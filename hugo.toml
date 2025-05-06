@@ -1,0 +1,4 @@
+baseURL = 'https://noonarby.casa/recipes/'
+languageCode = 'en-us'
+title = 'Recipes'
+theme = 'cookpot'

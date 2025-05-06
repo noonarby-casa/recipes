@@ -1,0 +1,19 @@
+name = 'Cookpot Recipe Theme'
+license = 'MIT'
+licenselink = 'https://github.com/owner/repo/LICENSE'
+description = 'A theme for displaying recipes, built for noonarby.casa.'
+
+# The home page of the theme, where the source can be found
+homepage = 'https://github.com/noonarby-casa/recipes'
+
+# If you have a running demo of the theme
+demosite = 'https://noonarby.casa/recipes'
+
+# Taxonomy terms
+tags = ['blog', 'recipes', 'food', 'minimal']
+features = ['recipe display']
+
+# If the theme has a single author
+[author]
+name = 'Nicholas Nooney'
+homepage = 'https://noonarby.casa'
