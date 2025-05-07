@@ -20,3 +20,35 @@ a {
   color: #00e;
   text-decoration: none;
 }
+
+.recipe-title-bar {
+  background-color: #f2f2f2;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.recipe-title-bar h1 {
+  margin: 0;
+}
+
+.recipe-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .recipe-container {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.ingredients-column {
+  border-right: 1px solid #ccc;
+  padding-right: 2rem;
+}
+
+.ingredients-column h2 {
+  margin-top: 0;
+}

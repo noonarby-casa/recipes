@@ -1,0 +1,25 @@
+{{ define "main" }}
+  <div class="recipe-title-bar">
+    <h1>{{ .Title }}</h1>
+  </div>
+
+  <div class="recipe-container">
+    <div class="ingredients-column">
+      <h2>Ingredients</h2>
+      <ul>
+        {{ range .Params.ingredients }}
+          <li>{{ . }}</li>
+        {{ end }}
+      </ul>
+    </div>
+    <div class="instructions-column">
+      {{ .Content }}
+    </div>
+  </div>
+
+  {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+  {{ $dateHuman := .Date | time.Format ":date_long" }}
+  <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+  
+  {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+{{ end }}

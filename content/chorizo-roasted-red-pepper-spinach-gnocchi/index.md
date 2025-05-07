@@ -1,17 +1,15 @@
 +++
 title = 'Chorizo Roasted Red Pepper Spinach Gnocchi'
 date = 2025-05-06T11:12:26-04:00
-draft = true
+ingredients = [
+  "16 ounces potato gnocchi",
+  "1/2 pound fresh chorizo, casing removed",
+  "3/4 cup chopped jarred roasted red peppers",
+  "1 small onion, chopped",
+  "1/2 teaspoon kosher salt",
+  "3 cups loosely packed baby spinach"
+]
 +++
-
-## Ingredients
-
-- 16 ounces potato gnocchi
-- 1/2 pound fresh chorizo, casing removed
-- 3/4 cup chopped jarred roasted red peppers
-- 1 small onion, chopped
-- 1/2 teaspoon kosher salt
-- 3 cups loosely packed baby spinach
 
 ## Instructions
 
