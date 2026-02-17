@@ -7,7 +7,7 @@ description = 'A theme for displaying recipes, built for noonarby.casa.'
 homepage = 'https://github.com/noonarby-casa/recipes'
 
 # If you have a running demo of the theme
-demosite = 'https://noonarby.casa/recipes'
+demosite = 'https://recipes.noonarby.casa/'
 
 # Taxonomy terms
 tags = ['blog', 'recipes', 'food', 'minimal']
@@ -15,5 +15,5 @@ features = ['recipe display']
 
 # If the theme has a single author
 [author]
-name = 'Nicholas Nooney'
+name = 'Nicholas Noonarby'
 homepage = 'https://noonarby.casa'

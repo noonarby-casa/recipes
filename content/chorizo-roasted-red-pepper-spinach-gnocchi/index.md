@@ -1,6 +1,7 @@
 +++
 title = 'Chorizo Roasted Red Pepper Spinach Gnocchi'
 date = 2025-05-06T11:12:26-04:00
+slug = 'chorizo-gnocchi'
 ingredients = [
   "16 ounces potato gnocchi",
   "1/2 pound fresh chorizo, casing removed",
