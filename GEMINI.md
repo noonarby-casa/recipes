@@ -23,6 +23,7 @@ A quick reference of the core technologies, libraries, and hosting parameters po
 | Layer | Technology | Version / Details | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Framework** | [Hugo (Extended)](https://gohugo.io/) | `latest` / Extended version required | Static Site Generator (SSG) |
+| **Version Control** | [Jujutsu (jj)](https://github.com/martinvonz/jj) | Git-compatible | Primary VCS; tracks changes automatically in working copy (`@`) |
 | **Styling** | Vanilla CSS | Defined in `themes/cookpot/assets/css/main.css` | Minimal, responsive layout |
 | **Development** | [Tailwind CSS](https://tailwindcss.com/) | `^4.1.18` (in `package.json` devDependencies) | Available but currently not compiled/active |
 | **Hosting** | Firebase Hosting | Project ID: `noonarby-casa-recipes` | Static hosting and SSL management |
@@ -64,6 +65,29 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 
 ---
 
+## 🔀 Version Control with Jujutsu (jj)
+
+This project uses **Jujutsu (jj)** for version control. It does not use standard Git commands directly (there is no active `.git` directory in the workspace).
+
+### 1. Automatic Working Copy Commits
+Jujutsu automatically captures all file modifications in the working directory as part of the current working copy commit (designated with `@`). There is no need to run stage commands like `git add` or `git commit` to save incremental changes.
+
+### 2. Global CLI Flag for AI Assistants (CRITICAL)
+> [!IMPORTANT]
+> **No Pager in Non-Interactive Shells:** Since AI assistants operate in non-interactive environments, any Jujutsu command that could page its output (like `jj log`, `jj status`, `jj diff`, or `jj show`) **must** be called with the global `--no-pager` flag (e.g., `jj --no-pager status` or `jj --no-pager diff`). Failing to include `--no-pager` will cause commands to hang or print warning prompts.
+
+### 3. Common CLI Operations
+
+| Action | Command | Purpose |
+| :--- | :--- | :--- |
+| **Check Workspace Status** | `jj --no-pager status` | Displays modifications, additions, and deletions |
+| **View Current Changes** | `jj --no-pager diff` | Shows code diff of the working copy against its parent |
+| **View Commit History** | `jj --no-pager log -n 5` | Displays the last 5 commits/changes |
+| **Describe Change** | `jj describe -m "Commit message"` | Sets or updates the commit message of the current working copy `@` |
+| **Create New Change** | `jj new` | Creates a new change commit on top of the current one |
+
+---
+
 ## 🎨 Design System & Styling Guidelines
 
 > [!NOTE]
@@ -83,6 +107,10 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
   1. Tailwind CSS commands must be set up to compile into `themes/cookpot/assets/css/main.css` or a compiled stylesheet directory.
   2. The custom partial `themes/cookpot/layouts/_partials/head/css.html` must correctly locate and reference the compiled asset.
 * For now, make style modifications directly in `themes/cookpot/assets/css/main.css` to respect the existing layout styling.
+* Use the primary color system:
+  - `--noonblue` (`#0080D8`)
+  - `--noonblue-hover` (`#006cb7`)
+  - `--noonblue-light` (`#3fb0ff`)
 
 ---
 
@@ -90,7 +118,7 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 
 All recipe articles are created as Hugo leaf bundles (a folder containing an `index.md` file). They must strict-match the following schema definition.
 
-### Recipe Markdown Schema (`index.md`)
+### Recipe Front Matter Schema
 
 ```toml
 +++
@@ -102,19 +130,32 @@ ingredients = [
   "Ingredient item 2",
   "..."
 ]
+tags = [
+  "tag1",
+  "tag2"
+]
 +++
-
-## Instructions
-
-1. Step 1 description with quantity: Add gnocchi ({{< qty "16 ounces" >}}).
-2. Step 2 description: Brown chorizo ({{< qty "1/2 pound" >}}).
-3. Keep instructions clear, ordered, and formatted as a numbered list.
 ```
 
 * **Title:** Capitalized like standard titles.
 * **Slug:** URL-friendly lowercase string used to define the address.
 * **Ingredients:** A TOML list of strings. Each entry represents a single line containing quantity, unit, and item name.
-* **Instructions & Step Quantities:** Placed directly in the body of the markdown file beneath a `## Instructions` header. Wrap any ingredient quantities inside step descriptions with the `{{< qty "amount unit" >}}` shortcode (e.g. `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`). This registers them with the client-side JavaScript engine, enabling them to scale dynamically alongside the main ingredients list when users adjust the scaling slider.
+* **Tags:** Optional string list for categorization (renders in recipe metadata).
+
+### Instructions, Step Quantities & Timers
+Instructions are placed directly in the body of the markdown file beneath a `## Instructions` header. 
+* **Scaling Quantities:** Wrap any ingredient quantities inside step descriptions with the `{{< qty "amount unit" >}}` shortcode (e.g. `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`). This registers them with the client-side JavaScript engine, enabling them to scale dynamically alongside the main ingredients list when users adjust the scaling slider.
+* **Timers:** Wrap any time durations or ranges inside step descriptions with the `{{< timer "duration" >}}` shortcode (e.g. `{{< timer "5-7 minutes" >}}` or `{{< timer "10 minutes" >}}`). This renders an interactive, color-coded client-side countdown timer.
+
+Example Markdown Body:
+```markdown
+## Instructions
+
+1. Step 1 description with quantity: Add gnocchi ({{< qty "16 ounces" >}}).
+2. Step 2 description: Brown chorizo ({{< qty "1/2 pound" >}}).
+3. Step 3 description with timer: Cook for {{< timer "5-7 minutes" >}}.
+4. Keep instructions clear, ordered, and formatted as a numbered list.
+```
 
 ---
 
@@ -130,6 +171,7 @@ Ensure you have [Hugo](https://gohugo.io/) (Extended edition) installed locally 
 | **Run Dev Server** | `hugo server` | Starts local development server on `http://localhost:1313/recipes/` |
 | **Verify Production Build** | `hugo --minify` | Runs a production build to check for Hugo template or compilation issues |
 | **Serve Rendered Disk Output**| `hugo serve --renderToDisk --disableFastRender` | Renders fully compiled production-ready output to the `public/` directory and serves it |
+| **Create New Recipe** | `hugo new content content/<recipe-slug>/index.md` | Generates a new recipe leaf bundle content file |
 
 ---
 
@@ -160,6 +202,7 @@ Behavioral rules and workflow steps tailored for agentic AI coding assistants (l
 ### 2. Execution Guidelines
 * **No Placeholders:** Never use mock images or placeholder text. Always generate high-fidelity assets or realistic mock data.
 * **Semantic HTML:** Always use semantic elements (`<main>`, `<article>`, `<time>`, `<header>`, `<footer>`) to maximize accessibility and SEO.
+* **VCS Commits:** Use `jj describe -m "description"` to log work descriptions when tasks are finished. Do not use git.
 
 ### 3. Verification & Testing
 * Always execute the production build command locally to verify zero compiler warnings or errors before marking a task as complete.
