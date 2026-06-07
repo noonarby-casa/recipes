@@ -3,12 +3,29 @@
     <h1>{{ .Title }}</h1>
   </div>
 
+  <div class="recipe-scale-panel">
+    <div class="scale-header">
+      <span class="scale-label">Adjust Servings / Scale</span>
+      <span class="scale-display"><strong id="scale-display-val">1.0</strong>x</span>
+    </div>
+    <div class="scale-controls">
+      <input type="range" id="recipe-scale-slider" min="0.25" max="4" step="0.25" value="1.0" aria-label="Scale recipe">
+      <div class="scale-presets">
+        <button type="button" class="scale-btn" data-val="0.25">0.25x</button>
+        <button type="button" class="scale-btn" data-val="0.5">0.5x</button>
+        <button type="button" class="scale-btn active" data-val="1.0">1x (Original)</button>
+        <button type="button" class="scale-btn" data-val="2.0">2x</button>
+        <button type="button" class="scale-btn" data-val="4.0">4x</button>
+      </div>
+    </div>
+  </div>
+
   <div class="recipe-container">
     <div class="ingredients-column">
       <h2>Ingredients</h2>
-      <ul>
+      <ul class="recipe-ingredients-list">
         {{ range .Params.ingredients }}
-          <li>{{ . }}</li>
+          <li class="recipe-ingredient">{{ . }}</li>
         {{ end }}
       </ul>
     </div>
@@ -17,9 +34,11 @@
     </div>
   </div>
 
-  {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-  {{ $dateHuman := .Date | time.Format ":date_long" }}
-  <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
-  
-  {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+  <div class="recipe-meta">
+    {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+    {{ $dateHuman := .Date | time.Format ":date_long" }}
+    <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+    
+    {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+  </div>
 {{ end }}

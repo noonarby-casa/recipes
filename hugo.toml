@@ -1,4 +1,4 @@
 baseURL = 'https://recipes.noonarby.casa/'
-languageCode = 'en-us'
+locale = 'en-us'
 title = 'Recipes'
 theme = 'cookpot'
