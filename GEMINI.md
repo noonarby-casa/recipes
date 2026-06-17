@@ -144,7 +144,14 @@ tags = [
 
 ### Instructions, Step Quantities & Timers
 Instructions are placed directly in the body of the markdown file beneath a `## Instructions` header. 
-* **Scaling Quantities:** Wrap any ingredient quantities inside step descriptions with the `{{< qty "amount unit" >}}` shortcode (e.g. `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`). This registers them with the client-side JavaScript engine, enabling them to scale dynamically alongside the main ingredients list when users adjust the scaling slider.
+* **Scaling Quantities:** Wrap any ingredient quantities inside step descriptions with the `{{< qty "amount unit" >}}` shortcode.
+  > [!IMPORTANT]
+  > **Supported Units & Formatting Rules:**
+  > The scaling engine in `themes/cookpot/assets/js/main.js` only recognizes a specific set of units: `ounces`, `ounce`, `pounds`, `pound`, `cups`, `cup`, `teaspoons`, `teaspoon`, `tablespoons`, `tablespoon`, `cloves`, `clove`, `cans`, `can`, `grams`, `gram`, `g`, `ml`, `small`, `large`, `medium`.
+  > 
+  > 1. **If the unit is supported:** Wrap both amount and unit in the shortcode. Example: `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`.
+  > 2. **If the unit is NOT supported** (e.g., `lemon`, `squash`, `onion`): Wrap *only* the numeric amount in the shortcode, leaving the unit word outside. Example: `{{< qty "1" >}} lemon` or `{{< qty "4" >}} summer squash`. Wrapping unsupported unit names inside the shortcode will cause them to be discarded when scaling changes.
+  > 3. **Avoid ranges inside the shortcode:** The parser matches the first numeric quantity in a string. For ranges (e.g., `2-3 tablespoons`), write `{{< qty "2 tablespoons" >}} (or up to 3)` or specify a single base quantity like `{{< qty "2 tablespoons" >}}` to prevent scaling output formatting bugs.
 * **Timers:** Wrap any time durations or ranges inside step descriptions with the `{{< timer "duration" >}}` shortcode (e.g. `{{< timer "5-7 minutes" >}}` or `{{< timer "10 minutes" >}}`). This renders an interactive, color-coded client-side countdown timer.
 
 Example Markdown Body:
@@ -156,6 +163,7 @@ Example Markdown Body:
 3. Step 3 description with timer: Cook for {{< timer "5-7 minutes" >}}.
 4. Keep instructions clear, ordered, and formatted as a numbered list.
 ```
+
 
 ---
 
