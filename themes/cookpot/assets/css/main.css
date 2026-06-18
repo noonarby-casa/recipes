@@ -72,7 +72,24 @@ a:hover {
 
 @media (min-width: 768px) {
   .recipe-container {
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 2.5fr;
+  }
+
+  .ingredients-column h2,
+  .instructions-column h2 {
+    font-size: 1.45rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .instructions-column ol {
+    padding-left: 2.2rem;
+  }
+
+  .instructions-column li {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 1.1rem;
+    color: #333;
   }
 }
 
@@ -247,7 +264,7 @@ a:hover {
   padding: 0.05rem 0.35rem;
   border-radius: 6px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.95em;
   border-bottom: 1.5px dashed var(--noonblue-border-light);
   transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: default;
@@ -305,13 +322,27 @@ a:hover {
   color: #fff;
 }
 
-/* Client-side Recipe Timers */
+/* Client-side Recipe Timers - Split Capsule Button */
 .recipe-timer {
   display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
+  align-items: stretch;
   vertical-align: middle;
   margin: 0 0.35rem;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px var(--noonblue-shadow-button);
+  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.recipe-timer:hover {
+  box-shadow: 0 6px 14px var(--noonblue-shadow);
+  transform: translateY(-0.5px);
+}
+
+.recipe-timer:active {
+  transform: translateY(0.5px) scale(0.97);
 }
 
 .recipe-timer-btn {
@@ -320,62 +351,47 @@ a:hover {
   gap: 0.45rem;
   padding: 0.35rem 0.85rem;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 0.95em;
   font-weight: 600;
   color: #fff;
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  border: 1px solid transparent;
-  border-radius: 20px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  box-shadow: 0 4px 10px var(--noonblue-shadow-button);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
+  outline: none;
+  transition: background-color 0.2s ease;
 }
 
 .recipe-timer-btn:hover {
-  background: linear-gradient(135deg, var(--noonblue-hover), var(--noonblue));
-  box-shadow: 0 6px 14px var(--noonblue-shadow);
-  transform: translateY(-0.5px);
-}
-
-.recipe-timer-btn:active {
-  transform: translateY(0.5px) scale(0.97);
+  background-color: rgba(0, 0, 0, 0.08);
 }
 
 .recipe-timer-reset {
-  display: inline-flex;
+  display: none; /* Hidden by default */
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  font-size: 0.9rem;
-  color: #666;
-  background-color: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 50%;
+  width: 36px; /* Generous touch target for tablets */
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  background: transparent;
+  border: none;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.25);
   cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.8);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .recipe-timer-reset:hover {
-  background-color: #e5e7eb;
-  color: #111;
-  border-color: #9ca3af;
+  background-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
 }
 
 /* Show reset button when active or paused */
 .recipe-timer.has-started .recipe-timer-reset {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1);
+  display: inline-flex;
 }
 
 /* Running State */
-.recipe-timer.is-running .recipe-timer-btn {
+.recipe-timer.is-running {
   animation: timer-pulse 2s infinite ease-in-out;
 }
 
@@ -389,14 +405,12 @@ a:hover {
 }
 
 /* Green State: In Range / Complete */
-.recipe-timer.is-in-range .recipe-timer-btn {
+.recipe-timer.is-in-range {
   background: linear-gradient(135deg, #10b981, #34d399);
-  color: #fff;
-  border-color: transparent;
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
 }
 
-.recipe-timer.is-in-range.is-running .recipe-timer-btn {
+.recipe-timer.is-in-range.is-running {
   animation: timer-pulse-green 2s infinite ease-in-out;
 }
 
@@ -410,14 +424,12 @@ a:hover {
 }
 
 /* Orange State: Beyond Range (Overtime) */
-.recipe-timer.is-beyond-range .recipe-timer-btn {
+.recipe-timer.is-beyond-range {
   background: linear-gradient(135deg, #f97316, #fb923c);
-  color: #fff;
-  border-color: transparent;
   box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
 }
 
-.recipe-timer.is-beyond-range.is-running .recipe-timer-btn {
+.recipe-timer.is-beyond-range.is-running {
   animation: timer-pulse-orange 1s infinite ease-in-out;
 }
 
@@ -588,7 +600,7 @@ a:hover {
   .recipe-container {
     grid-area: container;
     display: grid;
-    grid-template-columns: 1fr 1.6fr;
+    grid-template-columns: 1fr 2fr;
     gap: 2rem;
     height: 100%;
     min-height: 0; /* Keep children scrolling independently */
@@ -628,7 +640,7 @@ a:hover {
   .instructions-column h2 {
     margin-top: 0;
     margin-bottom: 0.75rem;
-    font-size: 1.25rem;
+    font-size: 1.45rem;
     font-weight: 700;
     color: #111;
     letter-spacing: -0.01em;
@@ -641,14 +653,14 @@ a:hover {
   }
 
   .instructions-column ol {
-    padding-left: 1.25rem;
+    padding-left: 2.2rem;
     margin-top: 0.5rem;
   }
 
   .instructions-column li {
-    margin-bottom: 0.85rem;
-    line-height: 1.5;
-    font-size: 1rem;
+    margin-bottom: 1.1rem;
+    line-height: 1.6;
+    font-size: 1.2rem;
     color: #333;
   }
 
