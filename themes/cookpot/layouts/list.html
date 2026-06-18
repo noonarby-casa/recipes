@@ -1,8 +1,13 @@
 {{ define "main" }}
-  <h1>{{ .Title }}</h1>
-  {{ .Content }}
-  {{ range .Pages }}
-    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-    {{ .Summary }}
+  <h1 class="page-title">{{ .Title }}</h1>
+  {{ if .Content }}
+    <div class="page-content">
+      {{ .Content }}
+    </div>
   {{ end }}
+  <div class="recipe-list">
+    {{ range .Pages.ByDate.Reverse }}
+      {{ partial "recipe-list-item.html" . }}
+    {{ end }}
+  </div>
 {{ end }}
