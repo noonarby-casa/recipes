@@ -10,6 +10,12 @@ ingredients = [
   "1/2 teaspoon kosher salt",
   "3 cups loosely packed baby spinach"
 ]
+tags = [
+  "easy",
+  "weeknight",
+  "gnocchi",
+  "chorizo"
+]
 +++
 
 ## Instructions
