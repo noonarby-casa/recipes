@@ -220,7 +220,7 @@ a:hover {
     flex-direction: row;
     align-items: stretch;
     gap: 1.25rem;
-    flex: 1.2;
+    flex: 1;
   }
 
   .recipe-header-right {
@@ -759,7 +759,7 @@ a:hover {
 
   .recipe-scale-panel #recipe-scale-slider {
     flex-grow: 1;
-    max-width: 140px;
+    max-width: 240px;
   }
 
   .recipe-scale-panel .scale-presets {
