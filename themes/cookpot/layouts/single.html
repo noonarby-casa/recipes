@@ -1,21 +1,33 @@
 {{ define "main" }}
-  <div class="recipe-title-bar">
-    <h1>{{ .Title }}</h1>
-  </div>
-
-  <div class="recipe-scale-panel">
-    <div class="scale-header">
-      <span class="scale-label">Adjust Servings / Scale</span>
-      <span class="scale-display"><strong id="scale-display-val">1.0</strong>x</span>
+  <div class="recipe-header">
+    <div class="recipe-header-left">
+      {{ with .Resources.GetMatch "featured-image*" }}
+        {{ $image := .Fill "320x320 webp" }}
+        <div class="recipe-featured-image">
+          <img src="{{ $image.RelPermalink }}" width="{{ $image.Width }}" height="{{ $image.Height }}" alt="{{ $.Title }}">
+        </div>
+      {{ end }}
+      <div class="recipe-title-bar">
+        <h1>{{ .Title }}</h1>
+      </div>
     </div>
-    <div class="scale-controls">
-      <input type="range" id="recipe-scale-slider" min="0.25" max="4" step="0.25" value="1.0" aria-label="Scale recipe">
-      <div class="scale-presets">
-        <button type="button" class="scale-btn" data-val="0.25">0.25x</button>
-        <button type="button" class="scale-btn" data-val="0.5">0.5x</button>
-        <button type="button" class="scale-btn active" data-val="1.0">1x (Original)</button>
-        <button type="button" class="scale-btn" data-val="2.0">2x</button>
-        <button type="button" class="scale-btn" data-val="4.0">4x</button>
+
+    <div class="recipe-header-right">
+      <div class="recipe-scale-panel">
+        <div class="scale-header">
+          <span class="scale-label">Adjust Servings / Scale</span>
+          <span class="scale-display"><strong id="scale-display-val">1.0</strong>x</span>
+        </div>
+        <div class="scale-controls">
+          <input type="range" id="recipe-scale-slider" min="0.25" max="4" step="0.25" value="1.0" aria-label="Scale recipe">
+          <div class="scale-presets">
+            <button type="button" class="scale-btn" data-val="0.25">0.25x</button>
+            <button type="button" class="scale-btn" data-val="0.5">0.5x</button>
+            <button type="button" class="scale-btn active" data-val="1.0">1x (Original)</button>
+            <button type="button" class="scale-btn" data-val="2.0">2x</button>
+            <button type="button" class="scale-btn" data-val="4.0">4x</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
