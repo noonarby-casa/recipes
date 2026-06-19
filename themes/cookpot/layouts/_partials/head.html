@@ -1,5 +1,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
+<link rel="icon" type="image/png" href="{{ "icon-600.png" | relURL }}">
+<link rel="apple-touch-icon" href="{{ "icon-600.png" | relURL }}">
+<link rel="icon" type="image/png" sizes="192x192" href="{{ "icon-600.png" | relURL }}">
 {{ partialCached "head/css.html" . }}
 {{ partialCached "head/js.html" . }}
+
