@@ -10,9 +10,18 @@
   <div class="recipe-list-content">
     <h2 class="recipe-list-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
     <div class="recipe-list-meta">
-      {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-      {{ $dateHuman := .Date | time.Format ":date_long" }}
-      <time datetime="{{ $dateMachine }}" class="recipe-list-date">{{ $dateHuman }}</time>
+      <div class="recipe-list-meta-left">
+        {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+        {{ $dateHuman := .Date | time.Format ":date_long" }}
+        <time datetime="{{ $dateMachine }}" class="recipe-list-date">{{ $dateHuman }}</time>
+        {{ with .Params.cookTime }}
+          <span class="recipe-meta-separator">•</span>
+          <div class="recipe-cooktime">
+            <svg class="cooktime-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>{{ . }}</span>
+          </div>
+        {{ end }}
+      </div>
       {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
     </div>
   </div>

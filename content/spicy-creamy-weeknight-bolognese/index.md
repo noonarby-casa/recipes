@@ -2,6 +2,7 @@
 title = 'Spicy, Creamy Weeknight Bolognese'
 date = 2026-06-17T22:19:42-04:00
 slug = 'spicy-creamy-weeknight-bolognese'
+cookTime = '20 minutes'
 ingredients = [
   "1 pound ground beef (at least 20 percent fat)",
   "1 large onion, finely chopped",

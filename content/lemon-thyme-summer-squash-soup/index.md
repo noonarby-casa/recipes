@@ -2,6 +2,7 @@
 title = 'Lemon Thyme Summer Squash Soup'
 date = 2026-06-17T16:21:20-04:00
 slug = 'lemon-thyme-summer-squash-soup'
+cookTime = '30 minutes'
 ingredients = [
   "2 tablespoons butter or olive oil",
   "1 small sweet onion, chopped",

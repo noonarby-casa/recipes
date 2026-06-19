@@ -2,6 +2,7 @@
 title = 'Macaroni Salad With Lemon and Herbs'
 date = 2026-06-17T22:30:58-04:00
 slug = 'macaroni-salad-with-lemon-and-herbs'
+cookTime = '10 minutes'
 ingredients = [
   "16 ounces elbow macaroni",
   "2/3 cup minced bread-and-butter pickles",

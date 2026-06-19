@@ -275,6 +275,7 @@ a:hover {
     border-radius: 12px;
     border: 1px solid rgba(0, 0, 0, 0.04);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
@@ -978,6 +979,36 @@ a:hover {
 .recipe-list-title a:hover {
   color: var(--noonblue);
   text-decoration: none;
+}
+
+.recipe-cooktime {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.recipe-cooktime svg {
+  stroke: #777;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.recipe-title-bar .recipe-cooktime {
+  margin-top: 0.35rem;
+}
+
+.recipe-list-meta-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recipe-meta-separator {
+  color: #bbb;
+  font-size: 0.85rem;
 }
 
 .recipe-list-meta {

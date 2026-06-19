@@ -2,6 +2,7 @@
 title = 'Korean BBQ-Style Meatballs'
 date = 2026-06-06T22:04:32-04:00
 slug = 'korean-bbq-style-meatballs'
+cookTime = '15 minutes'
 ingredients = [
   "1 pound ground beef (round or chuck)",
   "1/2 cup finely crushed Ritz crackers (12 crackers)",
