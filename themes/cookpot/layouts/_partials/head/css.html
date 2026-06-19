@@ -1,9 +1,19 @@
-{{- with resources.Get "css/main.css" }}
-  {{- if eq hugo.Environment "development" }}
-    <link rel="stylesheet" href="{{ .RelPermalink }}">
-  {{- else }}
-    {{- with . | minify | fingerprint }}
-      <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
-    {{- end }}
+{{- $styles := slice }}
+{{- $files := slice "css/variables.css" "css/global.css" "css/recipe-list.css" "css/recipe-single.css" "css/timers.css" }}
+
+{{- range $files }}
+  {{- with resources.Get . }}
+    {{- $styles = $styles | append . }}
   {{- end }}
 {{- end }}
+
+{{- $bundle := $styles | resources.Concat "css/main.css" }}
+
+{{- if eq hugo.Environment "development" }}
+  <link rel="stylesheet" href="{{ $bundle.RelPermalink }}">
+{{- else }}
+  {{- with $bundle | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+  {{- end }}
+{{- end }}
+

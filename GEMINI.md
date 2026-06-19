@@ -24,8 +24,7 @@ A quick reference of the core technologies, libraries, and hosting parameters po
 | :--- | :--- | :--- | :--- |
 | **Framework** | [Hugo (Extended)](https://gohugo.io/) | `latest` / Extended version required | Static Site Generator (SSG) |
 | **Version Control** | [Jujutsu (jj)](https://github.com/martinvonz/jj) | Git-compatible | Primary VCS; tracks changes automatically in working copy (`@`) |
-| **Styling** | Vanilla CSS | Defined in `themes/cookpot/assets/css/main.css` | Minimal, responsive layout |
-| **Development** | [Tailwind CSS](https://tailwindcss.com/) | `^4.1.18` (in `package.json` devDependencies) | Available but currently not compiled/active |
+| **Styling** | Vanilla CSS | Modular files in `themes/cookpot/assets/css/` | Minimal, responsive layout, bundled dynamically using Hugo Concat |
 | **Hosting** | Firebase Hosting | Project ID: `noonarby-casa-recipes` | Static hosting and SSL management |
 | **CI/CD** | GitHub Actions | Merge on `main` & PR previews | Automated building & cloud deployment |
 
@@ -48,8 +47,18 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 ├── themes/
 │   └── cookpot/                          # Custom recipe theme folder
 │       ├── assets/
-│       │   ├── css/main.css              # Main site stylesheet (Vanilla CSS)
-│       │   └── js/main.js                # Core JS file
+│       │   ├── css/                      # Modular style sheets
+│       │   │   ├── variables.css         # Theme-wide design variables/colors
+│       │   │   ├── global.css            # Base resets and element rules
+│       │   │   ├── recipe-list.css       # Recipe card/listing styles
+│       │   │   ├── recipe-single.css     # Recipe single details and landscape layouts
+│       │   │   └── timers.css            # Pulse timers style rules
+│       │   └── js/                       # Modular scripts (bundled by Hugo esbuild)
+│       │       ├── main.js               # Entry point and initializer
+│       │       ├── audio.js              # Sound alarms logic
+│       │       ├── scaler.js             # Scaling calculation logic
+│       │       ├── timers.js             # Countdowns logic
+│       │       └── fontsize.js           # Custom instructions text-scaler logic
 │       ├── layouts/
 │       │   ├── _partials/                # Sub-templates (head.html, menu.html, terms.html)
 │       │   ├── baseof.html               # Main boilerplate layout shell
@@ -59,8 +68,7 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │       └── theme.toml                    # Theme metadata and taxonomies config
 ├── .firebaserc                           # Firebase project configuration mapping
 ├── firebase.json                         # Firebase hosting redirect and ignore rules
-├── hugo.toml                             # Global Hugo configuration (baseURL, theme='cookpot', etc.)
-└── package.json                          # Node dependencies for CSS processors (Tailwind v4)
+└── hugo.toml                             # Global Hugo configuration (baseURL, theme='cookpot', etc.)
 ```
 
 ---
@@ -91,7 +99,7 @@ Jujutsu automatically captures all file modifications in the working directory a
 ## 🎨 Design System & Styling Guidelines
 
 > [!NOTE]
-> **Active Design Pattern:** The project currently uses a pure **Vanilla CSS** design system located in `themes/cookpot/assets/css/main.css`. It features clean sans-serif typography, a minimal black/grey/white color scheme, and a grid-based responsive layout for recipe pages.
+> **Active Design Pattern:** The project uses a pure **Vanilla CSS** modular design system located under `themes/cookpot/assets/css/` (`variables.css`, `global.css`, `recipe-list.css`, `recipe-single.css`, `timers.css`). These are dynamically bundled on build by Hugo Pipes. It features clean sans-serif typography, a minimal black/grey/white color scheme, and a grid-based responsive layout for recipe pages.
 
 ### Responsive Breakpoints & Cooking Mode
 * **Mobile-First Layout:** The single recipe view displays ingredients and instructions in a stacked, vertically flowing layout by default.
@@ -102,12 +110,9 @@ Jujutsu automatically captures all file modifications in the working directory a
   - **Independent Scroll Columns:** The ingredients column (`1fr`) and instructions column (`1.6fr`) scroll vertically independently of each other. Thin, premium custom scrollbars are styled for touch screens, keeping key content immediately in view.
   - **Integrated Metadata:** Date and tags are placed elegantly at the bottom of the grid.
 
-### Style Overrides & Tailwind Transition
-* The devDependencies include Tailwind CSS and `@tailwindcss/cli`. If Tailwind is activated in the future:
-  1. Tailwind CSS commands must be set up to compile into `themes/cookpot/assets/css/main.css` or a compiled stylesheet directory.
-  2. The custom partial `themes/cookpot/layouts/_partials/head/css.html` must correctly locate and reference the compiled asset.
-* For now, make style modifications directly in `themes/cookpot/assets/css/main.css` to respect the existing layout styling.
-* Use the primary color system:
+### Style Overrides & Core Variables
+* Modify styles within their respective module files (e.g., [timers.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/timers.css) for interactive countdowns, [recipe-single.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/recipe-single.css) for single page layout details).
+* Use the primary color system defined in [variables.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/variables.css):
   - `--noonblue` (`#0080D8`)
   - `--noonblue-hover` (`#006cb7`)
   - `--noonblue-light` (`#3fb0ff`)
@@ -125,6 +130,7 @@ All recipe articles are created as Hugo leaf bundles (a folder containing an `in
 title = 'Descriptive Title'
 date = YYYY-MM-DDTHH:MM:SS-TZ
 slug = 'url-safe-slug'
+cookTime = 'Cook time duration (e.g., "20 minutes")'
 ingredients = [
   "Quantity unit ingredient name (e.g., '16 ounces potato gnocchi')",
   "Ingredient item 2",
@@ -139,6 +145,7 @@ tags = [
 
 * **Title:** Capitalized like standard titles.
 * **Slug:** URL-friendly lowercase string used to define the address.
+* **CookTime:** Optional string describing the total active cooking/preparation duration (e.g., `'20 minutes'`). Renders next to the date in lists, and under the header title on recipe detail views.
 * **Ingredients:** A TOML list of strings. Each entry represents a single line containing quantity, unit, and item name.
 * **Tags:** Optional string list for categorization (renders in recipe metadata).
 
@@ -169,13 +176,12 @@ Example Markdown Body:
 
 ## 🚀 Local Development & Commands
 
-Ensure you have [Hugo](https://gohugo.io/) (Extended edition) installed locally on your machine.
+Ensure you have [Hugo](https://gohugo.io/) (Extended edition) installed locally on your machine. No Node.js environment is required.
 
 ### Command Reference
 
 | Action | Command | Purpose |
 | :--- | :--- | :--- |
-| **Install Packages** | `npm install` | Restores Tailwind CLI and styling packages |
 | **Run Dev Server** | `hugo server` | Starts local development server on `http://localhost:1313/recipes/` |
 | **Verify Production Build** | `hugo --minify` | Runs a production build to check for Hugo template or compilation issues |
 | **Serve Rendered Disk Output**| `hugo serve --renderToDisk --disableFastRender` | Renders fully compiled production-ready output to the `public/` directory and serves it |

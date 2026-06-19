@@ -1,0 +1,15 @@
+:root {
+  /* Noonblue Color System Palette */
+  --noonblue: #0080D8;
+  --noonblue-hover: #006cb7;
+  --noonblue-light: #3fb0ff;
+  --noonblue-bg-light: rgba(0, 128, 216, 0.08);
+  --noonblue-bg-hover: rgba(0, 128, 216, 0.15);
+  --noonblue-border-light: rgba(0, 128, 216, 0.3);
+  --noonblue-border-hover: rgba(0, 128, 216, 0.6);
+  --noonblue-shadow: rgba(0, 128, 216, 0.25);
+  --noonblue-shadow-subtle: rgba(0, 128, 216, 0.15);
+  --noonblue-shadow-button: rgba(0, 128, 216, 0.2);
+  --noonblue-panel-hover-border: rgba(0, 128, 216, 0.2);
+  --noonblue-btn-hover-bg: rgba(0, 128, 216, 0.03);
+}

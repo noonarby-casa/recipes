@@ -1,0 +1,119 @@
+/* Client-side Recipe Timers - Split Capsule Button */
+.recipe-timer {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+  margin: 0 0.35rem;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px var(--noonblue-shadow-button);
+  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.recipe-timer:hover {
+  box-shadow: 0 6px 14px var(--noonblue-shadow);
+  transform: translateY(-0.5px);
+}
+
+.recipe-timer:active {
+  transform: translateY(0.5px) scale(0.97);
+}
+
+.recipe-timer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.recipe-timer-btn:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.recipe-timer-reset {
+  display: none; /* Hidden by default */
+  align-items: center;
+  justify-content: center;
+  width: 36px; /* Generous touch target for tablets */
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  background: transparent;
+  border: none;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.recipe-timer-reset:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+/* Show reset button when active or paused */
+.recipe-timer.has-started .recipe-timer-reset {
+  display: inline-flex;
+}
+
+/* Running State */
+.recipe-timer.is-running {
+  animation: timer-pulse 2s infinite ease-in-out;
+}
+
+@keyframes timer-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 128, 216, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(0, 128, 216, 0.15);
+  }
+}
+
+/* Green State: In Range / Complete */
+.recipe-timer.is-in-range {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.recipe-timer.is-in-range.is-running {
+  animation: timer-pulse-green 2s infinite ease-in-out;
+}
+
+@keyframes timer-pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.15);
+  }
+}
+
+/* Orange State: Beyond Range (Overtime) */
+.recipe-timer.is-beyond-range {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
+}
+
+.recipe-timer.is-beyond-range.is-running {
+  animation: timer-pulse-orange 1s infinite ease-in-out;
+}
+
+@keyframes timer-pulse-orange {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.2);
+  }
+}
