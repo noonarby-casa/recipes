@@ -1,6 +1,6 @@
 <article class="recipe-list-item">
   {{ with .Resources.GetMatch "featured-image*" }}
-    {{ $image := .Fill "240x240 webp" }}
+    {{ $image := .Fill "240x240 Center webp" }}
     <a href="{{ $.RelPermalink }}" class="recipe-list-image-link" aria-label="{{ $.Title }}">
       <div class="recipe-list-image">
         <img src="{{ $image.RelPermalink }}" width="{{ $image.Width }}" height="{{ $image.Height }}" alt="{{ $.Title }}" loading="lazy">

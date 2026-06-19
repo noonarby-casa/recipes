@@ -110,11 +110,15 @@ a:hover {
 }
 
 .recipe-featured-image img {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
   object-fit: cover;
+  object-position: center center;
   display: block;
   transition: transform 0.5s ease;
+  transform-origin: center center;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .recipe-featured-image:hover {
@@ -240,7 +244,7 @@ a:hover {
   .recipe-featured-image {
     width: 110px;
     height: 110px;
-    margin-bottom: 0;
+    margin: 0;
     flex-shrink: 0;
   }
 
@@ -920,8 +924,10 @@ a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transform-origin: center center;
 }
 
 .recipe-list-item:hover .recipe-list-image img {

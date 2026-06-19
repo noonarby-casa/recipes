@@ -2,7 +2,7 @@
   <div class="recipe-header">
     <div class="recipe-header-left">
       {{ with .Resources.GetMatch "featured-image*" }}
-        {{ $image := .Fill "320x320 webp" }}
+        {{ $image := .Fill "320x320 Center webp" }}
         <div class="recipe-featured-image">
           <img src="{{ $image.RelPermalink }}" width="{{ $image.Width }}" height="{{ $image.Height }}" alt="{{ $.Title }}">
         </div>
