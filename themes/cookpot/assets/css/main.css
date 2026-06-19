@@ -125,6 +125,82 @@ a:hover {
   transform: scale(1.03);
 }
 
+/* Base styles for instructions font size controls */
+.recipe-font-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.recipe-font-panel:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  border-color: var(--noonblue-panel-hover-border);
+}
+
+.font-header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.font-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.font-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-grow: 1;
+}
+
+.font-btn {
+  flex: 1;
+  cursor: pointer;
+  padding: 0.45rem 0.65rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: #fff;
+  color: #555;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+}
+
+.font-btn:hover {
+  border-color: var(--noonblue);
+  color: var(--noonblue);
+  background: var(--noonblue-btn-hover-bg);
+}
+
+.font-btn:active {
+  transform: scale(0.97);
+}
+
+.font-btn.active {
+  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px var(--noonblue-shadow-button);
+}
+
+.instructions-column {
+  font-size: var(--instructions-font-size, 1.2rem);
+}
+
 @media (min-width: 768px) {
   .recipe-container {
     grid-template-columns: 1fr 2.5fr;
@@ -194,7 +270,7 @@ a:hover {
   }
 
   .instructions-column li {
-    font-size: 1.2rem;
+    font-size: 1em;
     line-height: 1.6;
     margin-bottom: 1.1rem;
     color: #333;
@@ -760,7 +836,7 @@ a:hover {
   .instructions-column li {
     margin-bottom: 1.1rem;
     line-height: 1.6;
-    font-size: 1.2rem;
+    font-size: 1em;
     color: #333;
   }
 
