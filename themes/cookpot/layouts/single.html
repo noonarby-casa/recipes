@@ -17,12 +17,22 @@
       {{ end }}
       <div class="recipe-title-bar">
         <h1>{{ .Title }}</h1>
-        {{ with .Params.cookTime }}
-          <div class="recipe-cooktime">
-            <svg class="cooktime-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>{{ . }}</span>
+        <div class="recipe-title-meta">
+          {{ with .Params.cookTime }}
+            <div class="recipe-cooktime">
+              <svg class="cooktime-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>{{ . }}</span>
+            </div>
+          {{ end }}
+          {{ if .Params.cookTime }}
+            <span class="recipe-meta-separator">•</span>
+          {{ end }}
+          {{ $recipeSource := .Params.recipeSource | default "Noonarby" }}
+          <div class="recipe-source">
+            <svg class="source-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>{{ $recipeSource }}</span>
           </div>
-        {{ end }}
+        </div>
       </div>
     </div>
 

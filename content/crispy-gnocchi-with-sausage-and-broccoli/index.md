@@ -3,6 +3,7 @@ title = 'Crispy Gnocchi with Sausage and Broccoli'
 date = 2026-06-17T22:32:14-04:00
 slug = 'crispy-gnocchi-sausage-broccoli'
 cookTime = '25 minutes'
+recipeSource = 'Noonarby'
 ingredients = [
   "1 package (12- to 18-ounces) shelf-stable potato gnocchi",
   "1 large head broccoli (about 1 pound), florets cut into 1½- to 2-inch pieces, stems thinly sliced",

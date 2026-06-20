@@ -94,7 +94,8 @@
   text-decoration: none;
 }
 
-.recipe-cooktime {
+.recipe-cooktime,
+.recipe-source {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -102,14 +103,20 @@
   color: #666;
 }
 
-.recipe-cooktime svg {
+.recipe-cooktime svg,
+.recipe-source svg {
   stroke: #777;
   flex-shrink: 0;
   display: inline-block;
   vertical-align: middle;
 }
 
-.recipe-title-bar .recipe-cooktime {
+.recipe-title-meta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-top: 0.35rem;
 }
 
