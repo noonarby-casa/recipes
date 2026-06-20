@@ -1,0 +1,44 @@
++++
+title = 'Tequila Lime Grilled Chicken'
+date = 2026-06-20T15:42:56-04:00
+slug = 'tequila-lime-grilled-chicken'
+cookTime = '1 hour 30 minutes'
+recipeSource = 'Rickarbys'
+ingredients = [
+  "3 tablespoons sugar (for brine)",
+  "1/2 teaspoon sugar (for sauce)",
+  "4 12-ounce split bone-in, skin-on chicken breasts",
+  "2 tablespoons fresh lime juice",
+  "1 lime, cut into wedges for serving",
+  "3 tablespoons tequila",
+  "1/4 cup mayonnaise",
+  "1/4 cup sour cream",
+  "1 1/2 teaspoons minced jalapeno pepper",
+  "1 medium clove garlic, minced",
+  "1/3 cup chopped fresh cilantro",
+  "Vegetable oil, for the grill",
+  "1/3 cup salt (for brine)",
+  "6 cups water (for brine)",
+  "1/2 teaspoon salt (for sauce)"
+]
+tags = [
+  "chicken",
+  "summer",
+  "grill",
+  "gluten-free",
+  "nut-free",
+  "easy"
+]
++++
+
+## Instructions
+
+1. In a large shallow bowl, stir {{< qty "1/3 cup" >}} salt and {{< qty "3 tablespoons" >}} sugar into {{< qty "6 cups" >}} water until dissolved. Submerge the chicken ({{< qty "4" >}}), cover, and refrigerate for {{< timer "1 hour" >}}.
+2. Meanwhile, in a medium bowl, mix the mayonnaise ({{< qty "1/4 cup" >}}), sour cream ({{< qty "1/4 cup" >}}), tequila ({{< qty "3 tablespoons" >}}), lime juice ({{< qty "2 tablespoons" >}}), jalapeno ({{< qty "1 1/2 teaspoons" >}}), garlic ({{< qty "1 medium clove" >}}), cilantro ({{< qty "1/3 cup" >}}), remaining sugar ({{< qty "1/2 teaspoon" >}}), and salt ({{< qty "1/2 teaspoon" >}}), then cover and refrigerate.
+3. Preheat a gas grill on high. (Once preheated, adjust one burner to medium-high and the others to low.)
+4. Remove the chicken from the marinade, rinse, and dry.
+5. Oil the grill grates with vegetable oil, then grill the chicken skin side down, over the hot part of the grill, and without moving, until skin is grill-marked, about {{< timer "4 minutes" >}}.
+6. Turn the pieces over and continue grilling until second side is grill-marked, about {{< timer "4 minutes" >}} longer.
+7. Move the chicken to the cooler side of the grill and grill, skin side up, until center of the thickest part of each piece registers 160 degrees on an instant-read thermometer, about {{< timer "18 minutes" >}} longer.
+8. Transfer the chicken to a platter, cover loosely with foil, and rest for {{< timer "10 minutes" >}}.
+9. Serve the chicken with the chilled sauce and the lime wedges (from {{< qty "1" >}} lime).
