@@ -10,10 +10,10 @@
 {{- $bundle := $styles | resources.Concat "css/main.css" }}
 
 {{- if eq hugo.Environment "development" }}
-  <link rel="stylesheet" href="{{ $bundle.RelPermalink }}">
+  <style>{{ $bundle.Content | safeCSS }}</style>
 {{- else }}
-  {{- with $bundle | minify | fingerprint }}
-    <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+  {{- with $bundle | minify }}
+    <style>{{ .Content | safeCSS }}</style>
   {{- end }}
 {{- end }}
 
