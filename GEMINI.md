@@ -99,7 +99,7 @@ Jujutsu automatically captures all file modifications in the working directory a
 ## 🎨 Design System & Styling Guidelines
 
 > [!NOTE]
-> **Active Design Pattern:** The project uses a pure **Vanilla CSS** modular design system located under `themes/cookpot/assets/css/` (`variables.css`, `global.css`, `recipe-list.css`, `recipe-single.css`, `timers.css`). These are dynamically bundled on build by Hugo Pipes. It features clean sans-serif typography, a minimal black/grey/white color scheme, and a grid-based responsive layout for recipe pages.
+> **Active Design Pattern:** The project uses a pure **Vanilla CSS** modular design system located under `themes/cookpot/assets/css/` (`variables.css`, `global.css`, `recipe-list.css`, `recipe-single.css`, `timers.css`). These are dynamically bundled on build by Hugo Pipes and inlined directly in the document `<head>` to avoid critical request chains and render-blocking HTTP requests. It features clean sans-serif typography, a minimal black/grey/white color scheme, and a grid-based responsive layout for recipe pages.
 
 ### Responsive Breakpoints & Cooking Mode
 * **Mobile-First Layout:** The single recipe view displays ingredients and instructions in a stacked, vertically flowing layout by default.
