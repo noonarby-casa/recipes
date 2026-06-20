@@ -2,9 +2,17 @@
   <div class="recipe-header">
     <div class="recipe-header-left">
       {{ with .Resources.GetMatch "featured-image*" }}
-        {{ $image := .Fill "320x320 Center webp" }}
+        {{ $img110 := .Fill "110x110 Center webp" }}
+        {{ $img140 := .Fill "140x140 Center webp" }}
+        {{ $img220 := .Fill "220x220 Center webp" }}
+        {{ $img280 := .Fill "280x280 Center webp" }}
         <div class="recipe-featured-image">
-          <img src="{{ $image.RelPermalink }}" width="{{ $image.Width }}" height="{{ $image.Height }}" alt="{{ $.Title }}">
+          <img src="{{ $img140.RelPermalink }}"
+               srcset="{{ $img110.RelPermalink }} 110w, {{ $img140.RelPermalink }} 140w, {{ $img220.RelPermalink }} 220w, {{ $img280.RelPermalink }} 280w"
+               sizes="(max-width: 767px) 140px, 110px"
+               width="140"
+               height="140"
+               alt="{{ $.Title }}">
         </div>
       {{ end }}
       <div class="recipe-title-bar">

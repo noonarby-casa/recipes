@@ -1,9 +1,18 @@
 <article class="recipe-list-item">
   {{ with .Resources.GetMatch "featured-image*" }}
-    {{ $image := .Fill "240x240 Center webp" }}
+    {{ $img90 := .Fill "90x90 Center webp" }}
+    {{ $img130 := .Fill "130x130 Center webp" }}
+    {{ $img180 := .Fill "180x180 Center webp" }}
+    {{ $img260 := .Fill "260x260 Center webp" }}
     <a href="{{ $.RelPermalink }}" class="recipe-list-image-link" aria-label="{{ $.Title }}">
       <div class="recipe-list-image">
-        <img src="{{ $image.RelPermalink }}" width="{{ $image.Width }}" height="{{ $image.Height }}" alt="{{ $.Title }}" loading="lazy">
+        <img src="{{ $img130.RelPermalink }}"
+             srcset="{{ $img90.RelPermalink }} 90w, {{ $img130.RelPermalink }} 130w, {{ $img180.RelPermalink }} 180w, {{ $img260.RelPermalink }} 260w"
+             sizes="(max-width: 599px) 90px, 130px"
+             width="130"
+             height="130"
+             alt="{{ $.Title }}"
+             loading="lazy">
       </div>
     </a>
   {{ end }}
