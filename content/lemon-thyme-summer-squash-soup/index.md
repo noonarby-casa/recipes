@@ -10,12 +10,12 @@ ingredients = [
   "3 cloves garlic, minced",
   "4 summer squash (about 7-8 ounces each), sliced into 1/8-inch half moons",
   "1 tablespoon fresh thyme",
-  "4 cups water",
-  "1/2 cup heavy cream",
-  "1 lemon, zested (about 1 teaspoon zest)",
-  "2 tablespoons fresh lemon juice (plus more to taste)",
   "1 teaspoon sea salt",
-  "black pepper, to taste"
+  "black pepper, to taste",
+  "4 cups water",
+  "1 lemon, zested (about 1 teaspoon zest)",
+  "1/2 cup heavy cream",
+  "2 tablespoons fresh lemon juice (plus more to taste)"
 ]
 tags = [
   "soup",

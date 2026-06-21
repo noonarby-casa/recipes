@@ -12,8 +12,8 @@ ingredients = [
   "Salt",
   "Crushed red pepper (optional)",
   "1 pound hot or sweet Italian sausage, casings removed",
-  "1/4 cup grated Parmesan, plus more for serving",
-  "1/2 lemon"
+  "1/2 lemon",
+  "1/4 cup grated Parmesan, plus more for serving"
 ]
 tags = [
   "easy",

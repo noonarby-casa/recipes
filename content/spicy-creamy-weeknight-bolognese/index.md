@@ -6,13 +6,13 @@ cookTime = '20 minutes'
 recipeSource = 'Noonarby'
 ingredients = [
   "1 pound ground beef (at least 20 percent fat)",
+  "salt and black pepper, to taste",
   "1 large onion, finely chopped",
   "2 carrots, peeled and finely chopped",
   "2 tablespoons red curry paste (or up to 3)",
   "1 can tomato sauce (15 ounces)",
   "1 pound short, curled pasta, such as pipettes",
-  "1 cup heavy cream",
-  "salt and black pepper, to taste"
+  "1 cup heavy cream"
 ]
 tags = [
   "pasta",

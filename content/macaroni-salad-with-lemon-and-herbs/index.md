@@ -5,7 +5,6 @@ slug = 'macaroni-salad-with-lemon-and-herbs'
 cookTime = '10 minutes'
 recipeSource = 'Noonarby'
 ingredients = [
-  "16 ounces elbow macaroni",
   "2/3 cup minced bread-and-butter pickles",
   "4 scallions, trimmed and thinly sliced, plus more for garnish",
   "3/4 cup mayonnaise",
@@ -16,7 +15,8 @@ ingredients = [
   "1 teaspoon fresh lemon zest",
   "4 teaspoons fresh lemon juice (from 1 large lemon)",
   "1 teaspoon granulated sugar",
-  "kosher salt and freshly ground pepper, to taste"
+  "kosher salt and freshly ground pepper, to taste",
+  "16 ounces elbow macaroni"
 ]
 tags = [
   "salad",
