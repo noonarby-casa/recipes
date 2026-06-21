@@ -2,11 +2,15 @@
   <div class="homepage-content">
     {{ .Content }}
   </div>
-  {{ $paginator := .Paginate site.RegularPages.ByDate.Reverse }}
-  <div class="recipe-list">
-    {{ range $paginator.Pages }}
-      {{ partial "recipe-list-item.html" . }}
-    {{ end }}
+  {{ partial "search.html" . }}
+  <div id="search-results" class="recipe-list" style="display: none;"></div>
+  <div id="recipe-list-default">
+    {{ $paginator := .Paginate site.RegularPages.ByDate.Reverse }}
+    <div class="recipe-list">
+      {{ range $paginator.Pages }}
+        {{ partial "recipe-list-item.html" . }}
+      {{ end }}
+    </div>
+    {{ partial "pagination.html" . }}
   </div>
-  {{ partial "pagination.html" . }}
 {{ end }}

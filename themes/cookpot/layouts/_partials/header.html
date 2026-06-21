@@ -1,2 +1,7 @@
 <h1><a href="{{ site.Home.RelPermalink }}"><img src="{{ "icon-72.png" | relURL }}" alt="" width="24" height="24" class="header-logo">{{ site.Title }}</a></h1>
-{{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+<div class="header-right">
+  {{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+  <a href="{{ site.Home.RelPermalink }}?search=focus" class="header-search-toggle" aria-label="Search recipes" id="header-search-toggle">
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+  </a>
+</div>

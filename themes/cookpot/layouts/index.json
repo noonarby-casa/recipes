@@ -1,0 +1,33 @@
+[
+  {{- range $index, $page := site.RegularPages.ByDate.Reverse }}
+  {{- if $index }},{{ end }}
+  {
+    "title": {{ $page.Title | jsonify }},
+    "permalink": {{ $page.RelPermalink | jsonify }},
+    "dateMachine": {{ $page.Date | time.Format "2006-01-02T15:04:05-07:00" | jsonify }},
+    "dateHuman": {{ $page.Date | time.Format ":date_long" | jsonify }},
+    "cookTime": {{ $page.Params.cookTime | default "" | jsonify }},
+    "recipeSource": {{ $page.Params.recipeSource | default "Noonarby" | jsonify }},
+    "tags": {{ $page.Params.tags | default slice | jsonify }},
+    "ingredients": {{ $page.Params.ingredients | default slice | jsonify }},
+    "summary": {{ $page.Summary | plainify | jsonify }},
+    {{- $img := "" }}
+    {{- $img90 := "" }}
+    {{- $img130 := "" }}
+    {{- $img180 := "" }}
+    {{- $img260 := "" }}
+    {{- with $page.Resources.GetMatch "featured-image*" }}
+      {{- $img = .RelPermalink }}
+      {{- $img90 = (.Fill "90x90 Center webp").RelPermalink }}
+      {{- $img130 = (.Fill "130x130 Center webp").RelPermalink }}
+      {{- $img180 = (.Fill "180x180 Center webp").RelPermalink }}
+      {{- $img260 = (.Fill "260x260 Center webp").RelPermalink }}
+    {{- end }}
+    "image": {{ $img | jsonify }},
+    "image90": {{ $img90 | jsonify }},
+    "image130": {{ $img130 | jsonify }},
+    "image180": {{ $img180 | jsonify }},
+    "image260": {{ $img260 | jsonify }}
+  }
+  {{- end }}
+]

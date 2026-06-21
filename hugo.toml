@@ -5,6 +5,9 @@ theme = 'cookpot'
 [pagination]
   pagerSize = 10
 
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
 
 
 

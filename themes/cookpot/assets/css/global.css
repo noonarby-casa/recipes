@@ -10,6 +10,12 @@ body {
 header {
   border-bottom: 1px solid #222;
   margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 header h1 a {
@@ -62,5 +68,33 @@ a:hover {
 .footer-github-icon {
   width: 1.25rem;
   height: 1.25rem;
+}
+
+/* Header Search Toggle & Right Section */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-search-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.header-search-toggle:hover {
+  color: var(--noonblue);
+  background-color: var(--noonblue-bg-light);
+}
+
+.header-search-toggle svg {
+  display: block;
 }
 
