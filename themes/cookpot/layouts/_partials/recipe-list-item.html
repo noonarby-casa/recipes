@@ -4,7 +4,7 @@
     {{ $img130 := .Fill "130x130 Center webp" }}
     {{ $img180 := .Fill "180x180 Center webp" }}
     {{ $img260 := .Fill "260x260 Center webp" }}
-    <a href="{{ $.RelPermalink }}" class="recipe-list-image-link" aria-label="{{ $.Title }}">
+    <div class="recipe-list-image-container">
       <div class="recipe-list-image">
         <img src="{{ $img130.RelPermalink }}"
              srcset="{{ $img90.RelPermalink }} 90w, {{ $img130.RelPermalink }} 130w, {{ $img180.RelPermalink }} 180w, {{ $img260.RelPermalink }} 260w"
@@ -14,7 +14,7 @@
              alt="{{ $.Title }}"
              loading="lazy">
       </div>
-    </a>
+    </div>
   {{ end }}
   <div class="recipe-list-content">
     <h2 class="recipe-list-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
