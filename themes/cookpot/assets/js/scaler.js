@@ -83,8 +83,8 @@ function getAdaptiveUnit(qty, unit) {
   if (!unit) return '';
   const lowerUnit = unit.toLowerCase();
   
-  // If quantity is exactly 1, return singular form
-  if (qty === 1) {
+  // If quantity is less than or equal to 1, return singular form
+  if (qty <= 1) {
     return singulars[lowerUnit] || unit;
   }
   // Otherwise, return plural form
