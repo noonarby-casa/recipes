@@ -121,6 +121,9 @@ Jujutsu automatically captures all file modifications in the working directory a
 
 ## ✍️ Recipe Content Structure & Schema
 
+> [!WARNING]
+> **No Featured Image Creation:** When adding or creating a new recipe, a `featured-image` file (e.g. `featured-image.jpg`, `featured-image.png`, `featured-image.webp`) **should NOT** be created by the AI assistant. These will be added via a different process.
+
 All recipe articles are created as Hugo leaf bundles (a folder containing an `index.md` file). They must strict-match the following schema definition.
 
 ### Recipe Front Matter Schema
