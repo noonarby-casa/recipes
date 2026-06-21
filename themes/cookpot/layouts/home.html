@@ -2,9 +2,11 @@
   <div class="homepage-content">
     {{ .Content }}
   </div>
+  {{ $paginator := .Paginate site.RegularPages.ByDate.Reverse }}
   <div class="recipe-list">
-    {{ range site.RegularPages.ByDate.Reverse }}
+    {{ range $paginator.Pages }}
       {{ partial "recipe-list-item.html" . }}
     {{ end }}
   </div>
+  {{ partial "pagination.html" . }}
 {{ end }}

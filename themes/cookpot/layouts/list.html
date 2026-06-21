@@ -5,9 +5,11 @@
       {{ .Content }}
     </div>
   {{ end }}
+  {{ $paginator := .Paginate .Pages.ByDate.Reverse }}
   <div class="recipe-list">
-    {{ range .Pages.ByDate.Reverse }}
+    {{ range $paginator.Pages }}
       {{ partial "recipe-list-item.html" . }}
     {{ end }}
   </div>
+  {{ partial "pagination.html" . }}
 {{ end }}

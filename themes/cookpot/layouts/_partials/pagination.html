@@ -1,0 +1,48 @@
+{{ $paginator := .Paginator }}
+{{ if gt $paginator.TotalPages 1 }}
+<nav class="pagination-container" aria-label="Pagination">
+  <div class="pagination">
+    {{ if $paginator.HasPrev }}
+      <a href="{{ $paginator.Prev.URL }}" class="pagination-btn pagination-prev" aria-label="Previous page">
+        <svg class="pagination-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>Previous</span>
+      </a>
+    {{ else }}
+      <span class="pagination-btn pagination-prev disabled" aria-disabled="true">
+        <svg class="pagination-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>Previous</span>
+      </span>
+    {{ end }}
+
+    <div class="pagination-pages">
+      {{ range $paginator.Pagers }}
+        {{ if eq .PageNumber $paginator.PageNumber }}
+          <span class="pagination-number active" aria-current="page">{{ .PageNumber }}</span>
+        {{ else }}
+          <a href="{{ .URL }}" class="pagination-number" aria-label="Go to page {{ .PageNumber }}">{{ .PageNumber }}</a>
+        {{ end }}
+      {{ end }}
+    </div>
+
+    {{ if $paginator.HasNext }}
+      <a href="{{ $paginator.Next.URL }}" class="pagination-btn pagination-next" aria-label="Next page">
+        <span>Next</span>
+        <svg class="pagination-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    {{ else }}
+      <span class="pagination-btn pagination-next disabled" aria-disabled="true">
+        <span>Next</span>
+        <svg class="pagination-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </span>
+    {{ end }}
+  </div>
+</nav>
+{{ end }}
