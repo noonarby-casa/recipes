@@ -1,10 +1,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
-<meta name="description" content="{{ if .Description }}{{ .Description }}{{ else if .Summary }}{{ .Summary | plainify | truncate 160 }}{{ else }}Delicious homemade recipes from the Noonarby Casa.{{ end }}">
+{{ $description := "" }}
+{{ if .Description }}
+  {{ $description = .Description }}
+{{ else if .Summary }}
+  {{ $description = .Summary | plainify | truncate 160 }}
+{{ else }}
+  {{ $description = "Delicious homemade recipes from the Noonarby Casa." }}
+{{ end }}
+<meta name="description" content="{{ $description }}">
+
+{{ $ogImage := "" }}
+{{ if .IsPage }}
+  {{ with .Resources.GetMatch "featured-image*" }}
+    {{ $ogImage = .Permalink }}
+  {{ end }}
+{{ end }}
+{{ if not $ogImage }}
+  {{ $ogImage = "icon-600.png" | absURL }}
+{{ end }}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:image" content="{{ $ogImage }}">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="{{ .Permalink }}">
+<meta name="twitter:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+<meta name="twitter:description" content="{{ $description }}">
+<meta name="twitter:image" content="{{ $ogImage }}">
+
 <link rel="icon" type="image/png" href="{{ "icon-72.png" | relURL }}">
 <link rel="apple-touch-icon" href="{{ "icon-600.png" | relURL }}">
 <link rel="icon" type="image/png" sizes="192x192" href="{{ "icon-600.png" | relURL }}">
 {{ partialCached "head/css.html" . }}
 {{ partialCached "head/js.html" . }}
-
