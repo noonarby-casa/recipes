@@ -58,11 +58,13 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │       │       ├── audio.js              # Sound alarms logic
 │       │       ├── scaler.js             # Scaling calculation logic
 │       │       ├── timers.js             # Countdowns logic
-│       │       └── fontsize.js           # Custom instructions text-scaler logic
+│       │       ├── fontsize.js           # Custom instructions text-scaler logic
+│       │       └── search.js             # Lazy-loaded recipe search logic
 │       ├── layouts/
-│       │   ├── _partials/                # Sub-templates (head.html, menu.html, terms.html)
+│       │   ├── _partials/                # Sub-templates (head.html, menu.html, terms.html, pagination.html, search.html)
 │       │   ├── baseof.html               # Main boilerplate layout shell
 │       │   ├── home.html                 # Homepage layout template
+│       │   ├── index.json                # JSON recipe search index template
 │       │   ├── list.html                 # List/taxonomies layout template
 │       │   └── single.html               # Recipe detail layout (grid of Ingredients / Instructions)
 │       └── theme.toml                    # Theme metadata and taxonomies config
@@ -134,6 +136,7 @@ title = 'Descriptive Title'
 date = YYYY-MM-DDTHH:MM:SS-TZ
 slug = 'url-safe-slug'
 cookTime = 'Cook time duration (e.g., "20 minutes")'
+recipeSource = 'Recipe source/author (e.g., "Rickarbys")'
 ingredients = [
   "Quantity unit ingredient name (e.g., '16 ounces potato gnocchi')",
   "Ingredient item 2",
@@ -149,6 +152,7 @@ tags = [
 * **Title:** Capitalized like standard titles.
 * **Slug:** URL-friendly lowercase string used to define the address.
 * **CookTime:** Optional string describing the total active cooking/preparation duration (e.g., `'20 minutes'`). Renders next to the date in lists, and under the header title on recipe detail views.
+* **RecipeSource:** Optional string parameter specifying the recipe's origin (e.g., `'Rickarbys'`), defaulting to `'Noonarby'` if omitted. Renders under the header title on recipe detail views and in search results.
 * **Ingredients:** A TOML list of strings. Each entry represents a single line containing quantity, unit, and item name.
 * **Tags:** Optional string list for categorization (renders in recipe metadata).
 
@@ -174,6 +178,24 @@ Example Markdown Body:
 4. Keep instructions clear, ordered, and formatted as a numbered list.
 ```
 
+---
+
+## 🔍 Recipe Search & Pagination
+
+The project includes custom built-in search and pagination features to improve navigation and loading times across lists.
+
+### 1. Recipe Search Engine
+The site features a client-side search engine for filtering recipes dynamically.
+* **Search Index Generation:** Hugo generates a search index at `index.json` (using the template at [index.json](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/index.json)) compiled from all pages. This index contains all recipe metadata (including `title`, `permalink`, `date`, `cookTime`, `recipeSource`, `tags`, `ingredients`, `summary`, and responsive image WebP crops).
+* **Lazy Loading Data:** The search module in [search.js](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/search.js) lazily fetches `index.json` only when the user hovers over or focuses on the search input box.
+* **Client-Side Filtering:** Searching matches search queries case-insensitively against titles, tags, ingredients, and summaries.
+* **Header Toggle:** Clicking the global search icon in the header dynamically scrolls to and focuses the search input.
+
+### 2. Pagination
+Recipe lists (on the homepage and category/tag list pages) are paginated to prevent performance issues.
+* **Configuration:** Pager size is set via `pagerSize = 10` inside [hugo.toml](file:///home/nicholasnooney/projects/noonarby-casa/recipes/hugo.toml).
+* **Markup & Partial:** Handled in [pagination.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/_partials/pagination.html) and styled inside [recipe-list.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/recipe-list.css).
+* **Template Integration:** Paginated lists in [home.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/home.html) and [list.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/list.html) iterate over the page items using `.Paginate` and render the pagination navigation buttons at the bottom.
 
 ---
 
