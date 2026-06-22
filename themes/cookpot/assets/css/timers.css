@@ -117,3 +117,28 @@
     box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.2);
   }
 }
+
+/* SVG Icon support */
+.timer-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-svg-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Toggle play/pause SVG icons based on running state */
+.recipe-timer .timer-pause-icon {
+  display: none;
+}
+
+.recipe-timer.is-running .timer-play-icon {
+  display: none;
+}
+
+.recipe-timer.is-running .timer-pause-icon {
+  display: block;
+}

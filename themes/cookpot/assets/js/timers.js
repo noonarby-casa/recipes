@@ -79,7 +79,6 @@ export function initTimers() {
 
     const btn = timerContainer.querySelector('.recipe-timer-btn');
     const resetBtn = timerContainer.querySelector('.recipe-timer-reset');
-    const iconSpan = btn.querySelector('.timer-icon');
     const labelSpan = btn.querySelector('.timer-label');
 
     function updateDisplay() {
@@ -87,7 +86,6 @@ export function initTimers() {
       
       if (elapsed === 0) {
         labelSpan.textContent = rawDuration;
-        iconSpan.textContent = '▶';
         timerContainer.classList.remove('has-started', 'is-running', 'is-in-range', 'is-beyond-range');
         return;
       }
@@ -107,10 +105,8 @@ export function initTimers() {
       timerContainer.classList.add('has-started');
       if (intervalId) {
         timerContainer.classList.add('is-running');
-        iconSpan.textContent = '⏸';
       } else {
         timerContainer.classList.remove('is-running');
-        iconSpan.textContent = '▶';
       }
     }
 
