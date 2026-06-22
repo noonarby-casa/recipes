@@ -6,6 +6,7 @@
     "permalink": {{ $page.RelPermalink | jsonify }},
     "dateMachine": {{ $page.Date | time.Format "2006-01-02T15:04:05-07:00" | jsonify }},
     "dateHuman": {{ $page.Date | time.Format ":date_long" | jsonify }},
+    "prepTime": {{ $page.Params.prepTime | default "" | jsonify }},
     "cookTime": {{ $page.Params.cookTime | default "" | jsonify }},
     "recipeSource": {{ $page.Params.recipeSource | default "Noonarby" | jsonify }},
     "tags": {{ $page.Params.tags | default slice | jsonify }},

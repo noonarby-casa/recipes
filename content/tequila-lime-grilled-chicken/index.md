@@ -2,7 +2,8 @@
 title = 'Tequila Lime Grilled Chicken'
 date = 2026-06-20T15:42:56-04:00
 slug = 'tequila-lime-grilled-chicken'
-cookTime = '1 hour 30 minutes'
+prepTime = '1 hour'
+cookTime = '30 minutes'
 recipeSource = 'Rickarbys'
 ingredients = [
   "1/3 cup salt (for brine)",

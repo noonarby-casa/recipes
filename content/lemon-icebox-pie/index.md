@@ -2,6 +2,7 @@
 title = 'Lemon Icebox Pie'
 date = 2026-06-20T21:06:01-04:00
 slug = 'lemon-icebox-pie'
+prepTime = '15 minutes (plus 6 hours freezing)'
 cookTime = '10 minutes'
 recipeSource = 'Rickarbys'
 ingredients = [

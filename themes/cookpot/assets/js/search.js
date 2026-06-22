@@ -183,13 +183,24 @@ export function initSearch() {
         </div>`;
       }
 
+      let prepTimeHtml = '';
+      if (recipe.prepTime) {
+        prepTimeHtml = `
+          <span class="recipe-meta-separator">•</span>
+          <div class="recipe-preptime">
+            <svg class="preptime-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Prep: ${escapeHtml(recipe.prepTime)}</span>
+          </div>`;
+      }
+
       let cookTimeHtml = '';
       if (recipe.cookTime) {
+        const label = recipe.prepTime ? 'Cook: ' : '';
         cookTimeHtml = `
           <span class="recipe-meta-separator">•</span>
           <div class="recipe-cooktime">
             <svg class="cooktime-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>${escapeHtml(recipe.cookTime)}</span>
+            <span>${label}${escapeHtml(recipe.cookTime)}</span>
           </div>`;
       }
 
@@ -224,6 +235,7 @@ export function initSearch() {
             <div class="recipe-list-meta">
               <div class="recipe-list-meta-left">
                 <time datetime="${recipe.dateMachine}" class="recipe-list-date">${escapeHtml(recipe.dateHuman)}</time>
+                ${prepTimeHtml}
                 ${cookTimeHtml}
                 ${sourceHtml}
               </div>

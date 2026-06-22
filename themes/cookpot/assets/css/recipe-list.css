@@ -115,6 +115,7 @@
   text-decoration: none;
 }
 
+.recipe-preptime,
 .recipe-cooktime,
 .recipe-source {
   display: inline-flex;
@@ -124,6 +125,7 @@
   color: #666;
 }
 
+.recipe-preptime svg,
 .recipe-cooktime svg,
 .recipe-source svg {
   stroke: #777;
