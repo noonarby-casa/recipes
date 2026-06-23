@@ -78,24 +78,7 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 
 ## 🔀 Version Control with Jujutsu (jj)
 
-This project uses **Jujutsu (jj)** for version control. It does not use standard Git commands directly (there is no active `.git` directory in the workspace).
-
-### 1. Automatic Working Copy Commits
-Jujutsu automatically captures all file modifications in the working directory as part of the current working copy commit (designated with `@`). There is no need to run stage commands like `git add` or `git commit` to save incremental changes.
-
-### 2. Global CLI Flag for AI Assistants (CRITICAL)
-> [!IMPORTANT]
-> **No Pager in Non-Interactive Shells:** Since AI assistants operate in non-interactive environments, any Jujutsu command that could page its output (like `jj log`, `jj status`, `jj diff`, or `jj show`) **must** be called with the global `--no-pager` flag (e.g., `jj --no-pager status` or `jj --no-pager diff`). Failing to include `--no-pager` will cause commands to hang or print warning prompts.
-
-### 3. Common CLI Operations
-
-| Action | Command | Purpose |
-| :--- | :--- | :--- |
-| **Check Workspace Status** | `jj --no-pager status` | Displays modifications, additions, and deletions |
-| **View Current Changes** | `jj --no-pager diff` | Shows code diff of the working copy against its parent |
-| **View Commit History** | `jj --no-pager log -n 5` | Displays the last 5 commits/changes |
-| **Describe Change** | `jj describe -m "Commit message"` | Sets or updates the commit message of the current working copy `@` |
-| **Create New Change** | `jj new` | Creates a new change commit on top of the current one |
+This project uses **Jujutsu (jj)** for version control. It does not use standard Git commands directly (there is no active `.git` directory in the workspace). Guidelines and commands are documented in the global `jj` skill.
 
 ---
 
