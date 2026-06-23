@@ -185,15 +185,17 @@ export function initSearch() {
 
       let timesHtml = '';
       if (recipe.times && recipe.times.length > 0) {
-        timesHtml = recipe.times.map(t => {
+        const stepsText = recipe.times.map(t => {
           const capitalizedStep = t.step.charAt(0).toUpperCase() + t.step.slice(1);
-          return `
-            <span class="recipe-meta-separator">•</span>
-            <div class="recipe-time">
-              <svg class="time-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              <span>${escapeHtml(capitalizedStep)}: ${escapeHtml(t.time)}</span>
-            </div>`;
-        }).join('');
+          return `${escapeHtml(capitalizedStep)} ${escapeHtml(t.time)}`;
+        }).join(' + ');
+
+        timesHtml = `
+          <span class="recipe-meta-separator">•</span>
+          <div class="recipe-time">
+            <svg class="time-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>${stepsText}</span>
+          </div>`;
       }
 
       const recipeSource = recipe.recipeSource || 'Noonarby';

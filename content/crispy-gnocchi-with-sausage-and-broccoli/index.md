@@ -3,7 +3,7 @@ title = 'Crispy Gnocchi with Sausage and Broccoli'
 date = 2026-06-17T22:32:14-04:00
 slug = 'crispy-gnocchi-sausage-broccoli'
 times = [
-  { step = 'cook', time = '25 minutes' }
+  { step = 'cook', time = '25 min' }
 ]
 recipeSource = 'Noonarby'
 ingredients = [

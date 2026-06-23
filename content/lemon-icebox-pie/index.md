@@ -3,9 +3,9 @@ title = 'Lemon Icebox Pie'
 date = 2026-06-20T21:06:01-04:00
 slug = 'lemon-icebox-pie'
 times = [
-  { step = 'prep', time = '15 minutes' },
+  { step = 'prep', time = '15 min' },
   { step = 'freeze', time = '6 hours' },
-  { step = 'cook', time = '10 minutes' }
+  { step = 'cook', time = '10 min' }
 ]
 recipeSource = 'Rickarbys'
 ingredients = [

@@ -3,9 +3,9 @@ title = 'Tequila Lime Grilled Chicken'
 date = 2026-06-20T15:42:56-04:00
 slug = 'tequila-lime-grilled-chicken'
 times = [
-  { step = 'prep', time = '15 minutes' },
+  { step = 'prep', time = '15 min' },
   { step = 'brine', time = '1 hour' },
-  { step = 'cook', time = '30 minutes' }
+  { step = 'cook', time = '30 min' }
 ]
 recipeSource = 'Rickarbys'
 ingredients = [

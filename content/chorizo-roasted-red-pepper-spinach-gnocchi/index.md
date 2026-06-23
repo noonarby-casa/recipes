@@ -3,7 +3,7 @@ title = 'Chorizo Roasted Red Pepper Spinach Gnocchi'
 date = 2025-05-06T11:12:26-04:00
 slug = 'chorizo-gnocchi'
 times = [
-  { step = 'cook', time = '20 minutes' }
+  { step = 'cook', time = '20 min' }
 ]
 recipeSource = 'Noonarby'
 ingredients = [

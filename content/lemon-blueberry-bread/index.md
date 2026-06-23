@@ -3,8 +3,8 @@ title = 'Lemon Blueberry Bread'
 date = 2026-06-20T21:10:50-04:00
 slug = 'lemon-blueberry-bread'
 times = [
-  { step = 'prep', time = '15 minutes' },
-  { step = 'cook', time = '60 minutes' }
+  { step = 'prep', time = '15 min' },
+  { step = 'cook', time = '60 min' }
 ]
 recipeSource = 'Rickarbys'
 ingredients = [

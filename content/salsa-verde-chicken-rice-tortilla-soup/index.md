@@ -3,7 +3,7 @@ title = 'Salsa Verde Chicken and Rice Tortilla Soup'
 date = 2026-06-22T05:48:25-04:00
 slug = 'salsa-verde-chicken-rice-tortilla-soup'
 times = [
-  { step = 'cook', time = '30 minutes' }
+  { step = 'cook', time = '30 min' }
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [

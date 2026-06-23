@@ -3,7 +3,7 @@ title = 'Bang Bang Chicken'
 date = 2026-06-22T05:53:17-04:00
 slug = 'bang-bang-chicken'
 times = [
-  { step = 'cook', time = '30 minutes' }
+  { step = 'cook', time = '30 min' }
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [

@@ -3,7 +3,7 @@ title = 'Cozy Chickpea Curry'
 date = 2026-06-22T05:53:17-04:00
 slug = 'chickpea-curry'
 times = [
-  { step = 'cook', time = '15 minutes' }
+  { step = 'cook', time = '15 min' }
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [

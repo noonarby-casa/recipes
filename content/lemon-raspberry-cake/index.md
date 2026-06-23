@@ -3,7 +3,7 @@ title = 'Lemon Raspberry Cake'
 date = 2026-06-20T21:15:00-04:00
 slug = 'lemon-raspberry-cake'
 times = [
-  { step = 'cook', time = '40 minutes' }
+  { step = 'cook', time = '40 min' }
 ]
 recipeSource = 'Rickarbys'
 ingredients = [

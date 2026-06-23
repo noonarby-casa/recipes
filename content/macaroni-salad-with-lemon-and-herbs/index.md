@@ -3,7 +3,7 @@ title = 'Macaroni Salad With Lemon and Herbs'
 date = 2026-06-17T22:30:58-04:00
 slug = 'macaroni-salad-with-lemon-and-herbs'
 times = [
-  { step = 'cook', time = '10 minutes' }
+  { step = 'cook', time = '10 min' }
 ]
 recipeSource = 'Noonarby'
 ingredients = [

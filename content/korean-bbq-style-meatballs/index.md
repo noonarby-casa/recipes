@@ -3,8 +3,8 @@ title = 'Korean BBQ-Style Meatballs'
 date = 2026-06-06T22:04:32-04:00
 slug = 'korean-bbq-style-meatballs'
 times = [
-  { step = 'prep', time = '15 minutes' },
-  { step = 'cook', time = '15 minutes' }
+  { step = 'prep', time = '15 min' },
+  { step = 'cook', time = '15 min' }
 ]
 recipeSource = 'Noonarby'
 ingredients = [

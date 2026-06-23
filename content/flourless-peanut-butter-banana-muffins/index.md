@@ -3,7 +3,7 @@ title = 'Flourless Peanut Butter Banana Muffins'
 date = 2026-06-22T05:53:17-04:00
 slug = 'flourless-peanut-butter-banana-muffins'
 times = [
-  { step = 'cook', time = '25 minutes' }
+  { step = 'cook', time = '25 min' }
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [

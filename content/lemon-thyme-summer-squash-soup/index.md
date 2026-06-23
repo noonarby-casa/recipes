@@ -3,7 +3,7 @@ title = 'Lemon Thyme Summer Squash Soup'
 date = 2026-06-17T16:21:20-04:00
 slug = 'lemon-thyme-summer-squash-soup'
 times = [
-  { step = 'cook', time = '30 minutes' }
+  { step = 'cook', time = '30 min' }
 ]
 recipeSource = 'Noonarby'
 ingredients = [

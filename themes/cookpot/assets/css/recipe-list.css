@@ -76,15 +76,7 @@
     height: 130px;
   }
 
-  .recipe-list-meta .recipe-list-meta-left {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-  }
 
-  .recipe-list-meta-left .recipe-meta-separator {
-    display: inline;
-  }
 }
 
 .recipe-list-title {
@@ -147,13 +139,14 @@
 
 .recipe-list-meta .recipe-list-meta-left {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.35rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .recipe-list-meta-left .recipe-meta-separator {
-  display: none;
+  display: inline;
 }
 
 .recipe-meta-separator {

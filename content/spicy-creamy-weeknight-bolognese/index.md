@@ -3,7 +3,7 @@ title = 'Spicy, Creamy Weeknight Bolognese'
 date = 2026-06-17T22:19:42-04:00
 slug = 'spicy-creamy-weeknight-bolognese'
 times = [
-  { step = 'cook', time = '20 minutes' }
+  { step = 'cook', time = '20 min' }
 ]
 recipeSource = 'Noonarby'
 ingredients = [

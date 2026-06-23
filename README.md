@@ -61,8 +61,8 @@ title = 'Recipe Title'
 date = YYYY-MM-DDTHH:MM:SS-TZ
 slug = 'url-safe-slug'
 times = [
-  { step = 'prep', time = 'Duration (e.g., "10 minutes")' },
-  { step = 'cook', time = 'Duration (e.g., "20 minutes")' }
+  { step = 'prep', time = 'Duration (e.g., "10 min")' },
+  { step = 'cook', time = 'Duration (e.g., "20 min")' }
 ]
 ingredients = [
   "Quantity unit ingredient (e.g., '16 ounces potato gnocchi')",

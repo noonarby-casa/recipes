@@ -136,8 +136,8 @@ title = 'Descriptive Title'
 date = YYYY-MM-DDTHH:MM:SS-TZ
 slug = 'url-safe-slug'
 times = [
-  { step = 'prep', time = 'Prep time duration (e.g., "10 minutes")' },
-  { step = 'cook', time = 'Cook time duration (e.g., "20 minutes")' }
+  { step = 'prep', time = 'Prep time duration (e.g., "10 min")' },
+  { step = 'cook', time = 'Cook time duration (e.g., "20 min")' }
 ]
 recipeSource = 'Recipe source/author (e.g., "Rickarbys")'
 ingredients = [
@@ -154,7 +154,7 @@ tags = [
 
 * **Title:** Capitalized like standard titles.
 * **Slug:** URL-friendly lowercase string used to define the address.
-* **Times:** An array of maps specifying recipe timing steps (e.g., prep, cook). Each item requires a `step` name and a `time` duration string (e.g., `'10 minutes'`). These render dynamically on lists and detail pages.
+* **Times:** An array of maps specifying recipe timing steps (e.g., prep, cook). Each item requires a `step` name and a `time` duration string (e.g., `'10 min'`). These render dynamically on lists and detail pages.
 * **RecipeSource:** Optional string parameter specifying the recipe's origin (e.g., `'Rickarbys'`), defaulting to `'Noonarby'` if omitted. Renders under the header title on recipe detail views and in search results.
 * **Ingredients:** A TOML list of strings. Each entry represents a single line containing quantity, unit, and item name.
 * **Tags:** Optional string list for categorization (renders in recipe metadata).
