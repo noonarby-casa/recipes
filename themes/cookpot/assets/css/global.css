@@ -77,7 +77,8 @@ a:hover {
   gap: 1rem;
 }
 
-.header-search-toggle {
+.header-search-toggle,
+.header-random-recipe {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -89,12 +90,14 @@ a:hover {
   cursor: pointer;
 }
 
-.header-search-toggle:hover {
+.header-search-toggle:hover,
+.header-random-recipe:hover {
   color: var(--noonblue);
   background-color: var(--noonblue-bg-light);
 }
 
-.header-search-toggle svg {
+.header-search-toggle svg,
+.header-random-recipe svg {
   display: block;
 }
 
