@@ -2,7 +2,9 @@
 title = 'Bang Bang Chicken'
 date = 2026-06-22T05:53:17-04:00
 slug = 'bang-bang-chicken'
-cookTime = '30 minutes'
+times = [
+  { step = 'cook', time = '30 minutes' }
+]
 recipeSource = 'Carly Rickarby'
 ingredients = [
   "1 cup whole-egg mayonnaise",

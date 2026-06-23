@@ -60,8 +60,10 @@ The recipe's `index.md` file must contain front matter configured using TOML:
 title = 'Recipe Title'
 date = YYYY-MM-DDTHH:MM:SS-TZ
 slug = 'url-safe-slug'
-prepTime = 'Duration (e.g., "10 minutes")'
-cookTime = 'Duration (e.g., "20 minutes")'
+times = [
+  { step = 'prep', time = 'Duration (e.g., "10 minutes")' },
+  { step = 'cook', time = 'Duration (e.g., "20 minutes")' }
+]
 ingredients = [
   "Quantity unit ingredient (e.g., '16 ounces potato gnocchi')",
   "Ingredient item 2",

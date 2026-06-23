@@ -2,7 +2,9 @@
 title = 'Crispy Gnocchi with Sausage and Broccoli'
 date = 2026-06-17T22:32:14-04:00
 slug = 'crispy-gnocchi-sausage-broccoli'
-cookTime = '25 minutes'
+times = [
+  { step = 'cook', time = '25 minutes' }
+]
 recipeSource = 'Noonarby'
 ingredients = [
   "1 package (12- to 18-ounces) shelf-stable potato gnocchi",

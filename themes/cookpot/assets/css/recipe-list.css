@@ -117,6 +117,7 @@
 
 .recipe-preptime,
 .recipe-cooktime,
+.recipe-time,
 .recipe-source {
   display: inline-flex;
   align-items: center;
@@ -127,6 +128,7 @@
 
 .recipe-preptime svg,
 .recipe-cooktime svg,
+.recipe-time svg,
 .recipe-source svg {
   stroke: #777;
   flex-shrink: 0;

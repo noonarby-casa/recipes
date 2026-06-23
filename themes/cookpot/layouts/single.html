@@ -18,22 +18,16 @@
       <div class="recipe-title-bar">
         <h1>{{ .Title }}</h1>
         <div class="recipe-title-meta">
-          {{ with .Params.prepTime }}
-            <div class="recipe-preptime">
-              <svg class="preptime-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              <span>Prep: {{ . }}</span>
+          {{ range $index, $element := .Params.times }}
+            {{ if $index }}
+              <span class="recipe-meta-separator">•</span>
+            {{ end }}
+            <div class="recipe-time">
+              <svg class="time-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>{{ .step | title }}: {{ .time }}</span>
             </div>
           {{ end }}
-          {{ if and .Params.prepTime .Params.cookTime }}
-            <span class="recipe-meta-separator">•</span>
-          {{ end }}
-          {{ with .Params.cookTime }}
-            <div class="recipe-cooktime">
-              <svg class="cooktime-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              <span>{{ if $.Params.prepTime }}Cook: {{ end }}{{ . }}</span>
-            </div>
-          {{ end }}
-          {{ if or .Params.prepTime .Params.cookTime }}
+          {{ if .Params.times }}
             <span class="recipe-meta-separator">•</span>
           {{ end }}
           {{ $recipeSource := .Params.recipeSource | default "Noonarby" }}

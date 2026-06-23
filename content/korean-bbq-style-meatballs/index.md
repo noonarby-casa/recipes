@@ -2,8 +2,10 @@
 title = 'Korean BBQ-Style Meatballs'
 date = 2026-06-06T22:04:32-04:00
 slug = 'korean-bbq-style-meatballs'
-prepTime = '15 minutes'
-cookTime = '15 minutes'
+times = [
+  { step = 'prep', time = '15 minutes' },
+  { step = 'cook', time = '15 minutes' }
+]
 recipeSource = 'Noonarby'
 ingredients = [
   "1 pound ground beef (round or chuck)",

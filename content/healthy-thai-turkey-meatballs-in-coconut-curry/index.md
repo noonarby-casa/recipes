@@ -2,7 +2,9 @@
 title = 'Healthy Thai Turkey Meatballs in Coconut Curry'
 date = 2026-06-22T05:53:17-04:00
 slug = 'healthy-thai-turkey-meatballs-in-coconut-curry'
-cookTime = '30 minutes'
+times = [
+  { step = 'cook', time = '30 minutes' }
+]
 recipeSource = 'Carly Rickarby'
 ingredients = [
   "1 pound organic ground turkey (or ground chicken)",

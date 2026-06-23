@@ -135,8 +135,10 @@ All recipe articles are created as Hugo leaf bundles (a folder containing an `in
 title = 'Descriptive Title'
 date = YYYY-MM-DDTHH:MM:SS-TZ
 slug = 'url-safe-slug'
-prepTime = 'Prep time duration (e.g., "10 minutes")'
-cookTime = 'Cook time duration (e.g., "20 minutes")'
+times = [
+  { step = 'prep', time = 'Prep time duration (e.g., "10 minutes")' },
+  { step = 'cook', time = 'Cook time duration (e.g., "20 minutes")' }
+]
 recipeSource = 'Recipe source/author (e.g., "Rickarbys")'
 ingredients = [
   "Quantity unit ingredient name (e.g., '16 ounces potato gnocchi')",
@@ -152,8 +154,7 @@ tags = [
 
 * **Title:** Capitalized like standard titles.
 * **Slug:** URL-friendly lowercase string used to define the address.
-* **PrepTime:** Optional string describing the preparation/inactive duration (e.g., `'10 minutes'`). Renders next to the date in lists, and under the header title on recipe detail views.
-* **CookTime:** Optional string describing the cooking duration (e.g., `'20 minutes'`). Renders next to the date in lists, and under the header title on recipe detail views.
+* **Times:** An array of maps specifying recipe timing steps (e.g., prep, cook). Each item requires a `step` name and a `time` duration string (e.g., `'10 minutes'`). These render dynamically on lists and detail pages.
 * **RecipeSource:** Optional string parameter specifying the recipe's origin (e.g., `'Rickarbys'`), defaulting to `'Noonarby'` if omitted. Renders under the header title on recipe detail views and in search results.
 * **Ingredients:** A TOML list of strings. Each entry represents a single line containing quantity, unit, and item name.
 * **Tags:** Optional string list for categorization (renders in recipe metadata).
@@ -188,7 +189,7 @@ The project includes custom built-in search and pagination features to improve n
 
 ### 1. Recipe Search Engine
 The site features a client-side search engine for filtering recipes dynamically.
-* **Search Index Generation:** Hugo generates a search index at `index.json` (using the template at [index.json](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/index.json)) compiled from all pages. This index contains all recipe metadata (including `title`, `permalink`, `date`, `prepTime`, `cookTime`, `recipeSource`, `tags`, `ingredients`, `summary`, and responsive image WebP crops).
+* **Search Index Generation:** Hugo generates a search index at `index.json` (using the template at [index.json](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/index.json)) compiled from all pages. This index contains all recipe metadata (including `title`, `permalink`, `date`, `times`, `recipeSource`, `tags`, `ingredients`, `summary`, and responsive image WebP crops).
 * **Lazy Loading Data:** The search module in [search.js](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/search.js) lazily fetches `index.json` only when the user hovers over or focuses on the search input box.
 * **Client-Side Filtering:** Searching matches search queries case-insensitively against titles, tags, ingredients, and summaries.
 * **Header Toggle:** Clicking the global search icon in the header dynamically scrolls to and focuses the search input.

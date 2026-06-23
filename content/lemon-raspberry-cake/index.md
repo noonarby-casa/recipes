@@ -2,7 +2,9 @@
 title = 'Lemon Raspberry Cake'
 date = 2026-06-20T21:15:00-04:00
 slug = 'lemon-raspberry-cake'
-cookTime = '40 minutes'
+times = [
+  { step = 'cook', time = '40 minutes' }
+]
 recipeSource = 'Rickarbys'
 ingredients = [
   "1 cup unsalted butter, at room temperature",

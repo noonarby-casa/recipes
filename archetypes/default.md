@@ -1,8 +1,10 @@
 +++
 title = '{{ replace .File.ContentBaseName "-" " " | title }}'
 date = '{{ .Date }}'
-prepTime = ''
-cookTime = ''
+times = [
+  { step = 'prep', time = '' },
+  { step = 'cook', time = '' }
+]
 recipeSource = 'Noonarby'
 draft = true
 +++
