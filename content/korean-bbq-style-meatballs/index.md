@@ -17,10 +17,13 @@ ingredients = [
   "1 teaspoon freshly ground black pepper"
 ]
 tags = [
+  "asian",
+  "beef",
+  "dinner",
   "easy",
-  "ground-beef",
-  "weeknight",
-  "meatballs"
+  "korean",
+  "meatballs",
+  "weeknight"
 ]
 +++
 

@@ -22,13 +22,15 @@ ingredients = [
   "white or brown basmati rice, to serve"
 ]
 tags = [
-  "curry",
   "chickpeas",
+  "curry",
+  "dairy-free",
+  "dinner",
+  "easy",
+  "gluten-free",
   "vegan",
   "vegetarian",
-  "dinner",
-  "weeknight",
-  "easy"
+  "weeknight"
 ]
 +++
 

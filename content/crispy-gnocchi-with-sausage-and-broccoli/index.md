@@ -18,12 +18,14 @@ ingredients = [
   "1/4 cup grated Parmesan, plus more for serving"
 ]
 tags = [
-  "easy",
-  "weeknight",
-  "gnocchi",
-  "sausage",
   "broccoli",
-  "sheet-pan"
+  "dinner",
+  "easy",
+  "gnocchi",
+  "italian",
+  "sausage",
+  "sheet-pan",
+  "weeknight"
 ]
 +++
 

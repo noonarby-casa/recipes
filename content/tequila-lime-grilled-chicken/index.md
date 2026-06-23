@@ -26,11 +26,13 @@ ingredients = [
 ]
 tags = [
   "chicken",
-  "summer",
-  "grill",
+  "dinner",
+  "easy",
   "gluten-free",
+  "grill",
+  "mexican",
   "nut-free",
-  "easy"
+  "summer"
 ]
 +++
 

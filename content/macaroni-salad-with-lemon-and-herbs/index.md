@@ -21,11 +21,14 @@ ingredients = [
   "16 ounces elbow macaroni"
 ]
 tags = [
-  "salad",
+  "easy",
+  "lemon",
+  "pasta",
   "pasta-salad",
-  "summer",
+  "salad",
   "side-dish",
-  "easy"
+  "summer",
+  "vegetarian"
 ]
 +++
 

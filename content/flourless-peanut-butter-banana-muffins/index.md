@@ -20,13 +20,14 @@ ingredients = [
   "1/2 cup raisins or dried cranberries (optional)"
 ]
 tags = [
-  "muffins",
-  "breakfast",
+  "baking",
   "banana",
-  "peanut-butter",
-  "gluten-free",
+  "breakfast",
   "dairy-free",
-  "baking"
+  "gluten-free",
+  "muffins",
+  "peanut-butter",
+  "vegetarian"
 ]
 +++
 

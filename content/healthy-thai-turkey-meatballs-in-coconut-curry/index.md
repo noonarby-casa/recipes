@@ -24,13 +24,17 @@ ingredients = [
   "cilantro, for garnish"
 ]
 tags = [
-  "meatballs",
-  "turkey",
-  "curry",
-  "dinner",
+  "asian",
   "coconut-milk",
+  "curry",
+  "dairy-free",
+  "dinner",
+  "easy",
   "gluten-free",
-  "dairy-free"
+  "meatballs",
+  "thai",
+  "turkey",
+  "weeknight"
 ]
 +++
 

@@ -15,10 +15,13 @@ ingredients = [
   "3 cups loosely packed baby spinach"
 ]
 tags = [
+  "chorizo",
+  "dinner",
   "easy",
-  "weeknight",
   "gnocchi",
-  "chorizo"
+  "italian",
+  "sausage",
+  "weeknight"
 ]
 +++
 

@@ -20,10 +20,15 @@ ingredients = [
   "2 tablespoons fresh lemon juice (plus more to taste)"
 ]
 tags = [
-  "soup",
-  "summer-squash",
+  "dinner",
+  "easy",
   "gluten-free",
-  "nut-free"
+  "lemon",
+  "nut-free",
+  "soup",
+  "summer",
+  "summer-squash",
+  "vegetarian"
 ]
 +++
 

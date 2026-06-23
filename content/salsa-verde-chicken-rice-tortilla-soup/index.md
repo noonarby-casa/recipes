@@ -25,12 +25,16 @@ ingredients = [
   "yogurt, avocado, cheese, and green onions, for serving"
 ]
 tags = [
-  "soup",
   "chicken",
-  "one-pot",
+  "dinner",
+  "easy",
+  "gluten-free",
   "mexican",
+  "one-pot",
   "rice",
-  "salsa-verde"
+  "salsa-verde",
+  "soup",
+  "weeknight"
 ]
 +++
 

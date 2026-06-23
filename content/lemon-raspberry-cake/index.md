@@ -36,11 +36,12 @@ ingredients = [
   "1 cup fresh raspberries (for garnish)"
 ]
 tags = [
+  "baking",
   "cake",
   "dessert",
   "lemon",
   "raspberry",
-  "baking"
+  "vegetarian"
 ]
 +++
 

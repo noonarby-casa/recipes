@@ -17,11 +17,13 @@ ingredients = [
   "1 cup heavy cream"
 ]
 tags = [
-  "pasta",
   "beef",
-  "weeknight",
+  "curry-paste",
+  "dinner",
   "easy",
-  "curry-paste"
+  "italian",
+  "pasta",
+  "weeknight"
 ]
 +++
 

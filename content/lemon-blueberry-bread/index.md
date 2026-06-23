@@ -23,12 +23,14 @@ ingredients = [
   "2 tablespoons fresh lemon juice (for glaze)"
 ]
 tags = [
-  "bread",
-  "sweet-bread",
-  "lemon",
-  "blueberry",
   "baking",
-  "easy"
+  "blueberry",
+  "bread",
+  "breakfast",
+  "easy",
+  "lemon",
+  "sweet-bread",
+  "vegetarian"
 ]
 +++
 

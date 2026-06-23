@@ -27,12 +27,13 @@ ingredients = [
   "1 spring onion (scallion), finely sliced"
 ]
 tags = [
-  "chicken",
   "asian",
+  "chicken",
+  "dairy-free",
   "dinner",
   "easy",
   "gluten-free",
-  "dairy-free"
+  "weeknight"
 ]
 +++
 

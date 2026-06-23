@@ -22,9 +22,10 @@ ingredients = [
 ]
 tags = [
   "dessert",
-  "pie",
+  "easy",
   "lemon",
-  "easy"
+  "pie",
+  "vegetarian"
 ]
 +++
 
