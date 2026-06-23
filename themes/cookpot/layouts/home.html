@@ -5,6 +5,20 @@
   {{ partial "search.html" . }}
   <div id="search-results" class="recipe-list" style="display: none;"></div>
   <div id="recipe-list-default">
+    {{- if site.Taxonomies.tags -}}
+      <div class="homepage-tags-container">
+        <span class="homepage-tags-label">Explore tags</span>
+        <div class="homepage-tags-list">
+          {{- range site.Taxonomies.tags.Alphabetical -}}
+            <a href="{{ .Page.RelPermalink }}" class="homepage-tag">
+              {{- .Page.Title -}}
+              <span class="tag-count">{{ .Count }}</span>
+            </a>
+          {{- end -}}
+        </div>
+      </div>
+    {{- end -}}
+
     {{ $paginator := .Paginate site.RegularPages.ByDate.Reverse }}
     <div class="recipe-list">
       {{ range $paginator.Pages }}
