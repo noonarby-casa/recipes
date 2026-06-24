@@ -79,7 +79,9 @@ export function cleanPrepTerms(text: string): string {
   text = text.replace(/\b(?:at\s+)?room\s+temperature\b/gi, '').trim();
 
   // 2. Remove prep terms as standalone words in the middle/start of the text (e.g. minced garlic)
-  const midPrepRegex = /\b(minced|diced|chopped|sliced|grated|crushed|shredded|toasted|melted|softened|beaten|mashed|julienned|drained|finely\s+(grated|chopped|diced|sliced|minced|crushed)|coarsely\s+(chopped|sliced))\b(?:\s+|$)/gi;
+  const sortedKeywords = [...PREP_KEYWORDS].sort((a, b) => b.length - a.length);
+  const pattern = sortedKeywords.map(k => k.replace(/\s+/g, '\\s+')).join('|');
+  const midPrepRegex = new RegExp(`\\b(${pattern})\\b(?:\\s+|$)`, 'gi');
   let cleaned = text.replace(midPrepRegex, '').trim();
 
   // Clean up double spaces
