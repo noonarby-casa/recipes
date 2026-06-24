@@ -24,6 +24,8 @@ A quick reference of the core technologies, libraries, and hosting parameters po
 | :--- | :--- | :--- | :--- |
 | **Framework** | [Hugo (Extended)](https://gohugo.io/) | `latest` / Extended version required | Static Site Generator (SSG) |
 | **Version Control** | [Jujutsu (jj)](https://github.com/martinvonz/jj) | Git-compatible | Primary VCS; tracks changes automatically in working copy (`@`) |
+| **Scripting** | [TypeScript](https://www.typescriptlang.org/) | Type-annotated modules, compiled using Hugo ESBuild | Frontend business logic and DOM interactions |
+| **Package Manager**| [pnpm](https://pnpm.io/) | Managed via `package.json` | Running local static type-checking (`pnpm typecheck`) |
 | **Styling** | Vanilla CSS | Modular files in `themes/cookpot/assets/css/` | Minimal, responsive layout, bundled dynamically using Hugo Concat |
 | **Hosting** | Firebase Hosting | Project ID: `noonarby-casa-recipes` | Static hosting and SSL management |
 | **CI/CD** | GitHub Actions | Merge on `main` & PR previews | Automated building & cloud deployment |
@@ -40,6 +42,8 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │   └── firebase-hosting-pull-request.yml # Deploy to Firebase preview channel on PR
 ├── archetypes/
 │   └── default.md                        # Default Hugo archetype template for new content
+├── assets/
+│   └── tsconfig.json                     # TypeScript compiler path mapping configuration
 ├── content/                              # Site content (markdown pages)
 │   ├── _index.md                         # Homepage content ("Here you will find recipes...")
 │   └── chorizo-roasted-red-pepper-spinach-gnocchi/
@@ -53,14 +57,20 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │       │   │   ├── recipe-list.css       # Recipe card/listing styles
 │       │   │   ├── recipe-single.css     # Recipe single details and landscape layouts
 │       │   │   └── timers.css            # Pulse timers style rules
-│       │   └── js/                       # Modular scripts (bundled by Hugo esbuild)
-│       │       ├── main.js               # Entry point and initializer
-│       │       ├── audio.js              # Sound alarms logic
-│       │       ├── scaler.js             # Scaling calculation logic
-│       │       ├── timers.js             # Countdowns logic
-│       │       ├── fontsize.js           # Custom instructions text-scaler logic
-│       │       ├── search.js             # Lazy-loaded recipe search logic
-│       │       └── random.js             # Client-side random recipe selector logic
+│       │   └── js/                       # Modular TypeScript (bundled by Hugo esbuild)
+│       │       ├── main.ts               # Entry point and initializer
+│       │       ├── audio.ts              # Sound alarms logic
+│       │       ├── scaler.ts             # Scaling calculation logic
+│       │       ├── timers.ts             # Countdowns logic
+│       │       ├── fontsize.ts           # Custom instructions text-scaler logic
+│       │       ├── search.ts             # Lazy-loaded recipe search logic
+│       │       ├── random.ts             # Client-side random recipe selector logic
+│       │       ├── shopping-list.ts      # Shopping list orchestrator and UI rendering
+│       │       └── shopping-list/        # Shopping list logic core modules
+│       │           ├── config.ts         # Cooking units and pantry staples catalog
+│       │           ├── converters.ts     # Registry of custom packaging strategy converters
+│       │           ├── pipeline.ts       # Raw ingredient aggregation & processing pipeline
+│       │           └── utils.ts          # Normalization and string parsers helpers
 │       ├── layouts/
 │       │   ├── _partials/                # Sub-templates (head.html, header.html, footer.html, menu.html, terms.html, pagination.html, recipe-list-item.html, search.html)
 │       │   ├── baseof.html               # Main boilerplate layout shell
@@ -71,7 +81,9 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │       └── theme.toml                    # Theme metadata and taxonomies config
 ├── .firebaserc                           # Firebase project configuration mapping
 ├── firebase.json                         # Firebase hosting redirect and ignore rules
-└── hugo.toml                             # Global Hugo configuration (baseURL, theme='cookpot', etc.)
+├── hugo.toml                             # Global Hugo configuration (baseURL, theme='cookpot', etc.)
+├── package.json                          # PNPM project scripts and compiler tools dependencies
+└── pnpm-lock.yaml                        # Locked dependency graph for deterministic installs
 ```
 
 ---
@@ -150,12 +162,12 @@ Instructions are placed directly in the body of the markdown file beneath a `## 
 * **Scaling Quantities:** Wrap any ingredient quantities inside step descriptions with the `{{< qty "amount unit" >}}` shortcode.
   > [!IMPORTANT]
   > **Supported Units & Formatting Rules:**
-  > The scaling engine in `themes/cookpot/assets/js/main.js` only recognizes a specific set of units: `ounces`, `ounce`, `pounds`, `pound`, `cups`, `cup`, `teaspoons`, `teaspoon`, `tablespoons`, `tablespoon`, `cloves`, `clove`, `cans`, `can`, `grams`, `gram`, `g`, `ml`, `small`, `large`, `medium`.
+  > The scaling engine in `themes/cookpot/assets/js/main.ts` only recognizes a specific set of units: `ounces`, `ounce`, `pounds`, `pound`, `cups`, `cup`, `teaspoons`, `teaspoon`, `tablespoons`, `tablespoon`, `cloves`, `clove`, `cans`, `can`, `grams`, `gram`, `g`, `ml`, `small`, `large`, `medium`.
   > 
   > 1. **If the unit is supported:** Wrap both amount and unit in the shortcode. Example: `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`.
   > 2. **If the unit is NOT supported** (e.g., `lemon`, `squash`, `onion`): Wrap *only* the numeric amount in the shortcode, leaving the unit word outside. Example: `{{< qty "1" >}} lemon` or `{{< qty "4" >}} summer squash`. Wrapping unsupported unit names inside the shortcode will cause them to be discarded when scaling changes.
   > 3. **Avoid ranges inside the shortcode:** The parser matches the first numeric quantity in a string. For ranges (e.g., `2-3 tablespoons`), write `{{< qty "2 tablespoons" >}} (or up to 3)` or specify a single base quantity like `{{< qty "2 tablespoons" >}}` to prevent scaling output formatting bugs.
-* **Timers:** Wrap any time durations or ranges inside step descriptions with the `{{< timer "duration" >}}` shortcode (e.g. `{{< timer "5-7 minutes" >}}` or `{{< timer "10 minutes" >}}`). This renders an interactive, color-coded client-side countdown timer powered by CSS-toggled SVG icons for play, pause, and reset functions (styled in [timers.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/timers.css) and driven by [timers.js](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/timers.js)).
+* **Timers:** Wrap any time durations or ranges inside step descriptions with the `{{< timer "duration" >}}` shortcode (e.g. `{{< timer "5-7 minutes" >}}` or `{{< timer "10 minutes" >}}`). This renders an interactive, color-coded client-side countdown timer powered by CSS-toggled SVG icons for play, pause, and reset functions (styled in [timers.css](themes/cookpot/assets/css/timers.css) and driven by [timers.ts](themes/cookpot/assets/js/timers.ts)).
 
 Example Markdown Body:
 ```markdown
@@ -176,7 +188,7 @@ The project includes custom built-in search, pagination, dynamic tag cloud, and 
 ### 1. Recipe Search Engine
 The site features a client-side search engine for filtering recipes dynamically.
 * **Search Index Generation:** Hugo generates a search index at `index.json` (using the template at [index.json](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/index.json)) compiled from all pages. This index contains all recipe metadata (including `title`, `permalink`, `date`, `times`, `recipeSource`, `tags`, `ingredients`, `summary`, and responsive image WebP crops).
-* **Lazy Loading Data:** The search module in [search.js](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/search.js) lazily fetches `index.json` only when the user hovers over or focuses on the search input box.
+* **Lazy Loading Data:** The search module in [search.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/search.ts) lazily fetches `index.json` only when the user hovers over or focuses on the search input box.
 * **Client-Side Filtering:** Searching matches search queries case-insensitively against titles, tags, ingredients, and summaries.
 * **Header Toggle:** Clicking the global search icon in the header dynamically scrolls to and focuses the search input.
 
@@ -189,18 +201,31 @@ Recipe lists (on the homepage and category/tag list pages) are paginated to prev
 ### 3. Random Recipe Selector
 A client-side random recipe selector is integrated into the site header to encourage user discovery.
 * **Markup & Entry Point:** A button with a crossing shuffle arrows SVG icon is rendered in [header.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/_partials/header.html). It embeds all regular page permalinks serialized as a JSON string under the `data-recipes` attribute.
-* **Routing Logic:** The script in [random.js](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/random.js) handles click events, parses the JSON array, filters out the currently viewed recipe page (if there are multiple recipes), picks a random path, and redirects the user.
+* **Routing Logic:** The script in [random.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/random.ts) handles click events, parses the JSON array, filters out the currently viewed recipe page (if there are multiple recipes), picks a random path, and redirects the user.
 
 ### 4. Homepage Tag Cloud & Categorization
 An alphabetized tag cloud is displayed on the homepage beneath the search bar, allowing users to browse recipes by category.
 * **Listing & Count:** Rendered using `site.Taxonomies.tags.Alphabetical` inside [home.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/home.html) to display each tag alongside its recipe count.
 * **Layout & Style:** Styled using hoverable pills that shift and highlight on focus/hover (defined in [recipe-list.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/recipe-list.css)).
 
+### 5. Shopping List Feature
+A custom client-side shopping list toggle aggregates scaled ingredients, converts them to commercial packaging formats, and isolates staples:
+* **Orchestrator:** [shopping-list.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list.ts) toggles view tabs and handles UI rendering.
+* **Conversion Rules Registry:** [converters.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list/converters.ts) contains rules matching specific ingredients (e.g. converting 10 garlic cloves to 1 head, volume butter to sticks, weight dry pasta to boxes, egg yolks to whole eggs).
+* **Aggregating Pipeline:** [pipeline.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list/pipeline.ts) combines quantities, merges note segments, groups duplicated ingredients, and splits outputs into target Buy/Staples lists.
+* **Pantry Staples Filtering:** Common spices, oils, small butter portions (<4 sticks), and water are dynamically filtered into a separate collapsible staples list.
+* **Clean & Copy:** Cleaned of prep words (chopped, minced) and features standard abbreviation logic. A button copies the entire checklist as markdown to clipboard.
+
 ---
 
 ## 🚀 Local Development & Commands
 
-Ensure you have [Hugo](https://gohugo.io/) (Extended edition) installed locally on your machine. No Node.js environment is required.
+Ensure you have [Hugo](https://gohugo.io/) (Extended edition) and **Node.js/pnpm** installed locally.
+
+First install compilation dependencies:
+```bash
+pnpm install
+```
 
 ### Command Reference
 
@@ -210,6 +235,7 @@ Ensure you have [Hugo](https://gohugo.io/) (Extended edition) installed locally 
 | **Verify Production Build** | `hugo --minify` | Runs a production build to check for Hugo template or compilation issues |
 | **Serve Rendered Disk Output**| `hugo serve --renderToDisk --disableFastRender` | Renders fully compiled production-ready output to the `public/` directory and serves it |
 | **Create New Recipe** | `hugo new content content/<recipe-slug>/index.md` | Generates a new recipe leaf bundle content file |
+| **Type-Check TS Files** | `pnpm typecheck` | Runs `tsc --noEmit` locally using the configured `tsconfig.json` to verify zero compiler errors |
 
 ---
 
