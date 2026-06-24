@@ -1,6 +1,6 @@
 import { formatCookingNumber } from '../scaler';
 import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from '../constants';
-import { VOLUME_UNITS, TO_TEASPOONS, STAPLES } from './config';
+import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS } from './config';
 
 export interface NoteItem {
   prefix: string;
@@ -65,8 +65,6 @@ export function cleanPrepTerms(text: string): string {
 
   // Remove "for serving" or "plus more for serving" phrases
   text = text.replace(/,?\s+(?:plus\s+more\s+)?for\s+serving\b/gi, '').trim();
-
-  const PREP_KEYWORDS = ['minced', 'diced', 'chopped', 'sliced', 'grated', 'crushed', 'shredded', 'toasted', 'melted', 'softened', 'beaten', 'mashed', 'julienned', 'drained', 'wedge', 'wedges', 'divided', 'grate', 'thinly', 'finely', 'coarsely', 'room temperature', 'finely crushed'];
 
   // 1. Remove suffixes (comma-separated instructions at the end) if they contain prep words
   const parts = text.split(',');

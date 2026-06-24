@@ -21,5 +21,8 @@ export const TO_TEASPOONS: Record<string, number> = {
   cup: 48,
   ml: 0.202884
 };
-
-
+export const PREP_KEYWORDS: string[] = [
+  'minced', 'diced', 'chopped', 'sliced', 'grated', 'crushed', 'shredded', 'toasted', 'melted',
+  'softened', 'beaten', 'mashed', 'julienned', 'drained', 'wedge', 'wedges', 'divided', 'grate',
+  'thinly', 'finely', 'coarsely', 'room temperature', 'finely crushed'
+];
