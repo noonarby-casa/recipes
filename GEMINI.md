@@ -72,7 +72,18 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │       │           ├── pipeline.ts       # Raw ingredient aggregation & processing pipeline
 │       │           └── utils.ts          # Normalization and string parsers helpers
 │       ├── layouts/
-│       │   ├── _partials/                # Sub-templates (head.html, header.html, footer.html, menu.html, terms.html, pagination.html, recipe-list-item.html, search.html)
+│       │   ├── _partials/                # Sub-templates directory
+│       │   │   ├── head/                 # Scripts and style bundlers
+│       │   │   │   ├── css.html          # Bundled stylesheet inline loader
+│       │   │   │   └── js.html           # ESBuild script bundler and injection loader
+│       │   │   ├── head.html                 # Page metadata layout shell
+│       │   │   ├── header.html               # Site title banner and navigation layout
+│       │   │   ├── footer.html               # Site copyright and footer links layout
+│       │   │   ├── menu.html                 # Navigation menu structure
+│       │   │   ├── terms.html                # Taxonomies terms layout template
+│       │   │   ├── pagination.html           # Pagination buttons structure
+│       │   │   ├── recipe-list-item.html     # Recipe card layout in lists
+│       │   │   └── search.html               # Search input area structure
 │       │   ├── baseof.html               # Main boilerplate layout shell
 │       │   ├── home.html                 # Homepage layout template
 │       │   ├── index.json                # JSON recipe search index template
