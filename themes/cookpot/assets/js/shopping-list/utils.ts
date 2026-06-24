@@ -1,5 +1,6 @@
 import { formatCookingNumber } from '../scaler';
-import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR, VOLUME_UNITS, TO_TEASPOONS, STAPLES } from './config';
+import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from '../constants';
+import { VOLUME_UNITS, TO_TEASPOONS, STAPLES } from './config';
 
 export interface NoteItem {
   prefix: string;

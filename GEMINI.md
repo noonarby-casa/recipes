@@ -59,6 +59,7 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │       │   │   └── timers.css            # Pulse timers style rules
 │       │   └── js/                       # Modular TypeScript (bundled by Hugo esbuild)
 │       │       ├── main.ts               # Entry point and initializer
+│       │       ├── constants.ts          # Global shared maps and constants
 │       │       ├── audio.ts              # Sound alarms logic
 │       │       ├── scaler.ts             # Scaling calculation logic
 │       │       ├── timers.ts             # Countdowns logic

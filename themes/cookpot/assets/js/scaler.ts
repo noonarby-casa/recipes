@@ -1,31 +1,4 @@
-// Common cooking units and their singular/plural mapping
-const plurals: Record<string, string> = {
-  ounce: 'ounces',
-  pound: 'pounds',
-  cup: 'cups',
-  teaspoon: 'teaspoons',
-  tablespoon: 'tablespoons',
-  clove: 'cloves',
-  can: 'cans',
-  gram: 'grams',
-  small: 'small',
-  large: 'large',
-  medium: 'medium'
-};
-
-const singulars: Record<string, string> = {
-  ounces: 'ounce',
-  pounds: 'pound',
-  cups: 'cup',
-  teaspoons: 'teaspoon',
-  tablespoons: 'tablespoon',
-  cloves: 'clove',
-  cans: 'can',
-  grams: 'gram',
-  small: 'small',
-  large: 'large',
-  medium: 'medium'
-};
+import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from './constants';
 
 export interface ParsedIngredient {
   quantity: number | null;
@@ -91,10 +64,10 @@ export function getAdaptiveUnit(qty: number, unit: string): string {
   
   // If quantity is less than or equal to 1, return singular form
   if (qty <= 1) {
-    return singulars[lowerUnit] || unit;
+    return PLURAL_TO_SINGULAR[lowerUnit] || unit;
   }
   // Otherwise, return plural form
-  return plurals[lowerUnit] || unit;
+  return SINGULAR_TO_PLURAL[lowerUnit] || unit;
 }
 
 interface FractionMapItem {
