@@ -1,23 +1,24 @@
-import { formatCookingNumber } from './scaler.js';
-import { processShoppingList } from './shopping-list/pipeline.js';
+import { formatCookingNumber } from './scaler';
+import { processShoppingList } from './shopping-list/pipeline';
+import { ConvertedItem } from './shopping-list/converters';
 
 /**
  * Initializes the shopping list feature: selects DOM elements, sets up initial
  * state, registers tab toggles, clipboard listeners, and scaling listeners.
  */
-export function initShoppingList() {
+export function initShoppingList(): void {
   const container = document.querySelector('.ingredients-column');
   if (!container) return;
 
   const btnRecipeView = document.getElementById('btn-recipe-view');
   const btnShoppingView = document.getElementById('btn-shopping-view');
-  const recipeList = document.querySelector('.recipe-ingredients-list');
-  const shoppingWrapper = document.querySelector('.shopping-list-wrapper');
-  const buyList = document.querySelector('.shopping-buy-list');
-  const staplesList = document.querySelector('.shopping-staples-list');
+  const recipeList = document.querySelector<HTMLElement>('.recipe-ingredients-list');
+  const shoppingWrapper = document.querySelector<HTMLElement>('.shopping-list-wrapper');
+  const buyList = document.querySelector<HTMLElement>('.shopping-buy-list');
+  const staplesList = document.querySelector<HTMLElement>('.shopping-staples-list');
   const copyBtn = document.getElementById('btn-copy-shopping-list');
   
-  if (!btnRecipeView || !btnShoppingView || !recipeList || !shoppingWrapper) return;
+  if (!btnRecipeView || !btnShoppingView || !recipeList || !shoppingWrapper || !buyList || !staplesList) return;
 
   let currentScale = 1.0;
   let activeTab = 'recipe'; // 'recipe' or 'shopping'
@@ -44,9 +45,10 @@ export function initShoppingList() {
   });
 
   // Listen to the Servings Scaler custom event
-  document.addEventListener('recipe:scale', (e) => {
-    if (e.detail && typeof e.detail.factor === 'number') {
-      currentScale = e.detail.factor;
+  document.addEventListener('recipe:scale', (e: Event) => {
+    const customEvent = e as CustomEvent;
+    if (customEvent.detail && typeof customEvent.detail.factor === 'number') {
+      currentScale = customEvent.detail.factor;
       if (activeTab === 'shopping') {
         renderShoppingList(currentScale);
       }
@@ -59,19 +61,19 @@ export function initShoppingList() {
       const recipeTitle = document.querySelector('.recipe-title-bar h1')?.textContent || 'Recipe';
       let text = `SHOPPING LIST: ${recipeTitle}\n\n`;
 
-      const buyItems = buyList.querySelectorAll('.shopping-item');
+      const buyItems = buyList.querySelectorAll<HTMLElement>('.shopping-item');
       buyItems.forEach(item => {
-        const mainRow = item.querySelector('.shopping-item-main-row').textContent.trim();
+        const mainRow = item.querySelector('.shopping-item-main-row')?.textContent?.trim() || '';
         text += `- ${mainRow}\n`;
       });
 
-      const stapleItems = staplesList.querySelectorAll('.shopping-item');
+      const stapleItems = staplesList.querySelectorAll<HTMLElement>('.shopping-item');
       if (buyItems.length > 0 && stapleItems.length > 0) {
         text += `\n---\n\n`;
       }
 
       stapleItems.forEach(item => {
-        const mainRow = item.querySelector('.shopping-item-main-row').textContent.trim();
+        const mainRow = item.querySelector('.shopping-item-main-row')?.textContent?.trim() || '';
         text += `- ${mainRow}\n`;
       });
 
@@ -79,7 +81,10 @@ export function initShoppingList() {
         // Visual feedback
         const originalHtml = copyBtn.innerHTML;
         copyBtn.classList.add('success');
-        copyBtn.querySelector('span').textContent = 'Copied!';
+        const span = copyBtn.querySelector('span');
+        if (span) {
+          span.textContent = 'Copied!';
+        }
         
         setTimeout(() => {
           copyBtn.classList.remove('success');
@@ -95,9 +100,9 @@ export function initShoppingList() {
    * Triggers pipeline execution and renders the resulting buy list and staples list.
    * Updates display layout visibility.
    */
-  function renderShoppingList(scale) {
-    buyList.innerHTML = '';
-    staplesList.innerHTML = '';
+  function renderShoppingList(scale: number): void {
+    buyList!.innerHTML = '';
+    staplesList!.innerHTML = '';
 
     const { buyItems, stapleItems } = processShoppingList(scale);
 
@@ -105,23 +110,23 @@ export function initShoppingList() {
     const hasStaples = stapleItems.length > 0;
 
     // Render Need to Buy items
-    buyItems.forEach(converted => renderItem(converted, buyList));
+    buyItems.forEach(converted => renderItem(converted, buyList!));
 
     // Render Pantry Staples items
-    stapleItems.forEach(converted => renderItem(converted, staplesList));
+    stapleItems.forEach(converted => renderItem(converted, staplesList!));
 
     // Toggle staple section visibility depending on items
-    const staplesSection = document.querySelector('.staples-section');
+    const staplesSection = document.querySelector<HTMLElement>('.staples-section');
     if (staplesSection) {
       staplesSection.style.display = hasStaples ? 'block' : 'none';
     }
 
-    const buySection = document.querySelector('.buy-section');
+    const buySection = document.querySelector<HTMLElement>('.buy-section');
     if (buySection) {
       buySection.style.display = hasBuyItems ? 'block' : 'none';
     }
 
-    const divider = document.querySelector('.shopping-divider');
+    const divider = document.querySelector<HTMLElement>('.shopping-divider');
     if (divider) {
       divider.style.display = (hasBuyItems && hasStaples) ? 'block' : 'none';
     }
@@ -130,7 +135,7 @@ export function initShoppingList() {
   /**
    * Generates DOM elements for a single converted item and appends it to targetList.
    */
-  function renderItem(converted, targetList) {
+  function renderItem(converted: ConvertedItem, targetList: HTMLElement): void {
     const li = document.createElement('li');
     li.className = 'shopping-item';
 

@@ -1,6 +1,11 @@
-import { initAudio, playLowerBoundChime, playUpperBoundChime } from './audio.js';
+import { initAudio, playLowerBoundChime, playUpperBoundChime } from './audio';
 
-function parseDuration(durationStr) {
+interface ParsedDuration {
+  minSeconds: number;
+  maxSeconds: number;
+}
+
+function parseDuration(durationStr: string): ParsedDuration | null {
   const str = durationStr.toLowerCase().trim();
   
   // Regex to match range, e.g. "5-7 minutes", "30-45 seconds", "1-2 hours"
@@ -43,7 +48,7 @@ function parseDuration(durationStr) {
   };
 }
 
-function formatTime(seconds) {
+function formatTime(seconds: number): string {
   const isNegative = seconds < 0;
   const absSeconds = Math.abs(seconds);
   const hrs = Math.floor(absSeconds / 3600);
@@ -60,8 +65,8 @@ function formatTime(seconds) {
   return isNegative ? `-${display}` : display;
 }
 
-export function initTimers() {
-  const timers = document.querySelectorAll('.recipe-timer');
+export function initTimers(): void {
+  const timers = document.querySelectorAll<HTMLElement>('.recipe-timer');
 
   timers.forEach(timerContainer => {
     const rawDuration = timerContainer.dataset.duration;
@@ -75,22 +80,25 @@ export function initTimers() {
 
     const { minSeconds, maxSeconds } = parsed;
     let elapsed = 0;
-    let intervalId = null;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
 
-    const btn = timerContainer.querySelector('.recipe-timer-btn');
-    const resetBtn = timerContainer.querySelector('.recipe-timer-reset');
-    const labelSpan = btn.querySelector('.timer-label');
+    const btn = timerContainer.querySelector<HTMLElement>('.recipe-timer-btn');
+    const resetBtn = timerContainer.querySelector<HTMLElement>('.recipe-timer-reset');
+    if (!btn || !resetBtn) return;
+    
+    const labelSpan = btn.querySelector<HTMLElement>('.timer-label');
+    if (!labelSpan) return;
 
-    function updateDisplay() {
+    function updateDisplay(): void {
       const remaining = maxSeconds - elapsed;
       
       if (elapsed === 0) {
-        labelSpan.textContent = rawDuration;
+        labelSpan!.textContent = rawDuration!;
         timerContainer.classList.remove('has-started', 'is-running', 'is-in-range', 'is-beyond-range');
         return;
       }
 
-      labelSpan.textContent = formatTime(remaining);
+      labelSpan!.textContent = formatTime(remaining);
 
       if (elapsed > maxSeconds) {
         timerContainer.classList.add('is-beyond-range');
@@ -110,7 +118,7 @@ export function initTimers() {
       }
     }
 
-    function startTimer() {
+    function startTimer(): void {
       if (intervalId) return;
       intervalId = setInterval(() => {
         elapsed++;
@@ -132,20 +140,20 @@ export function initTimers() {
       updateDisplay();
     }
 
-    function pauseTimer() {
+    function pauseTimer(): void {
       if (!intervalId) return;
       clearInterval(intervalId);
       intervalId = null;
       updateDisplay();
     }
 
-    function resetTimer() {
+    function resetTimer(): void {
       pauseTimer();
       elapsed = 0;
       updateDisplay();
     }
 
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', (e: MouseEvent) => {
       e.preventDefault();
       initAudio(); // Initialize audio context on user interaction
       if (intervalId) {
@@ -155,7 +163,7 @@ export function initTimers() {
       }
     });
 
-    resetBtn.addEventListener('click', (e) => {
+    resetBtn.addEventListener('click', (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
       resetTimer();

@@ -1,17 +1,17 @@
-export function initFontSize() {
-  const fontBtns = document.querySelectorAll('.font-btn');
-  const instructionsCol = document.querySelector('.instructions-column');
+export function initFontSize(): void {
+  const fontBtns = document.querySelectorAll<HTMLElement>('.font-btn');
+  const instructionsCol = document.querySelector<HTMLElement>('.instructions-column');
   const storageKey = 'recipe-instructions-font-size';
 
   if (!fontBtns.length || !instructionsCol) return;
 
-  const sizeMap = {
+  const sizeMap: Record<string, string> = {
     smaller: '1.0rem',
     default: '1.2rem',
     larger: '1.45rem'
   };
 
-  function setInstructionFontSize(size) {
+  function setInstructionFontSize(size: string): void {
     if (!instructionsCol) return;
     if (!sizeMap[size]) {
       size = 'default';
@@ -35,7 +35,7 @@ export function initFontSize() {
 
   fontBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const size = btn.dataset.size;
+      const size = btn.dataset.size || 'default';
       setInstructionFontSize(size);
     });
   });

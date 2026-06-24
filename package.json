@@ -1,0 +1,11 @@
+{
+  "name": "noonarby-casa-recipes",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit -p assets/tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.2"
+  }
+}

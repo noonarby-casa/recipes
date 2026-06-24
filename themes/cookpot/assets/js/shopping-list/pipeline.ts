@@ -1,16 +1,33 @@
-import { parseIngredientText, formatCookingNumber } from '../scaler.js';
-import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume } from './utils.js';
-import { convertIngredient } from './converters.js';
-import { TO_TEASPOONS } from './config.js';
+import { parseIngredientText, formatCookingNumber } from '../scaler';
+import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume, NoteItem } from './utils';
+import { convertIngredient, ConvertedItem } from './converters';
+import { TO_TEASPOONS } from './config';
+
+export interface RawIngredient {
+  scaledQty: number | null;
+  unit: string;
+  rest: string;
+  isMinced: boolean;
+}
+
+interface MergedIngredient {
+  scaledQty: number;
+  unit: string;
+  rest: string;
+  isMinced: boolean;
+}
 
 /**
  * Extracts raw ingredients from DOM element attributes or text content, cleans preparation
  * terms, scales their amounts, and aggregates items with matching name/unit.
  */
-export function getMergedIngredients(scale, rawItems = null) {
-  const items = rawItems || document.querySelectorAll('.recipe-ingredient');
-  const parsedMap = new Map();
-  const unquantified = [];
+export function getMergedIngredients(
+  scale: number,
+  rawItems: NodeListOf<HTMLElement> | HTMLElement[] | null = null
+): RawIngredient[] {
+  const items = rawItems || document.querySelectorAll<HTMLElement>('.recipe-ingredient');
+  const parsedMap = new Map<string, MergedIngredient>();
+  const unquantified: RawIngredient[] = [];
 
   const validScale = (typeof scale === 'number' && !isNaN(scale)) ? scale : 1.0;
 
@@ -20,7 +37,8 @@ export function getMergedIngredients(scale, rawItems = null) {
     let rest = el.dataset.rest || '';
 
     if (baseQty === null || isNaN(baseQty)) {
-      const parsed = parseIngredientText(el.textContent.trim());
+      const textContent = el.textContent || '';
+      const parsed = parseIngredientText(textContent.trim());
       if (parsed.quantity !== null && !isNaN(parsed.quantity)) {
         baseQty = parsed.quantity;
         unit = parsed.unit;
@@ -30,19 +48,20 @@ export function getMergedIngredients(scale, rawItems = null) {
       }
     }
 
-    const rawRest = rest || el.textContent.trim();
+    const rawRest = rest || (el.textContent || '').trim();
     const rawRestLower = rawRest.toLowerCase();
     if (rawRestLower.includes('pasta water') || rawRestLower.includes('cooking water') || rawRestLower.includes('reserved water')) {
       return; // skip completely
     }
     const cleanedRest = cleanPrepTerms(rawRest);
-    const isMinced = el.textContent.toLowerCase().includes('minced');
+    const textLower = (el.textContent || '').toLowerCase();
+    const isMinced = textLower.includes('minced');
 
     if (baseQty === null || isNaN(baseQty)) {
       unquantified.push({ 
         scaledQty: null, 
         unit: '', 
-        rest: cleanPrepTerms(el.textContent.trim()), 
+        rest: cleanPrepTerms((el.textContent || '').trim()), 
         isMinced 
       });
     } else {
@@ -58,8 +77,8 @@ export function getMergedIngredients(scale, rawItems = null) {
         const normUnit = getSingularUnit(unit);
         const key = `${normUnit}_${cleanedRest.toLowerCase()}`;
         
-        if (parsedMap.has(key)) {
-          const existing = parsedMap.get(key);
+        const existing = parsedMap.get(key);
+        if (existing) {
           existing.scaledQty += scaledQty;
           if (isMinced) {
             existing.isMinced = true;
@@ -78,15 +97,15 @@ export function getMergedIngredients(scale, rawItems = null) {
  * Combines two converted commercial package items of matching types, aggregating quantities, 
  * correcting pluralized units, and merging explanation notes.
  */
-export function mergeConvertedItems(item1, item2) {
-  let qty = null;
+export function mergeConvertedItems(item1: ConvertedItem, item2: ConvertedItem): ConvertedItem {
+  let qty: number | null = null;
   const isLemonOrLime = item1.rest.toLowerCase().includes('lemon') || item1.rest.toLowerCase().includes('lime') || 
                         item1.unit.toLowerCase().includes('lemon') || item1.unit.toLowerCase().includes('lime') ||
                         item2.rest.toLowerCase().includes('lemon') || item2.rest.toLowerCase().includes('lime') || 
                         item2.unit.toLowerCase().includes('lemon') || item2.unit.toLowerCase().includes('lime');
 
-  let juiceQty = null;
-  let zestWholeQty = null;
+  let juiceQty: number | undefined = undefined;
+  let zestWholeQty: number | undefined = undefined;
 
   if (isLemonOrLime) {
     const j1 = item1.juiceQty !== undefined ? item1.juiceQty : 0;
@@ -111,7 +130,7 @@ export function mergeConvertedItems(item1, item2) {
 
   let unit = item1.unit;
   if (qty !== null && qty > 1) {
-    const plurals = {
+    const plurals: Record<string, string> = {
       lemon: 'lemons',
       lime: 'limes',
       head: 'heads',
@@ -190,15 +209,16 @@ export function mergeConvertedItems(item1, item2) {
  * Combines note collections by grouping matching text tags, normalizing units to the smallest unit,
  * and aggregating numeric values.
  */
-function mergeNotesArrays(arr1, arr2) {
-  const merged = [];
+function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
+  const merged: NoteItem[] = [];
   const temp = [...arr1, ...arr2];
   
-  const groups = new Map();
+  const groups = new Map<string, NoteItem[]>();
   temp.forEach(item => {
     const key = `${item.rest.trim()}`;
-    if (groups.has(key)) {
-      groups.get(key).push(item);
+    const existing = groups.get(key);
+    if (existing) {
+      existing.push(item);
     } else {
       groups.set(key, [item]);
     }
@@ -250,7 +270,9 @@ function mergeNotesArrays(arr1, arr2) {
         const targetSingular = getSingularUnit(smallestUnit);
         let totalQty = 0;
         items.forEach(it => {
-          totalQty += convertVolume(it.qty, it.unit, targetSingular);
+          if (it.qty !== null) {
+            totalQty += convertVolume(it.qty, it.unit, targetSingular);
+          }
         });
         
         let explanation = '';
@@ -281,7 +303,7 @@ function mergeNotesArrays(arr1, arr2) {
 /**
  * Serializes merged note arrays back into formatted, abbreviated instruction strings prefixing 'need'.
  */
-function formatNotesArray(arr) {
+function formatNotesArray(arr: NoteItem[]): string {
   const measParts = arr.map(item => {
     if (item.qty === null) return item.rest;
     const formattedQty = formatCookingNumber(item.qty);
@@ -294,15 +316,23 @@ function formatNotesArray(arr) {
   return abbreviateNote('need ' + measParts.join(' + '));
 }
 
+export interface ProcessedShoppingList {
+  buyItems: ConvertedItem[];
+  stapleItems: ConvertedItem[];
+}
+
 /**
  * Runs the complete processing pipeline on the recipe ingredients. Merges inputs,
  * converts units, aggregates package duplicates, and splits results into buy list and staple list.
  */
-export function processShoppingList(scale, rawItems = null) {
+export function processShoppingList(
+  scale: number,
+  rawItems: NodeListOf<HTMLElement> | HTMLElement[] | null = null
+): ProcessedShoppingList {
   const rawIngredients = getMergedIngredients(scale, rawItems);
   const convertedItems = rawIngredients.map(item => convertIngredient(item));
 
-  const convertedMap = new Map();
+  const convertedMap = new Map<string, ConvertedItem>();
   convertedItems.forEach(converted => {
     let normUnit = getSingularUnit(converted.unit);
     let restKey = converted.rest.toLowerCase().trim();
@@ -320,8 +350,8 @@ export function processShoppingList(scale, rawItems = null) {
 
     const key = `${normUnit}_${restKey}`;
 
-    if (convertedMap.has(key)) {
-      const existing = convertedMap.get(key);
+    const existing = convertedMap.get(key);
+    if (existing) {
       convertedMap.set(key, mergeConvertedItems(existing, converted));
     } else {
       convertedMap.set(key, converted);
@@ -330,8 +360,8 @@ export function processShoppingList(scale, rawItems = null) {
 
   const finalItems = [...convertedMap.values()];
 
-  const buyItems = [];
-  const stapleItems = [];
+  const buyItems: ConvertedItem[] = [];
+  const stapleItems: ConvertedItem[] = [];
 
   finalItems.forEach(converted => {
     if (converted.isStaple) {

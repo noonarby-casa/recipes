@@ -1,5 +1,5 @@
 // Common cooking units and their singular/plural mapping
-const plurals = {
+const plurals: Record<string, string> = {
   ounce: 'ounces',
   pound: 'pounds',
   cup: 'cups',
@@ -13,7 +13,7 @@ const plurals = {
   medium: 'medium'
 };
 
-const singulars = {
+const singulars: Record<string, string> = {
   ounces: 'ounce',
   pounds: 'pound',
   cups: 'cup',
@@ -27,8 +27,14 @@ const singulars = {
   medium: 'medium'
 };
 
+export interface ParsedIngredient {
+  quantity: number | null;
+  unit: string;
+  rest: string;
+}
+
 // Helper to parse fractions (e.g., "1/2", "1 1/2") and decimals
-function parseNumeric(str) {
+function parseNumeric(str: string): number {
   str = str.trim();
   if (str.includes('/')) {
     const parts = str.split(/\s+/);
@@ -47,7 +53,7 @@ function parseNumeric(str) {
 }
 
 // Parse a description string to extract quantity, unit, and the rest
-export function parseIngredientText(text) {
+export function parseIngredientText(text: string): ParsedIngredient {
   text = text.trim();
   // Match Mixed fractions (1 1/2), normal fractions (1/2), and decimals/integers (1.5, 16)
   const qtyRegex = /^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)/;
@@ -79,7 +85,7 @@ export function parseIngredientText(text) {
 }
 
 // Pluralization engine
-export function getAdaptiveUnit(qty, unit) {
+export function getAdaptiveUnit(qty: number, unit: string): string {
   if (!unit) return '';
   const lowerUnit = unit.toLowerCase();
   
@@ -91,15 +97,20 @@ export function getAdaptiveUnit(qty, unit) {
   return plurals[lowerUnit] || unit;
 }
 
+interface FractionMapItem {
+  dec: number;
+  str: string;
+}
+
 // Formatting engine: rounds numbers and converts decimals to culinary fractions
-export function formatCookingNumber(val) {
+export function formatCookingNumber(val: number): string {
   if (val <= 0) return '0';
 
   const rounded = Math.round(val * 1000) / 1000;
   const whole = Math.floor(rounded);
   const dec = Math.round((rounded - whole) * 1000) / 1000;
 
-  const fractionMap = [
+  const fractionMap: FractionMapItem[] = [
     { dec: 0.125, str: '1/8' },
     { dec: 0.25, str: '1/4' },
     { dec: 0.333, str: '1/3' },
@@ -138,21 +149,21 @@ export function formatCookingNumber(val) {
   return rounded.toFixed(2).replace(/\.?0+$/, '');
 }
 
-export function initScaler() {
-  const ingredients = document.querySelectorAll('.recipe-ingredient');
-  const quantities = document.querySelectorAll('.recipe-quantity');
-  const slider = document.getElementById('recipe-scale-slider');
+export function initScaler(): void {
+  const ingredients = document.querySelectorAll<HTMLElement>('.recipe-ingredient');
+  const quantities = document.querySelectorAll<HTMLElement>('.recipe-quantity');
+  const slider = document.getElementById('recipe-scale-slider') as HTMLInputElement | null;
   const displayVal = document.getElementById('scale-display-val');
-  const presetBtns = document.querySelectorAll('.scale-btn');
+  const presetBtns = document.querySelectorAll<HTMLElement>('.scale-btn');
 
   if (!ingredients.length && !quantities.length && !slider) return;
 
   // Pre-parse and store base metrics for each ingredient item
   ingredients.forEach(el => {
-    const rawText = el.textContent;
+    const rawText = el.textContent || '';
     const parsed = parseIngredientText(rawText);
     if (parsed.quantity !== null) {
-      el.dataset.baseQty = parsed.quantity;
+      el.dataset.baseQty = parsed.quantity.toString();
       el.dataset.unit = parsed.unit;
       el.dataset.rest = parsed.rest;
     }
@@ -160,15 +171,15 @@ export function initScaler() {
 
   // Pre-parse and store base metrics for each instruction step inline quantity
   quantities.forEach(el => {
-    const rawText = el.dataset.baseText || el.textContent;
+    const rawText = el.dataset.baseText || el.textContent || '';
     const parsed = parseIngredientText(rawText);
     if (parsed.quantity !== null) {
-      el.dataset.baseQty = parsed.quantity;
+      el.dataset.baseQty = parsed.quantity.toString();
       el.dataset.unit = parsed.unit;
     }
   });
 
-  function updateRecipeScale(factor) {
+  function updateRecipeScale(factor: number): void {
     // 1. Update visual metrics display
     if (displayVal) {
       displayVal.textContent = factor.toFixed(2).replace(/\.00$/, '');
@@ -178,8 +189,8 @@ export function initScaler() {
     ingredients.forEach(el => {
       if (el.dataset.baseQty) {
         const baseQty = parseFloat(el.dataset.baseQty);
-        const unit = el.dataset.unit;
-        const rest = el.dataset.rest;
+        const unit = el.dataset.unit || '';
+        const rest = el.dataset.rest || '';
 
         const newQty = baseQty * factor;
         const formattedQty = formatCookingNumber(newQty);
@@ -193,7 +204,7 @@ export function initScaler() {
     quantities.forEach(el => {
       if (el.dataset.baseQty) {
         const baseQty = parseFloat(el.dataset.baseQty);
-        const unit = el.dataset.unit;
+        const unit = el.dataset.unit || '';
 
         const newQty = baseQty * factor;
         const formattedQty = formatCookingNumber(newQty);
@@ -205,12 +216,12 @@ export function initScaler() {
 
     // 4. Update Slider position
     if (slider && parseFloat(slider.value) !== factor) {
-      slider.value = factor;
+      slider.value = factor.toString();
     }
 
     // 5. Update Preset buttons active state styling
     presetBtns.forEach(btn => {
-      const btnVal = parseFloat(btn.dataset.val);
+      const btnVal = parseFloat(btn.dataset.val || '1.0');
       if (btnVal === factor) {
         btn.classList.add('active');
       } else {
@@ -225,7 +236,8 @@ export function initScaler() {
   // Handle slide movement
   if (slider) {
     slider.addEventListener('input', (e) => {
-      const factor = parseFloat(e.target.value);
+      const target = e.target as HTMLInputElement;
+      const factor = parseFloat(target.value);
       updateRecipeScale(factor);
     });
   }
@@ -233,7 +245,7 @@ export function initScaler() {
   // Handle preset clicks
   presetBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const factor = parseFloat(btn.dataset.val);
+      const factor = parseFloat(btn.dataset.val || '1.0');
       updateRecipeScale(factor);
     });
   });

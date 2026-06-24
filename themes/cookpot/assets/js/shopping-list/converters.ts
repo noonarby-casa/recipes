@@ -1,13 +1,42 @@
-import { getAdaptiveUnit, formatCookingNumber } from '../scaler.js';
-import { getSingularUnit, getPluralizedUnit, checkIsStaple, getButterExplanation } from './utils.js';
+import { getAdaptiveUnit, formatCookingNumber } from '../scaler';
+import { checkIsStaple } from './utils';
+
+export interface ConverterContext {
+  scaledQty: number;
+  unit: string;
+  rest: string;
+  isMinced: boolean;
+  nameLower: string;
+  isStaple: boolean;
+}
+
+export interface ConvertedItem {
+  qty: number | null;
+  unit: string;
+  rest: string;
+  note: string;
+  isStaple: boolean;
+  juiceQty?: number;
+  zestWholeQty?: number;
+}
+
+export interface ConverterStrategy {
+  name: string;
+  matches: (ctx: ConverterContext) => boolean;
+  convert: (ctx: ConverterContext) => ConvertedItem | null | undefined;
+}
 
 // Define the strategies list
-export const CONVERTERS = [];
+export const CONVERTERS: ConverterStrategy[] = [];
 
 /**
  * Helper function to register a converter strategy in the registry.
  */
-function registerConverter(name, matches, convert) {
+function registerConverter(
+  name: string,
+  matches: (ctx: ConverterContext) => boolean,
+  convert: (ctx: ConverterContext) => ConvertedItem | null | undefined
+): void {
   CONVERTERS.push({ name, matches, convert });
 }
 
@@ -69,6 +98,7 @@ registerConverter('Ginger',
         isStaple
       };
     }
+    return null;
   }
 );
 
@@ -165,6 +195,7 @@ registerConverter('Lemon',
         zestWholeQty: lemons
       };
     }
+    return null;
   }
 );
 
@@ -211,6 +242,7 @@ registerConverter('Lime',
         zestWholeQty: limes
       };
     }
+    return null;
   }
 );
 
@@ -252,6 +284,7 @@ registerConverter('Butter',
         isStaple: finalIsStaple
       };
     }
+    return null;
   }
 );
 
@@ -269,6 +302,7 @@ registerConverter('Onion',
         isStaple
       };
     }
+    return null;
   }
 );
 
@@ -388,6 +422,7 @@ registerConverter('HalfPintLiquids',
         };
       }
     }
+    return null;
   }
 );
 
@@ -424,6 +459,7 @@ registerConverter('PintMinimumLiquids',
         };
       }
     }
+    return null;
   }
 );
 
@@ -452,6 +488,7 @@ registerConverter('DryPasta',
         isStaple
       };
     }
+    return null;
   }
 );
 
@@ -538,11 +575,18 @@ registerConverter('VolumeToPackage',
   }
 );
 
+interface RawIngredientItem {
+  scaledQty: number | null;
+  unit: string;
+  rest: string;
+  isMinced: boolean;
+}
+
 /**
  * Converts a recipe ingredient item to its commercial shopping package representation
  * by running it through the registry of registered conversion strategies.
  */
-export function convertIngredient(item) {
+export function convertIngredient(item: RawIngredientItem): ConvertedItem {
   const { scaledQty, unit, rest, isMinced } = item;
   const nameLower = rest.toLowerCase();
   const isStaple = checkIsStaple(rest, scaledQty, unit);
@@ -551,7 +595,7 @@ export function convertIngredient(item) {
     return { qty: null, unit: '', rest, note: isStaple ? 'Pantry Staple' : '', isStaple };
   }
 
-  const context = { scaledQty, unit, rest, isMinced, nameLower, isStaple };
+  const context: ConverterContext = { scaledQty, unit, rest, isMinced, nameLower, isStaple };
 
   for (const strategy of CONVERTERS) {
     if (strategy.matches(context)) {

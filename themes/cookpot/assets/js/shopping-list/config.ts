@@ -1,4 +1,4 @@
-export const STAPLES = [
+export const STAPLES: string[] = [
   'salt', 'pepper', 'olive oil', 'vegetable oil', 'canola oil', 'cooking spray',
   'sugar', 'flour', 'baking powder', 'baking soda', 'vanilla extract', 'cornstarch',
   'yeast', 'paprika', 'cumin', 'garlic powder', 'onion powder', 'oregano', 'thyme',
@@ -7,11 +7,11 @@ export const STAPLES = [
   'mustard powder', 'parsley', 'basil', 'sage', 'lemon juice', 'lime juice', 'butter', 'water'
 ];
 
-export const VOLUME_UNITS = [
+export const VOLUME_UNITS: string[] = [
   'cup', 'cups', 'tablespoon', 'tablespoons', 'tbsp', 'teaspoon', 'teaspoons', 'tsp', 'ounce', 'ounces', 'oz', 'ml'
 ];
 
-export const TO_TEASPOONS = {
+export const TO_TEASPOONS: Record<string, number> = {
   teaspoon: 1,
   tsp: 1,
   tablespoon: 3,
@@ -22,7 +22,7 @@ export const TO_TEASPOONS = {
   ml: 0.202884
 };
 
-export const SINGULAR_TO_PLURAL = {
+export const SINGULAR_TO_PLURAL: Record<string, string> = {
   ounce: 'ounces',
   pound: 'pounds',
   cup: 'cups',
@@ -48,6 +48,6 @@ export const SINGULAR_TO_PLURAL = {
   'half-pint (8 oz)': 'half-pints (8 oz)'
 };
 
-export const PLURAL_TO_SINGULAR = Object.fromEntries(
+export const PLURAL_TO_SINGULAR: Record<string, string> = Object.fromEntries(
   Object.entries(SINGULAR_TO_PLURAL).map(([sing, plur]) => [plur, sing])
 );

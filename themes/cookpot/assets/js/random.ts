@@ -1,14 +1,14 @@
-export function initRandomRecipe() {
+export function initRandomRecipe(): void {
   const randomBtn = document.getElementById('header-random-recipe');
   if (!randomBtn) return;
 
-  randomBtn.addEventListener('click', (e) => {
+  randomBtn.addEventListener('click', (e: MouseEvent) => {
     e.preventDefault();
     const recipesJson = randomBtn.getAttribute('data-recipes');
     if (!recipesJson) return;
 
     try {
-      const recipes = JSON.parse(recipesJson);
+      const recipes: string[] = JSON.parse(recipesJson);
       if (recipes && recipes.length > 0) {
         // Exclude the current page if possible to ensure we actually navigate somewhere else,
         // unless there's only one recipe in total.
@@ -16,7 +16,7 @@ export function initRandomRecipe() {
         if (recipes.length > 1) {
           const currentPath = window.location.pathname;
           // Normalize paths by ensuring they end/start similarly
-          const cleanPath = (path) => path.replace(/\/+$/, '').toLowerCase();
+          const cleanPath = (path: string) => path.replace(/\/+$/, '').toLowerCase();
           const currentClean = cleanPath(currentPath);
           
           targetRecipes = recipes.filter(url => cleanPath(url) !== currentClean);

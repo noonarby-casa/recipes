@@ -1,12 +1,15 @@
 // --- Web Audio API Synth Alert Sounds ---
-let audioCtx = null;
+let audioCtx: AudioContext | null = null;
 
-export function initAudio() {
+export function initAudio(): void {
   try {
     if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtxClass) {
+        audioCtx = new AudioCtxClass();
+      }
     }
-    if (audioCtx.state === 'suspended') {
+    if (audioCtx && audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
   } catch (err) {
@@ -14,7 +17,13 @@ export function initAudio() {
   }
 }
 
-function playTone(freq, startTime, duration, type = 'sine', maxVolume = 0.15) {
+function playTone(
+  freq: number,
+  startTime: number,
+  duration: number,
+  type: OscillatorType = 'sine',
+  maxVolume: number = 0.15
+): void {
   if (!audioCtx) return;
   
   const oscNode = audioCtx.createOscillator();
@@ -34,7 +43,7 @@ function playTone(freq, startTime, duration, type = 'sine', maxVolume = 0.15) {
   oscNode.stop(startTime + duration);
 }
 
-export function playLowerBoundChime() {
+export function playLowerBoundChime(): void {
   initAudio();
   if (!audioCtx) return;
   
@@ -48,7 +57,7 @@ export function playLowerBoundChime() {
   });
 }
 
-export function playUpperBoundChime() {
+export function playUpperBoundChime(): void {
   initAudio();
   if (!audioCtx) return;
   

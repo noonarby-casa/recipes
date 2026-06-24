@@ -1,16 +1,38 @@
-export function initSearch() {
-  const searchInput = document.getElementById('recipe-search-input');
+interface RecipeTime {
+  step: string;
+  time: string;
+}
+
+interface Recipe {
+  title: string;
+  permalink: string;
+  dateMachine: string;
+  dateHuman: string;
+  times?: RecipeTime[];
+  recipeSource?: string;
+  tags?: string[];
+  ingredients?: string[];
+  summary: string;
+  image?: string;
+  image90?: string;
+  image130?: string;
+  image180?: string;
+  image260?: string;
+}
+
+export function initSearch(): void {
+  const searchInput = document.getElementById('recipe-search-input') as HTMLInputElement | null;
   const searchClear = document.getElementById('recipe-search-clear');
   const searchInfo = document.getElementById('search-results-info');
   const searchResults = document.getElementById('search-results');
   const defaultList = document.getElementById('recipe-list-default');
   const headerSearchToggle = document.getElementById('header-search-toggle');
 
-  let recipesData = null;
+  let recipesData: Recipe[] | null = null;
   let isFetching = false;
 
   // Lazily fetch search data
-  async function ensureDataFetched() {
+  async function ensureDataFetched(): Promise<void> {
     if (recipesData || isFetching) return;
     isFetching = true;
 
@@ -18,7 +40,7 @@ export function initSearch() {
       // Find basePath from home link if possible
       const homeLink = document.querySelector('header h1 a');
       const basePath = homeLink ? homeLink.getAttribute('href') : '/';
-      const cleanBasePath = basePath.endsWith('/') ? basePath : basePath + '/';
+      const cleanBasePath = basePath ? (basePath.endsWith('/') ? basePath : basePath + '/') : '/';
       
       const response = await fetch(`${cleanBasePath}index.json`);
       if (!response.ok) {
@@ -41,20 +63,22 @@ export function initSearch() {
       const query = searchInput.value.trim();
       
       if (query.length > 0) {
-        searchClear.style.display = 'inline-flex';
+        if (searchClear) searchClear.style.display = 'inline-flex';
         performSearch(query);
       } else {
-        searchClear.style.display = 'none';
+        if (searchClear) searchClear.style.display = 'none';
         resetSearch();
       }
     });
 
-    searchClear.addEventListener('click', () => {
-      searchInput.value = '';
-      searchInput.focus();
-      searchClear.style.display = 'none';
-      resetSearch();
-    });
+    if (searchClear) {
+      searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        searchInput.focus();
+        searchClear.style.display = 'none';
+        resetSearch();
+      });
+    }
   }
 
   // Handle header search toggle
@@ -79,7 +103,7 @@ export function initSearch() {
       ensureDataFetched().then(() => {
         if (qParam) {
           searchInput.value = qParam;
-          searchClear.style.display = 'inline-flex';
+          if (searchClear) searchClear.style.display = 'inline-flex';
           performSearch(qParam);
         }
         searchInput.focus();
@@ -87,7 +111,7 @@ export function initSearch() {
     }
   }
 
-  function performSearch(query) {
+  function performSearch(query: string): void {
     if (!recipesData) {
       // Data not loaded yet, wait and try again
       setTimeout(() => performSearch(query), 100);
@@ -106,14 +130,14 @@ export function initSearch() {
         const tagMatch = recipe.tags && recipe.tags.some(tag => tag.toLowerCase().includes(term));
         const ingredientMatch = recipe.ingredients && recipe.ingredients.some(ing => ing.toLowerCase().includes(term));
         const summaryMatch = recipe.summary && recipe.summary.toLowerCase().includes(term);
-        return titleMatch || tagMatch || ingredientMatch || summaryMatch;
+        return titleMatch || !!tagMatch || !!ingredientMatch || !!summaryMatch;
       });
     });
 
     renderResults(matches, query);
   }
 
-  function resetSearch() {
+  function resetSearch(): void {
     if (searchResults) {
       searchResults.style.display = 'none';
       searchResults.innerHTML = '';
@@ -127,7 +151,7 @@ export function initSearch() {
     }
   }
 
-  function renderResults(results, query) {
+  function renderResults(results: Recipe[], query: string): void {
     if (!searchResults) return;
 
     // Hide default list
@@ -140,7 +164,7 @@ export function initSearch() {
     // Find basePath from home link
     const homeLink = document.querySelector('header h1 a');
     const basePath = homeLink ? homeLink.getAttribute('href') : '/';
-    const cleanBasePath = basePath.endsWith('/') ? basePath : basePath + '/';
+    const cleanBasePath = basePath ? (basePath.endsWith('/') ? basePath : basePath + '/') : '/';
 
     if (results.length === 0) {
       searchResults.innerHTML = `
@@ -155,13 +179,16 @@ export function initSearch() {
           <span>0 recipes found</span>
           <a class="search-results-clear-link" id="search-clear-link">Clear search</a>
         `;
-        document.getElementById('search-clear-link').addEventListener('click', () => {
-          if (searchInput) {
-            searchInput.value = '';
-            searchClear.style.display = 'none';
-          }
-          resetSearch();
-        });
+        const clearLink = document.getElementById('search-clear-link');
+        if (clearLink) {
+          clearLink.addEventListener('click', () => {
+            if (searchInput) {
+              searchInput.value = '';
+              if (searchClear) searchClear.style.display = 'none';
+            }
+            resetSearch();
+          });
+        }
       }
       return;
     }
@@ -245,17 +272,20 @@ export function initSearch() {
         <span>Found ${results.length} recipe${results.length === 1 ? '' : 's'}</span>
         <a class="search-results-clear-link" id="search-clear-link">Clear search</a>
       `;
-      document.getElementById('search-clear-link').addEventListener('click', () => {
-        if (searchInput) {
-          searchInput.value = '';
-          searchClear.style.display = 'none';
-        }
-        resetSearch();
-      });
+      const clearLink = document.getElementById('search-clear-link');
+      if (clearLink) {
+        clearLink.addEventListener('click', () => {
+          if (searchInput) {
+            searchInput.value = '';
+            if (searchClear) searchClear.style.display = 'none';
+          }
+          resetSearch();
+        });
+      }
     }
   }
 
-  function escapeHtml(str) {
+  function escapeHtml(str: string): string {
     if (!str) return '';
     return str
       .replace(/&/g, '&amp;')

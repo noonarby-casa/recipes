@@ -1,10 +1,24 @@
-import { formatCookingNumber } from '../scaler.js';
-import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR, VOLUME_UNITS, TO_TEASPOONS, STAPLES } from './config.js';
+import { formatCookingNumber } from '../scaler';
+import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR, VOLUME_UNITS, TO_TEASPOONS, STAPLES } from './config';
+
+export interface NoteItem {
+  prefix: string;
+  qty: number | null;
+  unit: string;
+  rest: string;
+  explanation: string;
+}
+
+export interface ParsedMeas {
+  qty: number | null;
+  unit: string;
+  rest: string;
+}
 
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.
  */
-export function getSingularUnit(unit) {
+export function getSingularUnit(unit: string): string {
   if (!unit) return '';
   const lower = unit.toLowerCase().trim();
   return PLURAL_TO_SINGULAR[lower] || lower;
@@ -13,7 +27,7 @@ export function getSingularUnit(unit) {
 /**
  * Returns the pluralized form of a given unit, or the unit itself if not found.
  */
-export function getPluralizedUnit(unit) {
+export function getPluralizedUnit(unit: string): string {
   const lower = unit.toLowerCase().trim();
   return SINGULAR_TO_PLURAL[lower] || unit;
 }
@@ -21,7 +35,7 @@ export function getPluralizedUnit(unit) {
 /**
  * Checks if the unit is a known cooking volume unit (e.g. cup, tbsp, tsp, oz, ml).
  */
-export function isVolumeUnit(unit) {
+export function isVolumeUnit(unit: string): boolean {
   if (!unit) return false;
   return VOLUME_UNITS.includes(getSingularUnit(unit).toLowerCase());
 }
@@ -29,7 +43,7 @@ export function isVolumeUnit(unit) {
 /**
  * Converts a quantity from one volume unit to another using standard conversion factors.
  */
-export function convertVolume(qty, fromUnit, toUnit) {
+export function convertVolume(qty: number, fromUnit: string, toUnit: string): number {
   const fromSing = getSingularUnit(fromUnit).toLowerCase();
   const toSing = getSingularUnit(toUnit).toLowerCase();
   
@@ -45,7 +59,7 @@ export function convertVolume(qty, fromUnit, toUnit) {
 /**
  * Removes preparation keywords (e.g. sliced, chopped, minced) and serving suffixes from ingredient names.
  */
-export function cleanPrepTerms(text) {
+export function cleanPrepTerms(text: string): string {
   if (!text) return '';
 
   // Remove "for serving" or "plus more for serving" phrases
@@ -78,7 +92,7 @@ export function cleanPrepTerms(text) {
 /**
  * Parses a combined note string into structured measurement objects separated by '+'.
  */
-export function parseNoteToArray(note) {
+export function parseNoteToArray(note: string): NoteItem[] {
   if (!note) return [];
   
   let cleaned = note.trim();
@@ -103,7 +117,7 @@ export function parseNoteToArray(note) {
   
   if (cleaned.includes(' + ')) {
     const parts = cleaned.split(' + ');
-    let result = [];
+    let result: NoteItem[] = [];
     parts.forEach(p => {
       result = result.concat(parseNoteToArray(p));
     });
@@ -115,7 +129,8 @@ export function parseNoteToArray(note) {
   const expMatch = cleaned.match(/\s*\((?!need\s+)([^)]+)\)$/i);
   if (expMatch) {
     explanation = expMatch[1].trim();
-    cleaned = cleaned.substring(0, expMatch.index).trim();
+    const matchIndex = expMatch.index !== undefined ? expMatch.index : 0;
+    cleaned = cleaned.substring(0, matchIndex).trim();
   }
   
   // 4. Plain measurement
@@ -132,7 +147,7 @@ export function parseNoteToArray(note) {
 /**
  * Parses numeric quantities (including fractions) and units from a raw measurement string.
  */
-export function parseMeasString(str) {
+export function parseMeasString(str: string): ParsedMeas {
   const match = str.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)(?:\s+([a-zA-Z\-()]+))?(?:\s+(.*))?$/);
   if (match) {
     const qtyStr = match[1];
@@ -158,7 +173,7 @@ export function parseMeasString(str) {
 /**
  * Returns a stick conversion explanation note for butter depending on the target unit.
  */
-export function getButterExplanation(unit) {
+export function getButterExplanation(unit: string): string {
   const u = unit.toLowerCase();
   if (u.includes('tablespoon') || u.includes('tbsp')) return '1 stick = 8 tbsp';
   if (u.includes('teaspoon') || u.includes('tsp')) return '1 stick = 24 tsp';
@@ -170,7 +185,7 @@ export function getButterExplanation(unit) {
 /**
  * Abbreviates full unit names (e.g. tablespoons -> tbsp) within note strings.
  */
-export function abbreviateNote(note) {
+export function abbreviateNote(note: string): string {
   if (!note) return '';
   return note
     .replace(/\btablespoons?\b/gi, 'tbsp')
@@ -183,7 +198,7 @@ export function abbreviateNote(note) {
 /**
  * Determines staple status for an ingredient name, excluding fresh peppers, non-dairy butter, and fresh citrus juice.
  */
-export function checkIsStaple(name, qty, unit) {
+export function checkIsStaple(name: string, qty: number | null | undefined, unit: string): boolean {
   const nameLower = name.toLowerCase();
 
   // Exclude fresh peppers/chilies from being matched as the staple "pepper"
