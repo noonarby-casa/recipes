@@ -47,7 +47,7 @@ function parseNumeric(str) {
 }
 
 // Parse a description string to extract quantity, unit, and the rest
-function parseIngredientText(text) {
+export function parseIngredientText(text) {
   text = text.trim();
   // Match Mixed fractions (1 1/2), normal fractions (1/2), and decimals/integers (1.5, 16)
   const qtyRegex = /^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)/;
@@ -79,7 +79,7 @@ function parseIngredientText(text) {
 }
 
 // Pluralization engine
-function getAdaptiveUnit(qty, unit) {
+export function getAdaptiveUnit(qty, unit) {
   if (!unit) return '';
   const lowerUnit = unit.toLowerCase();
   
@@ -92,7 +92,7 @@ function getAdaptiveUnit(qty, unit) {
 }
 
 // Formatting engine: rounds numbers and converts decimals to culinary fractions
-function formatCookingNumber(val) {
+export function formatCookingNumber(val) {
   if (val <= 0) return '0';
 
   const rounded = Math.round(val * 1000) / 1000;
@@ -217,6 +217,9 @@ export function initScaler() {
         btn.classList.remove('active');
       }
     });
+
+    // Dispatch event to notify shopping list or other listeners
+    document.dispatchEvent(new CustomEvent('recipe:scale', { detail: { factor } }));
   }
 
   // Handle slide movement

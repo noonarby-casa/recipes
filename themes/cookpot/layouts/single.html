@@ -72,12 +72,35 @@
 
   <div class="recipe-container">
     <div class="ingredients-column">
-      <h2>Ingredients</h2>
+      <div class="ingredients-title-wrapper">
+        <h2>Ingredients</h2>
+        <div class="shopping-view-toggle">
+          <button type="button" class="view-toggle-btn active" id="btn-recipe-view" aria-label="Show original recipe ingredients">Recipe</button>
+          <button type="button" class="view-toggle-btn" id="btn-shopping-view" aria-label="Show converted shopping list">Shopping List</button>
+        </div>
+      </div>
+      
       <ul class="recipe-ingredients-list">
         {{ range .Params.ingredients }}
           <li class="recipe-ingredient">{{ . }}</li>
         {{ end }}
       </ul>
+
+      <div class="shopping-list-wrapper" style="display: none;">
+        <div class="shopping-actions">
+          <button type="button" class="shopping-copy-btn" id="btn-copy-shopping-list" aria-label="Copy shopping list to clipboard">
+            <svg class="copy-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy List</span>
+          </button>
+        </div>
+        <div class="shopping-section buy-section">
+          <ul class="shopping-buy-list"></ul>
+        </div>
+        <hr class="shopping-divider" style="display: none;">
+        <div class="shopping-section staples-section">
+          <ul class="shopping-staples-list"></ul>
+        </div>
+      </div>
     </div>
     <div class="instructions-column">
       {{ .Content }}
