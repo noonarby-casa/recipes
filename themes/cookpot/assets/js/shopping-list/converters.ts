@@ -42,7 +42,7 @@ function registerConverter(
 
 // 1. Minced Garlic Jar
 registerConverter('MincedGarlicJar',
-  ({ nameLower, unit, isMinced }) => nameLower.includes('garlic') && isMinced && !['clove', 'cloves'].some(u => unit.toLowerCase().includes(u)),
+  ({ nameLower, isMinced }) => nameLower.includes('garlic') && isMinced,
   ({ scaledQty, unit }) => ({
     qty: scaledQty,
     unit: getAdaptiveUnit(scaledQty, unit),

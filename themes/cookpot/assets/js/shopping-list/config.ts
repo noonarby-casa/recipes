@@ -26,3 +26,8 @@ export const PREP_KEYWORDS: string[] = [
   'softened', 'beaten', 'mashed', 'julienned', 'drained', 'wedge', 'wedges', 'divided', 'grate',
   'thinly', 'finely', 'coarsely', 'room temperature', 'finely crushed'
 ];
+
+export const SKIP_TERMS: string[] = [
+  'pasta water', 'cooking water', 'reserved water'
+];
+

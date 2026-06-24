@@ -1,5 +1,5 @@
 import { parseIngredientText, formatCookingNumber } from '../scaler';
-import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume, NoteItem } from './utils';
+import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume, NoteItem, shouldSkipIngredient } from './utils';
 import { convertIngredient, ConvertedItem } from './converters';
 import { TO_TEASPOONS } from './config';
 
@@ -32,61 +32,54 @@ export function getMergedIngredients(
   const validScale = (typeof scale === 'number' && !isNaN(scale)) ? scale : 1.0;
 
   items.forEach(el => {
+    const rawText = (el.textContent || '').trim();
+
+    if (shouldSkipIngredient(rawText)) {
+      return; // skip completely
+    }
+
+    const isMinced = rawText.toLowerCase().includes('minced');
+
     let baseQty = el.dataset.baseQty !== undefined ? parseFloat(el.dataset.baseQty) : null;
     let unit = el.dataset.unit || '';
     let rest = el.dataset.rest || '';
 
+    // Fallback to obtain baseQty, unit, rest if not already parsed; handle unquantified items.
     if (baseQty === null || isNaN(baseQty)) {
-      const textContent = el.textContent || '';
-      const parsed = parseIngredientText(textContent.trim());
+      const parsed = parseIngredientText(rawText);
       if (parsed.quantity !== null && !isNaN(parsed.quantity)) {
         baseQty = parsed.quantity;
         unit = parsed.unit;
         rest = parsed.rest;
       } else {
-        baseQty = null;
-      }
-    }
-
-    const rawRest = rest || (el.textContent || '').trim();
-    const rawRestLower = rawRest.toLowerCase();
-    if (rawRestLower.includes('pasta water') || rawRestLower.includes('cooking water') || rawRestLower.includes('reserved water')) {
-      return; // skip completely
-    }
-    const cleanedRest = cleanPrepTerms(rawRest);
-    const textLower = (el.textContent || '').toLowerCase();
-    const isMinced = textLower.includes('minced');
-
-    if (baseQty === null || isNaN(baseQty)) {
-      unquantified.push({ 
-        scaledQty: null, 
-        unit: '', 
-        rest: cleanPrepTerms((el.textContent || '').trim()), 
-        isMinced 
-      });
-    } else {
-      const scaledQty = baseQty * validScale;
-      if (isNaN(scaledQty)) {
-        unquantified.push({ 
-          scaledQty: null, 
-          unit: '', 
-          rest: cleanedRest, 
-          isMinced 
+        unquantified.push({
+          scaledQty: null,
+          unit: '',
+          rest: cleanPrepTerms(rawText),
+          isMinced
         });
-      } else {
-        const normUnit = getSingularUnit(unit);
-        const key = `${normUnit}_${cleanedRest.toLowerCase()}`;
-        
-        const existing = parsedMap.get(key);
-        if (existing) {
-          existing.scaledQty += scaledQty;
-          if (isMinced) {
-            existing.isMinced = true;
-          }
-        } else {
-          parsedMap.set(key, { scaledQty, unit, rest: cleanedRest, isMinced });
-        }
+        return;
       }
+    }
+
+    const scaledQty = baseQty * validScale;
+    const cleanedRest = cleanPrepTerms(rest || rawText);
+    const normUnit = getSingularUnit(unit);
+    const restLower = cleanedRest.toLowerCase();
+    
+    // Garlic-specific override: separate minced garlic from normal garlic cloves/heads
+    const key = (restLower.includes('garlic') && isMinced)
+      ? `${normUnit}_${restLower}_minced`
+      : `${normUnit}_${restLower}`;
+
+    const existing = parsedMap.get(key);
+    if (existing) {
+      existing.scaledQty += scaledQty;
+      if (isMinced) {
+        existing.isMinced = true;
+      }
+    } else {
+      parsedMap.set(key, { scaledQty, unit, rest: cleanedRest, isMinced });
     }
   });
 
@@ -94,14 +87,14 @@ export function getMergedIngredients(
 }
 
 /**
- * Combines two converted commercial package items of matching types, aggregating quantities, 
+ * Combines two converted commercial package items of matching types, aggregating quantities,
  * correcting pluralized units, and merging explanation notes.
  */
 export function mergeConvertedItems(item1: ConvertedItem, item2: ConvertedItem): ConvertedItem {
   let qty: number | null = null;
-  const isLemonOrLime = item1.rest.toLowerCase().includes('lemon') || item1.rest.toLowerCase().includes('lime') || 
+  const isLemonOrLime = item1.rest.toLowerCase().includes('lemon') || item1.rest.toLowerCase().includes('lime') ||
                         item1.unit.toLowerCase().includes('lemon') || item1.unit.toLowerCase().includes('lime') ||
-                        item2.rest.toLowerCase().includes('lemon') || item2.rest.toLowerCase().includes('lime') || 
+                        item2.rest.toLowerCase().includes('lemon') || item2.rest.toLowerCase().includes('lime') ||
                         item2.unit.toLowerCase().includes('lemon') || item2.unit.toLowerCase().includes('lime');
 
   let juiceQty: number | undefined = undefined;
@@ -212,7 +205,7 @@ export function mergeConvertedItems(item1: ConvertedItem, item2: ConvertedItem):
 function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
   const merged: NoteItem[] = [];
   const temp = [...arr1, ...arr2];
-  
+
   const groups = new Map<string, NoteItem[]>();
   temp.forEach(item => {
     const key = `${item.rest.trim()}`;
@@ -223,7 +216,7 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
       groups.set(key, [item]);
     }
   });
-  
+
   for (const [key, items] of groups.entries()) {
     if (items.length === 1) {
       merged.push(items[0]);
@@ -231,13 +224,13 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
       const firstUnit = getSingularUnit(items[0].unit);
       const sameUnit = items.every(it => getSingularUnit(it.unit) === firstUnit);
       const allVolume = items.every(it => it.unit && isVolumeUnit(it.unit) && it.qty !== null);
-      
+
       if (sameUnit) {
         let totalQty = 0;
         items.forEach(it => {
           if (it.qty !== null) totalQty += it.qty;
         });
-        
+
         let explanation = '';
         const isButter = items.some(it => it.explanation && (it.explanation.includes('stick') || it.explanation.includes('lb')));
         if (isButter) {
@@ -246,7 +239,7 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
           const found = items.find(it => it.explanation);
           if (found) explanation = found.explanation;
         }
-        
+
         merged.push({
           prefix: '',
           qty: totalQty,
@@ -257,7 +250,7 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
       } else if (allVolume) {
         let smallestUnit = items[0].unit;
         let smallestFactor = TO_TEASPOONS[getSingularUnit(smallestUnit).toLowerCase()] || 999999;
-        
+
         items.forEach(it => {
           const sing = getSingularUnit(it.unit).toLowerCase();
           const factor = TO_TEASPOONS[sing] || 999999;
@@ -266,7 +259,7 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
             smallestUnit = it.unit;
           }
         });
-        
+
         const targetSingular = getSingularUnit(smallestUnit);
         let totalQty = 0;
         items.forEach(it => {
@@ -274,7 +267,7 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
             totalQty += convertVolume(it.qty, it.unit, targetSingular);
           }
         });
-        
+
         let explanation = '';
         const isButter = items.some(it => it.explanation && (it.explanation.includes('stick') || it.explanation.includes('lb')));
         if (isButter) {
@@ -283,7 +276,7 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
           const found = items.find(it => it.explanation);
           if (found) explanation = found.explanation;
         }
-        
+
         merged.push({
           prefix: '',
           qty: totalQty,
@@ -296,7 +289,7 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
       }
     }
   }
-  
+
   return merged;
 }
 
@@ -312,7 +305,7 @@ function formatNotesArray(arr: NoteItem[]): string {
     const displayExp = item.explanation ? ` (${item.explanation})` : '';
     return `${formattedQty}${displayUnit}${displayRest}${displayExp}`;
   });
-  
+
   return abbreviateNote('need ' + measParts.join(' + '));
 }
 

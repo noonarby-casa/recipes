@@ -1,6 +1,6 @@
 import { formatCookingNumber } from '../scaler';
 import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from '../constants';
-import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS } from './config';
+import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS, SKIP_TERMS } from './config';
 
 export interface NoteItem {
   prefix: string;
@@ -221,4 +221,13 @@ export function checkIsStaple(name: string, qty: number | null | undefined, unit
           ((qty === null || qty === undefined || isNaN(qty)) && 
            (nameLower.includes('salt') || nameLower.includes('pepper')))) &&
          !isFreshPepper && !isSpecialButter && !isFreshJuice && !nameLower.includes('sausage');
+}
+
+/**
+ * Checks if an ingredient should be skipped from the shopping list completely.
+ */
+export function shouldSkipIngredient(text: string): boolean {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return SKIP_TERMS.some(term => lower.includes(term.toLowerCase()));
 }
