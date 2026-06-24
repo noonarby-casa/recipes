@@ -12,7 +12,6 @@ This is a **Hugo-based static website** dedicated to displaying recipes for the 
 - **Theme:** `cookpot` (a custom theme tailored for recipe rendering, timers, and scaling)
 - **Scripting Language:** [TypeScript](https://www.typescriptlang.org/) (transpiled natively by Hugo's built-in ESBuild pipeline)
 - **Package Manager:** [pnpm](https://pnpm.io/) (for managing development tools like TypeScript linting/checking)
-- **Version Control:** [Jujutsu (jj)](https://github.com/martinvonz/jj)
 - **Hosting:** Firebase Hosting (Project ID: `noonarby-casa-recipes`)
 - **CI/CD:** GitHub Actions for automated pull request previews and production deployment.
 
@@ -121,23 +120,6 @@ The shopping list logic in [shopping-list.ts](file:///home/nicholasnooney/projec
 * **Pantry Staples Section:** Items like oil, vinegar, spices, water, and baking goods (including small quantities of butter) are isolated into a separate "Pantry Staples" subsection.
 * **Note Aggregation & Abbreviations:** Groups duplicated ingredients, adds up notes to the smallest units, and prints concise instructions (abbreviating `tablespoons` to `tbsp`, `ounces` to `oz`, etc.).
 * **Clipboard copy:** Features a copy button that outputs a clean, Markdown-formatted checklist to easily paste into shopping apps.
-
----
-
-## 🔀 Version Control with Jujutsu (`jj`)
-
-This repository uses **Jujutsu (jj)** as its primary version control system. It does not use standard Git commands directly (there is no active `.git` directory in the workspace).
-
-### Key Workflow Commands
-
-* **Check status:** `jj status`
-* **Show diff:** `jj diff`
-* **View commit log:** `jj log -n 5`
-* **Set commit message:** `jj describe -m "Your commit message"`
-* **Create a new working copy commit:** `jj new`
-
-> [!IMPORTANT]
-> Since Jujutsu uses a pager by default for commands like `status`, `diff`, and `log`, when calling these commands from non-interactive shells or automated scripts, you **must** pass the `--no-pager` global flag (e.g., `jj --no-pager status`).
 
 ---
 
