@@ -14,3 +14,8 @@ hugo.linux
 
 # Node stuff
 node_modules/
+
+# Logs and debug files
+firebase-debug.log
+*.log
+

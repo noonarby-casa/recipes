@@ -47,7 +47,7 @@ registerConverter('MincedGarlicJar',
     qty: scaledQty,
     unit: getAdaptiveUnit(scaledQty, unit),
     rest: 'minced garlic',
-    note: 'Pantry Staple',
+    note: '',
     isStaple: true
   })
 );
@@ -587,7 +587,7 @@ export function convertIngredient(item: Ingredient): ShoppingItem {
   const isStaple = checkIsStaple(rest, scaledQty, unit);
 
   if (scaledQty === null || scaledQty === undefined || isNaN(scaledQty)) {
-    return { qty: null, unit: '', rest, note: isStaple ? 'Pantry Staple' : '', isStaple };
+    return { qty: null, unit: '', rest, note: '', isStaple };
   }
 
   const context: ConverterContext = { scaledQty, unit, rest, restLower, prep, isStaple };
@@ -603,7 +603,7 @@ export function convertIngredient(item: Ingredient): ShoppingItem {
     qty: scaledQty,
     unit: getAdaptiveUnit(scaledQty, unit),
     rest,
-    note: isStaple ? 'Pantry Staple' : '',
+    note: '',
     isStaple
   };
 }
