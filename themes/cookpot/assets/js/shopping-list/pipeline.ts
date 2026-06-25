@@ -1,20 +1,26 @@
 import { parseIngredientText, formatCookingNumber } from '../scaler';
-import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume, NoteItem, shouldSkipIngredient } from './utils';
-import { convertIngredient, ConvertedItem } from './converters';
+import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume, NoteItem, shouldSkipIngredient, Ingredient } from './utils';
+import { convertIngredient, ShoppingItem } from './converters';
 import { TO_TEASPOONS } from './config';
 
-export interface RawIngredient {
-  scaledQty: number | null;
-  unit: string;
-  rest: string;
-  isMinced: boolean;
-}
+/**
+ * ParsedIngredient represents a quantified ingredient that has been successfully parsed
+ * and validated. It differs from Ingredient by guaranteeing that 'scaledQty' is a strict,
+ * non-nullable number, allowing safe aggregation (e.g. addition) without runtime null checks.
+ */
+export type ParsedIngredient = Omit<Ingredient, 'scaledQty'> & { scaledQty: number };
 
-interface MergedIngredient {
-  scaledQty: number;
-  unit: string;
-  rest: string;
-  isMinced: boolean;
+/**
+ * Generates a unique aggregation key for an ingredient based on its unit, name, and preparation state.
+ * Standardizes units and names, and applies a garlic-specific override to separate minced garlic
+ * from normal garlic cloves/heads.
+ */
+function getIngredientKey(unit: string, rest: string, prep: string): string {
+  const normUnit = getSingularUnit(unit);
+  const restLower = rest.toLowerCase();
+  
+  const isMincedGarlic = restLower.includes('garlic') && prep === 'minced';
+  return `${normUnit}_${restLower}${isMincedGarlic ? '_minced' : ''}`;
 }
 
 /**
@@ -23,11 +29,10 @@ interface MergedIngredient {
  */
 export function getMergedIngredients(
   scale: number,
-  rawItems: NodeListOf<HTMLElement> | HTMLElement[] | null = null
-): RawIngredient[] {
-  const items = rawItems || document.querySelectorAll<HTMLElement>('.recipe-ingredient');
-  const parsedMap = new Map<string, MergedIngredient>();
-  const unquantified: RawIngredient[] = [];
+  items: NodeListOf<HTMLElement> | HTMLElement[]
+): Ingredient[] {
+  const parsedMap = new Map<string, ParsedIngredient>();
+  const unquantified: Ingredient[] = [];
 
   const validScale = (typeof scale === 'number' && !isNaN(scale)) ? scale : 1.0;
 
@@ -38,13 +43,13 @@ export function getMergedIngredients(
       return; // skip completely
     }
 
-    const isMinced = rawText.toLowerCase().includes('minced');
-
     let baseQty = el.dataset.baseQty !== undefined ? parseFloat(el.dataset.baseQty) : null;
     let unit = el.dataset.unit || '';
     let rest = el.dataset.rest || '';
+    let prep = '';
 
-    // Fallback to obtain baseQty, unit, rest if not already parsed; handle unquantified items.
+    // Fallback to obtain baseQty, unit, rest if not already parsed;
+    // if parsing fails, consider the item unquantified.
     if (baseQty === null || isNaN(baseQty)) {
       const parsed = parseIngredientText(rawText);
       if (parsed.quantity !== null && !isNaN(parsed.quantity)) {
@@ -52,34 +57,29 @@ export function getMergedIngredients(
         unit = parsed.unit;
         rest = parsed.rest;
       } else {
+        ({ rest, prep } = cleanPrepTerms(rawText));
         unquantified.push({
           scaledQty: null,
           unit: '',
-          rest: cleanPrepTerms(rawText),
-          isMinced
+          rest,
+          prep
         });
         return;
       }
     }
 
+    ({ rest, prep } = cleanPrepTerms(rest || rawText));
+    const key = getIngredientKey(unit, rest, prep);
     const scaledQty = baseQty * validScale;
-    const cleanedRest = cleanPrepTerms(rest || rawText);
-    const normUnit = getSingularUnit(unit);
-    const restLower = cleanedRest.toLowerCase();
-    
-    // Garlic-specific override: separate minced garlic from normal garlic cloves/heads
-    const key = (restLower.includes('garlic') && isMinced)
-      ? `${normUnit}_${restLower}_minced`
-      : `${normUnit}_${restLower}`;
 
     const existing = parsedMap.get(key);
     if (existing) {
       existing.scaledQty += scaledQty;
-      if (isMinced) {
-        existing.isMinced = true;
+      if (prep) {
+        existing.prep = prep;
       }
     } else {
-      parsedMap.set(key, { scaledQty, unit, rest: cleanedRest, isMinced });
+      parsedMap.set(key, { scaledQty, unit, rest, prep });
     }
   });
 
@@ -90,7 +90,7 @@ export function getMergedIngredients(
  * Combines two converted commercial package items of matching types, aggregating quantities,
  * correcting pluralized units, and merging explanation notes.
  */
-export function mergeConvertedItems(item1: ConvertedItem, item2: ConvertedItem): ConvertedItem {
+export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): ShoppingItem {
   let qty: number | null = null;
   const isLemonOrLime = item1.rest.toLowerCase().includes('lemon') || item1.rest.toLowerCase().includes('lime') ||
                         item1.unit.toLowerCase().includes('lemon') || item1.unit.toLowerCase().includes('lime') ||
@@ -310,8 +310,8 @@ function formatNotesArray(arr: NoteItem[]): string {
 }
 
 export interface ProcessedShoppingList {
-  buyItems: ConvertedItem[];
-  stapleItems: ConvertedItem[];
+  buyItems: ShoppingItem[];
+  stapleItems: ShoppingItem[];
 }
 
 /**
@@ -322,10 +322,11 @@ export function processShoppingList(
   scale: number,
   rawItems: NodeListOf<HTMLElement> | HTMLElement[] | null = null
 ): ProcessedShoppingList {
-  const rawIngredients = getMergedIngredients(scale, rawItems);
+  const items = rawItems || document.querySelectorAll<HTMLElement>('.recipe-ingredient');
+  const rawIngredients = getMergedIngredients(scale, items);
   const convertedItems = rawIngredients.map(item => convertIngredient(item));
 
-  const convertedMap = new Map<string, ConvertedItem>();
+  const convertedMap = new Map<string, ShoppingItem>();
   convertedItems.forEach(converted => {
     let normUnit = getSingularUnit(converted.unit);
     let restKey = converted.rest.toLowerCase().trim();
@@ -345,7 +346,7 @@ export function processShoppingList(
 
     const existing = convertedMap.get(key);
     if (existing) {
-      convertedMap.set(key, mergeConvertedItems(existing, converted));
+      convertedMap.set(key, mergeShoppingItems(existing, converted));
     } else {
       convertedMap.set(key, converted);
     }
@@ -353,8 +354,8 @@ export function processShoppingList(
 
   const finalItems = [...convertedMap.values()];
 
-  const buyItems: ConvertedItem[] = [];
-  const stapleItems: ConvertedItem[] = [];
+  const buyItems: ShoppingItem[] = [];
+  const stapleItems: ShoppingItem[] = [];
 
   finalItems.forEach(converted => {
     if (converted.isStaple) {

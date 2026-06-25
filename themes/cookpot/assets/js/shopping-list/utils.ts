@@ -2,6 +2,13 @@ import { formatCookingNumber } from '../scaler';
 import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from '../constants';
 import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS, SKIP_TERMS } from './config';
 
+export interface Ingredient {
+  scaledQty: number | null;
+  unit: string;
+  rest: string;
+  prep: string;
+}
+
 export interface NoteItem {
   prefix: string;
   qty: number | null;
@@ -57,11 +64,20 @@ export function convertVolume(qty: number, fromUnit: string, toUnit: string): nu
   return qty;
 }
 
+export interface CleanedPrepResult {
+  rest: string;
+  prep: string;
+}
+
 /**
  * Removes preparation keywords (e.g. sliced, chopped, minced) and serving suffixes from ingredient names.
+ * Returns both the cleaned name (as 'rest') and the matched preparation term.
  */
-export function cleanPrepTerms(text: string): string {
-  if (!text) return '';
+export function cleanPrepTerms(text: string): CleanedPrepResult {
+  if (!text) return { rest: '', prep: '' };
+
+  const textLower = text.toLowerCase();
+  const prep = PREP_KEYWORDS.find(k => textLower.includes(k.toLowerCase())) || '';
 
   // Remove "for serving" or "plus more for serving" phrases
   text = text.replace(/,?\s+(?:plus\s+more\s+)?for\s+serving\b/gi, '').trim();
@@ -87,7 +103,7 @@ export function cleanPrepTerms(text: string): string {
   // Clean up double spaces
   cleaned = cleaned.replace(/\s+/g, ' ').trim();
 
-  return cleaned;
+  return { rest: cleaned, prep };
 }
 
 /**

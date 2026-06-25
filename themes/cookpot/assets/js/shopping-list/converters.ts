@@ -1,16 +1,16 @@
 import { getAdaptiveUnit, formatCookingNumber } from '../scaler';
-import { checkIsStaple } from './utils';
+import { checkIsStaple, Ingredient } from './utils';
 
 export interface ConverterContext {
   scaledQty: number;
   unit: string;
   rest: string;
-  isMinced: boolean;
-  nameLower: string;
+  restLower: string;
+  prep: string;
   isStaple: boolean;
 }
 
-export interface ConvertedItem {
+export interface ShoppingItem {
   qty: number | null;
   unit: string;
   rest: string;
@@ -23,7 +23,7 @@ export interface ConvertedItem {
 export interface ConverterStrategy {
   name: string;
   matches: (ctx: ConverterContext) => boolean;
-  convert: (ctx: ConverterContext) => ConvertedItem | null | undefined;
+  convert: (ctx: ConverterContext) => ShoppingItem | null | undefined;
 }
 
 // Define the strategies list
@@ -35,14 +35,14 @@ export const CONVERTERS: ConverterStrategy[] = [];
 function registerConverter(
   name: string,
   matches: (ctx: ConverterContext) => boolean,
-  convert: (ctx: ConverterContext) => ConvertedItem | null | undefined
+  convert: (ctx: ConverterContext) => ShoppingItem | null | undefined
 ): void {
   CONVERTERS.push({ name, matches, convert });
 }
 
 // 1. Minced Garlic Jar
 registerConverter('MincedGarlicJar',
-  ({ nameLower, isMinced }) => nameLower.includes('garlic') && isMinced,
+  ({ restLower, prep }) => restLower.includes('garlic') && prep === 'minced',
   ({ scaledQty, unit }) => ({
     qty: scaledQty,
     unit: getAdaptiveUnit(scaledQty, unit),
@@ -54,10 +54,10 @@ registerConverter('MincedGarlicJar',
 
 // 2. Garlic Cloves / Heads
 registerConverter('Garlic',
-  ({ nameLower }) => nameLower.includes('garlic') && !nameLower.includes('powder') && !nameLower.includes('salt'),
+  ({ restLower }) => restLower.includes('garlic') && !restLower.includes('powder') && !restLower.includes('salt'),
   ({ scaledQty, unit, rest, isStaple }) => {
-    const nameLower = rest.toLowerCase();
-    const isHeadOrBulb = nameLower.includes('head') || nameLower.includes('bulb');
+    const restLower = rest.toLowerCase();
+    const isHeadOrBulb = restLower.includes('head') || restLower.includes('bulb');
     
     if (isHeadOrBulb) {
       const heads = Math.ceil(scaledQty);
@@ -86,7 +86,7 @@ registerConverter('Garlic',
 
 // 3. Ginger Root
 registerConverter('Ginger',
-  ({ nameLower }) => nameLower.includes('ginger') && !nameLower.includes('powder') && !nameLower.includes('ground') && !nameLower.includes('dry') && !nameLower.includes('dried'),
+  ({ restLower }) => restLower.includes('ginger') && !restLower.includes('powder') && !restLower.includes('ground') && !restLower.includes('dry') && !restLower.includes('dried'),
   ({ scaledQty, unit, isStaple }) => {
     const lowerUnit = unit.toLowerCase();
     if (['teaspoon', 'teaspoons', 'tsp', 'tablespoon', 'tablespoons', 'tbsp', 'inch', 'inches', 'piece', 'pieces', 'knob', 'knobs', 'oz', 'ounce', 'ounces'].some(u => lowerUnit.includes(u) || lowerUnit === '')) {
@@ -104,7 +104,7 @@ registerConverter('Ginger',
 
 // 4. Lemon Zest
 registerConverter('LemonZest',
-  ({ nameLower }) => nameLower.includes('lemon') && nameLower.includes('zest'),
+  ({ restLower }) => restLower.includes('lemon') && restLower.includes('zest'),
   ({ scaledQty, unit, isStaple }) => {
     let lemonsCount = 1;
     const lowerUnit = unit.toLowerCase();
@@ -129,7 +129,7 @@ registerConverter('LemonZest',
 
 // 5. Lime Zest
 registerConverter('LimeZest',
-  ({ nameLower }) => nameLower.includes('lime') && nameLower.includes('zest'),
+  ({ restLower }) => restLower.includes('lime') && restLower.includes('zest'),
   ({ scaledQty, unit, isStaple }) => {
     let limesCount = 1;
     const lowerUnit = unit.toLowerCase();
@@ -154,7 +154,7 @@ registerConverter('LimeZest',
 
 // 6. Lemon Juice / Whole Lemons
 registerConverter('Lemon',
-  ({ nameLower, isStaple }) => nameLower.includes('lemon') && !isStaple && !nameLower.includes('grass') && !nameLower.includes('pepper') && !nameLower.includes('extract') && !nameLower.includes('zest'),
+  ({ restLower, isStaple }) => restLower.includes('lemon') && !isStaple && !restLower.includes('grass') && !restLower.includes('pepper') && !restLower.includes('extract') && !restLower.includes('zest'),
   ({ scaledQty, unit, rest, isStaple }) => {
     const lowerUnit = unit.toLowerCase();
     if (['tablespoon', 'tablespoons', 'tbsp', 'teaspoon', 'teaspoons', 'tsp', 'cup', 'cups', 'ounce', 'ounces', 'oz', 'ml'].some(u => lowerUnit.includes(u))) {
@@ -201,7 +201,7 @@ registerConverter('Lemon',
 
 // 7. Lime Juice / Whole Limes
 registerConverter('Lime',
-  ({ nameLower, isStaple }) => nameLower.includes('lime') && !isStaple && !nameLower.includes('leaf') && !nameLower.includes('leaves') && !nameLower.includes('extract') && !nameLower.includes('zest'),
+  ({ restLower, isStaple }) => restLower.includes('lime') && !isStaple && !restLower.includes('leaf') && !restLower.includes('leaves') && !restLower.includes('extract') && !restLower.includes('zest'),
   ({ scaledQty, unit, rest, isStaple }) => {
     const lowerUnit = unit.toLowerCase();
     if (['tablespoon', 'tablespoons', 'tbsp', 'teaspoon', 'teaspoons', 'tsp', 'cup', 'cups', 'ounce', 'ounces', 'oz', 'ml'].some(u => lowerUnit.includes(u))) {
@@ -248,7 +248,7 @@ registerConverter('Lime',
 
 // 8. Butter
 registerConverter('Butter',
-  ({ nameLower }) => nameLower.includes('butter') && !['peanut', 'almond', 'beans', 'milk', 'squash', 'butternut', 'lettuce', 'pickles'].some(b => nameLower.includes(b)),
+  ({ restLower }) => restLower.includes('butter') && !['peanut', 'almond', 'beans', 'milk', 'squash', 'butternut', 'lettuce', 'pickles'].some(b => restLower.includes(b)),
   ({ scaledQty, unit, isStaple }) => {
     const lowerUnit = unit.toLowerCase();
     if (['cup', 'cups', 'tablespoon', 'tablespoons', 'tbsp', 'pound', 'pounds', 'lb', 'lbs', 'ounce', 'ounces', 'oz'].some(u => lowerUnit.includes(u))) {
@@ -290,7 +290,7 @@ registerConverter('Butter',
 
 // 9. Onion
 registerConverter('Onion',
-  ({ nameLower }) => nameLower.includes('onion') && !['powder', 'salt', 'green', 'spring', 'pearl'].some(o => nameLower.includes(o)),
+  ({ restLower }) => restLower.includes('onion') && !['powder', 'salt', 'green', 'spring', 'pearl'].some(o => restLower.includes(o)),
   ({ scaledQty, unit, rest, isStaple }) => {
     if (unit.toLowerCase().includes('cup')) {
       const onions = Math.ceil(scaledQty);
@@ -308,7 +308,7 @@ registerConverter('Onion',
 
 // 10. Coconut Milk
 registerConverter('CoconutMilk',
-  ({ nameLower }) => nameLower.includes('coconut milk'),
+  ({ restLower }) => restLower.includes('coconut milk'),
   ({ scaledQty, unit, isStaple }) => {
     let cansCount = 1;
     const lowerUnit = unit.toLowerCase();
@@ -331,7 +331,7 @@ registerConverter('CoconutMilk',
 
 // 11. Cabbage
 registerConverter('Cabbage',
-  ({ nameLower }) => nameLower.includes('cabbage'),
+  ({ restLower }) => restLower.includes('cabbage'),
   ({ scaledQty, unit, rest, isStaple }) => {
     let headsCount = 1;
     const lowerUnit = unit.toLowerCase();
@@ -358,7 +358,7 @@ registerConverter('Cabbage',
 
 // 12. Scallions / Green Onions
 registerConverter('Scallions',
-  ({ nameLower }) => ['scallion', 'spring onion', 'green onion'].some(s => nameLower.includes(s)),
+  ({ restLower }) => ['scallion', 'spring onion', 'green onion'].some(s => restLower.includes(s)),
   ({ scaledQty, unit, isStaple }) => {
     let bundlesCount = 1;
     const lowerUnit = unit.toLowerCase();
@@ -383,7 +383,7 @@ registerConverter('Scallions',
 
 // 13. Half-Pint Liquids (sour cream, ricotta)
 registerConverter('HalfPintLiquids',
-  ({ nameLower }) => ['sour cream', 'ricotta'].some(liq => nameLower.includes(liq)),
+  ({ restLower }) => ['sour cream', 'ricotta'].some(liq => restLower.includes(liq)),
   ({ scaledQty, unit, rest, isStaple }) => {
     const lowerUnit = unit.toLowerCase();
     if (lowerUnit.includes('cup')) {
@@ -428,7 +428,7 @@ registerConverter('HalfPintLiquids',
 
 // 14. Pint-Minimum Liquids (broth, stock, milk, heavy cream, whipping cream, yogurt)
 registerConverter('PintMinimumLiquids',
-  ({ nameLower }) => ['broth', 'stock', 'milk', 'heavy cream', 'whipping cream', 'yogurt'].some(liq => nameLower.includes(liq)),
+  ({ restLower }) => ['broth', 'stock', 'milk', 'heavy cream', 'whipping cream', 'yogurt'].some(liq => restLower.includes(liq)),
   ({ scaledQty, unit, rest, isStaple }) => {
     const lowerUnit = unit.toLowerCase();
     if (lowerUnit.includes('cup')) {
@@ -465,7 +465,7 @@ registerConverter('PintMinimumLiquids',
 
 // 15. Dry Pasta
 registerConverter('DryPasta',
-  ({ nameLower }) => ['pasta', 'macaroni', 'spaghetti', 'penne', 'noodle', 'noodles', 'fettuccine', 'linguine', 'lasagna'].some(p => nameLower.includes(p)),
+  ({ restLower }) => ['pasta', 'macaroni', 'spaghetti', 'penne', 'noodle', 'noodles', 'fettuccine', 'linguine', 'lasagna'].some(p => restLower.includes(p)),
   ({ scaledQty, unit, rest, isStaple }) => {
     const lowerUnit = unit.toLowerCase();
     if (['ounce', 'ounces', 'oz', 'pound', 'pounds', 'lb', 'lbs', 'gram', 'grams', 'g'].some(u => lowerUnit.includes(u))) {
@@ -509,7 +509,7 @@ registerConverter('Cans',
 
 // 17. Egg Yolks
 registerConverter('EggYolks',
-  ({ nameLower }) => nameLower.includes('egg yolk'),
+  ({ restLower }) => restLower.includes('egg yolk'),
   ({ scaledQty, unit, rest, isStaple }) => {
     const rounded = Math.ceil(scaledQty);
     let finalRest = rest.trim();
@@ -551,17 +551,17 @@ registerConverter('VolumeToPackage',
     return ['cup', 'cups', 'tablespoon', 'tablespoons', 'tbsp', 'teaspoon', 'teaspoons', 'tsp', 'ounce', 'ounces', 'oz', 'ml'].some(u => lowerUnit.includes(u));
   },
   ({ scaledQty, unit, rest, isStaple }) => {
-    const nameLower = rest.toLowerCase();
+    const restLower = rest.toLowerCase();
     let purchaseUnit = 'package';
     let purchaseQty = 1;
     
-    if (['paste', 'sauce', 'butter', 'jam', 'jelly', 'spread', 'mayo', 'mustard', 'curry', 'pesto', 'tahini', 'jar'].some(k => nameLower.includes(k))) {
+    if (['paste', 'sauce', 'butter', 'jam', 'jelly', 'spread', 'mayo', 'mustard', 'curry', 'pesto', 'tahini', 'jar'].some(k => restLower.includes(k))) {
       purchaseUnit = 'jar';
-    } else if (['aminos', 'oil', 'vinegar', 'syrup', 'honey', 'juice', 'extract', 'liquid', 'bottle'].some(k => nameLower.includes(k))) {
+    } else if (['aminos', 'oil', 'vinegar', 'syrup', 'honey', 'juice', 'extract', 'liquid', 'bottle'].some(k => restLower.includes(k))) {
       purchaseUnit = 'bottle';
-    } else if (['crumb', 'cracker', 'flour', 'sugar', 'chip', 'seed', 'nut', 'rice', 'pasta', 'noodle', 'oat', 'meal', 'powder', 'bag', 'box'].some(k => nameLower.includes(k))) {
-      purchaseUnit = (nameLower.includes('crumb') || nameLower.includes('cracker')) ? 'box' : 'package';
-    } else if (['cream', 'sour cream', 'yogurt', 'cheese', 'tub', 'container'].some(k => nameLower.includes(k))) {
+    } else if (['crumb', 'cracker', 'flour', 'sugar', 'chip', 'seed', 'nut', 'rice', 'pasta', 'noodle', 'oat', 'meal', 'powder', 'bag', 'box'].some(k => restLower.includes(k))) {
+      purchaseUnit = (restLower.includes('crumb') || restLower.includes('cracker')) ? 'box' : 'package';
+    } else if (['cream', 'sour cream', 'yogurt', 'cheese', 'tub', 'container'].some(k => restLower.includes(k))) {
       purchaseUnit = 'container';
     }
 
@@ -575,27 +575,22 @@ registerConverter('VolumeToPackage',
   }
 );
 
-interface RawIngredientItem {
-  scaledQty: number | null;
-  unit: string;
-  rest: string;
-  isMinced: boolean;
-}
+
 
 /**
  * Converts a recipe ingredient item to its commercial shopping package representation
  * by running it through the registry of registered conversion strategies.
  */
-export function convertIngredient(item: RawIngredientItem): ConvertedItem {
-  const { scaledQty, unit, rest, isMinced } = item;
-  const nameLower = rest.toLowerCase();
+export function convertIngredient(item: Ingredient): ShoppingItem {
+  const { scaledQty, unit, rest, prep } = item;
+  const restLower = rest.toLowerCase();
   const isStaple = checkIsStaple(rest, scaledQty, unit);
 
   if (scaledQty === null || scaledQty === undefined || isNaN(scaledQty)) {
     return { qty: null, unit: '', rest, note: isStaple ? 'Pantry Staple' : '', isStaple };
   }
 
-  const context: ConverterContext = { scaledQty, unit, rest, isMinced, nameLower, isStaple };
+  const context: ConverterContext = { scaledQty, unit, rest, restLower, prep, isStaple };
 
   for (const strategy of CONVERTERS) {
     if (strategy.matches(context)) {

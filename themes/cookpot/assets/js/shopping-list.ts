@@ -1,6 +1,6 @@
 import { formatCookingNumber } from './scaler';
 import { processShoppingList } from './shopping-list/pipeline';
-import { ConvertedItem } from './shopping-list/converters';
+import { ShoppingItem } from './shopping-list/converters';
 
 /**
  * Initializes the shopping list feature: selects DOM elements, sets up initial
@@ -135,7 +135,7 @@ export function initShoppingList(): void {
   /**
    * Generates DOM elements for a single converted item and appends it to targetList.
    */
-  function renderItem(converted: ConvertedItem, targetList: HTMLElement): void {
+  function renderItem(item: ShoppingItem, targetList: HTMLElement): void {
     const li = document.createElement('li');
     li.className = 'shopping-item';
 
@@ -143,23 +143,23 @@ export function initShoppingList(): void {
     mainRow.className = 'shopping-item-main-row';
     
     let qtyStr = '';
-    if (converted.qty !== null) {
-      qtyStr = formatCookingNumber(converted.qty);
-      if (converted.unit) {
-        qtyStr += ` ${converted.unit}`;
+    if (item.qty !== null) {
+      qtyStr = formatCookingNumber(item.qty);
+      if (item.unit) {
+        qtyStr += ` ${item.unit}`;
       }
     }
     
-    mainRow.textContent = `${qtyStr ? qtyStr + ' ' : ''}${converted.rest}`;
+    mainRow.textContent = `${qtyStr ? qtyStr + ' ' : ''}${item.rest}`;
     li.appendChild(mainRow);
 
-    if (converted.note) {
+    if (item.note) {
       const details = document.createElement('div');
       details.className = 'shopping-item-details';
       
       const noteSpan = document.createElement('span');
       noteSpan.className = 'shopping-item-note';
-      noteSpan.textContent = converted.note;
+      noteSpan.textContent = item.note;
       details.appendChild(noteSpan);
       li.appendChild(details);
     }
