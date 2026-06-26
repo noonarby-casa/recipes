@@ -1,13 +1,24 @@
-import { formatCookingNumber } from '../scaler';
+import { formatCookingNumber, getAdaptiveUnit } from '../scaler';
 import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from '../constants';
-import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS, SKIP_TERMS } from './config';
+import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS, SKIP_TERMS, StringMatchConfig, ShoppingItemKeyOverride, SHOPPING_ITEM_KEY_OVERRIDES } from './config';
+export { StringMatchConfig };
 
-export interface Ingredient {
-  scaledQty: number | null;
-  unit: string;
+export interface BaseIngredient {
   rest: string;
   prep: string;
 }
+
+export interface ScalableIngredient extends BaseIngredient {
+  isScalable: true;
+  scaledQty: number;
+  unit: string;
+}
+
+export interface FixedIngredient extends BaseIngredient {
+  isScalable: false;
+}
+
+export type Ingredient = ScalableIngredient | FixedIngredient;
 
 export interface NoteItem {
   prefix: string;
@@ -45,19 +56,19 @@ export function getPluralizedUnit(unit: string): string {
  */
 export function isVolumeUnit(unit: string): boolean {
   if (!unit) return false;
-  return VOLUME_UNITS.includes(getSingularUnit(unit).toLowerCase());
+  return VOLUME_UNITS.includes(getSingularUnit(unit));
 }
 
 /**
  * Converts a quantity from one volume unit to another using standard conversion factors.
  */
 export function convertVolume(qty: number, fromUnit: string, toUnit: string): number {
-  const fromSing = getSingularUnit(fromUnit).toLowerCase();
-  const toSing = getSingularUnit(toUnit).toLowerCase();
-  
+  const fromSing = getSingularUnit(fromUnit);
+  const toSing = getSingularUnit(toUnit);
+
   const fromFactor = TO_TEASPOONS[fromSing];
   const toFactor = TO_TEASPOONS[toSing];
-  
+
   if (fromFactor && toFactor) {
     return qty * (fromFactor / toFactor);
   }
@@ -77,7 +88,7 @@ export function cleanPrepTerms(text: string): CleanedPrepResult {
   if (!text) return { rest: '', prep: '' };
 
   const textLower = text.toLowerCase();
-  const prep = PREP_KEYWORDS.find(k => textLower.includes(k.toLowerCase())) || '';
+  const prep = PREP_KEYWORDS.find(k => textLower.includes(k)) || '';
 
   // Remove "for serving" or "plus more for serving" phrases
   text = text.replace(/,?\s+(?:plus\s+more\s+)?for\s+serving\b/gi, '').trim();
@@ -111,9 +122,9 @@ export function cleanPrepTerms(text: string): CleanedPrepResult {
  */
 export function parseNoteToArray(note: string): NoteItem[] {
   if (!note) return [];
-  
+
   let cleaned = note.trim();
-  
+
   // 1. Check for prefix style (need ...) pattern first to prevent splitting on inner '+'
   const match = cleaned.match(/^(.*?)\(need\s+([^)]+)\)$/i);
   if (match) {
@@ -126,12 +137,12 @@ export function parseNoteToArray(note: string): NoteItem[] {
     });
     return innerParsed;
   }
-  
+
   // 2. Handle 'need ' prefix and splitting by '+'
   if (cleaned.toLowerCase().startsWith('need ')) {
     cleaned = cleaned.substring(5).trim();
   }
-  
+
   if (cleaned.includes(' + ')) {
     const parts = cleaned.split(' + ');
     let result: NoteItem[] = [];
@@ -140,7 +151,7 @@ export function parseNoteToArray(note: string): NoteItem[] {
     });
     return result;
   }
-  
+
   // 3. Match any parenthesized explanation at the end, e.g. need 9 tablespoons juice (1 lemon = ~3 tbsp juice)
   let explanation = '';
   const expMatch = cleaned.match(/\s*\((?!need\s+)([^)]+)\)$/i);
@@ -149,7 +160,7 @@ export function parseNoteToArray(note: string): NoteItem[] {
     const matchIndex = expMatch.index !== undefined ? expMatch.index : 0;
     cleaned = cleaned.substring(0, matchIndex).trim();
   }
-  
+
   // 4. Plain measurement
   const parsedMeas = parseMeasString(cleaned);
   return [{
@@ -213,30 +224,45 @@ export function abbreviateNote(note: string): string {
 }
 
 /**
+ * Helper to match a text or array of texts against a StringMatchConfig (supporting match, excludeIf, and keepIf terms).
+ */
+export function matchesConfig(text: string | string[], config: StringMatchConfig): boolean {
+  const texts = Array.isArray(text) ? text : [text];
+  const textLowers = texts.map(t => t.toLowerCase());
+
+  const matchArray = Array.isArray(config.match) ? config.match : [config.match];
+  const hasMatch = matchArray.some(pattern => {
+    const patLower = pattern.toLowerCase();
+    return textLowers.some(t => t.includes(patLower));
+  });
+
+  if (!hasMatch) {
+    return false;
+  }
+
+  const hasExclusion = config.excludeIf?.some(term => {
+    const termLower = term.toLowerCase();
+    return textLowers.some(t => t.includes(termLower));
+  }) ?? false;
+
+  if (hasExclusion) {
+    const hasKeep = config.keepIf?.some(term => {
+      const termLower = term.toLowerCase();
+      return textLowers.some(t => t.includes(termLower));
+    }) ?? false;
+    if (!hasKeep) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Determines staple status for an ingredient name, excluding fresh peppers, non-dairy butter, and fresh citrus juice.
  */
-export function checkIsStaple(name: string, qty: number | null | undefined, unit: string): boolean {
-  const nameLower = name.toLowerCase();
-
-  // Exclude fresh peppers/chilies from being matched as the staple "pepper"
-  const isFreshPepper = ['bell', 'jalapeno', 'serrano', 'habanero', 'poblano', 'banana', 'chili', 'chilli', 'red', 'green', 'yellow', 'orange', 'roasted', 'sweet'].some(p => nameLower.includes(p)) &&
-                        !nameLower.includes('powder') &&
-                        !nameLower.includes('flakes') &&
-                        !nameLower.includes('ground') &&
-                        !nameLower.includes('cayenne');
-
-  // Exclude non-butter items from being matched as the staple "butter"
-  const isSpecialButter = ['peanut', 'almond', 'beans', 'milk', 'squash', 'butternut', 'lettuce', 'pickles'].some(b => nameLower.includes(b));
-
-  // Exclude fresh lemon/lime juice from being matched as the staple "lemon juice" or "lime juice"
-  const isFreshJuice = (nameLower.includes('lemon') || nameLower.includes('lime')) &&
-                       (nameLower.includes('fresh') || nameLower.includes('squeezed'));
-
-  // Determine staple status
-  return (STAPLES.some(staple => nameLower.includes(staple)) || 
-          ((qty === null || qty === undefined || isNaN(qty)) && 
-           (nameLower.includes('salt') || nameLower.includes('pepper')))) &&
-         !isFreshPepper && !isSpecialButter && !isFreshJuice && !nameLower.includes('sausage');
+export function checkIsStaple(nameLower: string): boolean {
+  return STAPLES.some(entry => matchesConfig(nameLower, entry));
 }
 
 /**
@@ -245,5 +271,91 @@ export function checkIsStaple(name: string, qty: number | null | undefined, unit
 export function shouldSkipIngredient(text: string): boolean {
   if (!text) return false;
   const lower = text.toLowerCase();
-  return SKIP_TERMS.some(term => lower.includes(term.toLowerCase()));
+  return SKIP_TERMS.some(term => lower.includes(term));
+}
+
+/**
+ * Formats a standardized map key from a unit and name.
+ */
+export function buildMapKey(unit: string, name: string): string {
+  return `${getSingularUnit(unit)}_${name.toLowerCase().trim()}`;
+}
+
+/**
+ * Generates a unique aggregation key for an ingredient pre-conversion,
+ * applying a garlic-specific override to separate minced garlic.
+ */
+export function getIngredientKey(unit: string, rest: string, prep: string): string {
+  const isMincedGarlic = rest.toLowerCase().includes('garlic') && prep === 'minced';
+  const baseKey = buildMapKey(unit, rest);
+  return isMincedGarlic ? `${baseKey}_minced` : baseKey;
+}
+
+/**
+ * Generates a unique aggregation key for a shopping item post-conversion,
+ * consolidating lemons and limes.
+ */
+export function getShoppingItemKey(unit: string, rest: string): string {
+  const normUnit = getSingularUnit(unit);
+  const restLower = rest.toLowerCase().trim();
+
+  for (const override of SHOPPING_ITEM_KEY_OVERRIDES) {
+    if (normUnit === override.matchUnit || matchesConfig(restLower, override.matchRest)) {
+      return override.key;
+    }
+  }
+  return buildMapKey(unit, rest);
+}
+
+/**
+ * Serializes merged note arrays back into formatted, abbreviated instruction strings prefixing 'need'.
+ * Conditionally includes parenthetical explanations depending on showExplanations flag.
+ */
+export function formatNotesArray(arr: NoteItem[], showExplanations = true): string {
+  const measParts = arr.map(item => {
+    if (item.qty === null) return item.rest;
+    const formattedQty = formatCookingNumber(item.qty);
+    const displayUnit = item.unit ? ' ' + item.unit : '';
+    const displayRest = item.rest ? ' ' + item.rest : '';
+    const displayExp = (item.explanation && showExplanations) ? ` (${item.explanation})` : '';
+    return `${formattedQty}${displayUnit}${displayRest}${displayExp}`;
+  });
+
+  return abbreviateNote('need ' + measParts.join(' + '));
+}
+
+/**
+ * Adjusts the singular or plural spelling of a specific base word within a description string
+ * based on the quantity, leveraging central mapping constants.
+ */
+export function adjustDescriptionPlurality(
+  qty: number,
+  rest: string,
+  baseWord: string
+): string {
+  let finalRest = rest.trim();
+  const lowerWord = baseWord.toLowerCase();
+
+  let singularWord = lowerWord;
+  let pluralWord = lowerWord;
+
+  if (SINGULAR_TO_PLURAL[lowerWord]) {
+    pluralWord = SINGULAR_TO_PLURAL[lowerWord];
+  } else if (PLURAL_TO_SINGULAR[lowerWord]) {
+    singularWord = PLURAL_TO_SINGULAR[lowerWord];
+  }
+
+  if (qty > 1) {
+    const regex = new RegExp(`\\b${singularWord}\\b`, 'gi');
+    finalRest = finalRest.replace(regex, pluralWord);
+  } else {
+    const regex = new RegExp(`\\b${pluralWord}\\b`, 'gi');
+    finalRest = finalRest.replace(regex, singularWord);
+  }
+
+  if (!finalRest) {
+    return getAdaptiveUnit(qty, singularWord);
+  }
+
+  return finalRest;
 }

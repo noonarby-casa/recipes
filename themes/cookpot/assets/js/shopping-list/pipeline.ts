@@ -1,85 +1,51 @@
-import { parseIngredientText, formatCookingNumber } from '../scaler';
-import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume, NoteItem, shouldSkipIngredient, Ingredient } from './utils';
+import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume, NoteItem, shouldSkipIngredient, Ingredient, ScalableIngredient, getIngredientKey, getShoppingItemKey, formatNotesArray } from './utils';
 import { convertIngredient, ShoppingItem } from './converters';
 import { TO_TEASPOONS } from './config';
-
-/**
- * ParsedIngredient represents a quantified ingredient that has been successfully parsed
- * and validated. It differs from Ingredient by guaranteeing that 'scaledQty' is a strict,
- * non-nullable number, allowing safe aggregation (e.g. addition) without runtime null checks.
- */
-export type ParsedIngredient = Omit<Ingredient, 'scaledQty'> & { scaledQty: number };
-
-/**
- * Generates a unique aggregation key for an ingredient based on its unit, name, and preparation state.
- * Standardizes units and names, and applies a garlic-specific override to separate minced garlic
- * from normal garlic cloves/heads.
- */
-function getIngredientKey(unit: string, rest: string, prep: string): string {
-  const normUnit = getSingularUnit(unit);
-  const restLower = rest.toLowerCase();
-  
-  const isMincedGarlic = restLower.includes('garlic') && prep === 'minced';
-  return `${normUnit}_${restLower}${isMincedGarlic ? '_minced' : ''}`;
-}
 
 /**
  * Extracts raw ingredients from DOM element attributes or text content, cleans preparation
  * terms, scales their amounts, and aggregates items with matching name/unit.
  */
-export function getMergedIngredients(
+export function getIngredients(
   scale: number,
-  items: NodeListOf<HTMLElement> | HTMLElement[]
+  elements: NodeListOf<HTMLElement> | HTMLElement[]
 ): Ingredient[] {
-  const parsedMap = new Map<string, ParsedIngredient>();
+  const parsedMap = new Map<string, ScalableIngredient>();
   const unquantified: Ingredient[] = [];
 
-  const validScale = (typeof scale === 'number' && !isNaN(scale)) ? scale : 1.0;
+  scale = Number.isFinite(scale) ? scale : 1.0;
 
-  items.forEach(el => {
+  elements.forEach(el => {
     const rawText = (el.textContent || '').trim();
 
     if (shouldSkipIngredient(rawText)) {
       return; // skip completely
     }
 
-    let baseQty = el.dataset.baseQty !== undefined ? parseFloat(el.dataset.baseQty) : null;
-    let unit = el.dataset.unit || '';
-    let rest = el.dataset.rest || '';
-    let prep = '';
+    const baseQty = el.dataset.baseQty ? parseFloat(el.dataset.baseQty) : null;
+    const unit = el.dataset.unit || '';
+    const rawRest = el.dataset.rest || '';
 
-    // Fallback to obtain baseQty, unit, rest if not already parsed;
-    // if parsing fails, consider the item unquantified.
+    const { rest, prep } = cleanPrepTerms(rawRest || rawText);
+
     if (baseQty === null || isNaN(baseQty)) {
-      const parsed = parseIngredientText(rawText);
-      if (parsed.quantity !== null && !isNaN(parsed.quantity)) {
-        baseQty = parsed.quantity;
-        unit = parsed.unit;
-        rest = parsed.rest;
-      } else {
-        ({ rest, prep } = cleanPrepTerms(rawText));
-        unquantified.push({
-          scaledQty: null,
-          unit: '',
-          rest,
-          prep
-        });
-        return;
-      }
+      unquantified.push({
+        isScalable: false,
+        rest,
+        prep
+      });
+      return;
     }
 
-    ({ rest, prep } = cleanPrepTerms(rest || rawText));
     const key = getIngredientKey(unit, rest, prep);
-    const scaledQty = baseQty * validScale;
+    const scaledQty = baseQty * scale;
 
-    const existing = parsedMap.get(key);
-    if (existing) {
-      existing.scaledQty += scaledQty;
-      if (prep) {
-        existing.prep = prep;
-      }
+    const item = parsedMap.get(key);
+    if (item) {
+      item.scaledQty += scaledQty;
+      item.prep = prep || item.prep;
     } else {
-      parsedMap.set(key, { scaledQty, unit, rest, prep });
+      parsedMap.set(key, { isScalable: true, scaledQty, unit, rest, prep });
     }
   });
 
@@ -92,25 +58,35 @@ export function getMergedIngredients(
  */
 export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): ShoppingItem {
   let qty: number | null = null;
-  const isLemonOrLime = item1.rest.toLowerCase().includes('lemon') || item1.rest.toLowerCase().includes('lime') ||
-                        item1.unit.toLowerCase().includes('lemon') || item1.unit.toLowerCase().includes('lime') ||
-                        item2.rest.toLowerCase().includes('lemon') || item2.rest.toLowerCase().includes('lime') ||
-                        item2.unit.toLowerCase().includes('lemon') || item2.unit.toLowerCase().includes('lime');
+  let parts: { [key: string]: number | undefined } | undefined = undefined;
 
-  let juiceQty: number | undefined = undefined;
-  let zestWholeQty: number | undefined = undefined;
+  if (item1.parts || item2.parts) {
+    parts = {};
+    const keys = new Set([
+      ...Object.keys(item1.parts || {}),
+      ...Object.keys(item2.parts || {})
+    ]);
+    for (const key of keys) {
+      const q1 = item1.parts?.[key] ?? 0;
+      const q2 = item2.parts?.[key] ?? 0;
+      parts[key] = q1 + q2;
+    }
 
-  if (isLemonOrLime) {
-    const j1 = item1.juiceQty !== undefined ? item1.juiceQty : 0;
-    const z1 = item1.zestWholeQty !== undefined ? item1.zestWholeQty : (item1.juiceQty === undefined ? (item1.qty || 0) : 0);
-    const j2 = item2.juiceQty !== undefined ? item2.juiceQty : 0;
-    const z2 = item2.zestWholeQty !== undefined ? item2.zestWholeQty : (item2.juiceQty === undefined ? (item2.qty || 0) : 0);
+    const maxParts1 = item1.parts && Object.keys(item1.parts).length > 0
+      ? Math.max(...Object.values(item1.parts).map(v => v ?? 0))
+      : 0;
+    const diff1 = Math.max(0, (item1.qty ?? 0) - maxParts1);
 
-    const totalJuice = j1 + j2;
-    const totalZestWhole = z1 + z2;
-    qty = Math.max(totalJuice, totalZestWhole);
-    juiceQty = totalJuice;
-    zestWholeQty = totalZestWhole;
+    const maxParts2 = item2.parts && Object.keys(item2.parts).length > 0
+      ? Math.max(...Object.values(item2.parts).map(v => v ?? 0))
+      : 0;
+    const diff2 = Math.max(0, (item2.qty ?? 0) - maxParts2);
+
+    const totalDiff = diff1 + diff2;
+    const maxMergedParts = Object.keys(parts).length > 0
+      ? Math.max(...Object.values(parts).map(v => v ?? 0))
+      : 0;
+    qty = maxMergedParts + totalDiff;
   } else {
     if (item1.qty !== null && item2.qty !== null) {
       qty = item1.qty + item2.qty;
@@ -123,25 +99,7 @@ export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): Sh
 
   let unit = item1.unit;
   if (qty !== null && qty > 1) {
-    const plurals: Record<string, string> = {
-      lemon: 'lemons',
-      lime: 'limes',
-      head: 'heads',
-      root: 'roots',
-      can: 'cans',
-      bundle: 'bundles',
-      bottle: 'bottles',
-      jar: 'jars',
-      box: 'boxes',
-      package: 'packages',
-      container: 'containers',
-      'quart (32 fl oz)': 'quarts (32 fl oz)',
-      'quart (32 oz)': 'quarts (32 oz)',
-      'pint (16 fl oz)': 'pints (16 fl oz)',
-      'pint (16 oz)': 'pints (16 oz)',
-      'half-pint (8 oz)': 'half-pints (8 oz)'
-    };
-    unit = plurals[unit] || unit;
+    unit = getPluralizedUnit(unit);
   } else if (qty !== null && qty <= 1) {
     unit = getSingularUnit(unit);
   }
@@ -172,14 +130,11 @@ export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): Sh
     }
   }
 
-  let note = '';
-  if (item1.note && item2.note) {
-    const arr1 = parseNoteToArray(item1.note);
-    const arr2 = parseNoteToArray(item2.note);
-    const mergedArr = mergeNotesArrays(arr1, arr2);
-    note = formatNotesArray(mergedArr);
+  let note: NoteItem[] = [];
+  if (item1.note.length && item2.note.length) {
+    note = mergeNotesArrays(item1.note, item2.note);
   } else {
-    note = item1.note || item2.note || '';
+    note = [...item1.note, ...item2.note];
   }
 
   let isStaple = item1.isStaple && item2.isStaple;
@@ -193,8 +148,7 @@ export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): Sh
     rest,
     note,
     isStaple,
-    juiceQty,
-    zestWholeQty
+    parts
   };
 }
 
@@ -249,10 +203,10 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
         });
       } else if (allVolume) {
         let smallestUnit = items[0].unit;
-        let smallestFactor = TO_TEASPOONS[getSingularUnit(smallestUnit).toLowerCase()] || 999999;
+        let smallestFactor = TO_TEASPOONS[getSingularUnit(smallestUnit)] || 999999;
 
         items.forEach(it => {
-          const sing = getSingularUnit(it.unit).toLowerCase();
+          const sing = getSingularUnit(it.unit);
           const factor = TO_TEASPOONS[sing] || 999999;
           if (factor < smallestFactor) {
             smallestFactor = factor;
@@ -293,20 +247,27 @@ function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
   return merged;
 }
 
+
+
 /**
- * Serializes merged note arrays back into formatted, abbreviated instruction strings prefixing 'need'.
+ * Deduplicates and aggregates converted shopping items by their package keys,
+ * merging quantities and notes for duplicates.
  */
-function formatNotesArray(arr: NoteItem[]): string {
-  const measParts = arr.map(item => {
-    if (item.qty === null) return item.rest;
-    const formattedQty = formatCookingNumber(item.qty);
-    const displayUnit = item.unit ? ' ' + item.unit : '';
-    const displayRest = item.rest ? ' ' + item.rest : '';
-    const displayExp = item.explanation ? ` (${item.explanation})` : '';
-    return `${formattedQty}${displayUnit}${displayRest}${displayExp}`;
+export function getMergedShoppingItems(items: ShoppingItem[]): ShoppingItem[] {
+  const mergedMap = new Map<string, ShoppingItem>();
+
+  items.forEach(item => {
+    const key = getShoppingItemKey(item.unit, item.rest);
+
+    const existing = mergedMap.get(key);
+    if (existing) {
+      mergedMap.set(key, mergeShoppingItems(existing, item));
+    } else {
+      mergedMap.set(key, item);
+    }
   });
 
-  return abbreviateNote('need ' + measParts.join(' + '));
+  return [...mergedMap.values()];
 }
 
 export interface ProcessedShoppingList {
@@ -320,56 +281,14 @@ export interface ProcessedShoppingList {
  */
 export function processShoppingList(
   scale: number,
-  rawItems: NodeListOf<HTMLElement> | HTMLElement[] | null = null
+  elements: NodeListOf<HTMLElement> | HTMLElement[]
 ): ProcessedShoppingList {
-  const items = rawItems || document.querySelectorAll<HTMLElement>('.recipe-ingredient');
-  const rawIngredients = getMergedIngredients(scale, items);
-  const convertedItems = rawIngredients.map(item => convertIngredient(item));
+  const ingredients = getIngredients(scale, elements);
+  const shoppingItems = ingredients.map(item => convertIngredient(item));
+  const mergedShoppingItems = getMergedShoppingItems(shoppingItems);
 
-  const convertedMap = new Map<string, ShoppingItem>();
-  convertedItems.forEach(converted => {
-    let normUnit = getSingularUnit(converted.unit);
-    let restKey = converted.rest.toLowerCase().trim();
-
-    const isLemon = (normUnit === 'lemon') || (restKey.includes('lemon') && !restKey.includes('extract') && !restKey.includes('grass') && !restKey.includes('pepper'));
-    const isLime = (normUnit === 'lime') || (restKey.includes('lime') && !restKey.includes('extract') && !restKey.includes('leaf') && !restKey.includes('leaves'));
-
-    if (isLemon) {
-      normUnit = '';
-      restKey = 'lemons';
-    } else if (isLime) {
-      normUnit = '';
-      restKey = 'limes';
-    }
-
-    const key = `${normUnit}_${restKey}`;
-
-    const existing = convertedMap.get(key);
-    if (existing) {
-      convertedMap.set(key, mergeShoppingItems(existing, converted));
-    } else {
-      convertedMap.set(key, converted);
-    }
-  });
-
-  const finalItems = [...convertedMap.values()];
-
-  const buyItems: ShoppingItem[] = [];
-  const stapleItems: ShoppingItem[] = [];
-
-  finalItems.forEach(converted => {
-    if (converted.isStaple) {
-      converted.note = '';
-    } else if (converted.note) {
-      converted.note = abbreviateNote(converted.note);
-    }
-
-    if (converted.isStaple) {
-      stapleItems.push(converted);
-    } else {
-      buyItems.push(converted);
-    }
-  });
+  const stapleItems = mergedShoppingItems.filter(item => item.isStaple);
+  const buyItems = mergedShoppingItems.filter(item => !item.isStaple);
 
   return { buyItems, stapleItems };
 }

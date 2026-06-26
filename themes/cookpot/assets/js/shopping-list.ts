@@ -1,6 +1,7 @@
 import { formatCookingNumber } from './scaler';
 import { processShoppingList } from './shopping-list/pipeline';
 import { ShoppingItem } from './shopping-list/converters';
+import { formatNotesArray } from './shopping-list/utils';
 
 /**
  * Initializes the shopping list feature: selects DOM elements, sets up initial
@@ -104,7 +105,8 @@ export function initShoppingList(): void {
     buyList!.innerHTML = '';
     staplesList!.innerHTML = '';
 
-    const { buyItems, stapleItems } = processShoppingList(scale);
+    const elements = document.querySelectorAll<HTMLElement>('.recipe-ingredient');
+    const { buyItems, stapleItems } = processShoppingList(scale, elements);
 
     const hasBuyItems = buyItems.length > 0;
     const hasStaples = stapleItems.length > 0;
@@ -153,13 +155,13 @@ export function initShoppingList(): void {
     mainRow.textContent = `${qtyStr ? qtyStr + ' ' : ''}${item.rest}`;
     li.appendChild(mainRow);
 
-    if (item.note) {
+    if (item.note && item.note.length > 0) {
       const details = document.createElement('div');
       details.className = 'shopping-item-details';
       
       const noteSpan = document.createElement('span');
       noteSpan.className = 'shopping-item-note';
-      noteSpan.textContent = item.note;
+      noteSpan.textContent = formatNotesArray(item.note, !item.isStaple);
       details.appendChild(noteSpan);
       li.appendChild(details);
     }

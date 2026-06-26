@@ -1,14 +1,81 @@
-export const STAPLES: string[] = [
-  'salt', 'pepper', 'olive oil', 'vegetable oil', 'canola oil', 'cooking spray',
-  'sugar', 'flour', 'baking powder', 'baking soda', 'vanilla extract', 'cornstarch',
-  'yeast', 'paprika', 'cumin', 'garlic powder', 'onion powder', 'oregano', 'thyme',
-  'rosemary', 'cayenne', 'chili powder', 'cinnamon', 'nutmeg', 'ginger powder',
-  'ground ginger', 'turmeric', 'coriander', 'cardamom', 'cloves powder', 'allspice',
-  'mustard powder', 'parsley', 'basil', 'sage', 'lemon juice', 'lime juice', 'butter', 'water'
+export interface StringMatchConfig {
+  match: string | string[];
+  excludeIf?: string[];
+  keepIf?: string[];
+}
+
+export const STAPLES: StringMatchConfig[] = [
+  { match: 'salt' },
+  {
+    match: 'pepper',
+    excludeIf: [
+      'bell', 'jalapeno', 'serrano', 'habanero', 'poblano',
+      'banana', 'chili', 'chilli', 'red', 'green', 'yellow',
+      'orange', 'roasted', 'sweet'
+    ],
+    keepIf: ['powder', 'flakes', 'ground', 'cayenne']
+  },
+  { match: 'olive oil' },
+  { match: 'vegetable oil' },
+  { match: 'canola oil' },
+  { match: 'cooking spray' },
+  { match: 'sugar' },
+  { match: 'flour' },
+  { match: 'baking powder' },
+  { match: 'baking soda' },
+  { match: 'vanilla extract' },
+  { match: 'cornstarch' },
+  { match: 'yeast' },
+  { match: 'paprika' },
+  { match: 'cumin' },
+  { match: 'garlic powder' },
+  { match: 'onion powder' },
+  { match: 'oregano' },
+  { match: 'thyme' },
+  { match: 'rosemary' },
+  { match: 'cayenne' },
+  { match: 'chili powder' },
+  { match: 'cinnamon' },
+  { match: 'nutmeg' },
+  { match: 'ginger powder' },
+  { match: 'ground ginger' },
+  { match: 'turmeric' },
+  { match: 'coriander' },
+  { match: 'cardamom' },
+  { match: 'cloves powder' },
+  { match: 'allspice' },
+  { match: 'mustard powder' },
+  { match: 'parsley' },
+  { match: 'basil' },
+  {
+    match: 'sage',
+    excludeIf: ['sausage']
+  },
+  {
+    match: 'lemon juice',
+    excludeIf: ['fresh', 'squeezed']
+  },
+  {
+    match: 'lime juice',
+    excludeIf: ['fresh', 'squeezed']
+  },
+  {
+    match: 'butter',
+    excludeIf: [
+      'peanut', 'almond', 'beans', 'milk', 'squash',
+      'butternut', 'lettuce', 'pickles'
+    ]
+  },
+  { match: 'water' }
 ];
 
 export const VOLUME_UNITS: string[] = [
   'cup', 'cups', 'tablespoon', 'tablespoons', 'tbsp', 'teaspoon', 'teaspoons', 'tsp', 'ounce', 'ounces', 'oz', 'ml'
+];
+
+export const OTHER_UNITS: string[] = [
+  'pound', 'pounds', 'lb', 'lbs', 'clove', 'cloves', 'can', 'cans', 'gram', 'grams', 'g', 'small', 'large', 'medium',
+  'head', 'heads', 'bulb', 'bulbs'
 ];
 
 export const TO_TEASPOONS: Record<string, number> = {
@@ -21,6 +88,7 @@ export const TO_TEASPOONS: Record<string, number> = {
   cup: 48,
   ml: 0.202884
 };
+
 export const PREP_KEYWORDS: string[] = [
   'minced', 'diced', 'chopped', 'sliced', 'grated', 'crushed', 'shredded', 'toasted', 'melted',
   'softened', 'beaten', 'mashed', 'julienned', 'drained', 'wedge', 'wedges', 'divided', 'grate',
@@ -31,3 +99,27 @@ export const SKIP_TERMS: string[] = [
   'pasta water', 'cooking water', 'reserved water'
 ];
 
+export interface ShoppingItemKeyOverride {
+  matchUnit: string;
+  matchRest: StringMatchConfig;
+  key: string;
+}
+
+export const SHOPPING_ITEM_KEY_OVERRIDES: ShoppingItemKeyOverride[] = [
+  {
+    matchUnit: 'lemon',
+    matchRest: {
+      match: 'lemon',
+      excludeIf: ['extract', 'grass', 'pepper']
+    },
+    key: '_lemons'
+  },
+  {
+    matchUnit: 'lime',
+    matchRest: {
+      match: 'lime',
+      excludeIf: ['extract', 'leaf', 'leaves']
+    },
+    key: '_limes'
+  }
+];

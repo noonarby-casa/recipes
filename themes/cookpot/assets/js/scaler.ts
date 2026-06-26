@@ -1,10 +1,17 @@
 import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from './constants';
+import { VOLUME_UNITS, OTHER_UNITS } from './shopping-list/config';
 
 export interface ParsedIngredient {
   quantity: number | null;
   unit: string;
   rest: string;
 }
+
+// Match common culinary units dynamically compiled from config arrays
+const ALL_UNITS = [...VOLUME_UNITS, ...OTHER_UNITS];
+const SORTED_UNITS = [...ALL_UNITS].sort((a, b) => b.length - a.length);
+const escapedUnits = SORTED_UNITS.map(u => u.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+const unitRegex = new RegExp(`^(${escapedUnits.join('|')})\\b`, 'i');
 
 // Helper to parse fractions (e.g., "1/2", "1 1/2") and decimals
 function parseNumeric(str: string): number {
@@ -40,8 +47,6 @@ export function parseIngredientText(text: string): ParsedIngredient {
   const quantity = parseNumeric(qtyStr);
   let remainder = text.slice(qtyStr.length).trim();
 
-  // Match common culinary units
-  const unitRegex = /^(ounces|ounce|pounds|pound|cups|cup|teaspoons|teaspoon|tablespoons|tablespoon|cloves|clove|cans|can|grams|gram|g|ml|small|large|medium)\b/i;
   const unitMatch = remainder.match(unitRegex);
 
   let unit = '';
@@ -135,21 +140,17 @@ export function initScaler(): void {
   ingredients.forEach(el => {
     const rawText = el.textContent || '';
     const parsed = parseIngredientText(rawText);
-    if (parsed.quantity !== null) {
-      el.dataset.baseQty = parsed.quantity.toString();
-      el.dataset.unit = parsed.unit;
-      el.dataset.rest = parsed.rest;
-    }
+    el.dataset.baseQty = parsed.quantity !== null ? parsed.quantity.toString() : '';
+    el.dataset.unit = parsed.unit;
+    el.dataset.rest = parsed.rest;
   });
 
   // Pre-parse and store base metrics for each instruction step inline quantity
   quantities.forEach(el => {
     const rawText = el.dataset.baseText || el.textContent || '';
     const parsed = parseIngredientText(rawText);
-    if (parsed.quantity !== null) {
-      el.dataset.baseQty = parsed.quantity.toString();
-      el.dataset.unit = parsed.unit;
-    }
+    el.dataset.baseQty = parsed.quantity !== null ? parsed.quantity.toString() : '';
+    el.dataset.unit = parsed.unit;
   });
 
   function updateRecipeScale(factor: number): void {
