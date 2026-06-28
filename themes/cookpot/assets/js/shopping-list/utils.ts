@@ -1,6 +1,6 @@
 import { formatCookingNumber, getAdaptiveUnit } from '../scaler';
 import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from '../constants';
-import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS, SKIP_TERMS, StringMatchConfig, ShoppingItemKeyOverride, SHOPPING_ITEM_KEY_OVERRIDES } from './config';
+import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS, SKIP_TERMS, StringMatchConfig } from './config';
 export { StringMatchConfig };
 
 export interface BaseIngredient {
@@ -19,6 +19,27 @@ export interface FixedIngredient extends BaseIngredient {
 }
 
 export type Ingredient = ScalableIngredient | FixedIngredient;
+
+export interface ConverterContext {
+  scaledQty: number;
+  unit: string;
+  unitLower: string;
+  rest: string;
+  restLower: string;
+  prep: string;
+  prepLower: string;
+  isStaple: boolean;
+}
+
+export interface ShoppingItem {
+  qty: number | null;
+  unit: string;
+  rest: string;
+  notes?: Record<string, NoteItem[]>;
+  note?: NoteItem[];
+  isStaple: boolean;
+  parts?: { [partName: string]: number };
+}
 
 export interface NoteItem {
   prefix: string;
@@ -199,15 +220,27 @@ export function parseMeasString(str: string): ParsedMeas {
 }
 
 /**
- * Returns a stick conversion explanation note for butter depending on the target unit.
+ * Returns a pack conversion explanation note (e.g. stick or box conversions) depending on the target unit.
  */
-export function getButterExplanation(unit: string): string {
-  const u = unit.toLowerCase();
-  if (u.includes('tablespoon') || u.includes('tbsp')) return '1 stick = 8 tbsp';
-  if (u.includes('teaspoon') || u.includes('tsp')) return '1 stick = 24 tsp';
-  if (u.includes('pound') || u.includes('lb')) return '1 stick = 1/4 lb';
-  if (u.includes('ounce') || u.includes('oz')) return '1 stick = 4 oz';
-  return '1 stick = 1/2 cup';
+export function getPackExplanation(packUnit: string, targetUnit: string): string {
+  const pack = packUnit.toLowerCase().trim();
+  const target = targetUnit.toLowerCase().trim();
+
+  if (pack.includes('stick')) {
+    if (target.includes('tablespoon') || target.includes('tbsp')) return '1 stick = 8 tbsp';
+    if (target.includes('teaspoon') || target.includes('tsp')) return '1 stick = 24 tsp';
+    if (target.includes('pound') || target.includes('lb')) return '1 stick = 1/4 lb';
+    if (target.includes('ounce') || target.includes('oz')) return '1 stick = 4 oz';
+    return '1 stick = 1/2 cup';
+  }
+
+  if (pack.includes('box')) {
+    if (target.includes('ounce') || target.includes('oz')) return '1 box = 16 oz';
+    if (target.includes('gram') || target.includes('g')) return '1 box = 454 g';
+    return '1 box = 1 lb';
+  }
+
+  return '';
 }
 
 /**
@@ -224,45 +257,30 @@ export function abbreviateNote(note: string): string {
 }
 
 /**
- * Helper to match a text or array of texts against a StringMatchConfig (supporting match, excludeIf, and keepIf terms).
+ * Helper to match a text or array of texts against a StringMatchConfig.
+ * Assumes the StringMatchConfig fields (match, excludeIf, keepIf) are already lowercase.
  */
 export function matchesConfig(text: string | string[], config: StringMatchConfig): boolean {
   const texts = Array.isArray(text) ? text : [text];
   const textLowers = texts.map(t => t.toLowerCase());
 
   const matchArray = Array.isArray(config.match) ? config.match : [config.match];
-  const hasMatch = matchArray.some(pattern => {
-    const patLower = pattern.toLowerCase();
-    return textLowers.some(t => t.includes(patLower));
-  });
+  const hasMatch = matchArray.some(pattern => textLowers.some(t => t.includes(pattern)));
 
   if (!hasMatch) {
     return false;
   }
 
-  const hasExclusion = config.excludeIf?.some(term => {
-    const termLower = term.toLowerCase();
-    return textLowers.some(t => t.includes(termLower));
-  }) ?? false;
+  const hasExclusion = config.excludeIf?.some(term => textLowers.some(t => t.includes(term))) ?? false;
 
   if (hasExclusion) {
-    const hasKeep = config.keepIf?.some(term => {
-      const termLower = term.toLowerCase();
-      return textLowers.some(t => t.includes(termLower));
-    }) ?? false;
+    const hasKeep = config.keepIf?.some(term => textLowers.some(t => t.includes(term))) ?? false;
     if (!hasKeep) {
       return false;
     }
   }
 
   return true;
-}
-
-/**
- * Determines staple status for an ingredient name, excluding fresh peppers, non-dairy butter, and fresh citrus juice.
- */
-export function checkIsStaple(nameLower: string): boolean {
-  return STAPLES.some(entry => matchesConfig(nameLower, entry));
 }
 
 /**
@@ -279,32 +297,6 @@ export function shouldSkipIngredient(text: string): boolean {
  */
 export function buildMapKey(unit: string, name: string): string {
   return `${getSingularUnit(unit)}_${name.toLowerCase().trim()}`;
-}
-
-/**
- * Generates a unique aggregation key for an ingredient pre-conversion,
- * applying a garlic-specific override to separate minced garlic.
- */
-export function getIngredientKey(unit: string, rest: string, prep: string): string {
-  const isMincedGarlic = rest.toLowerCase().includes('garlic') && prep === 'minced';
-  const baseKey = buildMapKey(unit, rest);
-  return isMincedGarlic ? `${baseKey}_minced` : baseKey;
-}
-
-/**
- * Generates a unique aggregation key for a shopping item post-conversion,
- * consolidating lemons and limes.
- */
-export function getShoppingItemKey(unit: string, rest: string): string {
-  const normUnit = getSingularUnit(unit);
-  const restLower = rest.toLowerCase().trim();
-
-  for (const override of SHOPPING_ITEM_KEY_OVERRIDES) {
-    if (normUnit === override.matchUnit || matchesConfig(restLower, override.matchRest)) {
-      return override.key;
-    }
-  }
-  return buildMapKey(unit, rest);
 }
 
 /**

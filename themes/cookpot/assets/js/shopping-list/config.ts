@@ -1,8 +1,13 @@
+/**
+ * Configuration options for text matching. All pattern strings (match, excludeIf, keepIf)
+ * MUST be defined in lowercase.
+ */
 export interface StringMatchConfig {
   match: string | string[];
   excludeIf?: string[];
   keepIf?: string[];
 }
+
 
 export const STAPLES: StringMatchConfig[] = [
   { match: 'salt' },
@@ -59,13 +64,6 @@ export const STAPLES: StringMatchConfig[] = [
     match: 'lime juice',
     excludeIf: ['fresh', 'squeezed']
   },
-  {
-    match: 'butter',
-    excludeIf: [
-      'peanut', 'almond', 'beans', 'milk', 'squash',
-      'butternut', 'lettuce', 'pickles'
-    ]
-  },
   { match: 'water' }
 ];
 
@@ -97,29 +95,4 @@ export const PREP_KEYWORDS: string[] = [
 
 export const SKIP_TERMS: string[] = [
   'pasta water', 'cooking water', 'reserved water'
-];
-
-export interface ShoppingItemKeyOverride {
-  matchUnit: string;
-  matchRest: StringMatchConfig;
-  key: string;
-}
-
-export const SHOPPING_ITEM_KEY_OVERRIDES: ShoppingItemKeyOverride[] = [
-  {
-    matchUnit: 'lemon',
-    matchRest: {
-      match: 'lemon',
-      excludeIf: ['extract', 'grass', 'pepper']
-    },
-    key: '_lemons'
-  },
-  {
-    matchUnit: 'lime',
-    matchRest: {
-      match: 'lime',
-      excludeIf: ['extract', 'leaf', 'leaves']
-    },
-    key: '_limes'
-  }
 ];

@@ -1,6 +1,8 @@
-import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPluralizedUnit, getButterExplanation, convertVolume, NoteItem, shouldSkipIngredient, Ingredient, ScalableIngredient, getIngredientKey, getShoppingItemKey, formatNotesArray } from './utils';
+import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPackExplanation, convertVolume, NoteItem, shouldSkipIngredient, Ingredient, ScalableIngredient, formatNotesArray } from './utils';
 import { convertIngredient, ShoppingItem } from './converters';
 import { TO_TEASPOONS } from './config';
+import { getAdaptiveUnit } from '../scaler';
+import { getIngredientKey, getShoppingItemKey, findRule } from './rules';
 
 /**
  * Extracts raw ingredients from DOM element attributes or text content, cleans preparation
@@ -53,201 +55,142 @@ export function getIngredients(
 }
 
 /**
+ * Calculates the quantity of a shopping item that is not used for parts.
+ */
+function getWholeQty(item: ShoppingItem): number {
+  const parts = Object.values(item.parts || {});
+  const maxPart = Math.max(...parts, 0);
+  return Math.max(0, (item.qty ?? 0) - maxPart);
+}
+
+/**
  * Combines two converted commercial package items of matching types, aggregating quantities,
  * correcting pluralized units, and merging explanation notes.
  */
 export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): ShoppingItem {
   let qty: number | null = null;
-  let parts: { [key: string]: number | undefined } | undefined = undefined;
+  let parts: { [key: string]: number } | undefined = undefined;
 
   if (item1.parts || item2.parts) {
     parts = {};
-    const keys = new Set([
-      ...Object.keys(item1.parts || {}),
-      ...Object.keys(item2.parts || {})
-    ]);
-    for (const key of keys) {
-      const q1 = item1.parts?.[key] ?? 0;
-      const q2 = item2.parts?.[key] ?? 0;
-      parts[key] = q1 + q2;
+    for (const [key, val] of Object.entries(item1.parts || {})) {
+      parts[key] = (parts[key] ?? 0) + val;
+    }
+    for (const [key, val] of Object.entries(item2.parts || {})) {
+      parts[key] = (parts[key] ?? 0) + val;
     }
 
-    const maxParts1 = item1.parts && Object.keys(item1.parts).length > 0
-      ? Math.max(...Object.values(item1.parts).map(v => v ?? 0))
-      : 0;
-    const diff1 = Math.max(0, (item1.qty ?? 0) - maxParts1);
-
-    const maxParts2 = item2.parts && Object.keys(item2.parts).length > 0
-      ? Math.max(...Object.values(item2.parts).map(v => v ?? 0))
-      : 0;
-    const diff2 = Math.max(0, (item2.qty ?? 0) - maxParts2);
-
-    const totalDiff = diff1 + diff2;
-    const maxMergedParts = Object.keys(parts).length > 0
-      ? Math.max(...Object.values(parts).map(v => v ?? 0))
-      : 0;
-    qty = maxMergedParts + totalDiff;
+    const whole1 = getWholeQty(item1);
+    const whole2 = getWholeQty(item2);
+    const maxFromParts = Math.max(...Object.values(parts), 0);
+    qty = maxFromParts + whole1 + whole2;
   } else {
-    if (item1.qty !== null && item2.qty !== null) {
-      qty = item1.qty + item2.qty;
-    } else if (item1.qty !== null) {
-      qty = item1.qty;
-    } else if (item2.qty !== null) {
-      qty = item2.qty;
-    }
+    qty = (item1.qty !== null || item2.qty !== null)
+      ? (item1.qty ?? 0) + (item2.qty ?? 0)
+      : null;
   }
 
-  let unit = item1.unit;
-  if (qty !== null && qty > 1) {
-    unit = getPluralizedUnit(unit);
-  } else if (qty !== null && qty <= 1) {
-    unit = getSingularUnit(unit);
-  }
-
-  const isItem1Lemon = item1.rest.toLowerCase().includes('lemon') || item1.unit.toLowerCase().includes('lemon');
-  const isItem2Lemon = item2.rest.toLowerCase().includes('lemon') || item2.unit.toLowerCase().includes('lemon');
-  const isItem1Lime = item1.rest.toLowerCase().includes('lime') || item1.unit.toLowerCase().includes('lime');
-  const isItem2Lime = item2.rest.toLowerCase().includes('lime') || item2.unit.toLowerCase().includes('lime');
-
+  let unit = getAdaptiveUnit(qty, item1.unit);
   let rest = item1.rest;
-  if (isItem1Lemon && isItem2Lemon) {
-    if (item1.rest !== item2.rest) {
-      rest = item1.rest === 'for juice' ? item2.rest : item1.rest;
-      unit = '';
-    }
-  } else if (isItem1Lime && isItem2Lime) {
-    if (item1.rest !== item2.rest) {
-      rest = item1.rest === 'for juice' ? item2.rest : item1.rest;
-      unit = '';
-    }
-  }
-
   if (unit === '') {
-    if (qty !== null && qty > 1) {
-      rest = rest.replace(/\blemon\b/gi, 'lemons').replace(/\blime\b/gi, 'limes');
-    } else if (qty !== null) {
-      rest = rest.replace(/\blemons\b/gi, 'lemon').replace(/\blimes\b/gi, 'lime');
-    }
+    rest = getAdaptiveUnit(qty, rest);
   }
 
-  let note: NoteItem[] = [];
-  if (item1.note.length && item2.note.length) {
-    note = mergeNotesArrays(item1.note, item2.note);
-  } else {
-    note = [...item1.note, ...item2.note];
+  const notes: Record<string, NoteItem[]> = { ...(item1.notes || {}) };
+  for (const [key, arr2] of Object.entries(item2.notes || {})) {
+    notes[key] = [...(notes[key] || []), ...arr2];
   }
 
-  let isStaple = item1.isStaple && item2.isStaple;
-  if (rest.toLowerCase() === 'butter' && (unit === 'stick' || unit === 'sticks')) {
-    isStaple = qty !== null && qty < 4;
-  }
+  const isStaple = item1.isStaple && item2.isStaple;
 
   return {
     qty,
     unit,
     rest,
-    note,
+    notes,
     isStaple,
     parts
   };
 }
 
 /**
- * Combines note collections by grouping matching text tags, normalizing units to the smallest unit,
- * and aggregating numeric values.
+ * Normalizes and aggregates note items of the same sub-ingredient/purpose,
+ * converting units to the smallest compatible unit.
  */
-function mergeNotesArrays(arr1: NoteItem[], arr2: NoteItem[]): NoteItem[] {
-  const merged: NoteItem[] = [];
-  const temp = [...arr1, ...arr2];
+function normalizeNotesGroup(items: NoteItem[]): NoteItem[] {
+  if (items.length === 0) return [];
+  if (items.length === 1) return [items[0]];
 
-  const groups = new Map<string, NoteItem[]>();
-  temp.forEach(item => {
-    const key = `${item.rest.trim()}`;
-    const existing = groups.get(key);
-    if (existing) {
-      existing.push(item);
-    } else {
-      groups.set(key, [item]);
+  const firstSingular = getSingularUnit(items[0].unit);
+  const sameUnit = items.every(it => getSingularUnit(it.unit) === firstSingular);
+  const allVolume = items.every(it => it.unit && isVolumeUnit(it.unit) && it.qty !== null);
+
+  if (sameUnit || allVolume) {
+    let targetSingular = firstSingular;
+    if (!sameUnit && allVolume) {
+      items.forEach(it => {
+        const sing = getSingularUnit(it.unit);
+        if ((TO_TEASPOONS[sing] || 999999) < (TO_TEASPOONS[targetSingular] || 999999)) {
+          targetSingular = sing;
+        }
+      });
     }
-  });
 
-  for (const [key, items] of groups.entries()) {
-    if (items.length === 1) {
-      merged.push(items[0]);
-    } else {
-      const firstUnit = getSingularUnit(items[0].unit);
-      const sameUnit = items.every(it => getSingularUnit(it.unit) === firstUnit);
-      const allVolume = items.every(it => it.unit && isVolumeUnit(it.unit) && it.qty !== null);
-
-      if (sameUnit) {
-        let totalQty = 0;
-        items.forEach(it => {
-          if (it.qty !== null) totalQty += it.qty;
-        });
-
-        let explanation = '';
-        const isButter = items.some(it => it.explanation && (it.explanation.includes('stick') || it.explanation.includes('lb')));
-        if (isButter) {
-          explanation = getButterExplanation(firstUnit);
-        } else {
-          const found = items.find(it => it.explanation);
-          if (found) explanation = found.explanation;
-        }
-
-        merged.push({
-          prefix: '',
-          qty: totalQty,
-          unit: totalQty > 1 ? getPluralizedUnit(firstUnit) : firstUnit,
-          rest: items[0].rest,
-          explanation: explanation
-        });
-      } else if (allVolume) {
-        let smallestUnit = items[0].unit;
-        let smallestFactor = TO_TEASPOONS[getSingularUnit(smallestUnit)] || 999999;
-
-        items.forEach(it => {
-          const sing = getSingularUnit(it.unit);
-          const factor = TO_TEASPOONS[sing] || 999999;
-          if (factor < smallestFactor) {
-            smallestFactor = factor;
-            smallestUnit = it.unit;
-          }
-        });
-
-        const targetSingular = getSingularUnit(smallestUnit);
-        let totalQty = 0;
-        items.forEach(it => {
-          if (it.qty !== null) {
-            totalQty += convertVolume(it.qty, it.unit, targetSingular);
-          }
-        });
-
-        let explanation = '';
-        const isButter = items.some(it => it.explanation && (it.explanation.includes('stick') || it.explanation.includes('lb')));
-        if (isButter) {
-          explanation = getButterExplanation(targetSingular);
-        } else {
-          const found = items.find(it => it.explanation);
-          if (found) explanation = found.explanation;
-        }
-
-        merged.push({
-          prefix: '',
-          qty: totalQty,
-          unit: totalQty > 1 ? getPluralizedUnit(targetSingular) : targetSingular,
-          rest: items[0].rest,
-          explanation: explanation
-        });
-      } else {
-        items.forEach(it => merged.push(it));
+    let totalQty = 0;
+    items.forEach(it => {
+      if (it.qty !== null) {
+        totalQty += sameUnit ? it.qty : convertVolume(it.qty, it.unit, targetSingular);
       }
+    });
+
+    let explanation = '';
+    const foundExp = items.find(it => it.explanation);
+    if (foundExp && foundExp.explanation) {
+      const match = foundExp.explanation.match(/^1\s+(\w+)\b/);
+      const packUnit = match ? match[1] : '';
+      explanation = getPackExplanation(packUnit, targetSingular) || foundExp.explanation;
+    }
+
+    return [{
+      prefix: '',
+      qty: totalQty,
+      unit: getAdaptiveUnit(totalQty, targetSingular),
+      rest: items[0].rest,
+      explanation
+    }];
+  }
+
+  return items;
+}
+
+/**
+ * Finalizes a shopping item by re-evaluating staple status and flattening notes for rendering.
+ */
+function finalizeItem(item: ShoppingItem): ShoppingItem {
+  // 1. Re-evaluate staple status using rules
+  let isStaple = item.isStaple;
+  const rule = findRule(item.rest);
+  if (rule && typeof rule.isStaple === 'function') {
+    isStaple = rule.isStaple(item.qty, item.unit);
+  }
+
+  // 2. Flatten notes
+  const note: NoteItem[] = [];
+  if (item.notes) {
+    for (const notesArray of Object.values(item.notes)) {
+      note.push(...normalizeNotesGroup(notesArray));
     }
   }
 
-  return merged;
+  return {
+    qty: item.qty,
+    unit: item.unit,
+    rest: item.rest,
+    note,
+    isStaple,
+    parts: item.parts
+  };
 }
-
-
 
 /**
  * Deduplicates and aggregates converted shopping items by their package keys,
@@ -286,9 +229,10 @@ export function processShoppingList(
   const ingredients = getIngredients(scale, elements);
   const shoppingItems = ingredients.map(item => convertIngredient(item));
   const mergedShoppingItems = getMergedShoppingItems(shoppingItems);
+  const finalizedItems = mergedShoppingItems.map(finalizeItem);
 
-  const stapleItems = mergedShoppingItems.filter(item => item.isStaple);
-  const buyItems = mergedShoppingItems.filter(item => !item.isStaple);
+  const stapleItems = finalizedItems.filter(item => item.isStaple);
+  const buyItems = finalizedItems.filter(item => !item.isStaple);
 
   return { buyItems, stapleItems };
 }

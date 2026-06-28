@@ -63,8 +63,9 @@ export function parseIngredientText(text: string): ParsedIngredient {
 }
 
 // Pluralization engine
-export function getAdaptiveUnit(qty: number, unit: string): string {
+export function getAdaptiveUnit(qty: number | null, unit: string): string {
   if (!unit) return '';
+  if (qty === null) return unit;
   const lowerUnit = unit.toLowerCase();
   
   // If quantity is less than or equal to 1, return singular form
