@@ -11,54 +11,7 @@ export interface IngredientRule {
   convert?: (ctx: ConverterContext) => ShoppingItem | null;
 }
 
-// Helpers used inside the converters
-function createNote(qty: number | null, unit: string, explanation = '', rest = ''): Record<string, NoteItem[]> {
-  const adaptiveUnit = getAdaptiveUnit(qty, unit);
-  const adaptiveRest = getAdaptiveUnit(qty, rest);
-  const key = rest.toLowerCase().trim() || 'default';
-  return {
-    [key]: [{ prefix: '', qty, unit: adaptiveUnit, rest: adaptiveRest, explanation }]
-  };
-}
 
-function hasUnit(unitLower: string, keywords: string[]): boolean {
-  return keywords.some(k => unitLower.includes(k));
-}
-
-function match<T>(
-  str: string,
-  mappings: [string[], T][],
-  defaultValue: T
-): T {
-  for (const [keywords, value] of mappings) {
-    if (keywords.some(k => str.includes(k))) {
-      return value;
-    }
-  }
-  return defaultValue;
-}
-
-function range<T>(
-  val: number,
-  mappings: [number, T][],
-  defaultValue: T
-): T {
-  for (const [limit, value] of mappings) {
-    if (val <= limit) {
-      return value;
-    }
-  }
-  return defaultValue;
-}
-
-function replaceTerms(text: string, replacements: Record<string, string>): string {
-  let result = text;
-  for (const [pattern, replacement] of Object.entries(replacements)) {
-    const regex = new RegExp(`\\b${pattern}\\b`, 'gi');
-    result = result.replace(regex, replacement);
-  }
-  return result;
-}
 
 export const INGREDIENT_RULES: IngredientRule[] = [
   // 1. Garlic
@@ -505,4 +458,53 @@ export function getShoppingItemKey(unit: string, rest: string): string {
     }
   }
   return buildMapKey(unit, rest);
+}
+
+// Helpers used inside the converters
+function createNote(qty: number | null, unit: string, explanation = '', rest = ''): Record<string, NoteItem[]> {
+  const adaptiveUnit = getAdaptiveUnit(qty, unit);
+  const adaptiveRest = getAdaptiveUnit(qty, rest);
+  const key = rest.toLowerCase().trim() || 'default';
+  return {
+    [key]: [{ prefix: '', qty, unit: adaptiveUnit, rest: adaptiveRest, explanation }]
+  };
+}
+
+function hasUnit(unitLower: string, keywords: string[]): boolean {
+  return keywords.some(k => unitLower.includes(k));
+}
+
+function match<T>(
+  str: string,
+  mappings: [string[], T][],
+  defaultValue: T
+): T {
+  for (const [keywords, value] of mappings) {
+    if (keywords.some(k => str.includes(k))) {
+      return value;
+    }
+  }
+  return defaultValue;
+}
+
+function range<T>(
+  val: number,
+  mappings: [number, T][],
+  defaultValue: T
+): T {
+  for (const [limit, value] of mappings) {
+    if (val <= limit) {
+      return value;
+    }
+  }
+  return defaultValue;
+}
+
+function replaceTerms(text: string, replacements: Record<string, string>): string {
+  let result = text;
+  for (const [pattern, replacement] of Object.entries(replacements)) {
+    const regex = new RegExp(`\\b${pattern}\\b`, 'gi');
+    result = result.replace(regex, replacement);
+  }
+  return result;
 }

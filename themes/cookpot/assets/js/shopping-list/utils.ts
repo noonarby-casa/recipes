@@ -55,6 +55,11 @@ export interface ParsedMeas {
   rest: string;
 }
 
+export interface CleanedPrepResult {
+  rest: string;
+  prep: string;
+}
+
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.
  */
@@ -94,11 +99,6 @@ export function convertVolume(qty: number, fromUnit: string, toUnit: string): nu
     return qty * (fromFactor / toFactor);
   }
   return qty;
-}
-
-export interface CleanedPrepResult {
-  rest: string;
-  prep: string;
 }
 
 /**

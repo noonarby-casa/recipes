@@ -4,6 +4,30 @@ import { TO_TEASPOONS } from './config';
 import { getAdaptiveUnit } from '../scaler';
 import { getIngredientKey, getShoppingItemKey, findRule } from './rules';
 
+export interface ProcessedShoppingList {
+  buyItems: ShoppingItem[];
+  stapleItems: ShoppingItem[];
+}
+
+/**
+ * Runs the complete processing pipeline on the recipe ingredients. Merges inputs,
+ * converts units, aggregates package duplicates, and splits results into buy list and staple list.
+ */
+export function processShoppingList(
+  scale: number,
+  elements: NodeListOf<HTMLElement> | HTMLElement[]
+): ProcessedShoppingList {
+  const ingredients = getIngredients(scale, elements);
+  const shoppingItems = ingredients.map(item => convertIngredient(item));
+  const mergedShoppingItems = getMergedShoppingItems(shoppingItems);
+  const finalizedItems = mergedShoppingItems.map(finalizeItem);
+
+  const stapleItems = finalizedItems.filter(item => item.isStaple);
+  const buyItems = finalizedItems.filter(item => !item.isStaple);
+
+  return { buyItems, stapleItems };
+}
+
 /**
  * Extracts raw ingredients from DOM element attributes or text content, cleans preparation
  * terms, scales their amounts, and aggregates items with matching name/unit.
@@ -55,12 +79,24 @@ export function getIngredients(
 }
 
 /**
- * Calculates the quantity of a shopping item that is not used for parts.
+ * Deduplicates and aggregates converted shopping items by their package keys,
+ * merging quantities and notes for duplicates.
  */
-function getWholeQty(item: ShoppingItem): number {
-  const parts = Object.values(item.parts || {});
-  const maxPart = Math.max(...parts, 0);
-  return Math.max(0, (item.qty ?? 0) - maxPart);
+export function getMergedShoppingItems(items: ShoppingItem[]): ShoppingItem[] {
+  const mergedMap = new Map<string, ShoppingItem>();
+
+  items.forEach(item => {
+    const key = getShoppingItemKey(item.unit, item.rest);
+
+    const existing = mergedMap.get(key);
+    if (existing) {
+      mergedMap.set(key, mergeShoppingItems(existing, item));
+    } else {
+      mergedMap.set(key, item);
+    }
+  });
+
+  return [...mergedMap.values()];
 }
 
 /**
@@ -110,6 +146,35 @@ export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): Sh
     notes,
     isStaple,
     parts
+  };
+}
+
+/**
+ * Finalizes a shopping item by re-evaluating staple status and flattening notes for rendering.
+ */
+function finalizeItem(item: ShoppingItem): ShoppingItem {
+  // 1. Re-evaluate staple status using rules
+  let isStaple = item.isStaple;
+  const rule = findRule(item.rest);
+  if (rule && typeof rule.isStaple === 'function') {
+    isStaple = rule.isStaple(item.qty, item.unit);
+  }
+
+  // 2. Flatten notes
+  const note: NoteItem[] = [];
+  if (item.notes) {
+    for (const notesArray of Object.values(item.notes)) {
+      note.push(...normalizeNotesGroup(notesArray));
+    }
+  }
+
+  return {
+    qty: item.qty,
+    unit: item.unit,
+    rest: item.rest,
+    note,
+    isStaple,
+    parts: item.parts
   };
 }
 
@@ -164,75 +229,10 @@ function normalizeNotesGroup(items: NoteItem[]): NoteItem[] {
 }
 
 /**
- * Finalizes a shopping item by re-evaluating staple status and flattening notes for rendering.
+ * Calculates the quantity of a shopping item that is not used for parts.
  */
-function finalizeItem(item: ShoppingItem): ShoppingItem {
-  // 1. Re-evaluate staple status using rules
-  let isStaple = item.isStaple;
-  const rule = findRule(item.rest);
-  if (rule && typeof rule.isStaple === 'function') {
-    isStaple = rule.isStaple(item.qty, item.unit);
-  }
-
-  // 2. Flatten notes
-  const note: NoteItem[] = [];
-  if (item.notes) {
-    for (const notesArray of Object.values(item.notes)) {
-      note.push(...normalizeNotesGroup(notesArray));
-    }
-  }
-
-  return {
-    qty: item.qty,
-    unit: item.unit,
-    rest: item.rest,
-    note,
-    isStaple,
-    parts: item.parts
-  };
-}
-
-/**
- * Deduplicates and aggregates converted shopping items by their package keys,
- * merging quantities and notes for duplicates.
- */
-export function getMergedShoppingItems(items: ShoppingItem[]): ShoppingItem[] {
-  const mergedMap = new Map<string, ShoppingItem>();
-
-  items.forEach(item => {
-    const key = getShoppingItemKey(item.unit, item.rest);
-
-    const existing = mergedMap.get(key);
-    if (existing) {
-      mergedMap.set(key, mergeShoppingItems(existing, item));
-    } else {
-      mergedMap.set(key, item);
-    }
-  });
-
-  return [...mergedMap.values()];
-}
-
-export interface ProcessedShoppingList {
-  buyItems: ShoppingItem[];
-  stapleItems: ShoppingItem[];
-}
-
-/**
- * Runs the complete processing pipeline on the recipe ingredients. Merges inputs,
- * converts units, aggregates package duplicates, and splits results into buy list and staple list.
- */
-export function processShoppingList(
-  scale: number,
-  elements: NodeListOf<HTMLElement> | HTMLElement[]
-): ProcessedShoppingList {
-  const ingredients = getIngredients(scale, elements);
-  const shoppingItems = ingredients.map(item => convertIngredient(item));
-  const mergedShoppingItems = getMergedShoppingItems(shoppingItems);
-  const finalizedItems = mergedShoppingItems.map(finalizeItem);
-
-  const stapleItems = finalizedItems.filter(item => item.isStaple);
-  const buyItems = finalizedItems.filter(item => !item.isStaple);
-
-  return { buyItems, stapleItems };
+function getWholeQty(item: ShoppingItem): number {
+  const parts = Object.values(item.parts || {});
+  const maxPart = Math.max(...parts, 0);
+  return Math.max(0, (item.qty ?? 0) - maxPart);
 }

@@ -24,28 +24,7 @@ for (const rule of INGREDIENT_RULES) {
   }
 }
 
-// Helper to construct structured note arrays in strategy converters.
-function createNote(qty: number | null, unit: string, explanation = '', rest = ''): Record<string, NoteItem[]> {
-  const adaptiveUnit = getAdaptiveUnit(qty, unit);
-  const adaptiveRest = getAdaptiveUnit(qty, rest);
-  const key = rest.toLowerCase().trim() || 'default';
-  return {
-    [key]: [{ prefix: '', qty, unit: adaptiveUnit, rest: adaptiveRest, explanation }]
-  };
-}
 
-function match<T>(
-  str: string,
-  mappings: [string[], T][],
-  defaultValue: T
-): T {
-  for (const [keywords, value] of mappings) {
-    if (keywords.some(k => str.includes(k))) {
-      return value;
-    }
-  }
-  return defaultValue;
-}
 
 // Fallback / Generic converters
 
@@ -138,4 +117,27 @@ export function convertIngredient(item: Ingredient): ShoppingItem {
     notes: {},
     isStaple
   };
+}
+
+// Helper to construct structured note arrays in strategy converters.
+function createNote(qty: number | null, unit: string, explanation = '', rest = ''): Record<string, NoteItem[]> {
+  const adaptiveUnit = getAdaptiveUnit(qty, unit);
+  const adaptiveRest = getAdaptiveUnit(qty, rest);
+  const key = rest.toLowerCase().trim() || 'default';
+  return {
+    [key]: [{ prefix: '', qty, unit: adaptiveUnit, rest: adaptiveRest, explanation }]
+  };
+}
+
+function match<T>(
+  str: string,
+  mappings: [string[], T][],
+  defaultValue: T
+): T {
+  for (const [keywords, value] of mappings) {
+    if (keywords.some(k => str.includes(k))) {
+      return value;
+    }
+  }
+  return defaultValue;
 }
