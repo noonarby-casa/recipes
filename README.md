@@ -12,6 +12,7 @@ This is a **Hugo-based static website** dedicated to displaying recipes for the 
 - **Theme:** `cookpot` (a custom theme tailored for recipe rendering, timers, and scaling)
 - **Scripting Language:** [TypeScript](https://www.typescriptlang.org/) (transpiled natively by Hugo's built-in ESBuild pipeline)
 - **Package Manager:** [pnpm](https://pnpm.io/) (for managing development tools like TypeScript linting/checking)
+- **Code Linters & Formatters:** [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) (configured to enforce Google TypeScript Style Guide compliance)
 - **Hosting:** Firebase Hosting (Project ID: `noonarby-casa-recipes`)
 - **CI/CD:** GitHub Actions for automated pull request previews and production deployment.
 
@@ -42,6 +43,8 @@ pnpm install
 | `hugo --minify`                                 | Compiles the site into the `public/` directory, minifying assets to verify production build viability. |
 | `hugo serve --renderToDisk --disableFastRender` | Renders the production-ready site to the `public/` directory and serves it locally.                    |
 | `pnpm typecheck`                                | Runs the TypeScript compiler (`tsc`) with the `--noEmit` flag to perform static checks on all scripts. |
+| `pnpm lint`                                     | Runs ESLint to check for code style issues and static analysis warnings/errors.                        |
+| `pnpm format`                                   | Formats all code files using Prettier to maintain project styling guidelines.                          |
 
 ---
 
