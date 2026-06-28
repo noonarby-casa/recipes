@@ -1,4 +1,4 @@
-import { formatCookingNumber } from "./scaler";
+import { formatCookingNumber } from "./units";
 import { processShoppingList } from "./shopping-list/pipeline";
 import { ShoppingItem } from "./shopping-list/types";
 import { formatNotesArray } from "./shopping-list/utils";
@@ -82,7 +82,9 @@ export function initShoppingList(): void {
         const mainRow =
           item.querySelector(".shopping-item-main-row")?.textContent?.trim() ||
           "";
-        text += `- ${mainRow}\n`;
+        const noteText =
+          item.querySelector(".shopping-item-note")?.textContent?.trim() || "";
+        text += `- ${mainRow}${noteText ? ` ${noteText}` : ""}\n`;
       });
 
       const stapleItems =
@@ -95,7 +97,9 @@ export function initShoppingList(): void {
         const mainRow =
           item.querySelector(".shopping-item-main-row")?.textContent?.trim() ||
           "";
-        text += `- ${mainRow}\n`;
+        const noteText =
+          item.querySelector(".shopping-item-note")?.textContent?.trim() || "";
+        text += `- ${mainRow}${noteText ? ` ${noteText}` : ""}\n`;
       });
 
       navigator.clipboard
@@ -164,34 +168,24 @@ export function initShoppingList(): void {
    * Generates DOM elements for a single converted item and appends it to targetList.
    */
   function renderItem(item: ShoppingItem, targetList: HTMLElement): void {
-    const li = document.createElement("li");
-    li.className = "shopping-item";
+    const qtyStr =
+      item.qty !== null
+        ? `${formatCookingNumber(item.qty)}${item.unit ? " " + item.unit : ""}`
+        : "";
 
-    const mainRow = document.createElement("div");
-    mainRow.className = "shopping-item-main-row";
+    const noteHtml =
+      item.note && item.note.length > 0
+        ? `<div class="shopping-item-details">
+             <span class="shopping-item-note">${formatNotesArray(item.note, !item.isStaple)}</span>
+           </div>`
+        : "";
 
-    let qtyStr = "";
-    if (item.qty !== null) {
-      qtyStr = formatCookingNumber(item.qty);
-      if (item.unit) {
-        qtyStr += ` ${item.unit}`;
-      }
-    }
-
-    mainRow.textContent = `${qtyStr ? qtyStr + " " : ""}${item.rest}`;
-    li.appendChild(mainRow);
-
-    if (item.note && item.note.length > 0) {
-      const details = document.createElement("div");
-      details.className = "shopping-item-details";
-
-      const noteSpan = document.createElement("span");
-      noteSpan.className = "shopping-item-note";
-      noteSpan.textContent = formatNotesArray(item.note, !item.isStaple);
-      details.appendChild(noteSpan);
-      li.appendChild(details);
-    }
-
-    targetList.appendChild(li);
+    targetList.insertAdjacentHTML(
+      "beforeend",
+      `<li class="shopping-item">
+         <div class="shopping-item-main-row">${qtyStr ? qtyStr + " " : ""}${item.rest}</div>
+         ${noteHtml}
+       </li>`,
+    );
   }
 }

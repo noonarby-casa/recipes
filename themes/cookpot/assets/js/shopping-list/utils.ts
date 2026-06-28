@@ -1,5 +1,9 @@
-import { formatCookingNumber, getAdaptiveUnit } from "../scaler";
-import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from "../constants";
+import {
+  formatCookingNumber,
+  getAdaptiveUnit,
+  SINGULAR_TO_PLURAL,
+  PLURAL_TO_SINGULAR,
+} from "../units";
 import {
   VOLUME_UNITS,
   TO_TEASPOONS,
@@ -8,6 +12,7 @@ import {
 } from "./config";
 import {
   StringMatchConfig,
+  IngredientMatchConfig,
   BaseIngredient,
   ScalableIngredient,
   FixedIngredient,
@@ -70,6 +75,19 @@ export function convertVolume(
  * Removes preparation keywords (e.g. sliced, chopped, minced) and serving suffixes from ingredient names.
  * Returns both the cleaned name (as 'rest') and the matched preparation term.
  */
+const PREP_KEYWORDS_PATTERN = [...PREP_KEYWORDS]
+  .sort((a, b) => b.length - a.length)
+  .map((k) => k.replace(/\s+/g, "\\s+"))
+  .join("|");
+const MID_PREP_REGEX = new RegExp(
+  `\\b(${PREP_KEYWORDS_PATTERN})\\b(?:\\s+|$)`,
+  "gi",
+);
+
+/**
+ * Removes preparation keywords (e.g. sliced, chopped, minced) and serving suffixes from ingredient names.
+ * Returns both the cleaned name (as 'rest') and the matched preparation term.
+ */
 export function cleanPrepTerms(text: string): CleanedPrepResult {
   if (!text) return { rest: "", prep: "" };
 
@@ -92,18 +110,34 @@ export function cleanPrepTerms(text: string): CleanedPrepResult {
   text = text.replace(/\b(?:at\s+)?room\s+temperature\b/gi, "").trim();
 
   // 2. Remove prep terms as standalone words in the middle/start of the text (e.g. minced garlic)
-  const sortedKeywords = [...PREP_KEYWORDS].sort((a, b) => b.length - a.length);
-  const pattern = sortedKeywords
-    .map((k) => k.replace(/\s+/g, "\\s+"))
-    .join("|");
-  const midPrepRegex = new RegExp(`\\b(${pattern})\\b(?:\\s+|$)`, "gi");
-  let cleaned = text.replace(midPrepRegex, "").trim();
+  let cleaned = text.replace(MID_PREP_REGEX, "").trim();
 
   // Clean up double spaces
   cleaned = cleaned.replace(/\s+/g, " ").trim();
 
   return { rest: cleaned, prep };
 }
+
+/**
+ * Returns a pack conversion explanation note (e.g. stick or box conversions) depending on the target unit.
+ */
+const STICK_EXPLANATIONS: Record<string, string> = {
+  tablespoon: "1 stick = 8 tbsp",
+  tbsp: "1 stick = 8 tbsp",
+  teaspoon: "1 stick = 24 tsp",
+  tsp: "1 stick = 24 tsp",
+  pound: "1 stick = 1/4 lb",
+  lb: "1 stick = 1/4 lb",
+  ounce: "1 stick = 4 oz",
+  oz: "1 stick = 4 oz",
+};
+
+const BOX_EXPLANATIONS: Record<string, string> = {
+  ounce: "1 box = 16 oz",
+  oz: "1 box = 16 oz",
+  gram: "1 box = 454 g",
+  g: "1 box = 454 g",
+};
 
 /**
  * Returns a pack conversion explanation note (e.g. stick or box conversions) depending on the target unit.
@@ -116,22 +150,11 @@ export function getPackExplanation(
   const target = targetUnit.toLowerCase().trim();
 
   if (pack.includes("stick")) {
-    if (target.includes("tablespoon") || target.includes("tbsp"))
-      return "1 stick = 8 tbsp";
-    if (target.includes("teaspoon") || target.includes("tsp"))
-      return "1 stick = 24 tsp";
-    if (target.includes("pound") || target.includes("lb"))
-      return "1 stick = 1/4 lb";
-    if (target.includes("ounce") || target.includes("oz"))
-      return "1 stick = 4 oz";
-    return "1 stick = 1/2 cup";
+    return STICK_EXPLANATIONS[target] || "1 stick = 1/2 cup";
   }
 
   if (pack.includes("box")) {
-    if (target.includes("ounce") || target.includes("oz"))
-      return "1 box = 16 oz";
-    if (target.includes("gram") || target.includes("g")) return "1 box = 454 g";
-    return "1 box = 1 lb";
+    return BOX_EXPLANATIONS[target] || "1 box = 1 lb";
   }
 
   return "";
@@ -161,9 +184,9 @@ export function matchesConfig(
   const texts = Array.isArray(text) ? text : [text];
   const textLowers = texts.map((t) => t.toLowerCase());
 
-  const matchArray = Array.isArray(config.match)
-    ? config.match
-    : [config.match];
+  const matchArray = Array.isArray(config.terms)
+    ? config.terms
+    : [config.terms];
   const hasMatch = matchArray.some((pattern) =>
     textLowers.some((t) => t.includes(pattern)),
   );
@@ -238,14 +261,8 @@ export function adjustDescriptionPlurality(
   let finalRest = rest.trim();
   const lowerWord = baseWord.toLowerCase();
 
-  let singularWord = lowerWord;
-  let pluralWord = lowerWord;
-
-  if (SINGULAR_TO_PLURAL[lowerWord]) {
-    pluralWord = SINGULAR_TO_PLURAL[lowerWord];
-  } else if (PLURAL_TO_SINGULAR[lowerWord]) {
-    singularWord = PLURAL_TO_SINGULAR[lowerWord];
-  }
+  const singularWord = PLURAL_TO_SINGULAR[lowerWord] || lowerWord;
+  const pluralWord = SINGULAR_TO_PLURAL[singularWord] || singularWord;
 
   if (qty > 1) {
     const regex = new RegExp(`\\b${singularWord}\\b`, "gi");
@@ -322,18 +339,18 @@ export function range<T>(
   return defaultValue;
 }
 
-/**
- * Replaces occurrences of terms specified in a key-value mapping within the given text.
- * The keys are matched case-insensitively using word boundaries.
- */
-export function replaceTerms(
-  text: string,
-  replacements: Record<string, string>,
-): string {
-  let result = text;
-  for (const [pattern, replacement] of Object.entries(replacements)) {
-    const regex = new RegExp(`\\b${pattern}\\b`, "gi");
-    result = result.replace(regex, replacement);
+export function matchesIngredient(
+  item: { rest: string; prep: string; unit: string },
+  config: IngredientMatchConfig,
+): boolean {
+  if (config.rest && !matchesConfig(item.rest, config.rest)) {
+    return false;
   }
-  return result;
+  if (config.prep && !matchesConfig(item.prep, config.prep)) {
+    return false;
+  }
+  if (config.unit && !matchesConfig(item.unit, config.unit)) {
+    return false;
+  }
+  return true;
 }

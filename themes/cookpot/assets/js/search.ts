@@ -174,6 +174,7 @@ export function initSearch(): void {
     }
 
     searchResults.style.display = "flex";
+    searchResults.innerHTML = "";
 
     // Find basePath from home link
     const homeLink = document.querySelector("header h1 a");
@@ -211,88 +212,115 @@ export function initSearch(): void {
       return;
     }
 
-    searchResults.innerHTML = results
-      .map((recipe) => {
-        let imgHtml = "";
-        if (recipe.image) {
-          imgHtml = `
-        <div class="recipe-list-image-container">
-          <div class="recipe-list-image">
-            <img src="${recipe.image130}"
-                 srcset="${recipe.image90} 90w, ${recipe.image130} 130w, ${recipe.image180} 180w, ${recipe.image260} 260w"
-                 sizes="(max-width: 599px) 90px, 130px"
-                 width="130"
-                 height="130"
-                 alt="${escapeHtml(recipe.title)}"
-                 loading="lazy">
-          </div>
-        </div>`;
-        }
+    const template = document.getElementById(
+      "recipe-search-item-template",
+    ) as HTMLTemplateElement | null;
 
-        let timesHtml = "";
+    if (!template) {
+      console.error("Could not find recipe search item template");
+      return;
+    }
+
+    results.forEach((recipe) => {
+      const clone = template.content.cloneNode(true) as DocumentFragment;
+
+      // Title and Link
+      const titleLink = clone.querySelector<HTMLAnchorElement>(".recipe-link");
+      if (titleLink) {
+        titleLink.textContent = recipe.title;
+        titleLink.href = recipe.permalink;
+      }
+
+      // Date
+      const dateElement =
+        clone.querySelector<HTMLTimeElement>(".recipe-list-date");
+      if (dateElement) {
+        dateElement.setAttribute("datetime", recipe.dateMachine);
+        dateElement.textContent = recipe.dateHuman;
+      }
+
+      // Image
+      if (recipe.image) {
+        const imageContainer = clone.querySelector<HTMLElement>(
+          ".recipe-list-image-container",
+        );
+        const img = clone.querySelector<HTMLImageElement>(".recipe-image");
+        if (imageContainer && img) {
+          imageContainer.style.display = "block";
+          img.src = recipe.image130 || "";
+          img.srcset = `${recipe.image90} 90w, ${recipe.image130} 130w, ${recipe.image180} 180w, ${recipe.image260} 260w`;
+          img.alt = recipe.title;
+        }
+      }
+
+      // Times
+      const timeContainer = clone.querySelector<HTMLElement>(".recipe-time");
+      if (timeContainer) {
         if (recipe.times && recipe.times.length > 0) {
           const stepsText = recipe.times
             .map((t) => {
               const capitalizedStep =
                 t.step.charAt(0).toUpperCase() + t.step.slice(1);
-              return `${escapeHtml(capitalizedStep)} ${escapeHtml(t.time)}`;
+              return `${capitalizedStep} ${t.time}`;
             })
             .join(" + ");
 
-          timesHtml = `
-          <span class="recipe-meta-separator">•</span>
-          <div class="recipe-time">
-            <svg class="time-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>${stepsText}</span>
-          </div>`;
+          const timeText = timeContainer.querySelector(".time-text");
+          if (timeText) {
+            timeText.textContent = stepsText;
+          }
+        } else {
+          timeContainer.style.display = "none";
+          const timeSeparator = timeContainer.previousElementSibling;
+          if (
+            timeSeparator &&
+            timeSeparator.classList.contains("recipe-meta-separator")
+          ) {
+            (timeSeparator as HTMLElement).style.display = "none";
+          }
         }
+      }
 
+      // Source
+      const sourceContainer =
+        clone.querySelector<HTMLElement>(".recipe-source");
+      if (sourceContainer) {
         const recipeSource = recipe.recipeSource || "Noonarby";
-        const sourceHtml = `
-        <span class="recipe-meta-separator">•</span>
-        <div class="recipe-source">
-          <svg class="source-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          <span>${escapeHtml(recipeSource)}</span>
-        </div>`;
+        const sourceText = sourceContainer.querySelector(".source-text");
+        if (sourceText) {
+          sourceText.textContent = recipeSource;
+        }
+      }
 
-        let tagsHtml = "";
+      // Tags
+      const tagsContainer = clone.querySelector<HTMLElement>(
+        ".recipe-tags-container",
+      );
+      if (tagsContainer) {
         if (recipe.tags && recipe.tags.length > 0) {
-          const tagsList = recipe.tags
-            .map((tag) => {
+          tagsContainer.style.display = "block";
+          const tagsList = tagsContainer.querySelector(".recipe-tags-list");
+          if (tagsList) {
+            recipe.tags.forEach((tag) => {
+              const li = document.createElement("li");
+              const a = document.createElement("a");
               const slug = tag
                 .toLowerCase()
                 .replace(/\s+/g, "-")
                 .replace(/[^\w-]+/g, "");
-              return `<li><a href="${cleanBasePath}tags/${slug}/">${escapeHtml(tag)}</a></li>`;
-            })
-            .join("");
-          tagsHtml = `
-          <div>
-            <div>Tags:</div>
-            <ul>
-              ${tagsList}
-            </ul>
-          </div>`;
+              a.href = `${cleanBasePath}tags/${slug}/`;
+              a.textContent = tag;
+              li.appendChild(a);
+              tagsList.appendChild(li);
+            });
+          }
+        } else {
+          tagsContainer.style.display = "none";
         }
+      }
 
-        return `
-        <article class="recipe-list-item">
-          ${imgHtml}
-          <div class="recipe-list-content">
-            <h2 class="recipe-list-title"><a href="${recipe.permalink}">${escapeHtml(recipe.title)}</a></h2>
-            <div class="recipe-list-meta">
-              <div class="recipe-list-meta-left">
-                <time datetime="${recipe.dateMachine}" class="recipe-list-date">${escapeHtml(recipe.dateHuman)}</time>
-                ${timesHtml}
-                ${sourceHtml}
-              </div>
-              ${tagsHtml}
-            </div>
-          </div>
-        </article>
-      `;
-      })
-      .join("");
+      searchResults.appendChild(clone);
+    });
 
     if (searchInfo) {
       searchInfo.style.display = "flex";

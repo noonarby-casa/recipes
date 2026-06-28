@@ -8,7 +8,7 @@ import {
 } from "./utils";
 import { convertIngredient } from "./converters";
 import { TO_TEASPOONS } from "./config";
-import { getAdaptiveUnit } from "../scaler";
+import { getAdaptiveUnit } from "../units";
 import { getIngredientKey, getShoppingItemKey, findRule } from "./rules";
 import {
   Ingredient,
@@ -157,6 +157,7 @@ export function mergeShoppingItems(
     unit,
     rest,
     notes,
+    note: [],
     isStaple,
     parts,
   };
@@ -168,23 +169,19 @@ export function mergeShoppingItems(
 function finalizeItem(item: ShoppingItem): ShoppingItem {
   // 1. Re-evaluate staple status using rules
   let isStaple = item.isStaple;
-  const rule = findRule(item.rest);
+  const rule = findRule(item.rest, "", item.unit);
   if (rule && typeof rule.isStaple === "function") {
     isStaple = rule.isStaple(item.qty, item.unit);
   }
 
   // 2. Flatten notes
-  const note: NoteItem[] = [];
-  if (item.notes) {
-    for (const notesArray of Object.values(item.notes)) {
-      note.push(...normalizeNotesGroup(notesArray));
-    }
-  }
+  const note = Object.values(item.notes).flatMap(normalizeNotesGroup);
 
   return {
     qty: item.qty,
     unit: item.unit,
     rest: item.rest,
+    notes: item.notes,
     note,
     isStaple,
     parts: item.parts,
@@ -208,27 +205,24 @@ function normalizeNotesGroup(items: NoteItem[]): NoteItem[] {
   );
 
   if (sameUnit || allVolume) {
-    let targetSingular = firstSingular;
-    if (!sameUnit && allVolume) {
-      items.forEach((it) => {
-        const sing = getSingularUnit(it.unit);
-        if (
-          (TO_TEASPOONS[sing] || 999999) <
-          (TO_TEASPOONS[targetSingular] || 999999)
-        ) {
-          targetSingular = sing;
-        }
-      });
-    }
+    const targetSingular =
+      !sameUnit && allVolume
+        ? items.reduce((minUnit, it) => {
+            const sing = getSingularUnit(it.unit);
+            return (TO_TEASPOONS[sing] || 999999) <
+              (TO_TEASPOONS[minUnit] || 999999)
+              ? sing
+              : minUnit;
+          }, firstSingular)
+        : firstSingular;
 
-    let totalQty = 0;
-    items.forEach((it) => {
-      if (it.qty !== null) {
-        totalQty += sameUnit
-          ? it.qty
-          : convertVolume(it.qty, it.unit, targetSingular);
-      }
-    });
+    const totalQty = items.reduce((sum, it) => {
+      if (it.qty === null) return sum;
+      return (
+        sum +
+        (sameUnit ? it.qty : convertVolume(it.qty, it.unit, targetSingular))
+      );
+    }, 0);
 
     let explanation = "";
     const foundExp = items.find((it) => it.explanation);
