@@ -381,3 +381,41 @@ export function match<T>(
   return defaultValue;
 }
 
+/**
+ * Checks if a unit matches any of the specified keywords.
+ */
+export function hasUnit(unitLower: string, keywords: string[]): boolean {
+  return keywords.some(k => unitLower.includes(k));
+}
+
+/**
+ * Searches a list of numeric limit thresholds (ordered ascending) and returns the mapped value
+ * for the first limit that is greater than or equal to the target value. Returns defaultValue if no limit matches.
+ */
+export function range<T>(
+  val: number,
+  mappings: [number, T][],
+  defaultValue: T
+): T {
+  for (const [limit, value] of mappings) {
+    if (val <= limit) {
+      return value;
+    }
+  }
+  return defaultValue;
+}
+
+/**
+ * Replaces occurrences of terms specified in a key-value mapping within the given text.
+ * The keys are matched case-insensitively using word boundaries.
+ */
+export function replaceTerms(text: string, replacements: Record<string, string>): string {
+  let result = text;
+  for (const [pattern, replacement] of Object.entries(replacements)) {
+    const regex = new RegExp(`\\b${pattern}\\b`, 'gi');
+    result = result.replace(regex, replacement);
+  }
+  return result;
+}
+
+
