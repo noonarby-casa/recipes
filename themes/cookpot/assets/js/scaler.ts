@@ -1,5 +1,5 @@
-import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from './constants';
-import { VOLUME_UNITS, OTHER_UNITS } from './shopping-list/config';
+import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from "./constants";
+import { VOLUME_UNITS, OTHER_UNITS } from "./shopping-list/config";
 
 export interface ParsedIngredient {
   quantity: number | null;
@@ -10,22 +10,24 @@ export interface ParsedIngredient {
 // Match common culinary units dynamically compiled from config arrays
 const ALL_UNITS = [...VOLUME_UNITS, ...OTHER_UNITS];
 const SORTED_UNITS = [...ALL_UNITS].sort((a, b) => b.length - a.length);
-const escapedUnits = SORTED_UNITS.map(u => u.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
-const unitRegex = new RegExp(`^(${escapedUnits.join('|')})\\b`, 'i');
+const escapedUnits = SORTED_UNITS.map((u) =>
+  u.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"),
+);
+const unitRegex = new RegExp(`^(${escapedUnits.join("|")})\\b`, "i");
 
 // Helper to parse fractions (e.g., "1/2", "1 1/2") and decimals
 function parseNumeric(str: string): number {
   str = str.trim();
-  if (str.includes('/')) {
+  if (str.includes("/")) {
     const parts = str.split(/\s+/);
     if (parts.length === 2) {
       // Mixed number e.g. "1 1/2"
       const whole = parseFloat(parts[0]);
-      const fracParts = parts[1].split('/');
+      const fracParts = parts[1].split("/");
       return whole + parseFloat(fracParts[0]) / parseFloat(fracParts[1]);
     } else {
       // Simple fraction e.g. "1/2"
-      const fracParts = parts[0].split('/');
+      const fracParts = parts[0].split("/");
       return parseFloat(fracParts[0]) / parseFloat(fracParts[1]);
     }
   }
@@ -40,7 +42,7 @@ export function parseIngredientText(text: string): ParsedIngredient {
   const match = text.match(qtyRegex);
 
   if (!match) {
-    return { quantity: null, unit: '', rest: text };
+    return { quantity: null, unit: "", rest: text };
   }
 
   const qtyStr = match[0];
@@ -49,7 +51,7 @@ export function parseIngredientText(text: string): ParsedIngredient {
 
   const unitMatch = remainder.match(unitRegex);
 
-  let unit = '';
+  let unit = "";
   if (unitMatch) {
     unit = unitMatch[0];
     remainder = remainder.slice(unit.length).trim();
@@ -58,16 +60,16 @@ export function parseIngredientText(text: string): ParsedIngredient {
   return {
     quantity: quantity,
     unit: unit,
-    rest: remainder
+    rest: remainder,
   };
 }
 
 // Pluralization engine
 export function getAdaptiveUnit(qty: number | null, unit: string): string {
-  if (!unit) return '';
+  if (!unit) return "";
   if (qty === null) return unit;
   const lowerUnit = unit.toLowerCase();
-  
+
   // If quantity is less than or equal to 1, return singular form
   if (qty <= 1) {
     return PLURAL_TO_SINGULAR[lowerUnit] || unit;
@@ -83,26 +85,26 @@ interface FractionMapItem {
 
 // Formatting engine: rounds numbers and converts decimals to culinary fractions
 export function formatCookingNumber(val: number): string {
-  if (val <= 0) return '0';
+  if (val <= 0) return "0";
 
   const rounded = Math.round(val * 1000) / 1000;
   const whole = Math.floor(rounded);
   const dec = Math.round((rounded - whole) * 1000) / 1000;
 
   const fractionMap: FractionMapItem[] = [
-    { dec: 0.125, str: '1/8' },
-    { dec: 0.25, str: '1/4' },
-    { dec: 0.333, str: '1/3' },
-    { dec: 0.375, str: '3/8' },
-    { dec: 0.5, str: '1/2' },
-    { dec: 0.625, str: '5/8' },
-    { dec: 0.667, str: '2/3' },
-    { dec: 0.75, str: '3/4' },
-    { dec: 0.875, str: '7/8' }
+    { dec: 0.125, str: "1/8" },
+    { dec: 0.25, str: "1/4" },
+    { dec: 0.333, str: "1/3" },
+    { dec: 0.375, str: "3/8" },
+    { dec: 0.5, str: "1/2" },
+    { dec: 0.625, str: "5/8" },
+    { dec: 0.667, str: "2/3" },
+    { dec: 0.75, str: "3/4" },
+    { dec: 0.875, str: "7/8" },
   ];
 
   if (dec < 0.05) {
-    return whole > 0 ? whole.toString() : '0';
+    return whole > 0 ? whole.toString() : "0";
   }
   if (dec > 0.95) {
     return (whole + 1).toString();
@@ -125,67 +127,72 @@ export function formatCookingNumber(val: number): string {
   }
 
   // Otherwise, display as a clean, concise decimal (e.g. 1.2 or 0.7)
-  return rounded.toFixed(2).replace(/\.?0+$/, '');
+  return rounded.toFixed(2).replace(/\.?0+$/, "");
 }
 
 export function initScaler(): void {
-  const ingredients = document.querySelectorAll<HTMLElement>('.recipe-ingredient');
-  const quantities = document.querySelectorAll<HTMLElement>('.recipe-quantity');
-  const slider = document.getElementById('recipe-scale-slider') as HTMLInputElement | null;
-  const displayVal = document.getElementById('scale-display-val');
-  const presetBtns = document.querySelectorAll<HTMLElement>('.scale-btn');
+  const ingredients =
+    document.querySelectorAll<HTMLElement>(".recipe-ingredient");
+  const quantities = document.querySelectorAll<HTMLElement>(".recipe-quantity");
+  const slider = document.getElementById(
+    "recipe-scale-slider",
+  ) as HTMLInputElement | null;
+  const displayVal = document.getElementById("scale-display-val");
+  const presetBtns = document.querySelectorAll<HTMLElement>(".scale-btn");
 
   if (!ingredients.length && !quantities.length && !slider) return;
 
   // Pre-parse and store base metrics for each ingredient item
-  ingredients.forEach(el => {
-    const rawText = el.textContent || '';
+  ingredients.forEach((el) => {
+    const rawText = el.textContent || "";
     const parsed = parseIngredientText(rawText);
-    el.dataset.baseQty = parsed.quantity !== null ? parsed.quantity.toString() : '';
+    el.dataset.baseQty =
+      parsed.quantity !== null ? parsed.quantity.toString() : "";
     el.dataset.unit = parsed.unit;
     el.dataset.rest = parsed.rest;
   });
 
   // Pre-parse and store base metrics for each instruction step inline quantity
-  quantities.forEach(el => {
-    const rawText = el.dataset.baseText || el.textContent || '';
+  quantities.forEach((el) => {
+    const rawText = el.dataset.baseText || el.textContent || "";
     const parsed = parseIngredientText(rawText);
-    el.dataset.baseQty = parsed.quantity !== null ? parsed.quantity.toString() : '';
+    el.dataset.baseQty =
+      parsed.quantity !== null ? parsed.quantity.toString() : "";
     el.dataset.unit = parsed.unit;
   });
 
   function updateRecipeScale(factor: number): void {
     // 1. Update visual metrics display
     if (displayVal) {
-      displayVal.textContent = factor.toFixed(2).replace(/\.00$/, '');
+      displayVal.textContent = factor.toFixed(2).replace(/\.00$/, "");
     }
 
     // 2. Loop over and re-render the ingredients list
-    ingredients.forEach(el => {
+    ingredients.forEach((el) => {
       if (el.dataset.baseQty) {
         const baseQty = parseFloat(el.dataset.baseQty);
-        const unit = el.dataset.unit || '';
-        const rest = el.dataset.rest || '';
+        const unit = el.dataset.unit || "";
+        const rest = el.dataset.rest || "";
 
         const newQty = baseQty * factor;
         const formattedQty = formatCookingNumber(newQty);
         const adaptiveUnit = getAdaptiveUnit(newQty, unit);
 
-        el.innerHTML = `<span class="qty-num">${formattedQty}</span>${adaptiveUnit ? ' ' + adaptiveUnit : ''} ${rest}`;
+        el.innerHTML = `<span class="qty-num">${formattedQty}</span>${adaptiveUnit ? " " + adaptiveUnit : ""} ${rest}`;
       }
     });
 
     // 3. Loop over and re-render inline quantities inside steps
-    quantities.forEach(el => {
+    quantities.forEach((el) => {
       if (el.dataset.baseQty) {
         const baseQty = parseFloat(el.dataset.baseQty);
-        const unit = el.dataset.unit || '';
+        const unit = el.dataset.unit || "";
 
         const newQty = baseQty * factor;
         const formattedQty = formatCookingNumber(newQty);
         const adaptiveUnit = getAdaptiveUnit(newQty, unit);
 
-        el.textContent = `${formattedQty}${adaptiveUnit ? ' ' + adaptiveUnit : ''}`;
+        el.textContent = `${formattedQty}${adaptiveUnit ? " " + adaptiveUnit : ""}`;
       }
     });
 
@@ -195,22 +202,24 @@ export function initScaler(): void {
     }
 
     // 5. Update Preset buttons active state styling
-    presetBtns.forEach(btn => {
-      const btnVal = parseFloat(btn.dataset.val || '1.0');
+    presetBtns.forEach((btn) => {
+      const btnVal = parseFloat(btn.dataset.val || "1.0");
       if (btnVal === factor) {
-        btn.classList.add('active');
+        btn.classList.add("active");
       } else {
-        btn.classList.remove('active');
+        btn.classList.remove("active");
       }
     });
 
     // Dispatch event to notify shopping list or other listeners
-    document.dispatchEvent(new CustomEvent('recipe:scale', { detail: { factor } }));
+    document.dispatchEvent(
+      new CustomEvent("recipe:scale", { detail: { factor } }),
+    );
   }
 
   // Handle slide movement
   if (slider) {
-    slider.addEventListener('input', (e) => {
+    slider.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
       const factor = parseFloat(target.value);
       updateRecipeScale(factor);
@@ -218,9 +227,9 @@ export function initScaler(): void {
   }
 
   // Handle preset clicks
-  presetBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const factor = parseFloat(btn.dataset.val || '1.0');
+  presetBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const factor = parseFloat(btn.dataset.val || "1.0");
       updateRecipeScale(factor);
     });
   });

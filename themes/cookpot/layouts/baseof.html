@@ -1,17 +1,26 @@
-<!DOCTYPE html>
-<html lang="{{ or site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}">
-<head>
-  {{ partial "head.html" . }}
-</head>
-<body class="{{ if .IsPage }}recipe-single-layout{{ else }}recipe-list-layout{{ end }}">
-  <header>
-    {{ partial "header.html" . }}
-  </header>
-  <main>
-    {{ block "main" . }}{{ end }}
-  </main>
-  <footer>
-    {{ partial "footer.html" . }}
-  </footer>
-</body>
+<!doctype html>
+<html
+  lang="{{ or site.Language.Locale }}"
+  dir="{{ or site.Language.Direction `ltr` }}"
+>
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body
+    class="{{ if .IsPage }}
+      recipe-single-layout
+    {{ else }}
+      recipe-list-layout
+    {{ end }}"
+  >
+    <header>
+      {{ partial "header.html" . }}
+    </header>
+    <main>
+      {{ block "main" . }}{{ end }}
+    </main>
+    <footer>
+      {{ partial "footer.html" . }}
+    </footer>
+  </body>
 </html>

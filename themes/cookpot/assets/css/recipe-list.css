@@ -70,13 +70,11 @@
     padding: 1.25rem 1.5rem;
     gap: 1.5rem;
   }
-  
+
   .recipe-list-image {
     width: 130px;
     height: 130px;
   }
-
-
 }
 
 .recipe-list-title {
@@ -482,5 +480,3 @@
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
 }
-
-

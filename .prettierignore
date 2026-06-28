@@ -1,0 +1,23 @@
+# Package managers
+node_modules
+pnpm-lock.yaml
+
+# Hugo build outputs
+public
+resources
+.hugo_build.lock
+
+# Jujutsu / Git internals
+.jj
+.git
+
+# Firebase logs and cache
+*.log
+.firebase
+
+# Readmes and markdown files if desired (e.g. GEMINI.md has markdown details we might not want formatted automatically)
+# GEMINI.md
+
+# Hugo template JSON files
+themes/cookpot/layouts/**/*.json
+

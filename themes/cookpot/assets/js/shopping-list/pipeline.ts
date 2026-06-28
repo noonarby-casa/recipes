@@ -1,8 +1,18 @@
-import { cleanPrepTerms, getSingularUnit, isVolumeUnit, getPackExplanation, convertVolume, NoteItem, shouldSkipIngredient, Ingredient, ScalableIngredient } from './utils';
-import { convertIngredient, ShoppingItem } from './converters';
-import { TO_TEASPOONS } from './config';
-import { getAdaptiveUnit } from '../scaler';
-import { getIngredientKey, getShoppingItemKey, findRule } from './rules';
+import {
+  cleanPrepTerms,
+  getSingularUnit,
+  isVolumeUnit,
+  getPackExplanation,
+  convertVolume,
+  NoteItem,
+  shouldSkipIngredient,
+  Ingredient,
+  ScalableIngredient,
+} from "./utils";
+import { convertIngredient, ShoppingItem } from "./converters";
+import { TO_TEASPOONS } from "./config";
+import { getAdaptiveUnit } from "../scaler";
+import { getIngredientKey, getShoppingItemKey, findRule } from "./rules";
 
 export interface ProcessedShoppingList {
   buyItems: ShoppingItem[];
@@ -15,15 +25,15 @@ export interface ProcessedShoppingList {
  */
 export function processShoppingList(
   scale: number,
-  elements: NodeListOf<HTMLElement> | HTMLElement[]
+  elements: NodeListOf<HTMLElement> | HTMLElement[],
 ): ProcessedShoppingList {
   const ingredients = getIngredients(scale, elements);
-  const shoppingItems = ingredients.map(item => convertIngredient(item));
+  const shoppingItems = ingredients.map((item) => convertIngredient(item));
   const mergedShoppingItems = getMergedShoppingItems(shoppingItems);
   const finalizedItems = mergedShoppingItems.map(finalizeItem);
 
-  const stapleItems = finalizedItems.filter(item => item.isStaple);
-  const buyItems = finalizedItems.filter(item => !item.isStaple);
+  const stapleItems = finalizedItems.filter((item) => item.isStaple);
+  const buyItems = finalizedItems.filter((item) => !item.isStaple);
 
   return { buyItems, stapleItems };
 }
@@ -34,23 +44,23 @@ export function processShoppingList(
  */
 export function getIngredients(
   scale: number,
-  elements: NodeListOf<HTMLElement> | HTMLElement[]
+  elements: NodeListOf<HTMLElement> | HTMLElement[],
 ): Ingredient[] {
   const parsedMap = new Map<string, ScalableIngredient>();
   const unquantified: Ingredient[] = [];
 
   scale = Number.isFinite(scale) ? scale : 1.0;
 
-  elements.forEach(el => {
-    const rawText = (el.textContent || '').trim();
+  elements.forEach((el) => {
+    const rawText = (el.textContent || "").trim();
 
     if (shouldSkipIngredient(rawText)) {
       return; // skip completely
     }
 
     const baseQty = el.dataset.baseQty ? parseFloat(el.dataset.baseQty) : null;
-    const unit = el.dataset.unit || '';
-    const rawRest = el.dataset.rest || '';
+    const unit = el.dataset.unit || "";
+    const rawRest = el.dataset.rest || "";
 
     const { rest, prep } = cleanPrepTerms(rawRest || rawText);
 
@@ -58,7 +68,7 @@ export function getIngredients(
       unquantified.push({
         isScalable: false,
         rest,
-        prep
+        prep,
       });
       return;
     }
@@ -85,7 +95,7 @@ export function getIngredients(
 export function getMergedShoppingItems(items: ShoppingItem[]): ShoppingItem[] {
   const mergedMap = new Map<string, ShoppingItem>();
 
-  items.forEach(item => {
+  items.forEach((item) => {
     const key = getShoppingItemKey(item.unit, item.rest);
 
     const existing = mergedMap.get(key);
@@ -103,7 +113,10 @@ export function getMergedShoppingItems(items: ShoppingItem[]): ShoppingItem[] {
  * Combines two converted commercial package items of matching types, aggregating quantities,
  * correcting pluralized units, and merging explanation notes.
  */
-export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): ShoppingItem {
+export function mergeShoppingItems(
+  item1: ShoppingItem,
+  item2: ShoppingItem,
+): ShoppingItem {
   let qty: number | null;
   let parts: { [key: string]: number } | undefined = undefined;
 
@@ -121,14 +134,15 @@ export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): Sh
     const maxFromParts = Math.max(...Object.values(parts), 0);
     qty = maxFromParts + whole1 + whole2;
   } else {
-    qty = (item1.qty !== null || item2.qty !== null)
-      ? (item1.qty ?? 0) + (item2.qty ?? 0)
-      : null;
+    qty =
+      item1.qty !== null || item2.qty !== null
+        ? (item1.qty ?? 0) + (item2.qty ?? 0)
+        : null;
   }
 
   const unit = getAdaptiveUnit(qty, item1.unit);
   let rest = item1.rest;
-  if (unit === '') {
+  if (unit === "") {
     rest = getAdaptiveUnit(qty, rest);
   }
 
@@ -145,7 +159,7 @@ export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): Sh
     rest,
     notes,
     isStaple,
-    parts
+    parts,
   };
 }
 
@@ -156,7 +170,7 @@ function finalizeItem(item: ShoppingItem): ShoppingItem {
   // 1. Re-evaluate staple status using rules
   let isStaple = item.isStaple;
   const rule = findRule(item.rest);
-  if (rule && typeof rule.isStaple === 'function') {
+  if (rule && typeof rule.isStaple === "function") {
     isStaple = rule.isStaple(item.qty, item.unit);
   }
 
@@ -174,7 +188,7 @@ function finalizeItem(item: ShoppingItem): ShoppingItem {
     rest: item.rest,
     note,
     isStaple,
-    parts: item.parts
+    parts: item.parts,
   };
 }
 
@@ -187,42 +201,54 @@ function normalizeNotesGroup(items: NoteItem[]): NoteItem[] {
   if (items.length === 1) return [items[0]];
 
   const firstSingular = getSingularUnit(items[0].unit);
-  const sameUnit = items.every(it => getSingularUnit(it.unit) === firstSingular);
-  const allVolume = items.every(it => it.unit && isVolumeUnit(it.unit) && it.qty !== null);
+  const sameUnit = items.every(
+    (it) => getSingularUnit(it.unit) === firstSingular,
+  );
+  const allVolume = items.every(
+    (it) => it.unit && isVolumeUnit(it.unit) && it.qty !== null,
+  );
 
   if (sameUnit || allVolume) {
     let targetSingular = firstSingular;
     if (!sameUnit && allVolume) {
-      items.forEach(it => {
+      items.forEach((it) => {
         const sing = getSingularUnit(it.unit);
-        if ((TO_TEASPOONS[sing] || 999999) < (TO_TEASPOONS[targetSingular] || 999999)) {
+        if (
+          (TO_TEASPOONS[sing] || 999999) <
+          (TO_TEASPOONS[targetSingular] || 999999)
+        ) {
           targetSingular = sing;
         }
       });
     }
 
     let totalQty = 0;
-    items.forEach(it => {
+    items.forEach((it) => {
       if (it.qty !== null) {
-        totalQty += sameUnit ? it.qty : convertVolume(it.qty, it.unit, targetSingular);
+        totalQty += sameUnit
+          ? it.qty
+          : convertVolume(it.qty, it.unit, targetSingular);
       }
     });
 
-    let explanation = '';
-    const foundExp = items.find(it => it.explanation);
+    let explanation = "";
+    const foundExp = items.find((it) => it.explanation);
     if (foundExp && foundExp.explanation) {
       const match = foundExp.explanation.match(/^1\s+(\w+)\b/);
-      const packUnit = match ? match[1] : '';
-      explanation = getPackExplanation(packUnit, targetSingular) || foundExp.explanation;
+      const packUnit = match ? match[1] : "";
+      explanation =
+        getPackExplanation(packUnit, targetSingular) || foundExp.explanation;
     }
 
-    return [{
-      prefix: '',
-      qty: totalQty,
-      unit: getAdaptiveUnit(totalQty, targetSingular),
-      rest: items[0].rest,
-      explanation
-    }];
+    return [
+      {
+        prefix: "",
+        qty: totalQty,
+        unit: getAdaptiveUnit(totalQty, targetSingular),
+        rest: items[0].rest,
+        explanation,
+      },
+    ];
   }
 
   return items;

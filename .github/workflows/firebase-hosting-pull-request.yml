@@ -24,8 +24,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
-          cache: 'pnpm'
+          node-version: "latest"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
@@ -36,10 +36,13 @@ jobs:
       - name: ESLint Check
         run: pnpm lint
 
+      - name: Prettier Format Check
+        run: pnpm format:check
+
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: 'latest'
+          hugo-version: "latest"
           extended: true
 
       - name: Build

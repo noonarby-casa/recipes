@@ -129,7 +129,10 @@
   color: #555;
   border-radius: 17px;
   cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
   outline: none;
   text-align: center;
 }
@@ -237,7 +240,9 @@
   background: var(--noonblue);
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: transform 0.1s, background 0.3s;
+  transition:
+    transform 0.1s,
+    background 0.3s;
 }
 
 #recipe-scale-slider::-webkit-slider-thumb:hover {
@@ -253,7 +258,9 @@
   cursor: pointer;
   border: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: transform 0.1s, background 0.3s;
+  transition:
+    transform 0.1s,
+    background 0.3s;
 }
 
 #recipe-scale-slider::-moz-range-thumb:hover {
@@ -307,7 +314,9 @@
 
 .recipe-ingredient {
   margin-bottom: 0.6rem;
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 .recipe-ingredient .qty-num {

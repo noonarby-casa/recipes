@@ -7,12 +7,19 @@
         {{ $img220 := .Fill "220x220 Center webp" }}
         {{ $img280 := .Fill "280x280 Center webp" }}
         <div class="recipe-featured-image">
-          <img src="{{ $img140.RelPermalink }}"
-               srcset="{{ $img110.RelPermalink }} 110w, {{ $img140.RelPermalink }} 140w, {{ $img220.RelPermalink }} 220w, {{ $img280.RelPermalink }} 280w"
-               sizes="(max-width: 767px) 140px, 110px"
-               width="140"
-               height="140"
-               alt="{{ $.Title }}">
+          <img
+            src="{{ $img140.RelPermalink }}"
+            srcset="
+              {{ $img110.RelPermalink }} 110w,
+              {{ $img140.RelPermalink }} 140w,
+              {{ $img220.RelPermalink }} 220w,
+              {{ $img280.RelPermalink }} 280w
+            "
+            sizes="(max-width: 767px) 140px, 110px"
+            width="140"
+            height="140"
+            alt="{{ $.Title }}"
+          />
         </div>
       {{ end }}
       <div class="recipe-title-bar">
@@ -20,11 +27,25 @@
         <div class="recipe-title-meta">
           {{ if .Params.times }}
             <div class="recipe-time">
-              <svg class="time-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg
+                class="time-icon"
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                stroke="currentColor"
+                stroke-width="2.5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
               <span>
                 {{- range $index, $element := .Params.times -}}
-                  {{- if $index }} + {{ end -}}
-                  {{- .step | title }} {{ .time -}}
+                  {{- if $index }}+{{ end -}}
+                  {{- .step | title }}
+                  {{ .time -}}
                 {{- end -}}
               </span>
             </div>
@@ -32,7 +53,20 @@
           {{ end }}
           {{ $recipeSource := .Params.recipeSource | default "Noonarby" }}
           <div class="recipe-source">
-            <svg class="source-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <svg
+              class="source-icon"
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              stroke="currentColor"
+              stroke-width="2.5"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
             <span>{{ $recipeSource }}</span>
           </div>
         </div>
@@ -43,14 +77,28 @@
       <div class="recipe-scale-panel">
         <div class="scale-header">
           <span class="scale-label">Adjust Servings / Scale</span>
-          <span class="scale-display"><strong id="scale-display-val">1.0</strong>x</span>
+          <span class="scale-display"
+            ><strong id="scale-display-val">1.0</strong>x</span
+          >
         </div>
         <div class="scale-controls">
-          <input type="range" id="recipe-scale-slider" min="0.25" max="4" step="0.25" value="1.0" aria-label="Scale recipe">
+          <input
+            type="range"
+            id="recipe-scale-slider"
+            min="0.25"
+            max="4"
+            step="0.25"
+            value="1.0"
+            aria-label="Scale recipe"
+          />
           <div class="scale-presets">
-            <button type="button" class="scale-btn" data-val="0.25">0.25x</button>
+            <button type="button" class="scale-btn" data-val="0.25">
+              0.25x
+            </button>
             <button type="button" class="scale-btn" data-val="0.5">0.5x</button>
-            <button type="button" class="scale-btn active" data-val="1.0">1x (Original)</button>
+            <button type="button" class="scale-btn active" data-val="1.0">
+              1x (Original)
+            </button>
             <button type="button" class="scale-btn" data-val="2.0">2x</button>
             <button type="button" class="scale-btn" data-val="4.0">4x</button>
           </div>
@@ -62,9 +110,15 @@
           <span class="font-label">Text Size</span>
         </div>
         <div class="font-controls">
-          <button type="button" class="font-btn" data-size="smaller">Smaller</button>
-          <button type="button" class="font-btn active" data-size="default">Default</button>
-          <button type="button" class="font-btn" data-size="larger">Larger</button>
+          <button type="button" class="font-btn" data-size="smaller">
+            Smaller
+          </button>
+          <button type="button" class="font-btn active" data-size="default">
+            Default
+          </button>
+          <button type="button" class="font-btn" data-size="larger">
+            Larger
+          </button>
         </div>
       </div>
     </div>
@@ -75,11 +129,25 @@
       <div class="ingredients-title-wrapper">
         <h2>Ingredients</h2>
         <div class="shopping-view-toggle">
-          <button type="button" class="view-toggle-btn active" id="btn-recipe-view" aria-label="Show original recipe ingredients">Recipe</button>
-          <button type="button" class="view-toggle-btn" id="btn-shopping-view" aria-label="Show converted shopping list">Shopping List</button>
+          <button
+            type="button"
+            class="view-toggle-btn active"
+            id="btn-recipe-view"
+            aria-label="Show original recipe ingredients"
+          >
+            Recipe
+          </button>
+          <button
+            type="button"
+            class="view-toggle-btn"
+            id="btn-shopping-view"
+            aria-label="Show converted shopping list"
+          >
+            Shopping List
+          </button>
         </div>
       </div>
-      
+
       <ul class="recipe-ingredients-list">
         {{ range .Params.ingredients }}
           <li class="recipe-ingredient">{{ . }}</li>
@@ -88,15 +156,35 @@
 
       <div class="shopping-list-wrapper" style="display: none;">
         <div class="shopping-actions">
-          <button type="button" class="shopping-copy-btn" id="btn-copy-shopping-list" aria-label="Copy shopping list to clipboard">
-            <svg class="copy-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <button
+            type="button"
+            class="shopping-copy-btn"
+            id="btn-copy-shopping-list"
+            aria-label="Copy shopping list to clipboard"
+          >
+            <svg
+              class="copy-icon"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2.5"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              ></path>
+            </svg>
             <span>Copy List</span>
           </button>
         </div>
         <div class="shopping-section buy-section">
           <ul class="shopping-buy-list"></ul>
         </div>
-        <hr class="shopping-divider" style="display: none;">
+        <hr class="shopping-divider" style="display: none;" />
         <div class="shopping-section staples-section">
           <ul class="shopping-staples-list"></ul>
         </div>
@@ -111,7 +199,7 @@
     {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
     {{ $dateHuman := .Date | time.Format ":date_long" }}
     <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
-    
+
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
   </div>
 {{ end }}

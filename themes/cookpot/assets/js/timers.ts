@@ -1,4 +1,4 @@
-import { initAudio, playLowerBoundChime, playUpperBoundChime } from './audio';
+import { initAudio, playLowerBoundChime, playUpperBoundChime } from "./audio";
 
 interface ParsedDuration {
   minSeconds: number;
@@ -7,16 +7,18 @@ interface ParsedDuration {
 
 function parseDuration(durationStr: string): ParsedDuration | null {
   const str = durationStr.toLowerCase().trim();
-  
+
   // Regex to match range, e.g. "5-7 minutes", "30-45 seconds", "1-2 hours"
-  const rangeRegex = /^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)\s*(hour|hours|hr|hrs|h|minute|minutes|min|mins|m|second|seconds|sec|secs|s)$/;
+  const rangeRegex =
+    /^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)\s*(hour|hours|hr|hrs|h|minute|minutes|min|mins|m|second|seconds|sec|secs|s)$/;
   // Regex to match single, e.g. "10 minutes", "45 seconds", "1.5 hours"
-  const singleRegex = /^(\d+(?:\.\d+)?)\s*(hour|hours|hr|hrs|h|minute|minutes|min|mins|m|second|seconds|sec|secs|s)$/;
-  
+  const singleRegex =
+    /^(\d+(?:\.\d+)?)\s*(hour|hours|hr|hrs|h|minute|minutes|min|mins|m|second|seconds|sec|secs|s)$/;
+
   let minVal: number;
   let maxVal: number;
   let unit: string;
-  
+
   let match = str.match(rangeRegex);
   if (match) {
     minVal = parseFloat(match[1]);
@@ -32,19 +34,19 @@ function parseDuration(durationStr: string): ParsedDuration | null {
       return null;
     }
   }
-  
+
   let multiplier = 1;
-  if (unit.startsWith('h')) {
+  if (unit.startsWith("h")) {
     multiplier = 3600;
-  } else if (unit.startsWith('m')) {
+  } else if (unit.startsWith("m")) {
     multiplier = 60;
-  } else if (unit.startsWith('s')) {
+  } else if (unit.startsWith("s")) {
     multiplier = 1;
   }
-  
+
   return {
     minSeconds: Math.round(minVal * multiplier),
-    maxSeconds: Math.round(maxVal * multiplier)
+    maxSeconds: Math.round(maxVal * multiplier),
   };
 }
 
@@ -54,21 +56,21 @@ function formatTime(seconds: number): string {
   const hrs = Math.floor(absSeconds / 3600);
   const mins = Math.floor((absSeconds % 3600) / 60);
   const secs = absSeconds % 60;
-  
-  let display = '';
+
+  let display = "";
   if (hrs > 0) {
-    display += `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    display += `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   } else {
-    display += `${mins}:${secs.toString().padStart(2, '0')}`;
+    display += `${mins}:${secs.toString().padStart(2, "0")}`;
   }
-  
+
   return isNegative ? `-${display}` : display;
 }
 
 export function initTimers(): void {
-  const timers = document.querySelectorAll<HTMLElement>('.recipe-timer');
+  const timers = document.querySelectorAll<HTMLElement>(".recipe-timer");
 
-  timers.forEach(timerContainer => {
+  timers.forEach((timerContainer) => {
     const rawDuration = timerContainer.dataset.duration;
     if (!rawDuration) return;
 
@@ -82,39 +84,46 @@ export function initTimers(): void {
     let elapsed = 0;
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
-    const btn = timerContainer.querySelector<HTMLElement>('.recipe-timer-btn');
-    const resetBtn = timerContainer.querySelector<HTMLElement>('.recipe-timer-reset');
+    const btn = timerContainer.querySelector<HTMLElement>(".recipe-timer-btn");
+    const resetBtn = timerContainer.querySelector<HTMLElement>(
+      ".recipe-timer-reset",
+    );
     if (!btn || !resetBtn) return;
-    
-    const labelSpan = btn.querySelector<HTMLElement>('.timer-label');
+
+    const labelSpan = btn.querySelector<HTMLElement>(".timer-label");
     if (!labelSpan) return;
 
     function updateDisplay(): void {
       const remaining = maxSeconds - elapsed;
-      
+
       if (elapsed === 0) {
         labelSpan!.textContent = rawDuration!;
-        timerContainer.classList.remove('has-started', 'is-running', 'is-in-range', 'is-beyond-range');
+        timerContainer.classList.remove(
+          "has-started",
+          "is-running",
+          "is-in-range",
+          "is-beyond-range",
+        );
         return;
       }
 
       labelSpan!.textContent = formatTime(remaining);
 
       if (elapsed > maxSeconds) {
-        timerContainer.classList.add('is-beyond-range');
-        timerContainer.classList.remove('is-in-range');
+        timerContainer.classList.add("is-beyond-range");
+        timerContainer.classList.remove("is-in-range");
       } else if (elapsed >= minSeconds) {
-        timerContainer.classList.add('is-in-range');
-        timerContainer.classList.remove('is-beyond-range');
+        timerContainer.classList.add("is-in-range");
+        timerContainer.classList.remove("is-beyond-range");
       } else {
-        timerContainer.classList.remove('is-in-range', 'is-beyond-range');
+        timerContainer.classList.remove("is-in-range", "is-beyond-range");
       }
 
-      timerContainer.classList.add('has-started');
+      timerContainer.classList.add("has-started");
       if (intervalId) {
-        timerContainer.classList.add('is-running');
+        timerContainer.classList.add("is-running");
       } else {
-        timerContainer.classList.remove('is-running');
+        timerContainer.classList.remove("is-running");
       }
     }
 
@@ -153,7 +162,7 @@ export function initTimers(): void {
       updateDisplay();
     }
 
-    btn.addEventListener('click', (e: MouseEvent) => {
+    btn.addEventListener("click", (e: MouseEvent) => {
       e.preventDefault();
       initAudio(); // Initialize audio context on user interaction
       if (intervalId) {
@@ -163,7 +172,7 @@ export function initTimers(): void {
       }
     });
 
-    resetBtn.addEventListener('click', (e: MouseEvent) => {
+    resetBtn.addEventListener("click", (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
       resetTimer();

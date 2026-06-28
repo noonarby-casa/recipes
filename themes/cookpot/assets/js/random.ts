@@ -1,10 +1,10 @@
 export function initRandomRecipe(): void {
-  const randomBtn = document.getElementById('header-random-recipe');
+  const randomBtn = document.getElementById("header-random-recipe");
   if (!randomBtn) return;
 
-  randomBtn.addEventListener('click', (e: MouseEvent) => {
+  randomBtn.addEventListener("click", (e: MouseEvent) => {
     e.preventDefault();
-    const recipesJson = randomBtn.getAttribute('data-recipes');
+    const recipesJson = randomBtn.getAttribute("data-recipes");
     if (!recipesJson) return;
 
     try {
@@ -16,10 +16,13 @@ export function initRandomRecipe(): void {
         if (recipes.length > 1) {
           const currentPath = window.location.pathname;
           // Normalize paths by ensuring they end/start similarly
-          const cleanPath = (path: string) => path.replace(/\/+$/, '').toLowerCase();
+          const cleanPath = (path: string) =>
+            path.replace(/\/+$/, "").toLowerCase();
           const currentClean = cleanPath(currentPath);
-          
-          targetRecipes = recipes.filter(url => cleanPath(url) !== currentClean);
+
+          targetRecipes = recipes.filter(
+            (url) => cleanPath(url) !== currentClean,
+          );
           if (targetRecipes.length === 0) {
             targetRecipes = recipes;
           }
@@ -30,7 +33,7 @@ export function initRandomRecipe(): void {
         window.location.href = randomUrl;
       }
     } catch (err) {
-      console.error('Error parsing recipes for random redirect:', err);
+      console.error("Error parsing recipes for random redirect:", err);
     }
   });
 }

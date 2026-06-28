@@ -2,7 +2,7 @@
 
 This is a **Hugo-based static website** dedicated to displaying recipes for the **Noonarby Casa**. It features a custom recipe-focused Hugo theme named `cookpot` and is deployed to **Firebase Hosting**.
 
-* **Live Production Website:** [recipes.noonarby.casa](https://recipes.noonarby.casa/)
+- **Live Production Website:** [recipes.noonarby.casa](https://recipes.noonarby.casa/)
 
 ---
 
@@ -24,6 +24,7 @@ For a detailed map of the codebase directory structure and layouts, please refer
 ### Prerequisites
 
 You must have the following tools installed on your machine:
+
 1. **Hugo Extended** (Ensure the output of `hugo version` contains `extended`. The extended version is required to compile modular CSS/JS and assets handled by the theme.)
 2. **Node.js** and **pnpm** (used for TypeScript static type-checking).
 
@@ -35,12 +36,12 @@ pnpm install
 
 ### Commands
 
-| Command | Action |
-| :--- | :--- |
-| `hugo server` | Starts a local development server at `http://localhost:1313/recipes/` with live reloading. |
-| `hugo --minify` | Compiles the site into the `public/` directory, minifying assets to verify production build viability. |
-| `hugo serve --renderToDisk --disableFastRender` | Renders the production-ready site to the `public/` directory and serves it locally. |
-| `pnpm typecheck` | Runs the TypeScript compiler (`tsc`) with the `--noEmit` flag to perform static checks on all scripts. |
+| Command                                         | Action                                                                                                 |
+| :---------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
+| `hugo server`                                   | Starts a local development server at `http://localhost:1313/recipes/` with live reloading.             |
+| `hugo --minify`                                 | Compiles the site into the `public/` directory, minifying assets to verify production build viability. |
+| `hugo serve --renderToDisk --disableFastRender` | Renders the production-ready site to the `public/` directory and serves it locally.                    |
+| `pnpm typecheck`                                | Runs the TypeScript compiler (`tsc`) with the `--noEmit` flag to perform static checks on all scripts. |
 
 ---
 
@@ -85,21 +86,21 @@ tags = [
 
 Inside the `## Instructions` section, wrap any ingredient quantities in step descriptions with the `{{< qty "amount unit" >}}` shortcode to enable interactive scaling:
 
-* **Supported Units:** The scaling engine in [main.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/main.ts) supports: `ounces`, `ounce`, `pounds`, `pound`, `cups`, `cup`, `teaspoons`, `teaspoon`, `tablespoons`, `tablespoon`, `cloves`, `clove`, `cans`, `can`, `grams`, `gram`, `g`, `ml`, `small`, `large`, `medium`.
-* **Usage Rules:**
+- **Supported Units:** The scaling engine in [main.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/main.ts) supports: `ounces`, `ounce`, `pounds`, `pound`, `cups`, `cup`, `teaspoons`, `teaspoon`, `tablespoons`, `tablespoon`, `cloves`, `clove`, `cans`, `can`, `grams`, `gram`, `g`, `ml`, `small`, `large`, `medium`.
+- **Usage Rules:**
   - **Supported units:** Wrap both the amount and unit inside the shortcode.
-    * Example: `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`.
-  - **Unsupported units** (e.g., `lemon`, `onion`, `squash`): Wrap *only* the numeric amount, leaving the unit outside.
-    * Example: `{{< qty "1" >}} lemon` or `{{< qty "4" >}} summer squash`.
+    - Example: `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`.
+  - **Unsupported units** (e.g., `lemon`, `onion`, `squash`): Wrap _only_ the numeric amount, leaving the unit outside.
+    - Example: `{{< qty "1" >}} lemon` or `{{< qty "4" >}} summer squash`.
   - **Avoid ranges:** The parser matches the first numeric quantity. For ranges, write:
-    * Example: `{{< qty "2 tablespoons" >}} (or up to 3)`.
+    - Example: `{{< qty "2 tablespoons" >}} (or up to 3)`.
 
 ### 4. Interactive Timers
 
 Wrap time durations or ranges inside step descriptions with the `{{< timer "duration" >}}` shortcode. This generates an interactive client-side countdown timer:
 
-* Example: `Cook for {{< timer "5-7 minutes" >}}.`
-* Example: `Simmer for {{< timer "10 minutes" >}}.`
+- Example: `Cook for {{< timer "5-7 minutes" >}}.`
+- Example: `Simmer for {{< timer "10 minutes" >}}.`
 
 ---
 
@@ -108,18 +109,20 @@ Wrap time durations or ranges inside step descriptions with the `{{< timer "dura
 The recipe details view includes a **Shopping List** view. Users can toggle between the standard recipe presentation and a dynamically compiled list of items grouped for commercial grocery purchases.
 
 ### Dynamic Packing & Conversion Engine
+
 The shopping list logic in [shopping-list.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list.ts) processes raw ingredients and scales them using a series of specialized converter pipelines:
-* **Garlic:** Converts individual cloves to whole heads (assumes ~10 cloves/head).
-* **Ginger:** Suggests buying a whole root while displaying the exact required amount.
-* **Lemons & Limes:** Compares juice and zest volumes to recommend the precise quantity of whole citrus fruits.
-* **Butter:** Standardizes cups, tablespoons, or ounces into commercial sticks (1 stick = 1/2 cup) with conversions.
-* **Onions:** Converts recipe cup measurements to whole onion counts (1 onion = ~1 cup).
-* **Dairy & Liquids:** Translates cups of ricotta or sour cream to standard half-pints, pints, or quarts. Broths, milks, and heavy creams are grouped to minimum pints or quarts.
-* **Dry Pasta:** Groups pasta weights into standard boxes (1 lb or 454g).
-* **Egg Yolks:** Recommends purchasing whole eggs based on yolk count.
-* **Pantry Staples Section:** Items like oil, vinegar, spices, water, and baking goods (including small quantities of butter) are isolated into a separate "Pantry Staples" subsection.
-* **Note Aggregation & Abbreviations:** Groups duplicated ingredients, adds up notes to the smallest units, and prints concise instructions (abbreviating `tablespoons` to `tbsp`, `ounces` to `oz`, etc.).
-* **Clipboard copy:** Features a copy button that outputs a clean, Markdown-formatted checklist to easily paste into shopping apps.
+
+- **Garlic:** Converts individual cloves to whole heads (assumes ~10 cloves/head).
+- **Ginger:** Suggests buying a whole root while displaying the exact required amount.
+- **Lemons & Limes:** Compares juice and zest volumes to recommend the precise quantity of whole citrus fruits.
+- **Butter:** Standardizes cups, tablespoons, or ounces into commercial sticks (1 stick = 1/2 cup) with conversions.
+- **Onions:** Converts recipe cup measurements to whole onion counts (1 onion = ~1 cup).
+- **Dairy & Liquids:** Translates cups of ricotta or sour cream to standard half-pints, pints, or quarts. Broths, milks, and heavy creams are grouped to minimum pints or quarts.
+- **Dry Pasta:** Groups pasta weights into standard boxes (1 lb or 454g).
+- **Egg Yolks:** Recommends purchasing whole eggs based on yolk count.
+- **Pantry Staples Section:** Items like oil, vinegar, spices, water, and baking goods (including small quantities of butter) are isolated into a separate "Pantry Staples" subsection.
+- **Note Aggregation & Abbreviations:** Groups duplicated ingredients, adds up notes to the smallest units, and prints concise instructions (abbreviating `tablespoons` to `tbsp`, `ounces` to `oz`, etc.).
+- **Clipboard copy:** Features a copy button that outputs a clean, Markdown-formatted checklist to easily paste into shopping apps.
 
 ---
 

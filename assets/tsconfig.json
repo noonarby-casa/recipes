@@ -9,12 +9,8 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "../themes/cookpot/assets/*"
-      ]
+      "*": ["../themes/cookpot/assets/*"]
     }
   },
-  "include": [
-    "../themes/cookpot/assets/js/**/*"
-  ]
+  "include": ["../themes/cookpot/assets/js/**/*"]
 }

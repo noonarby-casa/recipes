@@ -6,31 +6,56 @@
     {{ $img260 := .Fill "260x260 Center webp" }}
     <div class="recipe-list-image-container">
       <div class="recipe-list-image">
-        <img src="{{ $img130.RelPermalink }}"
-             srcset="{{ $img90.RelPermalink }} 90w, {{ $img130.RelPermalink }} 130w, {{ $img180.RelPermalink }} 180w, {{ $img260.RelPermalink }} 260w"
-             sizes="(max-width: 599px) 90px, 130px"
-             width="130"
-             height="130"
-             alt="{{ $.Title }}"
-             loading="lazy">
+        <img
+          src="{{ $img130.RelPermalink }}"
+          srcset="
+            {{ $img90.RelPermalink }}  90w,
+            {{ $img130.RelPermalink }} 130w,
+            {{ $img180.RelPermalink }} 180w,
+            {{ $img260.RelPermalink }} 260w
+          "
+          sizes="(max-width: 599px) 90px, 130px"
+          width="130"
+          height="130"
+          alt="{{ $.Title }}"
+          loading="lazy"
+        />
       </div>
     </div>
   {{ end }}
   <div class="recipe-list-content">
-    <h2 class="recipe-list-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+    <h2 class="recipe-list-title">
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    </h2>
     <div class="recipe-list-meta">
       <div class="recipe-list-meta-left">
         {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
         {{ $dateHuman := .Date | time.Format ":date_long" }}
-        <time datetime="{{ $dateMachine }}" class="recipe-list-date">{{ $dateHuman }}</time>
+        <time datetime="{{ $dateMachine }}" class="recipe-list-date"
+          >{{ $dateHuman }}</time
+        >
         {{ if .Params.times }}
           <span class="recipe-meta-separator">•</span>
           <div class="recipe-time">
-            <svg class="time-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <svg
+              class="time-icon"
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              stroke="currentColor"
+              stroke-width="2.5"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
             <span>
               {{- range $index, $element := .Params.times -}}
-                {{- if $index }} + {{ end -}}
-                {{- .step | title }} {{ .time -}}
+                {{- if $index }}+{{ end -}}
+                {{- .step | title }}
+                {{ .time -}}
               {{- end -}}
             </span>
           </div>
@@ -38,7 +63,20 @@
         <span class="recipe-meta-separator">•</span>
         {{ $recipeSource := .Params.recipeSource | default "Noonarby" }}
         <div class="recipe-source">
-          <svg class="source-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <svg
+            class="source-icon"
+            viewBox="0 0 24 24"
+            width="14"
+            height="14"
+            stroke="currentColor"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
           <span>{{ $recipeSource }}</span>
         </div>
       </div>
