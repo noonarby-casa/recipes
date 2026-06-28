@@ -94,10 +94,11 @@ export function initTimers(): void {
     if (!labelSpan) return;
 
     function updateDisplay(): void {
+      if (!labelSpan || !rawDuration) return;
       const remaining = maxSeconds - elapsed;
 
       if (elapsed === 0) {
-        labelSpan!.textContent = rawDuration!;
+        labelSpan.textContent = rawDuration;
         timerContainer.classList.remove(
           "has-started",
           "is-running",
@@ -107,7 +108,7 @@ export function initTimers(): void {
         return;
       }
 
-      labelSpan!.textContent = formatTime(remaining);
+      labelSpan.textContent = formatTime(remaining);
 
       if (elapsed > maxSeconds) {
         timerContainer.classList.add("is-beyond-range");

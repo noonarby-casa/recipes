@@ -1,12 +1,4 @@
-/**
- * Configuration options for text matching. All pattern strings (match, excludeIf, keepIf)
- * MUST be defined in lowercase.
- */
-export interface StringMatchConfig {
-  match: string | string[];
-  excludeIf?: string[];
-  keepIf?: string[];
-}
+import { StringMatchConfig } from "./types";
 
 export const STAPLES: StringMatchConfig[] = [
   { match: "salt" },

@@ -1,6 +1,6 @@
 import { formatCookingNumber } from "./scaler";
 import { processShoppingList } from "./shopping-list/pipeline";
-import { ShoppingItem } from "./shopping-list/converters";
+import { ShoppingItem } from "./shopping-list/types";
 import { formatNotesArray } from "./shopping-list/utils";
 
 /**
@@ -125,8 +125,9 @@ export function initShoppingList(): void {
    * Updates display layout visibility.
    */
   function renderShoppingList(scale: number): void {
-    buyList!.innerHTML = "";
-    staplesList!.innerHTML = "";
+    if (!buyList || !staplesList) return;
+    buyList.innerHTML = "";
+    staplesList.innerHTML = "";
 
     const elements =
       document.querySelectorAll<HTMLElement>(".recipe-ingredient");
@@ -136,10 +137,10 @@ export function initShoppingList(): void {
     const hasStaples = stapleItems.length > 0;
 
     // Render Need to Buy items
-    buyItems.forEach((converted) => renderItem(converted, buyList!));
+    buyItems.forEach((converted) => renderItem(converted, buyList));
 
     // Render Pantry Staples items
-    stapleItems.forEach((converted) => renderItem(converted, staplesList!));
+    stapleItems.forEach((converted) => renderItem(converted, staplesList));
 
     // Toggle staple section visibility depending on items
     const staplesSection =

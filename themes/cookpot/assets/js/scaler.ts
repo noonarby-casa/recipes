@@ -8,9 +8,9 @@ export interface ParsedIngredient {
 }
 
 // Match common culinary units dynamically compiled from config arrays
-const ALL_UNITS = [...VOLUME_UNITS, ...OTHER_UNITS];
-const SORTED_UNITS = [...ALL_UNITS].sort((a, b) => b.length - a.length);
-const escapedUnits = SORTED_UNITS.map((u) =>
+const allUnits = [...VOLUME_UNITS, ...OTHER_UNITS];
+const sortedUnits = [...allUnits].sort((a, b) => b.length - a.length);
+const escapedUnits = sortedUnits.map((u) =>
   u.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"),
 );
 const unitRegex = new RegExp(`^(${escapedUnits.join("|")})\\b`, "i");

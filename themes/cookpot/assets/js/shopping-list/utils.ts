@@ -5,66 +5,29 @@ import {
   TO_TEASPOONS,
   PREP_KEYWORDS,
   SKIP_TERMS,
-  StringMatchConfig,
 } from "./config";
-export { StringMatchConfig };
-
-export interface BaseIngredient {
-  rest: string;
-  prep: string;
-}
-
-export interface ScalableIngredient extends BaseIngredient {
-  isScalable: true;
-  scaledQty: number;
-  unit: string;
-}
-
-export interface FixedIngredient extends BaseIngredient {
-  isScalable: false;
-}
-
-export type Ingredient = ScalableIngredient | FixedIngredient;
-
-export interface ConverterContext {
-  scaledQty: number;
-  unit: string;
-  unitLower: string;
-  rest: string;
-  restLower: string;
-  prep: string;
-  prepLower: string;
-  isStaple: boolean;
-}
-
-export interface ShoppingItem {
-  qty: number | null;
-  unit: string;
-  rest: string;
-  notes?: Record<string, NoteItem[]>;
-  note?: NoteItem[];
-  isStaple: boolean;
-  parts?: { [partName: string]: number };
-}
-
-export interface NoteItem {
-  prefix: string;
-  qty: number | null;
-  unit: string;
-  rest: string;
-  explanation: string;
-}
-
-export interface ParsedMeas {
-  qty: number | null;
-  unit: string;
-  rest: string;
-}
-
-export interface CleanedPrepResult {
-  rest: string;
-  prep: string;
-}
+import {
+  StringMatchConfig,
+  BaseIngredient,
+  ScalableIngredient,
+  FixedIngredient,
+  Ingredient,
+  ConverterContext,
+  ShoppingItem,
+  NoteItem,
+  CleanedPrepResult,
+} from "./types";
+export {
+  StringMatchConfig,
+  BaseIngredient,
+  ScalableIngredient,
+  FixedIngredient,
+  Ingredient,
+  ConverterContext,
+  ShoppingItem,
+  NoteItem,
+  CleanedPrepResult,
+};
 
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.
@@ -73,14 +36,6 @@ export function getSingularUnit(unit: string): string {
   if (!unit) return "";
   const lower = unit.toLowerCase().trim();
   return PLURAL_TO_SINGULAR[lower] || lower;
-}
-
-/**
- * Returns the pluralized form of a given unit, or the unit itself if not found.
- */
-export function getPluralizedUnit(unit: string): string {
-  const lower = unit.toLowerCase().trim();
-  return SINGULAR_TO_PLURAL[lower] || unit;
 }
 
 /**
@@ -148,91 +103,6 @@ export function cleanPrepTerms(text: string): CleanedPrepResult {
   cleaned = cleaned.replace(/\s+/g, " ").trim();
 
   return { rest: cleaned, prep };
-}
-
-/**
- * Parses a combined note string into structured measurement objects separated by '+'.
- */
-export function parseNoteToArray(note: string): NoteItem[] {
-  if (!note) return [];
-
-  let cleaned = note.trim();
-
-  // 1. Check for prefix style (need ...) pattern first to prevent splitting on inner '+'
-  const match = cleaned.match(/^(.*?)\(need\s+([^)]+)\)$/i);
-  if (match) {
-    const prefix = match[1].trim();
-    const measString = match[2].trim();
-    const innerParsed = parseNoteToArray("need " + measString);
-    innerParsed.forEach((item) => {
-      item.explanation = prefix;
-      item.prefix = "";
-    });
-    return innerParsed;
-  }
-
-  // 2. Handle 'need ' prefix and splitting by '+'
-  if (cleaned.toLowerCase().startsWith("need ")) {
-    cleaned = cleaned.substring(5).trim();
-  }
-
-  if (cleaned.includes(" + ")) {
-    const parts = cleaned.split(" + ");
-    let result: NoteItem[] = [];
-    parts.forEach((p) => {
-      result = result.concat(parseNoteToArray(p));
-    });
-    return result;
-  }
-
-  // 3. Match any parenthesized explanation at the end, e.g. need 9 tablespoons juice (1 lemon = ~3 tbsp juice)
-  let explanation = "";
-  const expMatch = cleaned.match(/\s*\((?!need\s+)([^)]+)\)$/i);
-  if (expMatch) {
-    explanation = expMatch[1].trim();
-    const matchIndex = expMatch.index !== undefined ? expMatch.index : 0;
-    cleaned = cleaned.substring(0, matchIndex).trim();
-  }
-
-  // 4. Plain measurement
-  const parsedMeas = parseMeasString(cleaned);
-  return [
-    {
-      prefix: "",
-      qty: parsedMeas.qty,
-      unit: parsedMeas.unit,
-      rest: parsedMeas.rest,
-      explanation: explanation,
-    },
-  ];
-}
-
-/**
- * Parses numeric quantities (including fractions) and units from a raw measurement string.
- */
-export function parseMeasString(str: string): ParsedMeas {
-  const match = str.match(
-    /^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)(?:\s+([a-zA-Z\-()]+))?(?:\s+(.*))?$/,
-  );
-  if (match) {
-    const qtyStr = match[1];
-    let qty = parseFloat(qtyStr);
-    if (qtyStr.includes("/")) {
-      const parts = qtyStr.split(/\s+/);
-      if (parts.length === 2) {
-        const whole = parseFloat(parts[0]);
-        const fracParts = parts[1].split("/");
-        qty = whole + parseFloat(fracParts[0]) / parseFloat(fracParts[1]);
-      } else {
-        const fracParts = parts[0].split("/");
-        qty = parseFloat(fracParts[0]) / parseFloat(fracParts[1]);
-      }
-    }
-    const unit = match[2] || "";
-    const rest = match[3] || "";
-    return { qty, unit, rest };
-  }
-  return { qty: null, unit: "", rest: str };
 }
 
 /**

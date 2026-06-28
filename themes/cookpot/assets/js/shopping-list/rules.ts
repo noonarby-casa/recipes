@@ -1,8 +1,5 @@
 import { getAdaptiveUnit } from "../scaler";
 import {
-  StringMatchConfig,
-  ShoppingItem,
-  ConverterContext,
   matchesConfig,
   isVolumeUnit,
   adjustDescriptionPlurality,
@@ -14,6 +11,7 @@ import {
   range,
   replaceTerms,
 } from "./utils";
+import { StringMatchConfig, ShoppingItem, ConverterContext } from "./types";
 import { STAPLES } from "./config";
 
 export interface IngredientRule {
@@ -23,6 +21,131 @@ export interface IngredientRule {
   getIngredientKey?: (unit: string, prep: string, baseKey: string) => string;
   getShoppingItemKey?: (unit: string, restLower: string) => string | undefined;
   convert?: (ctx: ConverterContext) => ShoppingItem | null;
+}
+
+function createCitrusRule(
+  name: string,
+  pluralKey: string,
+  juiceFactor: number,
+  excludeTerms: string[],
+): IngredientRule {
+  const matchConfig: StringMatchConfig = {
+    match: name,
+    excludeIf: excludeTerms,
+  };
+  return {
+    name,
+    match: matchConfig,
+    isStaple: false,
+    getShoppingItemKey: (unit, restLower) => {
+      const normUnit = getSingularUnit(unit);
+      if (normUnit === name || matchesConfig(restLower, matchConfig)) {
+        return pluralKey;
+      }
+      return undefined;
+    },
+    convert: ({
+      scaledQty,
+      unit,
+      unitLower,
+      restLower,
+      rest,
+      isStaple,
+    }): ShoppingItem | null => {
+      if (restLower.includes("zest")) {
+        const count = Math.ceil(
+          match(
+            unitLower,
+            [
+              [["tablespoon", "tbsp"], scaledQty],
+              [["teaspoon", "tsp"], scaledQty / 3],
+            ],
+            scaledQty,
+          ),
+        );
+        return {
+          qty: count,
+          unit: "",
+          rest: getAdaptiveUnit(count, name),
+          notes: createNote(scaledQty, unit || "tablespoon", "", "zest"),
+          isStaple,
+          parts: { zest: count },
+        };
+      }
+
+      if (!isStaple && isVolumeUnit(unitLower)) {
+        const tbsp = match(
+          unitLower,
+          [
+            [["cup"], scaledQty * 16],
+            [["teaspoon", "tsp"], scaledQty / 3],
+            [["ounce", "oz"], scaledQty * 2],
+            [["ml"], scaledQty * 0.067],
+          ],
+          scaledQty,
+        );
+
+        const count = Math.ceil(tbsp / juiceFactor);
+        return {
+          qty: count,
+          unit: "",
+          rest: getAdaptiveUnit(count, name),
+          notes: createNote(
+            scaledQty,
+            unit,
+            `1 ${name} = ~${juiceFactor} tbsp juice`,
+            "juice",
+          ),
+          isStaple,
+          parts: { juice: count },
+        };
+      }
+
+      if (hasUnit(unitLower, [name])) {
+        const count = Math.ceil(scaledQty);
+        return {
+          qty: count,
+          unit: "",
+          rest: adjustDescriptionPlurality(count, rest, name),
+          notes: {},
+          isStaple,
+        };
+      }
+
+      return null;
+    },
+  };
+}
+
+function createLiquidContainerRule(
+  name: string,
+  matchConfig: StringMatchConfig,
+  sizes: [number, string][],
+  fallbackUnit: string,
+): IngredientRule {
+  return {
+    name,
+    match: matchConfig,
+    isStaple: false,
+    convert: ({ scaledQty, unitLower, rest, isStaple }) => {
+      if (!hasUnit(unitLower, ["cup"])) return null;
+      const count = Math.ceil(scaledQty / 4);
+      const rangeConfig: [number, { qty: number; unit: string }][] = sizes.map(
+        ([limit, unitName]) => [limit, { qty: 1, unit: unitName }],
+      );
+      const { qty, unit } = range(scaledQty, rangeConfig, {
+        qty: count,
+        unit: getAdaptiveUnit(count, fallbackUnit),
+      });
+      return {
+        qty,
+        unit,
+        rest,
+        notes: createNote(scaledQty, "cup"),
+        isStaple,
+      };
+    },
+  };
 }
 
 export const INGREDIENT_RULES: IngredientRule[] = [
@@ -113,180 +236,9 @@ export const INGREDIENT_RULES: IngredientRule[] = [
     },
   },
 
-  // 3. Lemons
-  {
-    name: "lemon",
-    match: { match: "lemon", excludeIf: ["extract", "grass", "pepper"] },
-    isStaple: false,
-    getShoppingItemKey: (unit, restLower) => {
-      const normUnit = getSingularUnit(unit);
-      if (
-        normUnit === "lemon" ||
-        matchesConfig(restLower, {
-          match: "lemon",
-          excludeIf: ["extract", "grass", "pepper"],
-        })
-      ) {
-        return "_lemons";
-      }
-      return undefined;
-    },
-    convert: ({
-      scaledQty,
-      unit,
-      unitLower,
-      restLower,
-      rest,
-      isStaple,
-    }): ShoppingItem | null => {
-      if (restLower.includes("zest")) {
-        const count = Math.ceil(
-          match(
-            unitLower,
-            [
-              [["tablespoon", "tbsp"], scaledQty],
-              [["teaspoon", "tsp"], scaledQty / 3],
-            ],
-            scaledQty,
-          ),
-        );
-        return {
-          qty: count,
-          unit: "",
-          rest: getAdaptiveUnit(count, "lemon"),
-          notes: createNote(scaledQty, unit || "tablespoon", "", "zest"),
-          isStaple,
-          parts: { zest: count },
-        };
-      }
-
-      if (!isStaple && isVolumeUnit(unitLower)) {
-        const tbsp = match(
-          unitLower,
-          [
-            [["cup"], scaledQty * 16],
-            [["teaspoon", "tsp"], scaledQty / 3],
-            [["ounce", "oz"], scaledQty * 2],
-            [["ml"], scaledQty * 0.067],
-          ],
-          scaledQty,
-        );
-
-        const count = Math.ceil(tbsp / 3);
-        return {
-          qty: count,
-          unit: "",
-          rest: getAdaptiveUnit(count, "lemon"),
-          notes: createNote(
-            scaledQty,
-            unit,
-            "1 lemon = ~3 tbsp juice",
-            "juice",
-          ),
-          isStaple,
-          parts: { juice: count },
-        };
-      }
-
-      if (hasUnit(unitLower, ["lemon"])) {
-        const count = Math.ceil(scaledQty);
-        return {
-          qty: count,
-          unit: "",
-          rest: adjustDescriptionPlurality(count, rest, "lemon"),
-          notes: {},
-          isStaple,
-        };
-      }
-
-      return null;
-    },
-  },
-
-  // 4. Limes
-  {
-    name: "lime",
-    match: { match: "lime", excludeIf: ["leaf", "leaves", "extract"] },
-    isStaple: false,
-    getShoppingItemKey: (unit, restLower) => {
-      const normUnit = getSingularUnit(unit);
-      if (
-        normUnit === "lime" ||
-        matchesConfig(restLower, {
-          match: "lime",
-          excludeIf: ["leaf", "leaves", "extract"],
-        })
-      ) {
-        return "_limes";
-      }
-      return undefined;
-    },
-    convert: ({
-      scaledQty,
-      unit,
-      unitLower,
-      restLower,
-      rest,
-      isStaple,
-    }): ShoppingItem | null => {
-      if (restLower.includes("zest")) {
-        const count = Math.ceil(
-          match(
-            unitLower,
-            [
-              [["tablespoon", "tbsp"], scaledQty],
-              [["teaspoon", "tsp"], scaledQty / 3],
-            ],
-            scaledQty,
-          ),
-        );
-        return {
-          qty: count,
-          unit: "",
-          rest: getAdaptiveUnit(count, "lime"),
-          notes: createNote(scaledQty, unit || "tablespoon", "", "zest"),
-          isStaple,
-          parts: { zest: count },
-        };
-      }
-
-      if (!isStaple && isVolumeUnit(unitLower)) {
-        const tbsp = match(
-          unitLower,
-          [
-            [["cup"], scaledQty * 16],
-            [["teaspoon", "tsp"], scaledQty / 3],
-            [["ounce", "oz"], scaledQty * 2],
-            [["ml"], scaledQty * 0.067],
-          ],
-          scaledQty,
-        );
-
-        const count = Math.ceil(tbsp / 2);
-        return {
-          qty: count,
-          unit: "",
-          rest: getAdaptiveUnit(count, "lime"),
-          notes: createNote(scaledQty, unit, "1 lime = ~2 tbsp juice", "juice"),
-          isStaple,
-          parts: { juice: count },
-        };
-      }
-
-      if (hasUnit(unitLower, ["lime"])) {
-        const count = Math.ceil(scaledQty);
-        return {
-          qty: count,
-          unit: "",
-          rest: adjustDescriptionPlurality(count, rest, "lime"),
-          notes: {},
-          isStaple,
-        };
-      }
-
-      return null;
-    },
-  },
+  // 3. Lemons & Limes (Citrus)
+  createCitrusRule("lemon", "_lemons", 3, ["extract", "grass", "pepper"]),
+  createCitrusRule("lime", "_limes", 2, ["leaf", "leaves", "extract"]),
 
   // 5. Butter
   {
@@ -472,36 +424,21 @@ export const INGREDIENT_RULES: IngredientRule[] = [
   },
 
   // 10. Half-Pint Liquids
-  {
-    name: "half-pint liquids",
-    match: { match: ["sour cream", "ricotta"] },
-    isStaple: false,
-    convert: ({ scaledQty, unitLower, rest, isStaple }) => {
-      if (!hasUnit(unitLower, ["cup"])) return null;
-      const count = Math.ceil(scaledQty / 4);
-      const { qty, unit } = range(
-        scaledQty,
-        [
-          [1, { qty: 1, unit: "half-pint (8 oz)" }],
-          [2, { qty: 1, unit: "pint (16 oz)" }],
-          [4, { qty: 1, unit: "quart (32 oz)" }],
-        ],
-        { qty: count, unit: getAdaptiveUnit(count, "quart (32 oz)") },
-      );
-      return {
-        qty,
-        unit,
-        rest,
-        notes: createNote(scaledQty, "cup"),
-        isStaple,
-      };
-    },
-  },
+  createLiquidContainerRule(
+    "half-pint liquids",
+    { match: ["sour cream", "ricotta"] },
+    [
+      [1, "half-pint (8 oz)"],
+      [2, "pint (16 oz)"],
+      [4, "quart (32 oz)"],
+    ],
+    "quart (32 oz)",
+  ),
 
   // 11. Pint-Minimum Liquids
-  {
-    name: "pint-minimum liquids",
-    match: {
+  createLiquidContainerRule(
+    "pint-minimum liquids",
+    {
       match: [
         "broth",
         "stock",
@@ -511,30 +448,12 @@ export const INGREDIENT_RULES: IngredientRule[] = [
         "yogurt",
       ],
     },
-    isStaple: false,
-    convert: ({ scaledQty, unitLower, rest, isStaple }) => {
-      if (!hasUnit(unitLower, ["cup"])) return null;
-      const fallbackCount = Math.ceil(scaledQty / 4);
-      const { qty, unit } = range(
-        scaledQty,
-        [
-          [2, { qty: 1, unit: "pint (16 fl oz)" }],
-          [4, { qty: 1, unit: "quart (32 fl oz)" }],
-        ],
-        {
-          qty: fallbackCount,
-          unit: getAdaptiveUnit(fallbackCount, "quart (32 fl oz)"),
-        },
-      );
-      return {
-        qty,
-        unit,
-        rest,
-        notes: createNote(scaledQty, "cup"),
-        isStaple,
-      };
-    },
-  },
+    [
+      [2, "pint (16 fl oz)"],
+      [4, "quart (32 fl oz)"],
+    ],
+    "quart (32 fl oz)",
+  ),
 
   // 12. Dry Pasta
   {

@@ -4,20 +4,19 @@ import {
   isVolumeUnit,
   getPackExplanation,
   convertVolume,
-  NoteItem,
   shouldSkipIngredient,
-  Ingredient,
-  ScalableIngredient,
 } from "./utils";
-import { convertIngredient, ShoppingItem } from "./converters";
+import { convertIngredient } from "./converters";
 import { TO_TEASPOONS } from "./config";
 import { getAdaptiveUnit } from "../scaler";
 import { getIngredientKey, getShoppingItemKey, findRule } from "./rules";
-
-export interface ProcessedShoppingList {
-  buyItems: ShoppingItem[];
-  stapleItems: ShoppingItem[];
-}
+import {
+  Ingredient,
+  ScalableIngredient,
+  ShoppingItem,
+  NoteItem,
+  ProcessedShoppingList,
+} from "./types";
 
 /**
  * Runs the complete processing pipeline on the recipe ingredients. Merges inputs,

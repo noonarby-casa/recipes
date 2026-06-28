@@ -1,15 +1,7 @@
 import { getAdaptiveUnit } from "../scaler";
-import {
-  Ingredient,
-  matchesConfig,
-  ShoppingItem,
-  ConverterContext,
-  createNote,
-  match,
-} from "./utils";
+import { matchesConfig, createNote, match } from "./utils";
+import { Ingredient, ShoppingItem, ConverterContext } from "./types";
 import { INGREDIENT_RULES, checkIsStaple } from "./rules";
-
-export { ShoppingItem, ConverterContext };
 
 export interface ConverterStrategy {
   name: string;
@@ -18,12 +10,12 @@ export interface ConverterStrategy {
 }
 
 // Define the strategies list
-export const CONVERTERS: ConverterStrategy[] = [];
+export const converters: ConverterStrategy[] = [];
 
-// Populate CONVERTERS dynamically from INGREDIENT_RULES
+// Populate converters dynamically from INGREDIENT_RULES
 for (const rule of INGREDIENT_RULES) {
   if (rule.convert) {
-    CONVERTERS.push({
+    converters.push({
       name: rule.name,
       matches: (ctx) => matchesConfig(ctx.restLower, rule.match),
       convert: rule.convert,
@@ -33,32 +25,18 @@ for (const rule of INGREDIENT_RULES) {
 
 // Fallback / Generic converters
 
-// Cans
-CONVERTERS.push({
-  name: "Cans",
-  matches: ({ unitLower }) => unitLower.includes("can"),
-  convert: ({ scaledQty, rest, isStaple }) => {
-    const count = Math.ceil(scaledQty);
-    return {
-      qty: count,
-      unit: getAdaptiveUnit(count, "can"),
-      rest,
-      notes: {},
-      isStaple,
-    };
-  },
-});
-
-// Default Count Items
-CONVERTERS.push({
-  name: "DefaultCountItems",
+// Count-based items (Cans, cloves, sizes)
+converters.push({
+  name: "CountItems",
   matches: ({ unitLower }) =>
-    ["clove", "small", "large", "medium"].some((u) => unitLower.includes(u)),
+    ["can", "clove", "small", "large", "medium"].some((u) =>
+      unitLower.includes(u),
+    ),
   convert: ({ scaledQty, unit, rest, isStaple }) => {
     const count = Math.ceil(scaledQty);
     return {
       qty: count,
-      unit: getAdaptiveUnit(count, unit),
+      unit: getAdaptiveUnit(count, unit || "can"),
       rest,
       notes: {},
       isStaple,
@@ -67,7 +45,7 @@ CONVERTERS.push({
 });
 
 // Volume to Package
-CONVERTERS.push({
+converters.push({
   name: "VolumeToPackage",
   matches: ({ unitLower, isStaple }) => {
     if (isStaple) return false;
@@ -180,7 +158,7 @@ export function convertIngredient(item: Ingredient): ShoppingItem {
     isStaple,
   };
 
-  for (const strategy of CONVERTERS) {
+  for (const strategy of converters) {
     if (strategy.matches(context)) {
       const result = strategy.convert(context);
       if (result) return result;

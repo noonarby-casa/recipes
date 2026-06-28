@@ -302,3 +302,10 @@ Behavioral rules and workflow steps tailored for agentic AI coding assistants (l
 
 - Always execute the production build command locally to verify zero compiler warnings or errors before marking a task as complete.
 - Verify responsiveness across standard layouts and check that markdown outputs render perfectly.
+
+### 4. TypeScript Style Guide Compliance
+
+- **No Redundant Type/Non-Null Assertions:** Avoid using non-null assertions (`!`) or unnecessary type assertions (`as Type`) where TypeScript is already capable of narrowing types (e.g., after early returns or runtime null checks). Prefer explicit control-flow checks (`if (!x) return;`) to narrow types instead of using non-null assertions.
+- **Casing for Constants:**
+  - Exported global/module-level constants that are deeply immutable must be named in `CONSTANT_CASE`.
+  - Local/file-scoped variables (even if declared with `const` because they are not reassigned) and mutable/non-deeply-immutable exported constants (e.g., arrays that are populated dynamically via `.push()`) must be named in `camelCase`.
