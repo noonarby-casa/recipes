@@ -236,7 +236,7 @@ export function initSearch(): void {
       let tagsHtml = '';
       if (recipe.tags && recipe.tags.length > 0) {
         const tagsList = recipe.tags.map(tag => {
-          const slug = tag.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+          const slug = tag.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
           return `<li><a href="${cleanBasePath}tags/${slug}/">${escapeHtml(tag)}</a></li>`;
         }).join('');
         tagsHtml = `

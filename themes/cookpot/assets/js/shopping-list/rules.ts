@@ -1,5 +1,5 @@
 import { getAdaptiveUnit } from '../scaler';
-import { StringMatchConfig, ShoppingItem, ConverterContext, NoteItem, matchesConfig, isVolumeUnit, adjustDescriptionPlurality, getSingularUnit, buildMapKey, createNote, match, hasUnit, range, replaceTerms } from './utils';
+import { StringMatchConfig, ShoppingItem, ConverterContext, matchesConfig, isVolumeUnit, adjustDescriptionPlurality, getSingularUnit, buildMapKey, createNote, match, hasUnit, range, replaceTerms } from './utils';
 import { STAPLES } from './config';
 
 export interface IngredientRule {

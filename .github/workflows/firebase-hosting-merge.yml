@@ -32,6 +32,9 @@ jobs:
       - name: TypeScript Check
         run: pnpm typecheck
 
+      - name: ESLint Check
+        run: pnpm lint
+
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:

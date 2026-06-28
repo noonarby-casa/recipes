@@ -1,4 +1,4 @@
-import { cleanPrepTerms, getSingularUnit, parseNoteToArray, abbreviateNote, isVolumeUnit, getPackExplanation, convertVolume, NoteItem, shouldSkipIngredient, Ingredient, ScalableIngredient, formatNotesArray } from './utils';
+import { cleanPrepTerms, getSingularUnit, isVolumeUnit, getPackExplanation, convertVolume, NoteItem, shouldSkipIngredient, Ingredient, ScalableIngredient } from './utils';
 import { convertIngredient, ShoppingItem } from './converters';
 import { TO_TEASPOONS } from './config';
 import { getAdaptiveUnit } from '../scaler';
@@ -104,7 +104,7 @@ export function getMergedShoppingItems(items: ShoppingItem[]): ShoppingItem[] {
  * correcting pluralized units, and merging explanation notes.
  */
 export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): ShoppingItem {
-  let qty: number | null = null;
+  let qty: number | null;
   let parts: { [key: string]: number } | undefined = undefined;
 
   if (item1.parts || item2.parts) {
@@ -126,7 +126,7 @@ export function mergeShoppingItems(item1: ShoppingItem, item2: ShoppingItem): Sh
       : null;
   }
 
-  let unit = getAdaptiveUnit(qty, item1.unit);
+  const unit = getAdaptiveUnit(qty, item1.unit);
   let rest = item1.rest;
   if (unit === '') {
     rest = getAdaptiveUnit(qty, rest);

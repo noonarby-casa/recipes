@@ -13,9 +13,9 @@ function parseDuration(durationStr: string): ParsedDuration | null {
   // Regex to match single, e.g. "10 minutes", "45 seconds", "1.5 hours"
   const singleRegex = /^(\d+(?:\.\d+)?)\s*(hour|hours|hr|hrs|h|minute|minutes|min|mins|m|second|seconds|sec|secs|s)$/;
   
-  let minVal = 0;
-  let maxVal = 0;
-  let unit = '';
+  let minVal: number;
+  let maxVal: number;
+  let unit: string;
   
   let match = str.match(rangeRegex);
   if (match) {

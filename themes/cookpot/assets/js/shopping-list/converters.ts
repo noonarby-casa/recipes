@@ -1,5 +1,5 @@
 import { getAdaptiveUnit } from '../scaler';
-import { Ingredient, NoteItem, matchesConfig, ShoppingItem, ConverterContext, createNote, match } from './utils';
+import { Ingredient, matchesConfig, ShoppingItem, ConverterContext, createNote, match } from './utils';
 import { INGREDIENT_RULES, checkIsStaple } from './rules';
 
 export { ShoppingItem, ConverterContext };

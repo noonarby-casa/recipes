@@ -4,7 +4,7 @@ let audioCtx: AudioContext | null = null;
 export function initAudio(): void {
   try {
     if (!audioCtx) {
-      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtxClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (AudioCtxClass) {
         audioCtx = new AudioCtxClass();
       }

@@ -1,6 +1,6 @@
 import { formatCookingNumber, getAdaptiveUnit } from '../scaler';
 import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from '../constants';
-import { VOLUME_UNITS, TO_TEASPOONS, STAPLES, PREP_KEYWORDS, SKIP_TERMS, StringMatchConfig } from './config';
+import { VOLUME_UNITS, TO_TEASPOONS, PREP_KEYWORDS, SKIP_TERMS, StringMatchConfig } from './config';
 export { StringMatchConfig };
 
 export interface BaseIngredient {

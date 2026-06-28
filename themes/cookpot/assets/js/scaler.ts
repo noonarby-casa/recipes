@@ -10,7 +10,7 @@ export interface ParsedIngredient {
 // Match common culinary units dynamically compiled from config arrays
 const ALL_UNITS = [...VOLUME_UNITS, ...OTHER_UNITS];
 const SORTED_UNITS = [...ALL_UNITS].sort((a, b) => b.length - a.length);
-const escapedUnits = SORTED_UNITS.map(u => u.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+const escapedUnits = SORTED_UNITS.map(u => u.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
 const unitRegex = new RegExp(`^(${escapedUnits.join('|')})\\b`, 'i');
 
 // Helper to parse fractions (e.g., "1/2", "1 1/2") and decimals
