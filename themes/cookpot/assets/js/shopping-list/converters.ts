@@ -1,5 +1,5 @@
 import { getAdaptiveUnit } from '../scaler';
-import { Ingredient, NoteItem, matchesConfig, ShoppingItem, ConverterContext } from './utils';
+import { Ingredient, NoteItem, matchesConfig, ShoppingItem, ConverterContext, createNote, match } from './utils';
 import { INGREDIENT_RULES, checkIsStaple } from './rules';
 
 export { ShoppingItem, ConverterContext };
@@ -119,25 +119,3 @@ export function convertIngredient(item: Ingredient): ShoppingItem {
   };
 }
 
-// Helper to construct structured note arrays in strategy converters.
-function createNote(qty: number | null, unit: string, explanation = '', rest = ''): Record<string, NoteItem[]> {
-  const adaptiveUnit = getAdaptiveUnit(qty, unit);
-  const adaptiveRest = getAdaptiveUnit(qty, rest);
-  const key = rest.toLowerCase().trim() || 'default';
-  return {
-    [key]: [{ prefix: '', qty, unit: adaptiveUnit, rest: adaptiveRest, explanation }]
-  };
-}
-
-function match<T>(
-  str: string,
-  mappings: [string[], T][],
-  defaultValue: T
-): T {
-  for (const [keywords, value] of mappings) {
-    if (keywords.some(k => str.includes(k))) {
-      return value;
-    }
-  }
-  return defaultValue;
-}

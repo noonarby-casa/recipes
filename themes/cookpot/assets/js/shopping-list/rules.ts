@@ -1,5 +1,5 @@
 import { getAdaptiveUnit } from '../scaler';
-import { StringMatchConfig, ShoppingItem, ConverterContext, NoteItem, matchesConfig, isVolumeUnit, adjustDescriptionPlurality, getSingularUnit, buildMapKey } from './utils';
+import { StringMatchConfig, ShoppingItem, ConverterContext, NoteItem, matchesConfig, isVolumeUnit, adjustDescriptionPlurality, getSingularUnit, buildMapKey, createNote, match } from './utils';
 import { STAPLES } from './config';
 
 export interface IngredientRule {
@@ -461,30 +461,8 @@ export function getShoppingItemKey(unit: string, rest: string): string {
 }
 
 // Helpers used inside the converters
-function createNote(qty: number | null, unit: string, explanation = '', rest = ''): Record<string, NoteItem[]> {
-  const adaptiveUnit = getAdaptiveUnit(qty, unit);
-  const adaptiveRest = getAdaptiveUnit(qty, rest);
-  const key = rest.toLowerCase().trim() || 'default';
-  return {
-    [key]: [{ prefix: '', qty, unit: adaptiveUnit, rest: adaptiveRest, explanation }]
-  };
-}
-
 function hasUnit(unitLower: string, keywords: string[]): boolean {
   return keywords.some(k => unitLower.includes(k));
-}
-
-function match<T>(
-  str: string,
-  mappings: [string[], T][],
-  defaultValue: T
-): T {
-  for (const [keywords, value] of mappings) {
-    if (keywords.some(k => str.includes(k))) {
-      return value;
-    }
-  }
-  return defaultValue;
 }
 
 function range<T>(

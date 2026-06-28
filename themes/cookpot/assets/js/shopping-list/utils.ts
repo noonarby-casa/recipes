@@ -351,3 +351,33 @@ export function adjustDescriptionPlurality(
 
   return finalRest;
 }
+
+/**
+ * Helper to construct structured note arrays in strategy converters.
+ */
+export function createNote(qty: number | null, unit: string, explanation = '', rest = ''): Record<string, NoteItem[]> {
+  const adaptiveUnit = getAdaptiveUnit(qty, unit);
+  const adaptiveRest = getAdaptiveUnit(qty, rest);
+  const key = rest.toLowerCase().trim() || 'default';
+  return {
+    [key]: [{ prefix: '', qty, unit: adaptiveUnit, rest: adaptiveRest, explanation }]
+  };
+}
+
+/**
+ * Searches a list of keyword groups and returns the mapped value for the first group
+ * that has any keyword as a substring of the target string. Returns defaultValue if no match is found.
+ */
+export function match<T>(
+  str: string,
+  mappings: [string[], T][],
+  defaultValue: T
+): T {
+  for (const [keywords, value] of mappings) {
+    if (keywords.some(k => str.includes(k))) {
+      return value;
+    }
+  }
+  return defaultValue;
+}
+
