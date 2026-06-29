@@ -36,6 +36,7 @@ tags = [
   "soup",
   "weeknight"
 ]
+servings = 6
 +++
 
 ## Instructions

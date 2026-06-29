@@ -36,6 +36,7 @@ tags = [
   "turkey",
   "weeknight"
 ]
+servings = 4
 +++
 
 ## Instructions

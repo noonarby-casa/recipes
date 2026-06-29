@@ -25,6 +25,7 @@ tags = [
   "vegetarian",
   "weeknight"
 ]
+servings = 4
 +++
 
 ## Instructions

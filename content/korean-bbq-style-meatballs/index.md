@@ -25,6 +25,7 @@ tags = [
   "meatballs",
   "weeknight"
 ]
+servings = 4
 +++
 
 ## Instructions

@@ -1,5 +1,5 @@
 <h1>
-  <a href="{{ site.Home.RelPermalink }}"
+  <a href="{{ site.Home.RelPermalink }}" class="header-home-link"
     ><img
       src="{{ "icon-72.png" | relURL }}"
       alt=""
@@ -8,6 +8,7 @@
       class="header-logo"
     />{{ site.Title }}</a
   >
+  <a href="{{ "plan/" | relURL }}" class="header-plan-link">Plan</a>
 </h1>
 <div class="header-right">
   {{ partial "menu.html" (dict "menuID" "main" "page" .) }}

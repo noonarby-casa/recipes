@@ -1,0 +1,106 @@
+{{ define "main" }}
+  <!-- Preservation / Conflict Banner -->
+  <div id="plan-conflict-banner" class="planner-banner" style="display: none;">
+    <span class="banner-text">Viewing shared meal plan.</span>
+    <div class="banner-actions">
+      <button type="button" id="btn-banner-merge" class="banner-btn">Merge with your active plan</button>
+      <button type="button" id="btn-banner-discard" class="banner-btn">Discard and load your active plan</button>
+      <button type="button" id="btn-banner-dismiss" class="banner-btn-close" aria-label="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <!-- Narrow Screen Mobile Columns Tab Switcher -->
+  <div class="planner-mobile-tabs" style="display: none;">
+    <button type="button" id="tab-edit-plan" class="planner-tab-btn active">
+      Edit Plan <span id="mobile-plan-count"></span>
+    </button>
+    <button type="button" id="tab-shopping-list" class="planner-tab-btn">
+      Shopping List
+    </button>
+  </div>
+
+  <div class="meal-planner-container" id="meal-planner">
+    <div class="planner-column" id="col-planner">
+      <div class="planner-header-row">
+        <h2>Your Meal Plan</h2>
+        <div class="planner-header-actions">
+          <button type="button" id="btn-share-plan" class="planner-btn-secondary" style="display: none;">
+            Share Plan
+          </button>
+          <button type="button" id="btn-clear-plan" class="planner-clear-btn" style="display: none;">
+            Clear Plan
+          </button>
+        </div>
+      </div>
+      
+      <!-- Total Times Aggregation Widget -->
+      <div id="planner-time-summary" class="planner-time-summary" style="display: none;"></div>
+
+      <!-- Faceted Tag Search Area -->
+      <div class="planner-search-section">
+        <div class="planner-search-row">
+          <input type="text" id="planner-search-input" placeholder="Search available recipes..." autocomplete="off" />
+          <button type="button" id="btn-toggle-filters" class="planner-filter-btn" title="Toggle tag filters">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            <span>Filters</span>
+            <span id="filter-active-count" class="filter-count-badge" style="display: none;"></span>
+          </button>
+          <button type="button" id="btn-add-random" class="planner-add-random-btn" title="Add a random recipe to plan">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
+            </svg>
+            <span>Add Random</span>
+          </button>
+        </div>
+        
+        <!-- Faceted Tags Bar -->
+        <div id="planner-tag-filters" class="planner-tag-filters"></div>
+        
+        <!-- Dynamic Browse Shelf -->
+        <div id="planner-browse-shelf" class="planner-browse-shelf"></div>
+      </div>
+      
+      <!-- Selected Recipes list -->
+      <ul id="planned-recipes-list"></ul>
+    </div>
+
+    <div class="ingredients-column" id="col-shopping">
+      <div class="ingredients-title-wrapper">
+        <h2>Combined Shopping List</h2>
+        <div class="shopping-actions-wrapper">
+          <label class="omit-completed-label">
+            <input type="checkbox" id="chk-omit-completed" />
+            Omit checked items from copy
+          </label>
+          <button type="button" class="shopping-copy-btn" id="btn-copy-combined-list">
+            <svg class="copy-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy List</span>
+          </button>
+          <button type="button" class="shopping-reset-btn" id="btn-reset-shopping-list" title="Reset checkboxes">
+            Reset
+          </button>
+        </div>
+      </div>
+      
+      <div class="shopping-list-wrapper">
+        <div class="shopping-section buy-section">
+          <h3>Need to Buy</h3>
+          <ul id="combined-buy-list"></ul>
+        </div>
+        <hr class="shopping-divider" style="display: none;" />
+        <div class="shopping-section staples-section">
+          <h3 class="staples-header" id="btn-toggle-staples">
+            Pantry Staples <span class="accordion-arrow">▸</span>
+          </h3>
+          <ul id="combined-staples-list" style="display: none;"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

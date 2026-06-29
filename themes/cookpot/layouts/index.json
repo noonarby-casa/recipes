@@ -8,6 +8,7 @@
     "dateHuman": {{ $page.Date | time.Format ":date_long" | jsonify }},
     "times": {{ $page.Params.times | default slice | jsonify }},
     "recipeSource": {{ $page.Params.recipeSource | default "Noonarby" | jsonify }},
+    "servings": {{ $page.Params.servings | default 4 | jsonify }},
     "tags": {{ $page.Params.tags | default slice | jsonify }},
     "ingredients": {{ $page.Params.ingredients | default slice | jsonify }},
     "summary": {{ $page.Summary | plainify | jsonify }},

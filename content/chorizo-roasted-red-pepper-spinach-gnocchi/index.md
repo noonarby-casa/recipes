@@ -23,6 +23,7 @@ tags = [
   "sausage",
   "weeknight"
 ]
+servings = 4
 +++
 
 ## Instructions

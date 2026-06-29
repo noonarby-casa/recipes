@@ -30,6 +30,7 @@ tags = [
   "summer",
   "vegetarian"
 ]
+servings = 6
 +++
 
 ## Instructions

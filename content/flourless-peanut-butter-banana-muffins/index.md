@@ -29,6 +29,7 @@ tags = [
   "peanut-butter",
   "vegetarian"
 ]
+servings = 12
 +++
 
 ## Instructions

@@ -35,6 +35,7 @@ tags = [
   "gluten-free",
   "weeknight"
 ]
+servings = 4
 +++
 
 ## Instructions

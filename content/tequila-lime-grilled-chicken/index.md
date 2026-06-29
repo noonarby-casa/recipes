@@ -34,6 +34,7 @@ tags = [
   "nut-free",
   "summer"
 ]
+servings = 4
 +++
 
 ## Instructions

@@ -30,6 +30,7 @@ tags = [
   "summer-squash",
   "vegetarian"
 ]
+servings = 4
 +++
 
 ## Instructions

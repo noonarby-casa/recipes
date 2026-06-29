@@ -6,5 +6,6 @@ times = [
   { step = 'cook', time = '' }
 ]
 recipeSource = 'Noonarby'
+servings = 4
 draft = true
 +++

@@ -27,6 +27,7 @@ tags = [
   "sheet-pan",
   "weeknight"
 ]
+servings = 4
 +++
 
 ## Instructions

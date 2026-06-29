@@ -43,6 +43,7 @@ tags = [
   "raspberry",
   "vegetarian"
 ]
+servings = 8
 +++
 
 ## Instructions

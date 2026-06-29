@@ -25,6 +25,7 @@ tags = [
   "pasta",
   "weeknight"
 ]
+servings = 4
 +++
 
 ## Instructions
