@@ -18,10 +18,10 @@
 /* Toggle Switch Group */
 .shopping-view-toggle {
   display: flex;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--font-controls-bg);
   border-radius: 20px;
   padding: 3px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-ultra-subtle);
 }
 
 .view-toggle-btn {
@@ -30,7 +30,7 @@
   padding: 0.4rem 1rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #555;
+  color: var(--font-btn-text);
   border-radius: 17px;
   cursor: pointer;
   transition:
@@ -41,7 +41,7 @@
 }
 
 .view-toggle-btn:hover {
-  color: #000;
+  color: var(--font-btn-hover);
 }
 
 .view-toggle-btn.active {
@@ -122,7 +122,7 @@
 
 .shopping-divider {
   border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--border-subtle);
   margin: 1.5rem 0;
 }
 
@@ -137,13 +137,13 @@
   align-items: baseline;
   gap: 0.5rem;
   font-weight: 400;
-  color: #000000;
+  color: var(--text-title);
 }
 
 .shopping-item-details {
   font-size: 0.8rem;
   font-weight: 500;
-  color: #222222;
+  color: var(--text-color);
   margin-top: 0.15rem;
 }
 
@@ -161,6 +161,6 @@
 
 /* Muted list items in Staples */
 .staples-section .shopping-item-main-row {
-  color: #444444;
+  color: var(--text-muted);
   font-weight: 400;
 }

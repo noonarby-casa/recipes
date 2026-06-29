@@ -1,5 +1,5 @@
 .recipe-title-bar {
-  background-color: #f2f2f2;
+  background-color: var(--recipe-title-bg);
   padding: 1rem;
   margin-bottom: 1rem;
   text-align: center;
@@ -47,9 +47,9 @@
   align-self: center;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: #f8f9fa;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-subtle);
+  background-color: var(--image-bg);
   transition: all 0.3s ease;
 }
 
@@ -76,11 +76,11 @@
 
 /* Base styles for instructions font size controls */
 .recipe-font-panel {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--font-panel-bg);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
   padding: 0.75rem 1.25rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--btn-shadow);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: all 0.3s ease;
@@ -91,7 +91,7 @@
 }
 
 .recipe-font-panel:hover {
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--card-shadow);
   border-color: var(--noonblue-panel-hover-border);
 }
 
@@ -103,17 +103,17 @@
 
 .font-label {
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
   font-size: 0.95rem;
   letter-spacing: -0.01em;
 }
 
 .font-controls {
   display: flex;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--font-controls-bg);
   border-radius: 20px;
   padding: 3px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-ultra-subtle);
   gap: 0;
   flex-grow: 1;
 }
@@ -126,7 +126,7 @@
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #555;
+  color: var(--font-btn-text);
   border-radius: 17px;
   cursor: pointer;
   transition:
@@ -138,7 +138,7 @@
 }
 
 .font-btn:hover {
-  color: #000;
+  color: var(--font-btn-hover);
 }
 
 .font-btn:active {
@@ -157,7 +157,7 @@
 }
 
 .ingredients-column {
-  border-right: 1px solid #ccc;
+  border-right: 1px solid var(--border-color);
   padding-right: 2rem;
 }
 
@@ -167,19 +167,19 @@
 
 /* Premium Recipe Scaling Panel */
 .recipe-scale-panel {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--font-panel-bg);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
   margin: 1.5rem 0 2rem 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--btn-shadow);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: all 0.3s ease;
 }
 
 .recipe-scale-panel:hover {
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--card-shadow);
   border-color: var(--noonblue-panel-hover-border);
 }
 
@@ -192,7 +192,7 @@
 
 .scale-label {
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
   font-size: 1.05rem;
   letter-spacing: -0.01em;
 }
@@ -226,7 +226,7 @@
   width: 100%;
   height: 6px;
   border-radius: 3px;
-  background: #e2e8f0;
+  background: var(--slider-bg);
   outline: none;
   transition: background 0.3s;
 }
@@ -281,10 +281,10 @@
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: 600;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--btn-border);
   border-radius: 8px;
-  background: #fff;
-  color: #555;
+  background: var(--btn-bg);
+  color: var(--font-btn-text);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
 }
@@ -353,8 +353,8 @@
   align-items: flex-start;
   gap: 0.75rem;
   font-size: 0.85rem;
-  color: #666;
-  border-top: 1px solid #eee;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-subtle);
   padding-top: 0.75rem;
   margin-top: 0.5rem;
 }
@@ -379,8 +379,8 @@
 }
 
 .recipe-meta li a {
-  background: #f1f3f5;
-  color: #495057;
+  background: var(--tag-bg);
+  color: var(--tag-text);
   padding: 0.25rem 0.6rem;
   border-radius: 4px;
   text-decoration: none;
@@ -451,9 +451,9 @@
     grid-area: auto;
     margin: 0;
     padding: 0.5rem 1rem;
-    background: #f8f9fa;
+    background: var(--recipe-title-bg);
     border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-ultra-subtle);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -466,7 +466,7 @@
     font-size: 1.35rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: #111;
+    color: var(--text-title);
   }
 
   .ingredients-column h2,
@@ -483,7 +483,7 @@
     font-size: 1em;
     line-height: 1.6;
     margin-bottom: 1.1rem;
-    color: #333;
+    color: var(--text-color);
   }
 
   .recipe-meta {
@@ -512,7 +512,7 @@
   header {
     margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-subtle);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -543,7 +543,7 @@
   header nav ul li a {
     font-size: 0.95rem;
     font-weight: 500;
-    color: #555;
+    color: var(--text-muted);
     transition: color 0.2s;
   }
 
@@ -557,13 +557,13 @@
   }
 
   footer {
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-subtle);
     margin-top: 0.5rem;
     padding-top: 0.5rem;
     display: flex;
     justify-content: center;
     font-size: 0.8rem;
-    color: #666;
+    color: var(--text-muted);
   }
 
   body.recipe-single-layout footer {
@@ -608,7 +608,7 @@
 
   .recipe-scale-panel .scale-label {
     font-size: 0.8rem;
-    color: #666;
+    color: var(--text-muted);
     margin: 0;
   }
 
@@ -655,7 +655,7 @@
     height: 100%;
     overflow-y: auto;
     padding-right: 1.5rem;
-    border-right: 1px solid #eee;
+    border-right: 1px solid var(--border-subtle);
   }
 
   .ingredients-column::-webkit-scrollbar,
@@ -670,13 +670,13 @@
 
   .ingredients-column::-webkit-scrollbar-thumb,
   .instructions-column::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.08);
+    background: var(--scrollbar-thumb);
     border-radius: 3px;
   }
 
   .ingredients-column::-webkit-scrollbar-thumb:hover,
   .instructions-column::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--scrollbar-thumb-hover);
   }
 
   .ingredients-column h2,
@@ -685,7 +685,7 @@
     margin-bottom: 0.75rem;
     font-size: 1.45rem;
     font-weight: 700;
-    color: #111;
+    color: var(--text-title);
     letter-spacing: -0.01em;
   }
 
@@ -704,7 +704,7 @@
     margin-bottom: 1.1rem;
     line-height: 1.6;
     font-size: 1em;
-    color: #333;
+    color: var(--text-color);
   }
 
   .recipe-meta {

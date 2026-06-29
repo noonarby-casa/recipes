@@ -3,7 +3,8 @@ html {
 }
 
 body {
-  color: #222;
+  color: var(--text-color);
+  background-color: var(--bg-color);
   font-family: sans-serif;
   line-height: 1.5;
   margin: 0 auto;
@@ -12,7 +13,7 @@ body {
 }
 
 header {
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
@@ -41,7 +42,7 @@ header h1 a:hover {
 }
 
 footer {
-  border-top: 1px solid #222;
+  border-top: 1px solid var(--border-color);
   margin-top: 1rem;
 }
 
@@ -61,7 +62,7 @@ a:hover {
   align-items: center;
   margin-left: 8px;
   vertical-align: middle;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .footer-github-link:hover {
@@ -82,25 +83,43 @@ a:hover {
 }
 
 .header-search-toggle,
-.header-random-recipe {
+.header-random-recipe,
+.header-theme-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #555;
+  color: var(--text-muted);
   padding: 0.5rem;
   border-radius: 50%;
   background: transparent;
+  border: none;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .header-search-toggle:hover,
-.header-random-recipe:hover {
+.header-random-recipe:hover,
+.header-theme-toggle:hover {
   color: var(--noonblue);
   background-color: var(--noonblue-bg-light);
 }
 
 .header-search-toggle svg,
-.header-random-recipe svg {
+.header-random-recipe svg,
+.header-theme-toggle svg {
   display: block;
+}
+
+/* Theme Icon Toggling */
+.header-theme-toggle .theme-icon-light {
+  display: none;
+}
+.header-theme-toggle .theme-icon-dark {
+  display: block;
+}
+html.dark-mode .header-theme-toggle .theme-icon-light {
+  display: block;
+}
+html.dark-mode .header-theme-toggle .theme-icon-dark {
+  display: none;
 }
