@@ -460,7 +460,7 @@
   100% {
     background-color: var(--card-bg);
     border-color: var(--border-subtle);
-    transform: scale(1.0);
+    transform: scale(1);
   }
 }
 

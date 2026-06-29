@@ -3,9 +3,20 @@
   <div id="plan-conflict-banner" class="planner-banner" style="display: none;">
     <span class="banner-text">Viewing shared meal plan.</span>
     <div class="banner-actions">
-      <button type="button" id="btn-banner-merge" class="banner-btn">Merge with your active plan</button>
-      <button type="button" id="btn-banner-discard" class="banner-btn">Discard and load your active plan</button>
-      <button type="button" id="btn-banner-dismiss" class="banner-btn-close" aria-label="Dismiss">✕</button>
+      <button type="button" id="btn-banner-merge" class="banner-btn">
+        Merge with your active plan
+      </button>
+      <button type="button" id="btn-banner-discard" class="banner-btn">
+        Discard and load your active plan
+      </button>
+      <button
+        type="button"
+        id="btn-banner-dismiss"
+        class="banner-btn-close"
+        aria-label="Dismiss"
+      >
+        ✕
+      </button>
     </div>
   </div>
 
@@ -24,31 +35,84 @@
       <div class="planner-header-row">
         <h2>Your Meal Plan</h2>
         <div class="planner-header-actions">
-          <button type="button" id="btn-share-plan" class="planner-btn-secondary" style="display: none;">
+          <button
+            type="button"
+            id="btn-share-plan"
+            class="planner-btn-secondary"
+            style="display: none;"
+          >
             Share Plan
           </button>
-          <button type="button" id="btn-clear-plan" class="planner-clear-btn" style="display: none;">
+          <button
+            type="button"
+            id="btn-clear-plan"
+            class="planner-clear-btn"
+            style="display: none;"
+          >
             Clear Plan
           </button>
         </div>
       </div>
-      
+
       <!-- Total Times Aggregation Widget -->
-      <div id="planner-time-summary" class="planner-time-summary" style="display: none;"></div>
+      <div
+        id="planner-time-summary"
+        class="planner-time-summary"
+        style="display: none;"
+      ></div>
 
       <!-- Faceted Tag Search Area -->
       <div class="planner-search-section">
         <div class="planner-search-row">
-          <input type="text" id="planner-search-input" placeholder="Search available recipes..." autocomplete="off" />
-          <button type="button" id="btn-toggle-filters" class="planner-filter-btn" title="Toggle tag filters">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          <input
+            type="text"
+            id="planner-search-input"
+            placeholder="Search available recipes..."
+            autocomplete="off"
+          />
+          <button
+            type="button"
+            id="btn-toggle-filters"
+            class="planner-filter-btn"
+            title="Toggle tag filters"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2.5"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon
+                points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"
+              ></polygon>
             </svg>
             <span>Filters</span>
-            <span id="filter-active-count" class="filter-count-badge" style="display: none;"></span>
+            <span
+              id="filter-active-count"
+              class="filter-count-badge"
+              style="display: none;"
+            ></span>
           </button>
-          <button type="button" id="btn-add-random" class="planner-add-random-btn" title="Add a random recipe to plan">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <button
+            type="button"
+            id="btn-add-random"
+            class="planner-add-random-btn"
+            title="Add a random recipe to plan"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2.5"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <polyline points="16 3 21 3 21 8"></polyline>
               <line x1="4" y1="20" x2="21" y2="3"></line>
               <polyline points="21 16 21 21 16 21"></polyline>
@@ -58,14 +122,14 @@
             <span>Add Random</span>
           </button>
         </div>
-        
+
         <!-- Faceted Tags Bar -->
         <div id="planner-tag-filters" class="planner-tag-filters"></div>
-        
+
         <!-- Dynamic Browse Shelf -->
         <div id="planner-browse-shelf" class="planner-browse-shelf"></div>
       </div>
-      
+
       <!-- Selected Recipes list -->
       <ul id="planned-recipes-list"></ul>
     </div>
@@ -78,16 +142,38 @@
             <input type="checkbox" id="chk-omit-completed" />
             Omit checked items from copy
           </label>
-          <button type="button" class="shopping-copy-btn" id="btn-copy-combined-list">
-            <svg class="copy-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <button
+            type="button"
+            class="shopping-copy-btn"
+            id="btn-copy-combined-list"
+          >
+            <svg
+              class="copy-icon"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2.5"
+              fill="none"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              ></path>
+            </svg>
             <span>Copy List</span>
           </button>
-          <button type="button" class="shopping-reset-btn" id="btn-reset-shopping-list" title="Reset checkboxes">
+          <button
+            type="button"
+            class="shopping-reset-btn"
+            id="btn-reset-shopping-list"
+            title="Reset checkboxes"
+          >
             Reset
           </button>
         </div>
       </div>
-      
+
       <div class="shopping-list-wrapper">
         <div class="shopping-section buy-section">
           <h3>Need to Buy</h3>

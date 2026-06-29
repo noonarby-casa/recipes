@@ -39,7 +39,6 @@ let planState: PlannedRecipe[] = [];
 let recipesIndex: Recipe[] = [];
 const selectedTags: Set<string> = new Set();
 let searchQuery = "";
-let activeTab = "edit-plan"; // 'edit-plan' or 'shopping-list' on mobile
 const checkedIngredients: Set<string> = new Set();
 let staplesExpanded = false;
 let keyboardFocusedIndex = -1;
@@ -74,11 +73,7 @@ function getPermalinkFromSlug(slug: string): string | null {
 function getSiteBasePath(): string {
   const homeLink = document.querySelector("header h1 a");
   const basePath = homeLink ? homeLink.getAttribute("href") : "/";
-  return basePath
-    ? basePath.endsWith("/")
-      ? basePath
-      : basePath + "/"
-    : "/";
+  return basePath ? (basePath.endsWith("/") ? basePath : basePath + "/") : "/";
 }
 
 /**
@@ -144,8 +139,12 @@ function setupMealPlanner(): void {
     });
 
     // Check conflict: URL plan loaded, but user has a different active plan locally
-    const urlSlugs = urlPlan.map((p) => `${getSlug(p.permalink)}:${p.scale}`).join(",");
-    const localSlugs = localPlan.map((p) => `${getSlug(p.permalink)}:${p.scale}`).join(",");
+    const urlSlugs = urlPlan
+      .map((p) => `${getSlug(p.permalink)}:${p.scale}`)
+      .join(",");
+    const localSlugs = localPlan
+      .map((p) => `${getSlug(p.permalink)}:${p.scale}`)
+      .join(",");
 
     if (localPlan.length > 0 && urlSlugs !== localSlugs) {
       // Back up local plan and display conflict banner
@@ -256,7 +255,6 @@ function setupEventListeners(): void {
 
   if (tabEdit && tabShopping && colPlanner && colShopping) {
     tabEdit.addEventListener("click", () => {
-      activeTab = "edit-plan";
       tabEdit.classList.add("active");
       tabShopping.classList.remove("active");
       colPlanner.style.display = "block";
@@ -264,7 +262,6 @@ function setupEventListeners(): void {
     });
 
     tabShopping.addEventListener("click", () => {
-      activeTab = "shopping-list";
       tabShopping.classList.add("active");
       tabEdit.classList.remove("active");
       colPlanner.style.display = "none";
@@ -273,7 +270,9 @@ function setupEventListeners(): void {
   }
 
   // Autocomplete Search input
-  const searchInput = document.getElementById("planner-search-input") as HTMLInputElement | null;
+  const searchInput = document.getElementById(
+    "planner-search-input",
+  ) as HTMLInputElement | null;
   if (searchInput) {
     searchInput.addEventListener("input", () => {
       searchQuery = searchInput.value;
@@ -301,7 +300,8 @@ function setupEventListeners(): void {
         e.preventDefault();
         if (keyboardFocusedIndex >= 0 && keyboardFocusedIndex < cards.length) {
           const focusedCard = cards[keyboardFocusedIndex];
-          const addBtn = focusedCard.querySelector<HTMLButtonElement>(".browse-add-btn");
+          const addBtn =
+            focusedCard.querySelector<HTMLButtonElement>(".browse-add-btn");
           if (addBtn) addBtn.click();
         }
       } else if (e.key === "Escape") {
@@ -379,7 +379,9 @@ function setupEventListeners(): void {
   const btnCopyList = document.getElementById("btn-copy-combined-list");
   if (btnCopyList) {
     btnCopyList.addEventListener("click", () => {
-      const omitChecked = (document.getElementById("chk-omit-completed") as HTMLInputElement)?.checked || false;
+      const omitChecked =
+        (document.getElementById("chk-omit-completed") as HTMLInputElement)
+          ?.checked || false;
       const text = generateCopyableListMarkdown(omitChecked);
       navigator.clipboard
         .writeText(text)
@@ -462,14 +464,18 @@ function addRandomRecipeToPlan(): void {
 
   // 3. Filter out recipes that are already in the plan to avoid duplicates, if possible
   const plannedPermalinks = new Set(planState.map((p) => p.permalink));
-  let finalAvailable = available.filter((r) => !plannedPermalinks.has(r.permalink));
+  let finalAvailable = available.filter(
+    (r) => !plannedPermalinks.has(r.permalink),
+  );
   if (finalAvailable.length === 0) {
     finalAvailable = available; // Fallback to all matching recipes if all are already planned
   }
 
   // 4. If nothing matches the filter criteria, fallback to the entire index
   if (finalAvailable.length === 0) {
-    finalAvailable = recipesIndex.filter((r) => !plannedPermalinks.has(r.permalink));
+    finalAvailable = recipesIndex.filter(
+      (r) => !plannedPermalinks.has(r.permalink),
+    );
     if (finalAvailable.length === 0) {
       finalAvailable = recipesIndex;
     }
@@ -570,11 +576,14 @@ function updateFilterResults(): void {
   // Render browse shelf results
   shelf.innerHTML = "";
   if (filtered.length === 0) {
-    shelf.innerHTML = '<div style="font-size:0.85rem;color:var(--text-muted);padding:0.5rem 0;">No matching recipes.</div>';
+    shelf.innerHTML =
+      '<div style="font-size:0.85rem;color:var(--text-muted);padding:0.5rem 0;">No matching recipes.</div>';
   } else {
     // Show only first 6 matches to avoid long lists
     filtered.slice(0, 8).forEach((recipe) => {
-      const isAlreadyPlanned = planState.some((p) => p.permalink === recipe.permalink);
+      const isAlreadyPlanned = planState.some(
+        (p) => p.permalink === recipe.permalink,
+      );
       const card = document.createElement("div");
       card.className = `browse-card${isAlreadyPlanned ? " planned" : ""}`;
 
@@ -933,7 +942,9 @@ function renderShoppingList(): void {
   const staplesList = document.getElementById("combined-staples-list");
   const divider = document.querySelector<HTMLElement>(".shopping-divider");
   const wrapper = document.querySelector<HTMLElement>(".shopping-list-wrapper");
-  const actions = document.querySelector<HTMLElement>(".shopping-actions-wrapper");
+  const actions = document.querySelector<HTMLElement>(
+    ".shopping-actions-wrapper",
+  );
 
   if (!buyList || !staplesList) return;
 
@@ -945,7 +956,9 @@ function renderShoppingList(): void {
       // Clean previous elements and show empty state
       buyList.innerHTML = "";
       staplesList.innerHTML = "";
-      const existingEmpty = ingredientsColumn.querySelector(".shopping-empty-state");
+      const existingEmpty = ingredientsColumn.querySelector(
+        ".shopping-empty-state",
+      );
       if (!existingEmpty) {
         ingredientsColumn.insertAdjacentHTML(
           "beforeend",
@@ -1059,14 +1072,20 @@ function renderShoppingList(): void {
   const hasBuy = buyItems.length > 0;
   const hasStaples = stapleItems.length > 0;
 
-  const buySection = document.querySelector(".buy-section") as HTMLElement | null;
+  const buySection = document.querySelector(
+    ".buy-section",
+  ) as HTMLElement | null;
   if (buySection) buySection.style.display = hasBuy ? "block" : "none";
 
-  const staplesSection = document.querySelector(".staples-section") as HTMLElement | null;
-  if (staplesSection) staplesSection.style.display = hasStaples ? "block" : "none";
+  const staplesSection = document.querySelector(
+    ".staples-section",
+  ) as HTMLElement | null;
+  if (staplesSection)
+    staplesSection.style.display = hasStaples ? "block" : "none";
 
   if (divider) {
-    (divider as HTMLElement).style.display = hasBuy && hasStaples ? "block" : "none";
+    (divider as HTMLElement).style.display =
+      hasBuy && hasStaples ? "block" : "none";
   }
 }
 
@@ -1138,11 +1157,14 @@ export function initRecipePageAddToPlan(): void {
   if (!addBtn) return;
 
   addBtn.addEventListener("click", () => {
-    const title = document.querySelector(".recipe-title-bar h1")?.textContent || "Recipe";
+    const title =
+      document.querySelector(".recipe-title-bar h1")?.textContent || "Recipe";
     const currentPath = window.location.pathname;
 
     // Grab current serving scale factor from slider
-    const slider = document.getElementById("recipe-scale-slider") as HTMLInputElement | null;
+    const slider = document.getElementById(
+      "recipe-scale-slider",
+    ) as HTMLInputElement | null;
     const currentScale = slider ? parseFloat(slider.value) : 1.0;
 
     // Load active plan from LS
@@ -1157,7 +1179,9 @@ export function initRecipePageAddToPlan(): void {
     }
 
     // Count duplicates
-    const duplicateCount = activePlan.filter((p) => p.permalink === currentPath).length;
+    const duplicateCount = activePlan.filter(
+      (p) => p.permalink === currentPath,
+    ).length;
 
     // Add to plan
     activePlan.push({
@@ -1175,12 +1199,10 @@ export function initRecipePageAddToPlan(): void {
     toast.className = "plan-toast-notification";
 
     // Text content depending on count
-    let alertMessage = "";
-    if (duplicateCount > 0) {
-      alertMessage = `Added another copy of <strong>${title}</strong> to your Meal Plan! (Total: ${duplicateCount + 1})`;
-    } else {
-      alertMessage = `Added <strong>${title}</strong> to your Meal Plan!`;
-    }
+    const alertMessage =
+      duplicateCount > 0
+        ? `Added another copy of <strong>${title}</strong> to your Meal Plan! (Total: ${duplicateCount + 1})`
+        : `Added <strong>${title}</strong> to your Meal Plan!`;
 
     const basePath = getSiteBasePath();
     toast.innerHTML = `
@@ -1210,7 +1232,9 @@ export function initRecipePageAddToPlan(): void {
       pointer-events: auto;
     `;
 
-    const closeBtn = toast.querySelector(".toast-close-btn") as HTMLButtonElement;
+    const closeBtn = toast.querySelector(
+      ".toast-close-btn",
+    ) as HTMLButtonElement;
     closeBtn.style.cssText = `
       background: transparent;
       border: none;
