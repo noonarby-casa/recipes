@@ -8,7 +8,7 @@ times = [
   { step = 'prep', time = '15 min' },
   { step = 'cook', time = '50 min' }
 ]
-recipeSource = 'Cathy Rickarby'
+recipeSource = 'Rickarbys'
 ingredients = [
   "1 box (16 ounces) pound cake mix (plus ingredients required by package instructions)",
   "1 1/2 cups heavy cream",
