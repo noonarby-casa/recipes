@@ -53,7 +53,7 @@
             </svg>
             <span>
               {{- range $index, $element := .Params.times -}}
-                {{- if $index }}+{{ end -}}
+                {{- if $index -}}{{ " + " }}{{- end -}}
                 {{- .step | title }}
                 {{ .time -}}
               {{- end -}}
