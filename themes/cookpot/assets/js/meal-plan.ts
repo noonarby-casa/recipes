@@ -3,6 +3,7 @@ import { processShoppingList } from "./shopping-list/pipeline";
 import { formatCookingNumber } from "./units";
 import { ShoppingItem } from "./shopping-list/types";
 import { formatNotesArray } from "./shopping-list/utils";
+import { initToggleGroup } from "./components/toggle";
 
 // Interface definitions
 interface Recipe {
@@ -233,29 +234,20 @@ function setupEventListeners(): void {
     btnEdit.classList.toggle("active", activeMobileTab === "edit-plan");
     btnView.classList.toggle("active", activeMobileTab === "view-plan");
     btnShop.classList.toggle("active", activeMobileTab === "shopping-list");
-
-    btnEdit.addEventListener("click", () => switchTab("edit-plan"));
-    btnView.addEventListener("click", () => switchTab("view-plan"));
-    btnShop.addEventListener("click", () => switchTab("shopping-list"));
   }
+  initToggleGroup(".mode-toggle-group", (value) => {
+    if (value === "mode-edit-btn") switchTab("edit-plan");
+    else if (value === "mode-view-btn") switchTab("view-plan");
+    else if (value === "mode-shop-btn") switchTab("shopping-list");
+  });
 
   // 5-Day vs 7-Day Toggles
-  const btn7Day = document.getElementById("week-7day-btn");
-  const btn5Day = document.getElementById("week-5day-btn");
-  if (btn7Day && btn5Day) {
-    btn7Day.addEventListener("click", () => {
-      workWeekOnly = false;
-      saveSettings();
-      saveStateToStorageAndUrl(true);
-      renderUI();
-    });
-    btn5Day.addEventListener("click", () => {
-      workWeekOnly = true;
-      saveSettings();
-      saveStateToStorageAndUrl(true);
-      renderUI();
-    });
-  }
+  initToggleGroup(".week-toggle-group", (value) => {
+    workWeekOnly = value === "week-5day-btn";
+    saveSettings();
+    saveStateToStorageAndUrl(true);
+    renderUI();
+  });
 
   // Global Portions Scaler (+/-)
   const btnGlobalDec = document.getElementById("global-dec-btn");

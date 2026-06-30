@@ -109,47 +109,11 @@
 }
 
 .font-controls {
-  display: flex;
-  background-color: var(--font-controls-bg);
-  border-radius: 20px;
-  padding: 3px;
-  border: 1px solid var(--border-ultra-subtle);
-  gap: 0;
   flex-grow: 1;
 }
 
 .font-btn {
   flex: 1;
-  border: none;
-  background: transparent;
-  padding: 0.4rem 1rem;
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--font-btn-text);
-  border-radius: 17px;
-  cursor: pointer;
-  transition:
-    color 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
-  outline: none;
-  text-align: center;
-}
-
-.font-btn:hover {
-  color: var(--font-btn-hover);
-}
-
-.font-btn:active {
-  transform: scale(0.97);
-}
-
-.font-btn.active {
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 4px 12px var(--noonblue-shadow-button);
 }
 
 .instructions-column {

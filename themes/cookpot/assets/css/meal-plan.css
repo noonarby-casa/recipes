@@ -16,36 +16,6 @@
   box-shadow: var(--btn-shadow);
 }
 
-.mode-toggle-group,
-.week-toggle-group {
-  display: flex;
-  background-color: var(--font-controls-bg);
-  border-radius: 10px;
-  padding: 3px;
-  border: 1px solid var(--border-ultra-subtle);
-}
-
-.mode-toggle-btn,
-.week-toggle-btn {
-  background: transparent;
-  border: none;
-  color: var(--font-btn-text);
-  font-weight: 600;
-  padding: 0.45rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.2s ease;
-  font-size: 0.85rem;
-}
-
-.mode-toggle-btn.active,
-.week-toggle-btn.active {
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  color: #ffffff;
-  box-shadow: 0 3px 8px var(--noonblue-shadow-subtle);
-}
-
 .planner-global-controls {
   display: flex;
   align-items: center;

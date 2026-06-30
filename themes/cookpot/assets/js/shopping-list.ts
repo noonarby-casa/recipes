@@ -2,6 +2,7 @@ import { formatCookingNumber } from "./units";
 import { processShoppingList } from "./shopping-list/pipeline";
 import { ShoppingItem } from "./shopping-list/types";
 import { formatNotesArray } from "./shopping-list/utils";
+import { initToggleGroup } from "./components/toggle";
 
 /**
  * Initializes the shopping list feature: selects DOM elements, sets up initial
@@ -42,21 +43,17 @@ export function initShoppingList(): void {
   renderShoppingList(currentScale);
 
   // Toggle View Click Handlers
-  btnRecipeView.addEventListener("click", () => {
-    activeTab = "recipe";
-    btnRecipeView.classList.add("active");
-    btnShoppingView.classList.remove("active");
-    recipeList.style.display = "block";
-    shoppingWrapper.style.display = "none";
-  });
-
-  btnShoppingView.addEventListener("click", () => {
-    activeTab = "shopping";
-    btnShoppingView.classList.add("active");
-    btnRecipeView.classList.remove("active");
-    recipeList.style.display = "none";
-    shoppingWrapper.style.display = "block";
-    renderShoppingList(currentScale);
+  initToggleGroup(".shopping-view-toggle", (value) => {
+    if (value === "btn-recipe-view") {
+      activeTab = "recipe";
+      recipeList.style.display = "block";
+      shoppingWrapper.style.display = "none";
+    } else if (value === "btn-shopping-view") {
+      activeTab = "shopping";
+      recipeList.style.display = "none";
+      shoppingWrapper.style.display = "block";
+      renderShoppingList(currentScale);
+    }
   });
 
   // Listen to the Servings Scaler custom event

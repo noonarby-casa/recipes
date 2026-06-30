@@ -15,41 +15,6 @@
   margin: 0;
 }
 
-/* Toggle Switch Group */
-.shopping-view-toggle {
-  display: flex;
-  background-color: var(--font-controls-bg);
-  border-radius: 20px;
-  padding: 3px;
-  border: 1px solid var(--border-ultra-subtle);
-}
-
-.view-toggle-btn {
-  border: none;
-  background: transparent;
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--font-btn-text);
-  border-radius: 17px;
-  cursor: pointer;
-  transition:
-    color 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
-  outline: none;
-}
-
-.view-toggle-btn:hover {
-  color: var(--font-btn-hover);
-}
-
-.view-toggle-btn.active {
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  color: #ffffff;
-  box-shadow: 0 4px 12px var(--noonblue-shadow-button);
-}
-
 /* Shopping List Content styling */
 .shopping-list-wrapper {
   animation: fadeIn 0.3s ease;
