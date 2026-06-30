@@ -10,6 +10,7 @@ import { convertIngredient } from "./converters";
 import { TO_TEASPOONS } from "./config";
 import { getAdaptiveUnit } from "../units";
 import { getIngredientKey, getShoppingItemKey, findRule } from "./rules";
+import { scaleTextQuantities } from "../scaler";
 import {
   Ingredient,
   ScalableIngredient,
@@ -72,7 +73,8 @@ export function getIngredients(
       return;
     }
 
-    const key = getIngredientKey(unit, rest, prep);
+    const scaledRest = scaleTextQuantities(rest, scale);
+    const key = getIngredientKey(unit, scaledRest, prep);
     const scaledQty = baseQty * scale;
 
     const item = parsedMap.get(key);
@@ -80,7 +82,13 @@ export function getIngredients(
       item.scaledQty += scaledQty;
       item.prep = prep || item.prep;
     } else {
-      parsedMap.set(key, { isScalable: true, scaledQty, unit, rest, prep });
+      parsedMap.set(key, {
+        isScalable: true,
+        scaledQty,
+        unit,
+        rest: scaledRest,
+        prep,
+      });
     }
   });
 

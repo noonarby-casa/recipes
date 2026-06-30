@@ -1,4 +1,4 @@
-import { parseIngredientText } from "./scaler";
+import { parseIngredientText, scaleTextQuantities } from "./scaler";
 import { processShoppingList } from "./shopping-list/pipeline";
 import { formatCookingNumber } from "./units";
 import { ShoppingItem } from "./shopping-list/types";
@@ -1860,7 +1860,10 @@ function renderCombinedShoppingList(): void {
         const scaledQty = parsed.quantity * item.scale;
         el.setAttribute("data-base-qty", scaledQty.toString());
         el.setAttribute("data-unit", parsed.unit);
-        el.setAttribute("data-rest", parsed.rest);
+        el.setAttribute(
+          "data-rest",
+          scaleTextQuantities(parsed.rest, item.scale),
+        );
       }
       mockElements.push(el);
     });
