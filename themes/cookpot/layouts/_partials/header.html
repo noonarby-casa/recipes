@@ -18,7 +18,7 @@
     aria-label="Random recipe"
     id="header-random-recipe"
     title="Random recipe"
-    data-recipes="{{- $urls := slice -}}{{- range where site.RegularPages "Type" "ne" "plan" -}}
+    data-recipes="{{- $urls := slice -}}{{- range where site.RegularPages "Type" "recipe" -}}
       {{- $urls = $urls | append .RelPermalink -}}
     {{- end -}}{{- $urls | jsonify -}}"
   >

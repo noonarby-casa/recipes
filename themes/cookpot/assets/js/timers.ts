@@ -67,6 +67,37 @@ function formatTime(seconds: number): string {
   return isNegative ? `-${display}` : display;
 }
 
+let activeTimersCount = 0;
+let wakeLock: WakeLockSentinel | null = null;
+
+async function requestWakeLock(): Promise<void> {
+  if (!navigator.wakeLock) return;
+  if (wakeLock !== null) return;
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release", () => {
+      wakeLock = null;
+    });
+  } catch (err) {
+    console.error("Failed to acquire screen wake lock:", err);
+  }
+}
+
+function releaseWakeLock(): void {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+  }
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", async () => {
+    if (document.visibilityState === "visible" && activeTimersCount > 0) {
+      await requestWakeLock();
+    }
+  });
+}
+
 export function initTimers(): void {
   const timers = document.querySelectorAll<HTMLElement>(".recipe-timer");
 
@@ -82,7 +113,11 @@ export function initTimers(): void {
 
     const { minSeconds, maxSeconds } = parsed;
     let elapsed = 0;
+    let elapsedBeforeStart = 0;
+    let startTime: number | null = null;
     let intervalId: ReturnType<typeof setInterval> | null = null;
+    let lowerChimePlayed = false;
+    let upperChimePlayed = false;
 
     const btn = timerContainer.querySelector<HTMLElement>(".recipe-timer-btn");
     const resetBtn = timerContainer.querySelector<HTMLElement>(
@@ -128,39 +163,74 @@ export function initTimers(): void {
       }
     }
 
+    function tick(): void {
+      if (startTime !== null) {
+        elapsed =
+          elapsedBeforeStart + Math.floor((Date.now() - startTime) / 1000);
+      }
+      updateDisplay();
+
+      // Sound alert triggers when crossing bounds
+      if (minSeconds === maxSeconds) {
+        if (elapsed >= maxSeconds && !upperChimePlayed) {
+          playUpperBoundChime();
+          upperChimePlayed = true;
+        }
+      } else {
+        if (elapsed >= minSeconds && !lowerChimePlayed) {
+          playLowerBoundChime();
+          lowerChimePlayed = true;
+        }
+        if (elapsed >= maxSeconds && !upperChimePlayed) {
+          playUpperBoundChime();
+          upperChimePlayed = true;
+        }
+      }
+    }
+
     function startTimer(): void {
       if (intervalId) return;
+      activeTimersCount++;
+      if (activeTimersCount === 1) {
+        requestWakeLock();
+      }
+      startTime = Date.now();
       intervalId = setInterval(() => {
-        elapsed++;
-        updateDisplay();
-
-        // Sound alert triggers when crossing bounds
-        if (minSeconds === maxSeconds) {
-          if (elapsed === maxSeconds) {
-            playUpperBoundChime();
-          }
-        } else {
-          if (elapsed === minSeconds) {
-            playLowerBoundChime();
-          } else if (elapsed === maxSeconds) {
-            playUpperBoundChime();
-          }
-        }
+        tick();
       }, 1000);
-      updateDisplay();
+      tick();
     }
 
     function pauseTimer(): void {
       if (!intervalId) return;
       clearInterval(intervalId);
       intervalId = null;
+      if (startTime !== null) {
+        elapsedBeforeStart += Math.floor((Date.now() - startTime) / 1000);
+      }
+      startTime = null;
+      activeTimersCount = Math.max(0, activeTimersCount - 1);
+      if (activeTimersCount === 0) {
+        releaseWakeLock();
+      }
       updateDisplay();
     }
 
     function resetTimer(): void {
       pauseTimer();
       elapsed = 0;
+      elapsedBeforeStart = 0;
+      lowerChimePlayed = false;
+      upperChimePlayed = false;
       updateDisplay();
+    }
+
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && intervalId !== null) {
+          tick();
+        }
+      });
     }
 
     btn.addEventListener("click", (e: MouseEvent) => {

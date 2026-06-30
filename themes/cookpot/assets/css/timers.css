@@ -147,3 +147,14 @@
 .recipe-timer.is-running .timer-pause-icon {
   display: block;
 }
+
+/* Prevent reflow on countdown update / negative sign */
+.recipe-timer .timer-label {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.recipe-timer.has-started .timer-label {
+  min-width: 6ch;
+}

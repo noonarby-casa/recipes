@@ -2,7 +2,7 @@
   {{- /* Uniqueness and presence validation for recipe shortIds */ -}}
   {{- $seenIds := dict }}
   {{- range site.RegularPages }}
-    {{- if ne .Params.layout "plan" }}
+    {{- if eq .Type "recipe" }}
       {{- $shortId := .Params.shortId }}
       {{- if not $shortId }}
         {{- errorf "Recipe %q (file: %s) is missing the required 'shortId' front matter parameter." .Title .File.Path }}
@@ -15,7 +15,7 @@
     {{- end }}
   {{- end }}
 
-  {{- range $index, $page := (where site.RegularPages "Type" "ne" "plan").ByDate.Reverse }}
+  {{- range $index, $page := (where site.RegularPages "Type" "recipe").ByDate.Reverse }}
   {{- if $index }},{{ end }}
   {
     "title": {{ $page.Title | jsonify }},
