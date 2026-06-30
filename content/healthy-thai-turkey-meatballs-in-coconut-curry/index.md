@@ -2,6 +2,7 @@
 title = 'Healthy Thai Turkey Meatballs in Coconut Curry'
 date = 2026-06-22T05:53:17-04:00
 slug = 'healthy-thai-turkey-meatballs-in-coconut-curry'
+shortId = 'tmb'
 times = [
   { step = 'cook', time = '30 min' }
 ]

@@ -19,7 +19,7 @@
       </div>
     {{- end -}}
 
-    {{ $paginator := .Paginate site.RegularPages.ByDate.Reverse }}
+    {{ $paginator := .Paginate (where site.RegularPages "Type" "ne" "plan").ByDate.Reverse }}
     <div class="recipe-list">
       {{ range $paginator.Pages }}
         {{ partial "recipe-list-item.html" . }}

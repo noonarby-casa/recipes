@@ -2,6 +2,7 @@
 title = 'Macaroni Salad With Lemon and Herbs'
 date = 2026-06-17T22:30:58-04:00
 slug = 'macaroni-salad-with-lemon-and-herbs'
+shortId = 'msl'
 times = [
   { step = 'cook', time = '10 min' }
 ]

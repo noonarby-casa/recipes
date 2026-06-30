@@ -2,6 +2,7 @@
 title = 'Chorizo Roasted Red Pepper Spinach Gnocchi'
 date = 2025-05-06T11:12:26-04:00
 slug = 'chorizo-gnocchi'
+shortId = 'crg'
 times = [
   { step = 'cook', time = '20 min' }
 ]

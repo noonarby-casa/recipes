@@ -2,6 +2,7 @@
 title = 'Lemon Raspberry Cake'
 date = 2026-06-20T21:15:00-04:00
 slug = 'lemon-raspberry-cake'
+shortId = 'lrc'
 times = [
   { step = 'cook', time = '40 min' }
 ]

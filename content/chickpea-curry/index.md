@@ -2,6 +2,7 @@
 title = 'Cozy Chickpea Curry'
 date = 2026-06-22T05:53:17-04:00
 slug = 'chickpea-curry'
+shortId = 'cpc'
 times = [
   { step = 'cook', time = '15 min' }
 ]

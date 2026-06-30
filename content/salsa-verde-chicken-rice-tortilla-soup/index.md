@@ -2,6 +2,7 @@
 title = 'Salsa Verde Chicken and Rice Tortilla Soup'
 date = 2026-06-22T05:48:25-04:00
 slug = 'salsa-verde-chicken-rice-tortilla-soup'
+shortId = 'cts'
 times = [
   { step = 'cook', time = '30 min' }
 ]

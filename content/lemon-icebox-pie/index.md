@@ -2,6 +2,7 @@
 title = 'Lemon Icebox Pie'
 date = 2026-06-20T21:06:01-04:00
 slug = 'lemon-icebox-pie'
+shortId = 'lip'
 times = [
   { step = 'prep', time = '15 min' },
   { step = 'freeze', time = '6 hours' },

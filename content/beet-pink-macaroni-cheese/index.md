@@ -2,6 +2,7 @@
 title = 'Beet Pink Macaroni Cheese'
 date = 2026-06-23T20:42:44-04:00
 slug = 'beet-pink-macaroni-cheese'
+shortId = 'bpm'
 times = [
   { step = 'prep', time = '15 min' },
   { step = 'cook', time = '45 min' }

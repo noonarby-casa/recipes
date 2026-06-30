@@ -1,9 +1,26 @@
 [
-  {{- range $index, $page := site.RegularPages.ByDate.Reverse }}
+  {{- /* Uniqueness and presence validation for recipe shortIds */ -}}
+  {{- $seenIds := dict }}
+  {{- range site.RegularPages }}
+    {{- if ne .Params.layout "plan" }}
+      {{- $shortId := .Params.shortId }}
+      {{- if not $shortId }}
+        {{- errorf "Recipe %q (file: %s) is missing the required 'shortId' front matter parameter." .Title .File.Path }}
+      {{- end }}
+      {{- $existing := index $seenIds $shortId }}
+      {{- if $existing }}
+        {{- errorf "Duplicate 'shortId' found: %q is used by both %s and %s" $shortId .File.Path $existing }}
+      {{- end }}
+      {{- $seenIds = merge $seenIds (dict $shortId .File.Path) }}
+    {{- end }}
+  {{- end }}
+
+  {{- range $index, $page := (where site.RegularPages "Type" "ne" "plan").ByDate.Reverse }}
   {{- if $index }},{{ end }}
   {
     "title": {{ $page.Title | jsonify }},
     "permalink": {{ $page.RelPermalink | jsonify }},
+    "shortId": {{ $page.Params.shortId | default "" | jsonify }},
     "dateMachine": {{ $page.Date | time.Format "2006-01-02T15:04:05-07:00" | jsonify }},
     "dateHuman": {{ $page.Date | time.Format ":date_long" | jsonify }},
     "times": {{ $page.Params.times | default slice | jsonify }},

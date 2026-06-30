@@ -2,6 +2,7 @@
 title = 'Tequila Lime Grilled Chicken'
 date = 2026-06-20T15:42:56-04:00
 slug = 'tequila-lime-grilled-chicken'
+shortId = 'tlc'
 times = [
   { step = 'prep', time = '15 min' },
   { step = 'brine', time = '1 hour' },

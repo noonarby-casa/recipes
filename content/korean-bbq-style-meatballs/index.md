@@ -2,6 +2,7 @@
 title = 'Korean BBQ-Style Meatballs'
 date = 2026-06-06T22:04:32-04:00
 slug = 'korean-bbq-style-meatballs'
+shortId = 'kbq'
 times = [
   { step = 'prep', time = '15 min' },
   { step = 'cook', time = '15 min' }
