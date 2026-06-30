@@ -13,7 +13,6 @@ const sortedUnits = [...allUnits].sort((a, b) => b.length - a.length);
 const escapedUnits = sortedUnits.map((u) =>
   u.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"),
 );
-const unitRegex = new RegExp(`^(${escapedUnits.join("|")})\\b`, "i");
 
 // Helper to parse fractions (e.g., "1/2", "1 1/2") and decimals
 function parseNumeric(str: string): number {
@@ -52,7 +51,7 @@ export function parseIngredientSegments(text: string): IngredientSegment[] {
   if (startMatch) {
     const qtyStr = startMatch[0];
     const quantity = parseNumeric(qtyStr);
-    let afterQty = remainder.slice(qtyStr.length);
+    const afterQty = remainder.slice(qtyStr.length);
 
     const startUnitRegex = new RegExp(
       `^\\s*(${escapedUnits.join("|")})\\b`,
