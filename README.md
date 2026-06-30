@@ -18,7 +18,7 @@ This is a **Hugo-based static website** dedicated to displaying recipes for the 
 - **Hosting:** Firebase Hosting (Project ID: `noonarby-casa-recipes`)
 - **CI/CD:** GitHub Actions for automated pull request previews and production deployment.
 
-For a detailed map of the codebase directory structure and layouts, please refer to [GEMINI.md](GEMINI.md).
+For a detailed map of the codebase directory structure and layouts, please refer to [AGENTS.md](AGENTS.md).
 
 ---
 

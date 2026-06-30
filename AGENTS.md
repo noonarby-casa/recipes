@@ -1,8 +1,8 @@
-# GEMINI.md - Noonarby Casa Recipes
+# AGENTS.md - Noonarby Casa Recipes
 
 <!--
-This is the GEMINI.md project rule file. It provides high-level context, environment instructions,
-and technical guardrails for Gemini-powered agentic coding assistants (like Antigravity).
+This is the AGENTS.md project rule file. It provides high-level context, environment instructions,
+and technical guardrails for agent-powered agentic coding assistants (like Antigravity).
 Keep this file up-to-date to enable highly accurate pair programming.
 -->
 
