@@ -168,9 +168,7 @@ export function initMealPlanner(): void {
         saveStateToStorageAndUrl(true);
 
         // Auto-switch to View UX when returning from a recipe page
-        if (
-          new URLSearchParams(window.location.search).get("view") === "1"
-        ) {
+        if (new URLSearchParams(window.location.search).get("view") === "1") {
           switchTab("view-plan");
         }
       }
