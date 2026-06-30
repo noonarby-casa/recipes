@@ -272,8 +272,30 @@
 
 /* Ingredients layout enhancements */
 .recipe-ingredients-list {
-  padding-left: 1.25rem;
   margin-top: 0.75rem;
+}
+
+.recipe-ingredients-sublist {
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  list-style-type: disc;
+}
+
+.ingredient-category {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.25rem;
+}
+
+.ingredient-category:first-of-type {
+  margin-top: 0.5rem;
 }
 
 .recipe-ingredient {

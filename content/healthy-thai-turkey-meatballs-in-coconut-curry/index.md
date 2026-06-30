@@ -8,21 +8,27 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  "1 pound organic ground turkey (or ground chicken)",
-  "1 egg",
-  "1 cup gluten-free or grain-free cracker crumbs",
-  "2 cloves garlic, minced",
-  "1 teaspoon ground ginger",
-  "1.5 tablespoons coconut aminos",
-  "1 tablespoon red curry paste",
-  "sea salt and black pepper, to taste",
-  "2 tablespoons avocado or olive oil",
-  "1 red bell pepper, sliced",
-  "1 small onion, diced",
-  "2 tablespoons red curry paste",
-  "1 can (13.5 ounce) full-fat coconut milk",
-  "1 tablespoon coconut aminos",
-  "cilantro, for garnish"
+  { category = "Meatballs", items = [
+    "1 pound organic ground turkey (or ground chicken)",
+    "1 egg",
+    "1 cup gluten-free or grain-free cracker crumbs",
+    "2 cloves garlic, minced",
+    "1 teaspoon ground ginger",
+    "1.5 tablespoons coconut aminos",
+    "1 tablespoon red curry paste",
+    "sea salt and black pepper, to taste"
+  ] },
+  { category = "Coconut Curry Sauce", items = [
+    "2 tablespoons avocado or olive oil",
+    "1 red bell pepper, sliced",
+    "1 small onion, diced",
+    "2 tablespoons red curry paste",
+    "1 can (13.5 ounce) full-fat coconut milk",
+    "1 tablespoon coconut aminos"
+  ] },
+  { category = "Garnish", items = [
+    "cilantro, for garnish"
+  ] }
 ]
 tags = [
   "asian",

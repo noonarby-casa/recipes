@@ -10,20 +10,28 @@ times = [
 ]
 recipeSource = 'Rickarbys'
 ingredients = [
-  "1/3 cup salt (for brine)",
-  "3 tablespoons sugar (for brine)",
-  "6 cups water (for brine)",
-  "4 12-ounce split bone-in, skin-on chicken breasts",
-  "1/2 cup mayonnaise",
-  "1/2 cup sour cream",
-  "1 1/2 tablespoons tequila",
-  "4 tablespoons fresh lime juice",
-  "2 medium cloves garlic, minced",
-  "1/3 cup chopped fresh cilantro",
-  "1 teaspoon sugar (for sauce)",
-  "1 teaspoon salt (for sauce)",
-  "Vegetable oil, for the grill",
-  "1 lime, cut into wedges for serving"
+  { category = "Brine", items = [
+    "1/3 cup salt (for brine)",
+    "3 tablespoons sugar (for brine)",
+    "6 cups water (for brine)"
+  ] },
+  { category = "Chicken", items = [
+    "4 12-ounce split bone-in, skin-on chicken breasts"
+  ] },
+  { category = "Sauce", items = [
+    "1/2 cup mayonnaise",
+    "1/2 cup sour cream",
+    "1 1/2 tablespoons tequila",
+    "4 tablespoons fresh lime juice",
+    "2 medium cloves garlic, minced",
+    "1/3 cup chopped fresh cilantro",
+    "1 teaspoon sugar (for sauce)",
+    "1 teaspoon salt (for sauce)"
+  ] },
+  { category = "Serving & Grilling", items = [
+    "Vegetable oil, for the grill",
+    "1 lime, cut into wedges for serving"
+  ] }
 ]
 tags = [
   "chicken",

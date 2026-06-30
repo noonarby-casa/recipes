@@ -8,33 +8,39 @@ times = [
 ]
 recipeSource = 'Rickarbys'
 ingredients = [
-  "1 cup unsalted butter, at room temperature",
-  "1 1/2 cups granulated sugar",
-  "1/4 cup light brown sugar, packed",
-  "1 tablespoon lemon zest",
-  "1/2 teaspoon pure lemon extract (optional)",
-  "1 teaspoon vanilla extract",
-  "4 large eggs, at room temperature",
-  "2 1/2 cups cake flour",
-  "1 1/2 teaspoons baking powder",
-  "1/2 teaspoon baking soda",
-  "1/2 teaspoon salt",
-  "1/2 cup whole milk",
-  "1/2 cup full-fat sour cream",
-  "1/2 cup fresh squeezed lemon juice",
-  "2 1/2 cups fresh or frozen raspberries (if using frozen, do not thaw)",
-  "2 tablespoons all-purpose flour",
-  "8 ounces full-fat cream cheese, a little softer than room temperature (for frosting)",
-  "10 tablespoons unsalted butter, a little softer than room temperature (for frosting)",
-  "4 cups confectioners' sugar, more if needed (for frosting)",
-  "2 teaspoons fresh lemon zest (for frosting)",
-  "1 tablespoon fresh lemon juice (for frosting)",
-  "1/4 teaspoon pure lemon extract (for frosting, optional)",
-  "1/4 teaspoon salt (for frosting)",
-  "2 tablespoons sour cream (for frosting)",
-  "1/2 cup raspberry preserves (for garnish)",
-  "1 lemon, thinly sliced (for garnish)",
-  "1 cup fresh raspberries (for garnish)"
+  { category = "Cake Batter", items = [
+    "1 cup unsalted butter, at room temperature",
+    "1 1/2 cups granulated sugar",
+    "1/4 cup light brown sugar, packed",
+    "1 tablespoon lemon zest",
+    "1/2 teaspoon pure lemon extract (optional)",
+    "1 teaspoon vanilla extract",
+    "4 large eggs, at room temperature",
+    "2 1/2 cups cake flour",
+    "1 1/2 teaspoons baking powder",
+    "1/2 teaspoon baking soda",
+    "1/2 teaspoon salt",
+    "1/2 cup whole milk",
+    "1/2 cup full-fat sour cream",
+    "1/2 cup fresh squeezed lemon juice",
+    "2 1/2 cups fresh or frozen raspberries (if using frozen, do not thaw)",
+    "2 tablespoons all-purpose flour"
+  ] },
+  { category = "Frosting", items = [
+    "8 ounces full-fat cream cheese, a little softer than room temperature (for frosting)",
+    "10 tablespoons unsalted butter, a little softer than room temperature (for frosting)",
+    "4 cups confectioners' sugar, more if needed (for frosting)",
+    "2 teaspoons fresh lemon zest (for frosting)",
+    "1 tablespoon fresh lemon juice (for frosting)",
+    "1/4 teaspoon pure lemon extract (for frosting, optional)",
+    "1/4 teaspoon salt (for frosting)",
+    "2 tablespoons sour cream (for frosting)"
+  ] },
+  { category = "Garnish", items = [
+    "1/2 cup raspberry preserves (for garnish)",
+    "1 lemon, thinly sliced (for garnish)",
+    "1 cup fresh raspberries (for garnish)"
+  ] }
 ]
 tags = [
   "baking",

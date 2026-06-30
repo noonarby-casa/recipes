@@ -152,11 +152,33 @@
         </div>
       </div>
 
-      <ul class="recipe-ingredients-list">
-        {{ range .Params.ingredients }}
-          <li class="recipe-ingredient">{{ . }}</li>
+      <div class="recipe-ingredients-list">
+        {{ $isMap := false }}
+        {{ range first 1 .Params.ingredients }}
+          {{ if reflect.IsMap . }}
+            {{ $isMap = true }}
+          {{ end }}
         {{ end }}
-      </ul>
+
+        {{ if $isMap }}
+          {{ range .Params.ingredients }}
+            {{ if .category }}
+              <h3 class="ingredient-category">{{ .category }}</h3>
+            {{ end }}
+            <ul class="recipe-ingredients-sublist">
+              {{ range .items }}
+                <li class="recipe-ingredient">{{ . }}</li>
+              {{ end }}
+            </ul>
+          {{ end }}
+        {{ else }}
+          <ul class="recipe-ingredients-sublist">
+            {{ range .Params.ingredients }}
+              <li class="recipe-ingredient">{{ . }}</li>
+            {{ end }}
+          </ul>
+        {{ end }}
+      </div>
 
       <div class="shopping-list-wrapper" style="display: none;">
         <div class="shopping-actions">

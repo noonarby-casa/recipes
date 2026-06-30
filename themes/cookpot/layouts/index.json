@@ -27,7 +27,17 @@
     "recipeSource": {{ $page.Params.recipeSource | default "Noonarby" | jsonify }},
     "servings": {{ $page.Params.servings | default 4 | jsonify }},
     "tags": {{ $page.Params.tags | default slice | jsonify }},
-    "ingredients": {{ $page.Params.ingredients | default slice | jsonify }},
+    {{- $flatIngredients := slice }}
+    {{- range $page.Params.ingredients }}
+      {{- if reflect.IsMap . }}
+        {{- range .items }}
+          {{- $flatIngredients = $flatIngredients | append . }}
+        {{- end }}
+      {{- else }}
+        {{- $flatIngredients = $flatIngredients | append . }}
+      {{- end }}
+    {{- end }}
+    "ingredients": {{ $flatIngredients | jsonify }},
     "summary": {{ $page.Summary | plainify | jsonify }},
     {{- $img := "" }}
     {{- $img90 := "" }}

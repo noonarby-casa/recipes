@@ -10,16 +10,22 @@ times = [
 ]
 recipeSource = 'Rickarbys'
 ingredients = [
-  "9 ounces shortbread cookies",
-  "1/4 cup granulated sugar (for crust)",
-  "4 tablespoons unsalted butter, melted",
-  "6 large egg yolks",
-  "1/4 cup granulated sugar (for filling)",
-  "1 pinch kosher salt",
-  "1 14-ounce can sweetened condensed milk",
-  "2 tablespoons grated lemon zest",
-  "3/4 cup fresh lemon juice",
-  "Freshly whipped cream, for serving"
+  { category = "Crust", items = [
+    "9 ounces shortbread cookies",
+    "1/4 cup granulated sugar (for crust)",
+    "4 tablespoons unsalted butter, melted"
+  ] },
+  { category = "Filling", items = [
+    "6 large egg yolks",
+    "1/4 cup granulated sugar (for filling)",
+    "1 pinch kosher salt",
+    "1 14-ounce can sweetened condensed milk",
+    "2 tablespoons grated lemon zest",
+    "3/4 cup fresh lemon juice"
+  ] },
+  { category = "For Serving", items = [
+    "Freshly whipped cream, for serving"
+  ] }
 ]
 tags = [
   "dessert",
