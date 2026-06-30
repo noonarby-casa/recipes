@@ -25,6 +25,7 @@ A quick reference of the core technologies, libraries, and hosting parameters po
 | **Framework**       | [Hugo (Extended)](https://gohugo.io/)            | `latest` / Extended version required                | Static Site Generator (SSG)                                       |
 | **Version Control** | [Jujutsu (jj)](https://github.com/martinvonz/jj) | Git-compatible                                      | Primary VCS; tracks changes automatically in working copy (`@`)   |
 | **Scripting**       | [TypeScript](https://www.typescriptlang.org/)    | Type-annotated modules, compiled using Hugo ESBuild | Frontend business logic and DOM interactions                      |
+| **Web APIs**        | Screen Wake Lock & Local Storage                 | Native Browser APIs                                 | Keeping screen active during timers, persisting themes/plans      |
 | **Package Manager** | [pnpm](https://pnpm.io/)                         | Managed via `package.json`                          | Running local static type-checking (`pnpm typecheck`)             |
 | **Styling**         | Vanilla CSS                                      | Modular files in `themes/cookpot/assets/css/`       | Minimal, responsive layout, bundled dynamically using Hugo Concat |
 | **Hosting**         | Firebase Hosting                                 | Project ID: `noonarby-casa-recipes`                 | Static hosting and SSL management                                 |
@@ -46,8 +47,12 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │   └── tsconfig.json                     # TypeScript compiler path mapping configuration
 ├── content/                              # Site content (markdown pages)
 │   ├── _index.md                         # Homepage content ("Here you will find recipes...")
-│   └── chorizo-roasted-red-pepper-spinach-gnocchi/
-│       └── index.md                      # Example recipe leaf bundle
+│   ├── chorizo-roasted-red-pepper-spinach-gnocchi/
+│   │   └── index.md                      # Example recipe leaf bundle
+│   ├── plan/
+│   │   └── index.md                      # Meal planner landing page leaf bundle
+│   └── timers/
+│       └── index.md                      # Private timers/alarm test bed page leaf bundle
 ├── themes/
 │   └── cookpot/                          # Custom recipe theme folder
 │       ├── assets/
@@ -56,28 +61,34 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │       │   │   ├── global.css            # Base resets and element rules
 │       │   │   ├── recipe-list.css       # Recipe card/listing styles
 │       │   │   ├── recipe-single.css     # Recipe single details and landscape layouts
-│       │   │   └── timers.css            # Pulse timers style rules
+│       │   │   ├── timers.css            # Pulse timers style rules
+│       │   │   ├── meal-plan.css         # Calendar UI and planner styling
+│       │   │   └── shopping-list.css     # Checkout-style shopping list styles
 │       │   └── js/                       # Modular TypeScript (bundled by Hugo esbuild)
 │       │       ├── main.ts               # Entry point and initializer
 │       │       ├── constants.ts          # Global shared maps and constants
 │       │       ├── audio.ts              # Sound alarms logic
 │       │       ├── scaler.ts             # Scaling calculation logic
-│       │       ├── timers.ts             # Countdowns logic
+│       │       ├── timers.ts             # Countdowns logic & wake lock requests
 │       │       ├── fontsize.ts           # Custom instructions text-scaler logic
 │       │       ├── search.ts             # Lazy-loaded recipe search logic
 │       │       ├── random.ts             # Client-side random recipe selector logic
-│       │       ├── shopping-list.ts      # Shopping list orchestrator and UI rendering
+│       │       ├── darkmode.ts           # Client theme switching controls
+│       │       ├── meal-plan.ts          # Meal planner logic, drag-and-drop, and conflict resolution
+│       │       ├── units.ts              # Ingredient quantity parser & fraction standardizer
 │       │       └── shopping-list/        # Shopping list logic core modules
 │       │           ├── config.ts         # Cooking units and pantry staples catalog
 │       │           ├── converters.ts     # Registry of custom packaging strategy converters
 │       │           ├── pipeline.ts       # Raw ingredient aggregation & processing pipeline
+│       │           ├── rules.ts          # Declarative ingredient grouping & staple rules config
+│       │           ├── types.ts          # TypeScript type definitions for the shopping list pipeline
 │       │           └── utils.ts          # Normalization and string parsers helpers
 │       ├── layouts/
 │       │   ├── _partials/                # Sub-templates directory
 │       │   │   ├── head/                 # Scripts and style bundlers
 │       │   │   │   ├── css.html          # Bundled stylesheet inline loader
 │       │   │   │   └── js.html           # ESBuild script bundler and injection loader
-│       │   │   ├── head.html                 # Page metadata layout shell
+│       │   │   ├── head.html                 # Page metadata layout shell (with dark mode inline script)
 │       │   │   ├── header.html               # Site title banner and navigation layout
 │       │   │   ├── footer.html               # Site copyright and footer links layout
 │       │   │   ├── menu.html                 # Navigation menu structure
@@ -89,7 +100,9 @@ A tree-map of the project directories to help locate layouts, stylesheets, and p
 │       │   ├── home.html                 # Homepage layout template
 │       │   ├── index.json                # JSON recipe search index template
 │       │   ├── list.html                 # List/taxonomies layout template
-│       │   └── single.html               # Recipe detail layout (grid of Ingredients / Instructions)
+│       │   ├── single.html               # Recipe detail layout (grid of Ingredients / Instructions)
+│       │   ├── plan.html                 # Edit/View planner layout
+│       │   └── timers.html               # Countdowns test suite layout
 │       └── theme.toml                    # Theme metadata and taxonomies config
 ├── .firebaserc                           # Firebase project configuration mapping
 ├── firebase.json                         # Firebase hosting redirect and ignore rules
@@ -123,13 +136,20 @@ This project uses **Jujutsu (jj)** for version control. It does not use standard
 
 ### Style Overrides & Core Variables
 
-- Modify styles within their respective module files (e.g., [timers.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/timers.css) for interactive countdowns, [recipe-single.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/recipe-single.css) for single page layout details).
-- Use the primary color system defined in [variables.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/variables.css):
+- Modify styles within their respective module files (e.g., [timers.css](themes/cookpot/assets/css/timers.css) for interactive countdowns, [recipe-single.css](themes/cookpot/assets/css/recipe-single.css) for single page layout details).
+- Use the primary color system defined in [variables.css](themes/cookpot/assets/css/variables.css):
   - `--noonblue` (`#0080D8`)
   - `--noonblue-hover` (`#006cb7`)
   - `--noonblue-light` (`#3fb0ff`)
-- **Preventing Layout Shifts:** The `html` element uses `scrollbar-gutter: stable` to ensure a consistent page width and eliminate content shifting as users navigate between shorter/longer pages (defined in [global.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/global.css)).
-- **Inline Metadata Display:** To optimize vertical spacing on small and large screens, metadata elements (date, times, source) on recipe list items are displayed in a single horizontal row using CSS flexbox rules in [recipe-list.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/recipe-list.css).
+- **Preventing Layout Shifts:** The `html` element uses `scrollbar-gutter: stable` to ensure a consistent page width and eliminate content shifting as users navigate between shorter/longer pages (defined in [global.css](themes/cookpot/assets/css/global.css)).
+- **Inline Metadata Display:** To optimize vertical spacing on small and large screens, metadata elements (date, times, source) on recipe list items are displayed in a single horizontal row using CSS flexbox rules in [recipe-list.css](themes/cookpot/assets/css/recipe-list.css).
+
+### Theme-wide Dark Mode
+
+The project implements a selective dark mode utilizing CSS variables scoped under `html.dark-mode` in [variables.css](themes/cookpot/assets/css/variables.css).
+
+- **FOUC Prevention:** To prevent flash of unstyled content, an inline blocking script in the document `<head>` (defined in [head.html](themes/cookpot/layouts/_partials/head.html)) queries `localStorage` for `"theme"` and checks the user's system preferences (`prefers-color-scheme: dark`) before the browser renders the layout. If preferred, it immediately applies the `.dark-mode` class to the root `<html>` element.
+- **Client controls:** A theme toggle button resides in the header (bound by `initDarkMode` in [darkmode.ts](themes/cookpot/assets/js/darkmode.ts)), swapping the `dark-mode` class on the `<html>` root and saving the state dynamically.
 
 ---
 
@@ -147,6 +167,8 @@ All recipe articles are created as Hugo leaf bundles (a folder containing an `in
 title = 'Descriptive Title'
 date = YYYY-MM-DDTHH:MM:SS-TZ
 slug = 'url-safe-slug'
+shortId = 'unique-short-code'
+servings = 4
 times = [
   { step = 'prep', time = 'Prep time duration (e.g., "10 min")' },
   { step = 'cook', time = 'Cook time duration (e.g., "20 min")' }
@@ -166,6 +188,8 @@ tags = [
 
 - **Title:** Capitalized like standard titles.
 - **Slug:** URL-friendly lowercase string used to define the address.
+- **ShortId:** Required string parameter containing a unique 3-4 character lowercase code (e.g., `'crg'`) for identifying the recipe dynamically in the search index and planner calendar.
+- **Servings:** Optional integer parameter specifying the default portion count (defaults to `4` if omitted), used for scaling calculations.
 - **Times:** An array of maps specifying recipe timing steps (e.g., prep, cook). Each item requires a `step` name and a `time` duration string (e.g., `'10 min'`). These render inline, separated by `+` with a single clock SVG icon (e.g., `Prep 10 min + Cook 20 min`), across all content, layouts, list pages, and search index templates to minimize vertical space.
 - **RecipeSource:** Optional string parameter specifying the recipe's origin (e.g., `'Rickarbys'`), defaulting to `'Noonarby'` if omitted. Renders under the header title on recipe detail views and in search results.
 - **Ingredients:** A TOML list of strings. Each entry represents a single line containing quantity, unit, and item name.
@@ -178,7 +202,7 @@ Instructions are placed directly in the body of the markdown file beneath a `## 
 - **Scaling Quantities:** Wrap any ingredient quantities inside step descriptions with the `{{< qty "amount unit" >}}` shortcode.
   > [!IMPORTANT]
   > **Supported Units & Formatting Rules:**
-  > The scaling engine in `themes/cookpot/assets/js/main.ts` only recognizes a specific set of units: `ounces`, `ounce`, `pounds`, `pound`, `cups`, `cup`, `teaspoons`, `teaspoon`, `tablespoons`, `tablespoon`, `cloves`, `clove`, `cans`, `can`, `grams`, `gram`, `g`, `ml`, `small`, `large`, `medium`.
+  > The scaling engine in [scaler.ts](themes/cookpot/assets/js/scaler.ts) parses units dynamically imported from [config.ts](themes/cookpot/assets/js/shopping-list/config.ts). Supported units and standard abbreviations include: `ounces` (`ounces`, `ounce`, `oz`), `pounds` (`pounds`, `pound`, `lb`, `lbs`), `cups` (`cups`, `cup`), `teaspoons` (`teaspoons`, `teaspoon`, `tsp`), `tablespoons` (`tablespoons`, `tablespoon`, `tbsp`), `cloves` (`cloves`, `clove`), `cans` (`cans`, `can`), `grams` (`grams`, `gram`, `g`), `ml`, `small`, `large`, `medium`, `heads` (`heads`, `head`), and `bulbs` (`bulbs`, `bulb`).
   >
   > 1. **If the unit is supported:** Wrap both amount and unit in the shortcode. Example: `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`.
   > 2. **If the unit is NOT supported** (e.g., `lemon`, `squash`, `onion`): Wrap _only_ the numeric amount in the shortcode, leaving the unit word outside. Example: `{{< qty "1" >}} lemon` or `{{< qty "4" >}} summer squash`. Wrapping unsupported unit names inside the shortcode will cause them to be discarded when scaling changes.
@@ -206,8 +230,8 @@ The project includes custom built-in search, pagination, dynamic tag cloud, and 
 
 The site features a client-side search engine for filtering recipes dynamically.
 
-- **Search Index Generation:** Hugo generates a search index at `index.json` (using the template at [index.json](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/index.json)) compiled from all pages. This index contains all recipe metadata (including `title`, `permalink`, `date`, `times`, `recipeSource`, `tags`, `ingredients`, `summary`, and responsive image WebP crops).
-- **Lazy Loading Data:** The search module in [search.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/search.ts) lazily fetches `index.json` only when the user hovers over or focuses on the search input box.
+- **Search Index Generation:** Hugo generates a search index at `index.json` (using the template at [index.json](themes/cookpot/layouts/index.json)) compiled from all pages. This index contains all recipe metadata (including `title`, `permalink`, `date`, `times`, `recipeSource`, `tags`, `ingredients`, `summary`, and responsive image WebP crops).
+- **Lazy Loading Data:** The search module in [search.ts](themes/cookpot/assets/js/search.ts) lazily fetches `index.json` only when the user hovers over or focuses on the search input box.
 - **Client-Side Filtering:** Searching matches search queries case-insensitively against titles, tags, ingredients, and summaries.
 - **Header Toggle:** Clicking the global search icon in the header dynamically scrolls to and focuses the search input.
 
@@ -215,33 +239,68 @@ The site features a client-side search engine for filtering recipes dynamically.
 
 Recipe lists (on the homepage and category/tag list pages) are paginated to prevent performance issues.
 
-- **Configuration:** Pager size is set via `pagerSize = 10` inside [hugo.toml](file:///home/nicholasnooney/projects/noonarby-casa/recipes/hugo.toml).
-- **Markup & Partial:** Handled in [pagination.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/_partials/pagination.html) and styled inside [recipe-list.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/recipe-list.css).
-- **Template Integration:** Paginated lists in [home.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/home.html) and [list.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/list.html) iterate over the page items using `.Paginate` and render the pagination navigation buttons at the bottom.
+- **Configuration:** Pager size is set via `pagerSize = 10` inside [hugo.toml](hugo.toml).
+- **Markup & Partial:** Handled in [pagination.html](themes/cookpot/layouts/_partials/pagination.html) and styled inside [recipe-list.css](themes/cookpot/assets/css/recipe-list.css).
+- **Template Integration:** Paginated lists in [home.html](themes/cookpot/layouts/home.html) and [list.html](themes/cookpot/layouts/list.html) iterate over the page items using `.Paginate` and render the pagination navigation buttons at the bottom.
 
 ### 3. Random Recipe Selector
 
 A client-side random recipe selector is integrated into the site header to encourage user discovery.
 
-- **Markup & Entry Point:** A button with a crossing shuffle arrows SVG icon is rendered in [header.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/_partials/header.html). It embeds all regular page permalinks serialized as a JSON string under the `data-recipes` attribute.
-- **Routing Logic:** The script in [random.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/random.ts) handles click events, parses the JSON array, filters out the currently viewed recipe page (if there are multiple recipes), picks a random path, and redirects the user.
+- **Markup & Entry Point:** A button with a crossing shuffle arrows SVG icon is rendered in [header.html](themes/cookpot/layouts/_partials/header.html). It embeds all regular page permalinks serialized as a JSON string under the `data-recipes` attribute.
+- **Routing Logic:** The script in [random.ts](themes/cookpot/assets/js/random.ts) handles click events, parses the JSON array, filters out the currently viewed recipe page (if there are multiple recipes), picks a random path, and redirects the user.
 
 ### 4. Homepage Tag Cloud & Categorization
 
 An alphabetized tag cloud is displayed on the homepage beneath the search bar, allowing users to browse recipes by category.
 
-- **Listing & Count:** Rendered using `site.Taxonomies.tags.Alphabetical` inside [home.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/home.html) to display each tag alongside its recipe count.
-- **Layout & Style:** Styled using hoverable pills that shift and highlight on focus/hover (defined in [recipe-list.css](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/css/recipe-list.css)).
+- **Listing & Count:** Rendered using `site.Taxonomies.tags.Alphabetical` inside [home.html](themes/cookpot/layouts/home.html) to display each tag alongside its recipe count.
+- **Layout & Style:** Styled using hoverable pills that shift and highlight on focus/hover (defined in [recipe-list.css](themes/cookpot/assets/css/recipe-list.css)).
 
 ### 5. Shopping List Feature
 
 A custom client-side shopping list toggle aggregates scaled ingredients, converts them to commercial packaging formats, and isolates staples:
 
-- **Orchestrator:** [shopping-list.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list.ts) toggles view tabs and handles UI rendering.
-- **Conversion Rules Registry:** [converters.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list/converters.ts) contains rules matching specific ingredients (e.g. converting 10 garlic cloves to 1 head, volume butter to sticks, weight dry pasta to boxes, egg yolks to whole eggs).
-- **Aggregating Pipeline:** [pipeline.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list/pipeline.ts) combines quantities, merges note segments, groups duplicated ingredients, and splits outputs into target Buy/Staples lists.
+- **Orchestrator:** [shopping-list.ts](themes/cookpot/assets/js/shopping-list.ts) toggles view tabs and handles UI rendering.
+- **Conversion Rules Registry:** [converters.ts](themes/cookpot/assets/js/shopping-list/converters.ts) contains rules matching specific ingredients (e.g. converting 10 garlic cloves to 1 head, volume butter to sticks, weight dry pasta to boxes, egg yolks to whole eggs).
+- **Aggregating Pipeline:** [pipeline.ts](themes/cookpot/assets/js/shopping-list/pipeline.ts) combines quantities, merges note segments, groups duplicated ingredients, and splits outputs into target Buy/Staples lists.
 - **Pantry Staples Filtering:** Common spices, oils, small butter portions (<4 sticks), and water are dynamically filtered into a separate collapsible staples list.
 - **Clean & Copy:** Cleaned of prep words (chopped, minced) and features standard abbreviation logic. A button copies the entire checklist as markdown to clipboard.
+- **Meal Plan Integration:** The meal planner's View UX incorporates a combined shopping list tab. It aggregates ingredients across all days/recipes in the schedule, scales them by the globally selected portions, and runs them through the pipeline to output a single consolidated checklist. It allows omitting completed items from clipboard output and checking/unchecking items.
+
+### 6. Interactive Meal Planner
+
+Accessible at `/plan/` (using [plan.html](themes/cookpot/layouts/plan.html) layout and [plan/index.md](content/plan/index.md) content), styled in [meal-plan.css](themes/cookpot/assets/css/meal-plan.css) and driven by [meal-plan.ts](themes/cookpot/assets/js/meal-plan.ts), the weekly calendar-based planner aggregates recipes and scales portions:
+
+- **Interactive Calendar Assignments:** Allows users to schedule recipes to specific days of the week (Sunday through Saturday). Offers a quick toggle between a full **7-Day Week** and a **5-Day Work Week** layout.
+- **Recipe Adding UX:** Includes a Search Overlay Modal for searching and selecting recipes to schedule, alongside drag-and-drop mechanics to assign recipes to days. Includes a **Drag-to-Delete Trash Zone** that reveals itself only when an item is dragged.
+- **Servings Scaler:** Global portions controls scale all planned recipes by standard portion ratios.
+- **Plan Category Balance Stats:** Displays real-time category/tag balance distributions (like pasta, chicken, soup) for recipes currently in the plan, aiding in menu planning.
+- **Undo / Recovery:** Incorporates a toast notification for undoing deleted plans or recipe removals.
+- **Shared Plans & Conflict Resolution:** Serializes the scheduled state to URL query parameters for sharing. Opening a shared plan displays a **Compare-Draft Conflict Resolution Banner** (Option C), allowing users to compare the shared layout with their local draft, keep their local draft, load the shared plan, or merge both.
+
+### 7. Screen Wake Lock & Drifting Mitigation
+
+To support distraction-free cooking, the timer engine in [timers.ts](themes/cookpot/assets/js/timers.ts) incorporates modern browser power-management and precise delta checking:
+
+- **Screen Wake Lock API:** Automatically requests a wake lock (`navigator.wakeLock.request("screen")`) when cooking timers are started. It keeps the device screen active to prevent dimming or sleeping.
+- **Reference Counting:** The lock is requested when `activeTimersCount` increases to 1, and released when all running timers are paused or reset (`activeTimersCount === 0`).
+- **Visibility Re-acquisition:** Listens for `visibilitychange` events to automatically re-request the wake lock when the page returns to the foreground.
+- **Timer Drift Prevention:** Computes elapsed time using timestamp deltas (`Date.now() - startTime`) rather than depending on strict `setInterval` counts, ensuring countdown accuracy when the browser tab goes into background sleep mode.
+- **Audio Alarm Enhancements:** Sound alerts (written in [audio.ts](themes/cookpot/assets/js/audio.ts)) include a bright ascending major triad pattern played twice for lower-bound warnings, and a double-volume crescendo swing pattern repeating 4 times (~5 seconds) for upper-bound alerts.
+
+### 8. Private Timer Test Suite
+
+A private, dedicated page at `/timers/` (using [timers.html](themes/cookpot/layouts/timers.html) layout and [timers/index.md](content/timers/index.md) content) serves as an isolated playground to verify:
+
+- Single-value countdowns and warnings.
+- Decimal parser formats and shorthands (e.g. `10s`, `10 sec`, `0.1 minutes`).
+- Multi-timer Wake Lock reference counting (running multiple timers and checking release conditions).
+- Alarm chimes and visual countdown color states.
+
+### 9. Contextual "Back to Meal Plan" Navigation
+
+When a user visits a recipe page directly from the Meal Planner view, the app appends `?from=plan` to the URL. The script [meal-plan.ts](themes/cookpot/assets/js/meal-plan.ts) detects this query parameter and dynamically appends a fixed/floating "Back to Meal Plan" button in the viewport, which safely redirects back to `/plan/?view=1`.
 
 ---
 
@@ -272,10 +331,10 @@ pnpm install
 All deployments are managed automatically via GitHub Actions pipelines connected to the GitHub repository:
 
 - **Production Deployment:** Runs automatically on every push/merge to the `main` branch.
-  - **Workflow File:** [`.github/workflows/firebase-hosting-merge.yml`](file:///.github/workflows/firebase-hosting-merge.yml)
+  - **Workflow File:** [`.github/workflows/firebase-hosting-merge.yml`](.github/workflows/firebase-hosting-merge.yml)
   - **Steps:** Sets up Hugo (`latest`, extended edition), compiles using `hugo --minify`, and deploys directly to the `live` Firebase Hosting channel.
 - **Pull Request Preview Deployment:** Runs automatically on every pull request.
-  - **Workflow File:** [`.github/workflows/firebase-hosting-pull-request.yml`](file:///.github/workflows/firebase-hosting-pull-request.yml)
+  - **Workflow File:** [`.github/workflows/firebase-hosting-pull-request.yml`](.github/workflows/firebase-hosting-pull-request.yml)
   - **Steps:** Compiles and deploys a preview version of the site to a sandbox channel to test changes in isolation.
 
 ---
