@@ -114,7 +114,8 @@ function createConversionRule(config: RuleConfig): IngredientRule {
       let qty = conv.output?.qty ?? Math.ceil(scaledQty * factor);
 
       // 3. Handle threshold packaging sizes (Liquid containers)
-      let targetUnit = conv.output?.unit ?? "";
+      let targetUnit =
+        conv.output?.unit !== undefined ? conv.output.unit : unit;
       if (conv.packageSizes && conv.packageSizes.length > 0) {
         const rangeConfig: [number, { qty: number; unit: string }][] =
           conv.packageSizes.map(([limit, unitName]) => [
