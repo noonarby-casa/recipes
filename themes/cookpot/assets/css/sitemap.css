@@ -1,0 +1,206 @@
+/* Sitemap Styling */
+
+.sitemap-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.sitemap-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.sitemap-header h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--noonblue, #0080d8),
+    var(--noonblue-light, #3fb0ff)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sitemap-header p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+/* Sections layout */
+.sitemap-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+@media (min-width: 992px) {
+  .sitemap-layout {
+    grid-template-columns: 1fr 2fr;
+    gap: 3.5rem;
+  }
+}
+
+.sitemap-section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--border-subtle);
+  padding-bottom: 0.5rem;
+  position: relative;
+}
+
+.sitemap-section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background-color: var(--noonblue);
+}
+
+/* Core pages grid */
+.sitemap-core-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sitemap-core-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--card-shadow);
+  transition: all 0.2s ease;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.sitemap-core-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--noonblue-border-hover);
+  box-shadow: 0 6px 20px rgba(0, 128, 216, 0.08);
+}
+
+.sitemap-core-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--noonblue);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sitemap-core-card h3 svg {
+  flex-shrink: 0;
+  color: var(--noonblue);
+}
+
+.sitemap-core-card p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Recipes section */
+.sitemap-recipe-groups {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  .sitemap-recipe-groups {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+.sitemap-recipe-group {
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--card-shadow);
+}
+
+.sitemap-group-letter {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--noonblue);
+  margin: 0 0 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.25rem;
+}
+
+.sitemap-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.sitemap-recipe-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sitemap-recipe-link {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-title);
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+.sitemap-recipe-link:hover {
+  color: var(--noonblue);
+  text-decoration: none;
+}
+
+.sitemap-recipe-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.775rem;
+  color: var(--text-muted);
+}
+
+.sitemap-meta-dot {
+  color: var(--border-color);
+  opacity: 0.25;
+}
+
+.sitemap-recipe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.1rem;
+}
+
+.sitemap-tag-pill {
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.675rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.sitemap-tag-pill:hover {
+  background: var(--noonblue-bg-hover);
+  color: var(--noonblue);
+}

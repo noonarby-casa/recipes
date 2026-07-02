@@ -64,10 +64,22 @@ a:hover {
   text-decoration: underline;
 }
 
+.footer-sitemap-link {
+  color: var(--text-muted);
+  margin-left: 8px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.footer-sitemap-link:hover {
+  color: var(--noonblue-hover);
+  text-decoration: underline;
+}
+
 .footer-github-link {
   display: inline-flex;
   align-items: center;
-  margin-left: 8px;
+  margin-left: 4px;
   vertical-align: middle;
   color: var(--text-muted);
 }
