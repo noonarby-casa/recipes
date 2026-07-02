@@ -144,7 +144,16 @@ export function initSearch(): void {
           recipe.ingredients.some((ing) => ing.toLowerCase().includes(term));
         const summaryMatch =
           recipe.summary && recipe.summary.toLowerCase().includes(term);
-        return titleMatch || !!tagMatch || !!ingredientMatch || !!summaryMatch;
+        const sourceMatch =
+          recipe.recipeSource &&
+          recipe.recipeSource.toLowerCase().includes(term);
+        return (
+          titleMatch ||
+          !!tagMatch ||
+          !!ingredientMatch ||
+          !!summaryMatch ||
+          !!sourceMatch
+        );
       });
     });
 
