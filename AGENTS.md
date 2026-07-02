@@ -162,6 +162,10 @@ All recipe articles are created as Hugo leaf bundles (a folder containing an `in
 
 ### Recipe Front Matter Schema
 
+The recipe's `index.md` file must contain front matter configured using TOML.
+
+**Option A: Flat list of ingredients**
+
 ```toml
 +++
 title = 'Descriptive Title'
@@ -186,13 +190,44 @@ tags = [
 +++
 ```
 
+**Option B: Category-grouped ingredients**
+
+```toml
++++
+title = 'Descriptive Title'
+date = YYYY-MM-DDTHH:MM:SS-TZ
+slug = 'url-safe-slug'
+shortId = 'unique-short-code'
+servings = 4
+times = [
+  { step = 'prep', time = 'Prep time duration (e.g., "10 min")' },
+  { step = 'cook', time = 'Cook time duration (e.g., "20 min")' }
+]
+recipeSource = 'Recipe source/author (e.g., "Rickarbys")'
+ingredients = [
+  { category = "Category A", items = [
+    "Quantity unit ingredient name",
+    "..."
+  ] },
+  { category = "Category B", items = [
+    "Quantity unit ingredient name",
+    "..."
+  ] }
+]
+tags = [
+  "tag1",
+  "tag2"
+]
++++
+```
+
 - **Title:** Capitalized like standard titles.
 - **Slug:** URL-friendly lowercase string used to define the address.
-- **ShortId:** Required string parameter containing a unique 3-4 character lowercase code (e.g., `'crg'`) for identifying the recipe dynamically in the search index and planner calendar.
+- **ShortId:** Required string parameter containing a unique 3-4 character lowercase code (e.g., `'crg'`) for identifying the recipe dynamically in the search index and planner calendar. Note that `index.json` runs a build-time validation checking that every recipe has a unique `shortId`; if missing or duplicate, Hugo will throw an error and fail the build.
 - **Servings:** Optional integer parameter specifying the default portion count (defaults to `4` if omitted), used for scaling calculations.
 - **Times:** An array of maps specifying recipe timing steps (e.g., prep, cook). Each item requires a `step` name and a `time` duration string (e.g., `'10 min'`). These render inline, separated by `+` with a single clock SVG icon (e.g., `Prep 10 min + Cook 20 min`), across all content, layouts, list pages, and search index templates to minimize vertical space.
 - **RecipeSource:** Optional string parameter specifying the recipe's origin (e.g., `'Rickarbys'`), defaulting to `'Noonarby'` if omitted. Renders under the header title on recipe detail views and in search results.
-- **Ingredients:** A TOML list of strings. Each entry represents a single line containing quantity, unit, and item name.
+- **Ingredients:** A TOML list of strings (Option A) or list of maps containing `category` and `items` lists of strings (Option B).
 - **Tags:** Optional string list for categorization (renders in recipe metadata).
 
 ### Instructions, Step Quantities & Timers

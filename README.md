@@ -62,9 +62,20 @@ To generate a new recipe using the default archetype template, run:
 hugo new content content/<recipe-slug>/index.md
 ```
 
+After authoring, always check that the site builds successfully and that formatting is clean:
+
+```bash
+pnpm format
+hugo
+```
+
 ### 2. Front Matter Schema
 
-The recipe's `index.md` file must contain front matter configured using TOML:
+The recipe's `index.md` file must contain front matter configured using TOML. The `shortId` must be a unique 3-4 character code; the build pipeline (specifically `index.json`) will throw a build error and halt if it detects a missing or duplicate `shortId`.
+
+You can structure ingredients either as a flat list or grouped by category:
+
+**Option A: Flat list of ingredients**
 
 ```toml
 +++
@@ -81,6 +92,36 @@ ingredients = [
   "Quantity unit ingredient (e.g., '16 ounces potato gnocchi')",
   "Ingredient item 2",
   "..."
+]
+tags = [
+  "Tag1",
+  "Tag2"
+]
++++
+```
+
+**Option B: Category-grouped ingredients**
+
+```toml
++++
+title = 'Recipe Title'
+date = YYYY-MM-DDTHH:MM:SS-TZ
+slug = 'url-safe-slug'
+shortId = 'unique-short-code'
+servings = 4
+times = [
+  { step = 'prep', time = 'Duration (e.g., "10 min")' },
+  { step = 'cook', time = 'Duration (e.g., "20 min")' }
+]
+ingredients = [
+  { category = "Main Section", items = [
+    "Quantity unit ingredient",
+    "..."
+  ] },
+  { category = "Second Section", items = [
+    "Quantity unit ingredient",
+    "..."
+  ] }
 ]
 tags = [
   "Tag1",
