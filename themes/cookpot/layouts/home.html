@@ -6,8 +6,23 @@
   <div id="search-results" class="recipe-list" style="display: none;"></div>
   <div id="recipe-list-default">
     {{- if site.Taxonomies.tags -}}
-      <div class="homepage-tags-container">
-        <span class="homepage-tags-label">Explore tags</span>
+      <details class="homepage-tags-container">
+        <summary class="homepage-tags-label">
+          Explore tags
+          <svg
+            class="homepage-tags-arrow"
+            viewBox="0 0 24 24"
+            width="14"
+            height="14"
+            stroke="currentColor"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
         <div class="homepage-tags-list">
           {{- range site.Taxonomies.tags.Alphabetical -}}
             <a href="{{ .Page.RelPermalink }}" class="homepage-tag">
@@ -16,7 +31,7 @@
             </a>
           {{- end -}}
         </div>
-      </div>
+      </details>
     {{- end -}}
 
     {{ $paginator := .Paginate (where site.RegularPages "Type" "recipe").ByDate.Reverse }}

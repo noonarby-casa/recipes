@@ -418,9 +418,6 @@
 .homepage-tags-container {
   margin-top: 0.25rem;
   margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
 }
 
 .homepage-tags-label {
@@ -429,12 +426,45 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  list-style: none;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.homepage-tags-label::-webkit-details-marker {
+  display: none;
+}
+
+.homepage-tags-label:hover {
+  color: var(--noonblue);
+}
+
+.homepage-tags-arrow {
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.homepage-tags-label:hover .homepage-tags-arrow {
+  color: var(--noonblue);
+}
+
+.homepage-tags-container[open] .homepage-tags-arrow {
+  transform: rotate(180deg);
+  color: var(--noonblue);
 }
 
 .homepage-tags-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-top: 0.65rem;
 }
 
 .homepage-tag {
