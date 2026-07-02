@@ -30,14 +30,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: TypeScript Check
-        run: pnpm typecheck
-
-      - name: ESLint Check
-        run: pnpm lint
-
-      - name: Prettier Format Check
-        run: pnpm format:check
+      - name: Run CI checks
+        run: pnpm ci
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3

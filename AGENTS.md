@@ -358,6 +358,12 @@ pnpm install
 | **Serve Rendered Disk Output** | `hugo serve --renderToDisk --disableFastRender`   | Renders fully compiled production-ready output to the `public/` directory and serves it         |
 | **Create New Recipe**          | `hugo new content content/<recipe-slug>/index.md` | Generates a new recipe leaf bundle content file                                                 |
 | **Type-Check TS Files**        | `pnpm typecheck`                                  | Runs `tsc --noEmit` locally using the configured `tsconfig.json` to verify zero compiler errors |
+| **Lint TS Files**              | `pnpm lint`                                       | Runs ESLint syntax and style check on TypeScript source files                                   |
+| **Auto-Fix Lint Violations**   | `pnpm lint:fix`                                   | Runs ESLint with the `--fix` flag to resolve linting issues automatically                       |
+| **Check Code Formatting**      | `pnpm format`                                     | Runs Prettier format verification (read-only)                                                   |
+| **Fix Code Formatting**        | `pnpm format:fix`                                 | Re-runs Prettier formatter to write corrected styling to files                                  |
+| **Run CI checks**              | `pnpm ci`                                         | Runs all checking tools sequentially (`typecheck` + `lint` + `format`)                          |
+| **Auto-Fix All Issues**        | `pnpm fix`                                        | Runs all fixing tools sequentially (`lint:fix` + `format:fix`)                                  |
 
 ---
 
@@ -394,6 +400,7 @@ Behavioral rules and workflow steps tailored for agentic AI coding assistants (l
 
 ### 3. Verification & Testing
 
+- **Pre-Commit Code Adherence:** Before committing any changes, AI assistants **MUST** execute `pnpm ci` to verify that all code compiles, linting succeeds, and formatting rules are met. Use `pnpm fix` to resolve linting or formatting violations automatically.
 - Always execute the production build command locally to verify zero compiler warnings or errors before marking a task as complete.
 - Verify responsiveness across standard layouts and check that markdown outputs render perfectly.
 

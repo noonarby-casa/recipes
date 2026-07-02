@@ -6,8 +6,10 @@
     "typecheck": "tsc --noEmit -p assets/tsconfig.json",
     "lint": "eslint \"themes/cookpot/assets/js/**/*.ts\"",
     "lint:fix": "eslint \"themes/cookpot/assets/js/**/*.ts\" --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "ci": "pnpm run typecheck && pnpm run lint && pnpm run format",
+    "fix": "pnpm run lint:fix && pnpm run format:fix"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
