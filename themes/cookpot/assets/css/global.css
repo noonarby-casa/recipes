@@ -64,10 +64,15 @@ a:hover {
   text-decoration: underline;
 }
 
+.footer-separator {
+  color: var(--text-muted);
+  opacity: 0.5;
+  margin: 0 8px;
+  vertical-align: middle;
+}
+
 .footer-sitemap-link {
   color: var(--text-muted);
-  margin-left: 8px;
-  margin-right: 4px;
   vertical-align: middle;
 }
 
@@ -79,7 +84,6 @@ a:hover {
 .footer-github-link {
   display: inline-flex;
   align-items: center;
-  margin-left: 4px;
   vertical-align: middle;
   color: var(--text-muted);
 }
