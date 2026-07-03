@@ -3,9 +3,21 @@
 /* Mode Switcher and Controls Header */
 .planner-mode-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-top: 1rem;
+  margin-bottom: 0.75rem;
+  background: var(--font-panel-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 0.75rem 1.25rem;
+  box-shadow: var(--btn-shadow);
+}
+
+.planner-controls-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1.25rem;
@@ -14,13 +26,6 @@
   border-radius: 14px;
   padding: 0.75rem 1.25rem;
   box-shadow: var(--btn-shadow);
-}
-
-.planner-global-controls {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1.25rem;
 }
 
 /* Global Servings Scaler */
@@ -43,11 +48,23 @@
   padding-left: 0.5rem;
 }
 
-/* Share & Reset actions */
 .planner-top-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.omit-completed-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  padding: 0.45rem 0.5rem;
 }
 
 .planner-btn-secondary {
@@ -318,6 +335,12 @@
   box-sizing: border-box;
 }
 
+/* Consistently sized empty slot boxes inside day columns */
+.day-recipes-list .empty-slot-box {
+  min-height: 60px;
+  height: 60px;
+}
+
 .empty-slot-box:hover {
   border-color: var(--noonblue);
   background-color: var(--noonblue-bg-light);
@@ -380,6 +403,15 @@
   width: 100%;
   height: 80px;
   background-color: var(--image-bg);
+}
+
+.recipe-card-media-wrapper[draggable="true"] {
+  cursor: grab;
+  touch-action: none;
+}
+
+.recipe-card-media-wrapper[draggable="true"]:active {
+  cursor: grabbing;
 }
 
 .recipe-card-img {
@@ -526,14 +558,18 @@
 .planned-recipe-item.drag-over::before {
   content: "";
   position: absolute;
-  top: -0.4rem;
+  top: 0;
   left: 0;
   right: 0;
   height: 4px;
   background-color: var(--noonblue);
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(0, 128, 216, 0.4);
   pointer-events: none;
+  z-index: 100;
+}
+
+.empty-slot-box.drag-over {
+  border-color: var(--noonblue);
+  background-color: var(--noonblue-bg-light);
 }
 
 /* Disable pointer events during drag */
@@ -820,9 +856,10 @@
     grid-template-areas:
       "banner"
       "header"
+      "toolbar"
       "container";
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto auto 1fr;
     gap: 0.75rem;
     min-height: 0;
     height: 100%;
@@ -836,6 +873,11 @@
 
   .planner-mode-header {
     grid-area: header;
+    margin-bottom: 0;
+  }
+
+  .planner-controls-toolbar {
+    grid-area: toolbar;
   }
 
   .meal-planner-container {
@@ -895,6 +937,116 @@
     flex: 1;
     font-size: 0.8rem;
     padding: 0.5rem 0.5rem;
+  }
+
+  /* Center mobile controls toolbar content */
+  .planner-controls-toolbar {
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  /* Stack calendar days vertically */
+  .planned-recipes-grid,
+  .planned-recipes-grid.grid-5day {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Shrink empty day heights to avoid long scroll fatigue */
+  .day-column {
+    min-height: auto;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Horizontal row layout for daily calendar recipe cards and touch drag mirror */
+  .day-recipes-list .planned-recipe-item,
+  .planned-recipe-item.dragging-mirror {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    grid-template-areas:
+      "media body"
+      "media footer";
+    align-items: stretch;
+    min-height: 90px;
+  }
+
+  .day-recipes-list .recipe-card-media-wrapper,
+  .planned-recipe-item.dragging-mirror .recipe-card-media-wrapper {
+    grid-area: media;
+    width: 90px;
+    height: 100%;
+    position: static;
+  }
+
+  .day-recipes-list .recipe-card-body,
+  .planned-recipe-item.dragging-mirror .recipe-card-body {
+    grid-area: body;
+    padding: 0.6rem 3.5rem 0.25rem 0.75rem; /* Space on right for absolute-positioned buttons */
+  }
+
+  .day-recipes-list .recipe-card-title,
+  .planned-recipe-item.dragging-mirror .recipe-card-title {
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+
+  .day-recipes-list .recipe-card-footer,
+  .planned-recipe-item.dragging-mirror .recipe-card-footer {
+    grid-area: footer;
+    padding: 0.25rem 0.75rem 0.6rem 0.75rem;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* Position card action buttons relative to the card container */
+  .day-recipes-list .planned-recipe-item .recipe-remove-btn,
+  .planned-recipe-item.dragging-mirror .recipe-remove-btn {
+    top: 8px;
+    right: 8px;
+  }
+
+  .day-recipes-list .planned-recipe-item .recipe-swap-btn,
+  .planned-recipe-item.dragging-mirror .recipe-swap-btn {
+    top: 8px;
+    right: 34px;
+  }
+
+  .day-recipes-list .planned-recipe-item .recipe-drag-handle,
+  .planned-recipe-item.dragging-mirror .recipe-drag-handle {
+    top: 8px;
+    left: 8px;
+  }
+
+  /* Align backdrop to cover full screen */
+  .planner-modal-backdrop {
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  /* Full-Screen Modal sheet */
+  .planner-modal-content {
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+
+  /* Standardize padding & stack cards in 1 column */
+  .planner-modal-header {
+    padding: 1rem 1rem 0.75rem 1rem;
+  }
+  .modal-search-wrapper {
+    padding: 0.75rem 1rem;
+  }
+  .modal-tags-notice {
+    padding: 0.5rem 1rem;
+  }
+  .planner-browse-shelf {
+    grid-template-columns: 1fr;
+    padding: 0.5rem 1rem 1rem 1rem;
   }
 }
 

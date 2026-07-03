@@ -48,7 +48,7 @@ let undoToastTimeout: number | null = null;
 // Swipe Navigation State
 let swipeStartX = 0;
 let swipeStartY = 0;
-let activeMobileTab = "edit-plan"; // 'edit-plan' | 'view-plan' | 'shopping-list'
+let activeMobileTab = "view-plan"; // 'edit-plan' | 'view-plan' | 'shopping-list'
 
 const STORAGE_KEY = "noonarby-meal-plan";
 const SETTINGS_KEY = "noonarby-meal-plan-settings";
@@ -134,6 +134,9 @@ export function initMealPlanner(): void {
         }
       }
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlMode = urlParams.get("mode");
+
       const hasConflict =
         hasUrlParams &&
         localPlanExists &&
@@ -160,17 +163,28 @@ export function initMealPlanner(): void {
         workWeekOnly = urlWorkWeekOnly;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(planState));
         saveSettings();
-        // Default to View UX
-        switchTab("view-plan");
+
+        // Navigate to the target mode
+        if (urlMode === "edit") {
+          switchTab("edit-plan");
+        } else if (urlMode === "shop") {
+          switchTab("shopping-list");
+        } else {
+          switchTab("view-plan");
+        }
       } else {
         // Fallback to local storage and sync URL params to match
         loadStateFromStorage();
         workWeekOnly = localWorkWeekOnly;
         saveStateToStorageAndUrl(true);
 
-        // Auto-switch to View UX when returning from a recipe page
-        if (new URLSearchParams(window.location.search).get("view") === "1") {
-          switchTab("view-plan");
+        // Navigate to the target mode
+        if (urlMode === "edit") {
+          switchTab("edit-plan");
+        } else if (urlMode === "shop") {
+          switchTab("shopping-list");
+        } else {
+          switchTab("view-plan"); // Default to view-plan
         }
       }
 
@@ -388,6 +402,8 @@ function setupEventListeners(): void {
 
   if (bannerBtnKeep) {
     bannerBtnKeep.addEventListener("click", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetMode = urlParams.get("mode") || "view";
       try {
         const rawSettings = localStorage.getItem(SETTINGS_KEY);
         if (rawSettings) {
@@ -403,24 +419,41 @@ function setupEventListeners(): void {
       hideConflictBanner();
       saveStateToStorageAndUrl(true);
       saveSettings();
-      switchTab("edit-plan");
+
+      if (targetMode === "edit") {
+        switchTab("edit-plan");
+      } else if (targetMode === "shop") {
+        switchTab("shopping-list");
+      } else {
+        switchTab("view-plan");
+      }
     });
   }
   if (bannerBtnLoad) {
     bannerBtnLoad.addEventListener("click", () => {
-      const urlWeek =
-        new URLSearchParams(window.location.search).get("week") === "5";
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetMode = urlParams.get("mode") || "view";
+      const urlWeek = urlParams.get("week") === "5";
       workWeekOnly = urlWeek;
       parseUrlParams();
       hideConflictBanner();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(planState));
       saveStateToStorageAndUrl(true);
       saveSettings();
-      switchTab("edit-plan");
+
+      if (targetMode === "edit") {
+        switchTab("edit-plan");
+      } else if (targetMode === "shop") {
+        switchTab("shopping-list");
+      } else {
+        switchTab("view-plan");
+      }
     });
   }
   if (bannerBtnMerge) {
     bannerBtnMerge.addEventListener("click", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetMode = urlParams.get("mode") || "view";
       try {
         const rawSettings = localStorage.getItem(SETTINGS_KEY);
         if (rawSettings) {
@@ -446,7 +479,14 @@ function setupEventListeners(): void {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(planState));
       saveStateToStorageAndUrl(true);
       saveSettings();
-      switchTab("edit-plan");
+
+      if (targetMode === "edit") {
+        switchTab("edit-plan");
+      } else if (targetMode === "shop") {
+        switchTab("shopping-list");
+      } else {
+        switchTab("view-plan");
+      }
     });
   }
 
@@ -545,6 +585,13 @@ function switchTab(tabId: string): void {
   if (btnEdit) btnEdit.classList.toggle("active", tabId === "edit-plan");
   if (btnView) btnView.classList.toggle("active", tabId === "view-plan");
   if (btnShop) btnShop.classList.toggle("active", tabId === "shopping-list");
+
+  // Sync mode parameter to the URL (unless in preview conflict mode)
+  const banner = document.getElementById("plan-conflict-banner");
+  const isConflict = banner && banner.style.display === "flex";
+  if (!isConflict) {
+    saveStateToStorageAndUrl(true);
+  }
 
   renderUI();
 }
@@ -1170,6 +1217,12 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
     params.set("week", "5");
   }
 
+  if (activeMobileTab === "edit-plan") {
+    params.set("mode", "edit");
+  } else if (activeMobileTab === "shopping-list") {
+    params.set("mode", "shop");
+  }
+
   const query = params.toString();
   const path = window.location.pathname;
 
@@ -1261,17 +1314,16 @@ function renderUI(highlightInstanceId?: string): void {
   const container = document.getElementById("planned-recipes-list-grid");
   const colShopping = document.getElementById("col-shopping");
   const mealPlannerContainer = document.getElementById("meal-planner");
-  const btnShare = document.getElementById("btn-share-plan");
-  const btnClear = document.getElementById("btn-clear-plan");
-  const btnGenerate = document.getElementById("btn-generate-plan");
-  const btnToggleFilters = document.getElementById("btn-toggle-filters");
-  const globalScaler = document.getElementById("global-scaler-panel");
+  const toolbarEdit = document.getElementById("toolbar-edit");
+  const toolbarView = document.getElementById("toolbar-view");
+  const toolbarShop = document.getElementById("toolbar-shop");
   const suppSection = document.getElementById("supplemental-section");
   const suppList = document.getElementById("supplemental-recipes-list");
 
   if (!container) return;
 
   // Sync Filters button label and active highlights
+  const btnToggleFilters = document.getElementById("btn-toggle-filters");
   if (btnToggleFilters) {
     const filterCount = selectedTags.size;
     btnToggleFilters.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Filters${filterCount > 0 ? ` (${filterCount})` : ""}`;
@@ -1279,7 +1331,6 @@ function renderUI(highlightInstanceId?: string): void {
   }
 
   // Toggle View UX / Edit UX controls
-  const weekToggle = document.getElementById("week-toggle-group");
   const btn7Day = document.getElementById("week-7day-btn");
   const btn5Day = document.getElementById("week-5day-btn");
   if (btn7Day && btn5Day) {
@@ -1287,23 +1338,31 @@ function renderUI(highlightInstanceId?: string): void {
     btn7Day.classList.toggle("active", !workWeekOnly);
   }
 
-  if (editMode) {
-    if (btnShare) btnShare.style.display = "none";
-    if (btnClear) btnClear.style.display = "inline-flex";
-    if (btnGenerate) btnGenerate.style.display = "inline-flex";
-    if (btnToggleFilters) btnToggleFilters.style.display = "inline-flex";
-    if (globalScaler) globalScaler.style.display = "inline-flex";
-    if (weekToggle) weekToggle.style.display = "flex";
+  // Set per-view visibility of second toolbar controls
+  if (activeMobileTab === "edit-plan") {
+    if (toolbarEdit) toolbarEdit.style.display = "flex";
+    if (toolbarView) toolbarView.style.display = "none";
+    if (toolbarShop) toolbarShop.style.display = "none";
+
     if (colShopping) colShopping.style.display = "none";
     if (mealPlannerContainer)
       mealPlannerContainer.classList.remove("show-shopping");
-  } else {
-    if (btnShare) btnShare.style.display = "inline-flex";
-    if (btnClear) btnClear.style.display = "none";
-    if (btnGenerate) btnGenerate.style.display = "none";
-    if (btnToggleFilters) btnToggleFilters.style.display = "none";
-    if (globalScaler) globalScaler.style.display = "none";
-    if (weekToggle) weekToggle.style.display = "none";
+  } else if (activeMobileTab === "view-plan") {
+    if (toolbarEdit) toolbarEdit.style.display = "none";
+    if (toolbarView) toolbarView.style.display = "flex";
+    if (toolbarShop) toolbarShop.style.display = "none";
+
+    if (colShopping) colShopping.style.display = "block";
+    if (mealPlannerContainer)
+      mealPlannerContainer.classList.add("show-shopping");
+  } else if (activeMobileTab === "shopping-list") {
+    if (toolbarEdit) toolbarEdit.style.display = "none";
+    if (toolbarView) toolbarView.style.display = "none";
+
+    // Only show shopping list toolbar if plan contains scheduled items
+    const hasItems = planState.length > 0;
+    if (toolbarShop) toolbarShop.style.display = hasItems ? "flex" : "none";
+
     if (colShopping) colShopping.style.display = "block";
     if (mealPlannerContainer)
       mealPlannerContainer.classList.add("show-shopping");
@@ -1365,8 +1424,8 @@ function renderUI(highlightInstanceId?: string): void {
           const dinnerClass = idx === 0 ? "dinner-slot-card" : "";
 
           cardsHtml += `
-            <div class="planned-recipe-item ${highlightClass} ${dinnerClass}" draggable="true" data-instance-id="${dm.instanceId}" data-day="${day}">
-              <div class="recipe-card-media-wrapper">
+            <div class="planned-recipe-item ${highlightClass} ${dinnerClass}" data-instance-id="${dm.instanceId}" data-day="${day}">
+              <div class="recipe-card-media-wrapper" draggable="true">
                 <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
                 ${handle}
                 ${swapBtn}
@@ -1475,8 +1534,8 @@ function renderUI(highlightInstanceId?: string): void {
           const draggableAttr = editMode ? 'draggable="true"' : "";
 
           return `
-            <div class="planned-recipe-item ${highlightClass}" ${draggableAttr} data-instance-id="${dm.instanceId}" data-day="supplemental">
-              <div class="recipe-card-media-wrapper">
+            <div class="planned-recipe-item ${highlightClass}" data-instance-id="${dm.instanceId}" data-day="supplemental">
+              <div class="recipe-card-media-wrapper" ${draggableAttr}>
                 <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
                 ${handle}
                 ${swapBtn}
@@ -1562,15 +1621,6 @@ function renderUI(highlightInstanceId?: string): void {
     globalIndicator.textContent = planState.length > 0 ? "Portions" : "—";
   }
 
-  // Show/Hide Global controls (week toggle and adjust servings) on shopping list tab
-  const globalControls = document.querySelector(
-    ".planner-global-controls",
-  ) as HTMLElement;
-  if (globalControls) {
-    globalControls.style.display =
-      activeMobileTab === "shopping-list" ? "none" : "flex";
-  }
-
   // Show/Hide calendar vs shopping container
   const colPlanner = document.getElementById("col-planner");
   if (colPlanner) {
@@ -1598,37 +1648,231 @@ function setupDragAndDropHandlers(): void {
   );
   const supplementalList = document.querySelector(".supplemental-recipes-list");
 
-  cards.forEach((card) => {
-    card.addEventListener("dragstart", (e) => {
-      const id = card.getAttribute("data-instance-id");
-      if (!id) return;
+  // Touch Simulation State variables
+  let touchDraggedId: string | null = null;
+  let touchDraggedCard: HTMLElement | null = null;
+  let touchDragMirror: HTMLElement | null = null;
+  let touchOffsetLeft = 0;
+  let touchOffsetTop = 0;
+  let lastActiveTarget: HTMLElement | null = null;
 
-      const dragEvent = e as DragEvent;
-      if (dragEvent.dataTransfer) {
-        dragEvent.dataTransfer.setData("text/plain", id);
-        dragEvent.dataTransfer.effectAllowed = "move";
+  function findDropTarget(el: HTMLElement | null): HTMLElement | null {
+    while (el) {
+      if (
+        el.classList.contains("empty-slot-box") ||
+        el.classList.contains("planned-recipe-item") ||
+        el.classList.contains("planner-trash-zone") ||
+        el.classList.contains("supplemental-recipes-list")
+      ) {
+        return el;
       }
-      card.classList.add("dragging");
-      grid?.classList.add("dragging-active");
+      el = el.parentElement;
+    }
+    return null;
+  }
 
-      // Show trash zone
-      if (trashZone) trashZone.style.display = "flex";
-    });
+  function handleTouchMove(e: TouchEvent): void {
+    if (!touchDraggedId || !touchDragMirror) return;
+    const touch = e.touches[0];
 
-    card.addEventListener("dragend", () => {
-      card.classList.remove("dragging");
-      grid?.classList.remove("dragging-active");
+    // Position mirror at finger coordinates
+    touchDragMirror.style.left = `${touch.clientX - touchOffsetLeft}px`;
+    touchDragMirror.style.top = `${touch.clientY - touchOffsetTop}px`;
 
-      // Hide trash zone
-      if (trashZone) trashZone.style.display = "none";
+    // Detect target element under finger
+    const elUnder = document.elementFromPoint(
+      touch.clientX,
+      touch.clientY,
+    ) as HTMLElement | null;
+    const target = findDropTarget(elUnder);
 
-      // Clear drag indicators
-      document
-        .querySelectorAll(".empty-slot-box, .planned-recipe-item")
-        .forEach((c) => {
-          c.classList.remove("drag-over");
-        });
-    });
+    if (target !== lastActiveTarget) {
+      if (lastActiveTarget) {
+        lastActiveTarget.classList.remove("drag-over");
+      }
+      if (target) {
+        target.classList.add("drag-over");
+      }
+      lastActiveTarget = target;
+    }
+
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function handleTouchEnd(): void {
+    if (!touchDraggedId) return;
+
+    // Clean up global touchlisteners
+    document.removeEventListener("touchmove", handleTouchMove);
+    document.removeEventListener("touchend", handleTouchEnd);
+
+    if (touchDragMirror) {
+      touchDragMirror.remove();
+      touchDragMirror = null;
+    }
+
+    if (touchDraggedCard) {
+      touchDraggedCard.classList.remove("dragging");
+      touchDraggedCard = null;
+    }
+
+    document.body.classList.remove("dragging-active");
+    if (trashZone) trashZone.style.display = "none";
+
+    if (lastActiveTarget) {
+      lastActiveTarget.classList.remove("drag-over");
+
+      const targetDay = lastActiveTarget.getAttribute("data-day");
+      const targetInstanceId =
+        lastActiveTarget.getAttribute("data-instance-id") || undefined;
+
+      if (lastActiveTarget.classList.contains("planner-trash-zone")) {
+        removeRecipeWithRecovery(touchDraggedId);
+      } else if (
+        lastActiveTarget.classList.contains("supplemental-recipes-list")
+      ) {
+        const draggedIdx = planState.findIndex(
+          (p) => p.instanceId === touchDraggedId,
+        );
+        if (draggedIdx !== -1) {
+          const item = planState[draggedIdx];
+          if (item.day !== "supplemental") {
+            item.day = "supplemental";
+            saveStateToStorageAndUrl(true);
+            renderUI();
+          }
+        }
+      } else if (targetDay) {
+        if (targetDay === "supplemental") {
+          const draggedIdx = planState.findIndex(
+            (p) => p.instanceId === touchDraggedId,
+          );
+          if (draggedIdx !== -1) {
+            const item = planState[draggedIdx];
+            item.day = "supplemental";
+            if (targetInstanceId && targetInstanceId !== touchDraggedId) {
+              planState.splice(draggedIdx, 1);
+              const targetIdx = planState.findIndex(
+                (p) => p.instanceId === targetInstanceId,
+              );
+              if (targetIdx !== -1) {
+                planState.splice(targetIdx, 0, item);
+              } else {
+                planState.push(item);
+              }
+            }
+            saveStateToStorageAndUrl(true);
+            renderUI();
+          }
+        } else {
+          handleCardDrop(touchDraggedId, targetDay, targetInstanceId);
+        }
+      }
+      lastActiveTarget = null;
+    }
+
+    touchDraggedId = null;
+  }
+
+  cards.forEach((card) => {
+    const mediaWrapper = card.querySelector(
+      ".recipe-card-media-wrapper",
+    ) as HTMLElement;
+    if (mediaWrapper) {
+      // HTML5 Drag and Drop triggers on the media wrapper (Desktop)
+      mediaWrapper.addEventListener("dragstart", (e) => {
+        const target = e.target as HTMLElement;
+        if (
+          target.closest(".recipe-remove-btn") ||
+          target.closest(".recipe-swap-btn")
+        ) {
+          e.preventDefault();
+          return;
+        }
+
+        const id = card.getAttribute("data-instance-id");
+        if (!id) return;
+
+        const dragEvent = e as DragEvent;
+        if (dragEvent.dataTransfer) {
+          dragEvent.dataTransfer.setData("text/plain", id);
+          dragEvent.dataTransfer.effectAllowed = "move";
+        }
+        card.classList.add("dragging");
+        document.body.classList.add("dragging-active");
+
+        if (trashZone) trashZone.style.display = "flex";
+      });
+
+      mediaWrapper.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+        document.body.classList.remove("dragging-active");
+
+        if (trashZone) trashZone.style.display = "none";
+
+        document
+          .querySelectorAll(".empty-slot-box, .planned-recipe-item")
+          .forEach((c) => {
+            c.classList.remove("drag-over");
+          });
+      });
+
+      // Touch event listener on drag handle & wrapper (Mobile)
+      mediaWrapper.addEventListener(
+        "touchstart",
+        (e) => {
+          const touchEvent = e as TouchEvent;
+          const target = touchEvent.target as HTMLElement;
+          if (
+            target.closest(".recipe-remove-btn") ||
+            target.closest(".recipe-swap-btn")
+          ) {
+            return; // Allow button clicks/taps
+          }
+
+          const touch = touchEvent.touches[0];
+          const id = card.getAttribute("data-instance-id");
+          if (!id) return;
+
+          touchDraggedId = id;
+          touchDraggedCard = card as HTMLElement;
+
+          const rect = card.getBoundingClientRect();
+          touchOffsetLeft = touch.clientX - rect.left;
+          touchOffsetTop = touch.clientY - rect.top;
+
+          // Create floating card mirror element
+          touchDragMirror = card.cloneNode(true) as HTMLElement;
+          touchDragMirror.classList.add("dragging-mirror");
+          touchDragMirror.style.cssText = `
+            position: fixed;
+            left: ${rect.left}px;
+            top: ${rect.top}px;
+            width: ${rect.width}px;
+            height: ${rect.height}px;
+            opacity: 0.85;
+            pointer-events: none;
+            z-index: 10000000;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+            transform: scale(1.04);
+            transition: transform 0.1s ease;
+          `;
+          document.body.appendChild(touchDragMirror);
+
+          card.classList.add("dragging");
+          document.body.classList.add("dragging-active");
+          if (trashZone) trashZone.style.display = "flex";
+
+          document.addEventListener("touchmove", handleTouchMove, {
+            passive: false,
+          });
+          document.addEventListener("touchend", handleTouchEnd);
+
+          if (touchEvent.cancelable) touchEvent.preventDefault();
+        },
+        { passive: false },
+      );
+    }
   });
 
   slots.forEach((slot) => {
@@ -1661,7 +1905,6 @@ function setupDragAndDropHandlers(): void {
       if (!targetDay) return;
 
       if (targetDay === "supplemental") {
-        // Move to supplemental
         const draggedIdx = planState.findIndex(
           (p) => p.instanceId === draggedId,
         );
@@ -1669,7 +1912,6 @@ function setupDragAndDropHandlers(): void {
           const item = planState[draggedIdx];
           item.day = "supplemental";
 
-          // Reorder in planState if dropped next to another supplemental card
           const targetInstanceId = slot.getAttribute("data-instance-id");
           if (targetInstanceId && targetInstanceId !== draggedId) {
             planState.splice(draggedIdx, 1);
@@ -1823,9 +2065,6 @@ function renderCombinedShoppingList(): void {
   const buyList = document.getElementById("combined-buy-list");
   const staplesList = document.getElementById("combined-staples-list");
   const divider = document.querySelector(".shopping-divider");
-  const copyBtn = document.getElementById("btn-copy-combined-list");
-  const resetBtn = document.getElementById("btn-reset-shopping-list");
-  const omitLabel = document.querySelector(".omit-completed-label");
 
   if (!buyList || !staplesList) return;
 
@@ -1833,16 +2072,10 @@ function renderCombinedShoppingList(): void {
     buyList.innerHTML = `<div class="planner-empty-state">Add some recipes to generate your combined shopping list.</div>`;
     staplesList.innerHTML = "";
     if (divider) (divider as HTMLElement).style.display = "none";
-    if (copyBtn) (copyBtn as HTMLElement).style.display = "none";
-    if (resetBtn) (resetBtn as HTMLElement).style.display = "none";
-    if (omitLabel) (omitLabel as HTMLElement).style.display = "none";
     return;
   }
 
-  // Display actions
-  if (copyBtn) (copyBtn as HTMLElement).style.display = "inline-flex";
-  if (resetBtn) (resetBtn as HTMLElement).style.display = "inline-flex";
-  if (omitLabel) (omitLabel as HTMLElement).style.display = "inline-flex";
+  if (divider) (divider as HTMLElement).style.display = "block";
 
   // Mock DOM elements mapping scale multipliers
   const mockElements: HTMLElement[] = [];
@@ -2112,7 +2345,7 @@ export function initRecipePageAddToPlan(): void {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.has("from") && urlParams.get("from") === "plan") {
     const backBtn = document.createElement("a");
-    backBtn.href = getSiteBasePath() + "plan/?view=1"; // Navigate straight back in View UX
+    backBtn.href = getSiteBasePath() + "plan/"; // Defaults to View UX
     backBtn.className = "plan-back-btn";
     backBtn.innerHTML = `
       <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
