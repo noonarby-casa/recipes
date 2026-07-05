@@ -6,7 +6,7 @@ shortId = 'msl'
 times = [
   { step = 'cook', time = '10 min' }
 ]
-recipeSource = 'Noonarby'
+recipeSource = 'Noonarbys'
 ingredients = [
   "2/3 cup minced bread-and-butter pickles",
   "4 scallions, trimmed and thinly sliced, plus more for garnish",

@@ -7,7 +7,7 @@ times = [
   { step = 'prep', time = '15 min' },
   { step = 'cook', time = '45 min' }
 ]
-recipeSource = 'Noonarby'
+recipeSource = 'Noonarbys'
 ingredients = [
   "1 pound beets (red or orange)",
   "1 head garlic",

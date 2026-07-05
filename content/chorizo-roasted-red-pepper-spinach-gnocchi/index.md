@@ -6,7 +6,7 @@ shortId = 'crg'
 times = [
   { step = 'cook', time = '20 min' }
 ]
-recipeSource = 'Noonarby'
+recipeSource = 'Noonarbys'
 ingredients = [
   "16 ounces potato gnocchi",
   "1/2 pound fresh chorizo, casing removed",

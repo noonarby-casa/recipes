@@ -6,7 +6,7 @@ shortId = 'lss'
 times = [
   { step = 'cook', time = '30 min' }
 ]
-recipeSource = 'Noonarby'
+recipeSource = 'Noonarbys'
 ingredients = [
   "2 tablespoons butter or olive oil",
   "1 small sweet onion, chopped",

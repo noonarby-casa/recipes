@@ -6,7 +6,7 @@ shortId = 'scb'
 times = [
   { step = 'cook', time = '20 min' }
 ]
-recipeSource = 'Noonarby'
+recipeSource = 'Noonarbys'
 ingredients = [
   "1 pound ground beef (at least 20 percent fat)",
   "salt and black pepper, to taste",

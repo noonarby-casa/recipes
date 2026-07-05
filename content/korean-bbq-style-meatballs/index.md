@@ -7,7 +7,7 @@ times = [
   { step = 'prep', time = '15 min' },
   { step = 'cook', time = '15 min' }
 ]
-recipeSource = 'Noonarby'
+recipeSource = 'Noonarbys'
 ingredients = [
   { category = "Meatballs", items = [
     "1 pound ground beef (round or chuck)",
