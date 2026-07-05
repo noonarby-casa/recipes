@@ -7,6 +7,9 @@
       {{- if not $shortId }}
         {{- errorf "Recipe %q (file: %s) is missing the required 'shortId' front matter parameter." .Title .File.Path }}
       {{- end }}
+      {{- if not (findRE "^[a-z]{2,6}$" $shortId) }}
+        {{- errorf "Recipe %q (file: %s) has an invalid shortId %q. Must be 2-6 lowercase letters only (no numbers, hyphens, or uppercase)." .Title .File.Path $shortId }}
+      {{- end }}
       {{- $existing := index $seenIds $shortId }}
       {{- if $existing }}
         {{- errorf "Duplicate 'shortId' found: %q is used by both %s and %s" $shortId .File.Path $existing }}

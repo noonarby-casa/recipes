@@ -65,6 +65,28 @@ const DAY_NAMES: Record<string, string> = {
   sat: "Saturday",
 };
 
+const DAY_CODES: Record<string, string> = {
+  sun: "0",
+  mon: "1",
+  tue: "2",
+  wed: "3",
+  thu: "4",
+  fri: "5",
+  sat: "6",
+  supplemental: "7",
+};
+
+const CODE_TO_DAYS: Record<string, string> = {
+  "0": "sun",
+  "1": "mon",
+  "2": "tue",
+  "3": "wed",
+  "4": "thu",
+  "5": "fri",
+  "6": "sat",
+  "7": "supplemental",
+};
+
 /**
  * Normalization helper for checklist indexing key
  */
@@ -119,8 +141,8 @@ export function initMealPlanner(): void {
 
       let urlWorkWeekOnly = localWorkWeekOnly;
       if (hasUrlParams) {
-        urlWorkWeekOnly =
-          new URLSearchParams(window.location.search).get("week") === "5";
+        const urlParams = new URLSearchParams(window.location.search);
+        urlWorkWeekOnly = (urlParams.get("w") || urlParams.get("week")) === "5";
       }
 
       const localRaw = localStorage.getItem(STORAGE_KEY);
@@ -135,7 +157,15 @@ export function initMealPlanner(): void {
       }
 
       const urlParams = new URLSearchParams(window.location.search);
-      const urlMode = urlParams.get("mode");
+      const rawMode = urlParams.get("m") || urlParams.get("mode");
+      const urlMode =
+        rawMode === "e"
+          ? "edit"
+          : rawMode === "s"
+            ? "shop"
+            : rawMode === "v"
+              ? "view"
+              : rawMode;
 
       const hasConflict =
         hasUrlParams &&
@@ -375,8 +405,8 @@ function setupEventListeners(): void {
     bannerCompareShared.addEventListener("click", () => {
       bannerCompareShared.classList.add("active");
       bannerCompareLocal.classList.remove("active");
-      const urlWeek =
-        new URLSearchParams(window.location.search).get("week") === "5";
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlWeek = (urlParams.get("w") || urlParams.get("week")) === "5";
       workWeekOnly = urlWeek;
       parseUrlParams();
       renderUI();
@@ -403,7 +433,12 @@ function setupEventListeners(): void {
   if (bannerBtnKeep) {
     bannerBtnKeep.addEventListener("click", () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const targetMode = urlParams.get("mode") || "view";
+      const rawMode = urlParams.get("m") || urlParams.get("mode");
+      const targetMode =
+        rawMode === "e"
+          ? "edit"
+          : (rawMode === "s" ? "shop" : rawMode === "v" ? "view" : rawMode) ||
+            "view";
       try {
         const rawSettings = localStorage.getItem(SETTINGS_KEY);
         if (rawSettings) {
@@ -432,8 +467,13 @@ function setupEventListeners(): void {
   if (bannerBtnLoad) {
     bannerBtnLoad.addEventListener("click", () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const targetMode = urlParams.get("mode") || "view";
-      const urlWeek = urlParams.get("week") === "5";
+      const rawMode = urlParams.get("m") || urlParams.get("mode");
+      const targetMode =
+        rawMode === "e"
+          ? "edit"
+          : (rawMode === "s" ? "shop" : rawMode === "v" ? "view" : rawMode) ||
+            "view";
+      const urlWeek = (urlParams.get("w") || urlParams.get("week")) === "5";
       workWeekOnly = urlWeek;
       parseUrlParams();
       hideConflictBanner();
@@ -453,7 +493,12 @@ function setupEventListeners(): void {
   if (bannerBtnMerge) {
     bannerBtnMerge.addEventListener("click", () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const targetMode = urlParams.get("mode") || "view";
+      const rawMode = urlParams.get("m") || urlParams.get("mode");
+      const targetMode =
+        rawMode === "e"
+          ? "edit"
+          : (rawMode === "s" ? "shop" : rawMode === "v" ? "view" : rawMode) ||
+            "view";
       try {
         const rawSettings = localStorage.getItem(SETTINGS_KEY);
         if (rawSettings) {
@@ -1186,6 +1231,53 @@ function mergePlans(
 }
 
 /**
+ * Shows a toast/notification warning the user that a recipe code from the shared link was not found.
+ */
+function showUnknownRecipeWarning(code: string): void {
+  const existingWarning = document.querySelector(`.toast-warning-${code}`);
+  if (existingWarning) return;
+
+  const message = `Shared recipe with code "<strong>${code}</strong>" could not be found. It may have been renamed or removed.`;
+  const toastContainer = getOrCreateToastContainer();
+  const toast = document.createElement("div");
+  toast.className = `plan-toast-notification toast-warning-${code}`;
+
+  toast.innerHTML = `
+    <div class="toast-body">
+      <span>${message}</span>
+    </div>
+    <button type="button" class="toast-close-btn" aria-label="Dismiss toast">✕</button>
+  `;
+
+  toast.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg);
+    border: 1px solid #ffcccc;
+    border-left: 4px solid #cc0000;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-top: 0.5rem;
+    animation: slideIn 0.3s ease;
+    gap: 1rem;
+    font-size: 0.85rem;
+  `;
+
+  const closeBtn = toast.querySelector(".toast-close-btn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => toast.remove());
+  }
+
+  toastContainer.appendChild(toast);
+
+  window.setTimeout(() => {
+    toast.remove();
+  }, 8000);
+}
+
+/**
  * Serialization state updates
  */
 function saveStateToStorageAndUrl(writeHistory = false): void {
@@ -1195,32 +1287,36 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
   // Serialize to unescaped URL parameter keys
   const params = new URLSearchParams();
 
-  // Populate days and supplemental using compact short codes and dash delimiters
+  const entries: string[] = [];
+
   planState.forEach((item) => {
     const rec = recipesIndex.find((r) => r.permalink === item.permalink);
     if (!rec) return;
     const code = permalinkToCode(item.permalink);
-    const hasCustomScale = item.scale !== 1.0;
+    const dayCode = DAY_CODES[item.day];
+    if (!dayCode) return; // Ignore invalid day
 
-    // Avoid decimal fractions if integer
-    const scaleStr =
-      item.scale % 1 === 0 ? item.scale.toFixed(0) : item.scale.toFixed(1);
+    const portions = Math.round(item.scale * rec.servings);
+    const hasCustomPortions = portions !== rec.servings;
 
-    let val = code;
-    if (hasCustomScale) {
-      val = `${code}-${scaleStr}`;
+    let val = `${dayCode}${code}`;
+    if (hasCustomPortions) {
+      val += portions.toString();
     }
-    params.append(item.day, val);
+    entries.push(val);
   });
 
+  const pVal = ["1", ...entries].join(".");
+  params.set("p", pVal);
+
   if (workWeekOnly) {
-    params.set("week", "5");
+    params.set("w", "5");
   }
 
   if (activeMobileTab === "edit-plan") {
-    params.set("mode", "edit");
+    params.set("m", "e");
   } else if (activeMobileTab === "shopping-list") {
-    params.set("mode", "shop");
+    params.set("m", "s");
   }
 
   const query = params.toString();
@@ -1249,43 +1345,114 @@ function loadStateFromStorage(): void {
 }
 
 /**
- * Parses Multi-Parameter query string parameters (Option C)
+ * Parses Multi-Parameter query string parameters
  */
 function parseUrlParams(): boolean {
   const params = new URLSearchParams(window.location.search);
   let hasValidParams = false;
   const newPlan: PlannedRecipe[] = [];
 
-  const allKeys = [...DAYS, "supplemental"];
+  // Check if new single-param 'p' is present
+  if (params.has("p")) {
+    const pVal = params.get("p") || "";
+    const parts = pVal.split(".");
+    const version = parts[0];
 
-  allKeys.forEach((day) => {
-    const values = params.getAll(day);
-    if (values.length > 0) {
+    if (version === "1") {
       hasValidParams = true;
-      values.forEach((val) => {
-        let code = val;
-        let scale = 1.0;
+      const entries = parts.slice(1);
+      entries.forEach((entry) => {
+        if (!entry) return;
 
-        if (val.includes("-")) {
-          const parts = val.split("-");
-          code = parts[0];
-          scale = parseFloat(parts[1]) || 1.0;
+        // dayCode is 1 char: '0'..'7'
+        const dayCode = entry.charAt(0);
+        const day = CODE_TO_DAYS[dayCode];
+        if (!day) {
+          console.warn(`[URL Parser] Invalid day code: ${dayCode}`);
+          return;
+        }
+
+        const rest = entry.slice(1);
+        if (!rest) return;
+
+        // Parse shortId (lowercase letters) and portions (digits)
+        let digitIndex = -1;
+        for (let i = 0; i < rest.length; i++) {
+          const char = rest.charAt(i);
+          if (char >= "0" && char <= "9") {
+            digitIndex = i;
+            break;
+          }
+        }
+
+        let code = rest;
+        let portions: number | null = null;
+        if (digitIndex !== -1) {
+          code = rest.slice(0, digitIndex);
+          portions = parseInt(rest.slice(digitIndex), 10);
         }
 
         const permalink = codeToPermalink(code);
+        const rec = recipesIndex.find((r) => r.permalink === permalink);
+        if (!rec) {
+          showUnknownRecipeWarning(code);
+        }
+
+        const defaultServings = rec ? rec.servings : 4;
+        let scale = 1.0;
+        if (portions !== null && !isNaN(portions)) {
+          scale = portions / defaultServings;
+        }
+
         newPlan.push({
           instanceId: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
           permalink,
-          scale: isNaN(scale) ? 1.0 : scale,
+          scale,
           day,
         });
       });
+    } else {
+      console.warn(`[URL Parser] Unsupported plan version: ${version}`);
     }
-  });
+  } else {
+    // Legacy fallback
+    const allKeys = [...DAYS, "supplemental"];
+    allKeys.forEach((day) => {
+      const values = params.getAll(day);
+      if (values.length > 0) {
+        hasValidParams = true;
+        values.forEach((val) => {
+          let code = val;
+          let scale = 1.0;
 
-  if (params.has("week")) {
+          if (val.includes("-")) {
+            const parts = val.split("-");
+            code = parts[0];
+            scale = parseFloat(parts[1]) || 1.0;
+          }
+
+          const permalink = codeToPermalink(code);
+          const rec = recipesIndex.find((r) => r.permalink === permalink);
+          if (!rec) {
+            showUnknownRecipeWarning(code);
+          }
+
+          newPlan.push({
+            instanceId: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+            permalink,
+            scale: isNaN(scale) ? 1.0 : scale,
+            day,
+          });
+        });
+      }
+    });
+  }
+
+  // Parse week / w
+  if (params.has("w") || params.has("week")) {
     hasValidParams = true;
-    workWeekOnly = params.get("week") === "5";
+    const wVal = params.get("w") || params.get("week");
+    workWeekOnly = wVal === "5";
   }
 
   if (hasValidParams) {
@@ -1640,7 +1807,6 @@ function renderUI(highlightInstanceId?: string): void {
  * Setup Event Listeners for HTML5 drag-and-drop actions
  */
 function setupDragAndDropHandlers(): void {
-  const grid = document.getElementById("planned-recipes-list-grid");
   const trashZone = document.getElementById("planner-trash-zone");
   const cards = document.querySelectorAll(".planned-recipe-item");
   const slots = document.querySelectorAll(
