@@ -3,7 +3,7 @@ title = 'Pigs in a Blanket'
 date = 2026-07-04T21:04:31-04:00
 slug = 'pigs-in-a-blanket'
 shortId = 'pib'
-servings = 4
+servings = 24
 times = [
   { step = 'prep', time = '5 min' },
   { step = 'cook', time = '15 min' }
