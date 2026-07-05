@@ -237,7 +237,7 @@ Instructions are placed directly in the body of the markdown file beneath a `## 
 - **Scaling Quantities:** Wrap any ingredient quantities inside step descriptions with the `{{< qty "amount unit" >}}` shortcode.
   > [!IMPORTANT]
   > **Supported Units & Formatting Rules:**
-  > The scaling engine in [scaler.ts](themes/cookpot/assets/js/scaler.ts) parses units dynamically imported from [config.ts](themes/cookpot/assets/js/shopping-list/config.ts). Supported units and standard abbreviations include: `ounces` (`ounces`, `ounce`, `oz`), `pounds` (`pounds`, `pound`, `lb`, `lbs`), `cups` (`cups`, `cup`), `teaspoons` (`teaspoons`, `teaspoon`, `tsp`), `tablespoons` (`tablespoons`, `tablespoon`, `tbsp`), `cloves` (`cloves`, `clove`), `cans` (`cans`, `can`), `grams` (`grams`, `gram`, `g`), `ml`, `small`, `large`, `medium`, `heads` (`heads`, `head`), and `bulbs` (`bulbs`, `bulb`).
+  > The scaling engine in [scaler.ts](themes/cookpot/assets/js/scaler.ts) parses units dynamically imported from [config.ts](themes/cookpot/assets/js/shopping-list/config.ts). The canonical lists of supported units are the `VOLUME_UNITS` and `OTHER_UNITS` arrays defined in that file — always check those arrays as the source of truth rather than relying on any list here.
   >
   > 1. **If the unit is supported:** Wrap both amount and unit in the shortcode. Example: `{{< qty "16 ounces" >}}` or `{{< qty "1/2 pound" >}}`.
   > 2. **If the unit is NOT supported** (e.g., `lemon`, `squash`, `onion`): Wrap _only_ the numeric amount in the shortcode, leaving the unit word outside. Example: `{{< qty "1" >}} lemon` or `{{< qty "4" >}} summer squash`. Wrapping unsupported unit names inside the shortcode will cause them to be discarded when scaling changes.
