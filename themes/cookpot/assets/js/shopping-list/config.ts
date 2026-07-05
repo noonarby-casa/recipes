@@ -103,6 +103,8 @@ export const OTHER_UNITS: string[] = [
   "heads",
   "bulb",
   "bulbs",
+  "package",
+  "packages",
 ];
 
 export const TO_TEASPOONS: Record<string, number> = {
