@@ -18,7 +18,7 @@ This is a **Hugo-based static website** dedicated to displaying recipes for the 
 - **Hosting:** Firebase Hosting (Project ID: `noonarby-casa-recipes`)
 - **CI/CD:** GitHub Actions for automated pull request previews and production deployment.
 
-For a detailed map of the codebase directory structure and layouts, please refer to [AGENTS.md](AGENTS.md).
+For a detailed map of the codebase directory structure, refer to [directory_structure.md](docs/directory_structure.md). For feature architectures, refer to [architecture.md](docs/architecture.md).
 
 ---
 
@@ -39,14 +39,19 @@ pnpm install
 
 ### Commands
 
-| Command                                         | Action                                                                                                 |
-| :---------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
-| `hugo server`                                   | Starts a local development server at `http://localhost:1313/recipes/` with live reloading.             |
-| `hugo --minify`                                 | Compiles the site into the `public/` directory, minifying assets to verify production build viability. |
-| `hugo serve --renderToDisk --disableFastRender` | Renders the production-ready site to the `public/` directory and serves it locally.                    |
-| `pnpm typecheck`                                | Runs the TypeScript compiler (`tsc`) with the `--noEmit` flag to perform static checks on all scripts. |
-| `pnpm lint`                                     | Runs ESLint to check for code style issues and static analysis warnings/errors.                        |
-| `pnpm format`                                   | Formats all code files using Prettier to maintain project styling guidelines.                          |
+| Command                                           | Action                                                                                          |
+| :------------------------------------------------ | :---------------------------------------------------------------------------------------------- |
+| `hugo server`                                     | Starts local development server on `http://localhost:1313/recipes/`                             |
+| `hugo --minify`                                   | Runs a production build to check for Hugo template or compilation issues                        |
+| `hugo serve --renderToDisk --disableFastRender`   | Renders fully compiled production-ready output to the `public/` directory and serves it         |
+| `hugo new content content/<recipe-slug>/index.md` | Generates a new recipe leaf bundle content file                                                 |
+| `pnpm typecheck`                                  | Runs `tsc --noEmit` locally using the configured `tsconfig.json` to verify zero compiler errors |
+| `pnpm lint`                                       | Runs ESLint syntax and style check on TypeScript source files                                   |
+| `pnpm lint:fix`                                   | Runs ESLint with the `--fix` flag to resolve linting issues automatically                       |
+| `pnpm format`                                     | Runs Prettier format verification (read-only)                                                   |
+| `pnpm format:fix`                                 | Re-runs Prettier formatter to write corrected styling to files                                  |
+| `pnpm ci`                                         | Runs all checking tools sequentially (`typecheck` + `lint` + `format`)                          |
+| `pnpm fix`                                        | Runs all fixing tools sequentially (`lint:fix` + `format:fix`)                                  |
 
 ---
 
