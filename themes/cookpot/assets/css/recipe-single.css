@@ -75,41 +75,17 @@
 }
 
 /* Base styles for instructions font size controls */
-.recipe-font-panel {
-  background: var(--font-panel-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 0.75rem 1.25rem;
-  box-shadow: var(--btn-shadow);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
+.instructions-title-wrapper {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
-}
-
-.recipe-font-panel:hover {
-  box-shadow: var(--card-shadow);
-  border-color: var(--noonblue-panel-hover-border);
-}
-
-.font-header {
-  display: flex;
   align-items: center;
-  flex-shrink: 0;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
-.font-label {
-  font-weight: 600;
-  color: var(--text-color);
-  font-size: 0.95rem;
-  letter-spacing: -0.01em;
-}
-
-.font-controls {
-  flex-grow: 1;
+.instructions-title-wrapper h2 {
+  margin: 0;
 }
 
 .font-btn {
@@ -442,8 +418,7 @@
     flex-shrink: 0;
   }
 
-  .recipe-scale-panel,
-  .recipe-font-panel {
+  .recipe-scale-panel {
     padding: 0.4rem 1rem;
   }
 

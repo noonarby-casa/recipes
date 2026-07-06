@@ -106,27 +106,6 @@
           >
         </div>
       </div>
-
-      <div class="recipe-font-panel">
-        <div class="font-header">
-          <span class="font-label">Text Size</span>
-        </div>
-        <div class="font-controls toggle-group">
-          <button type="button" class="font-btn toggle-btn" data-size="smaller">
-            Smaller
-          </button>
-          <button
-            type="button"
-            class="font-btn toggle-btn active"
-            data-size="default"
-          >
-            Default
-          </button>
-          <button type="button" class="font-btn toggle-btn" data-size="larger">
-            Larger
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -270,7 +249,25 @@
       role="region"
       aria-label="Cooking Instructions"
     >
-      {{ .Content }}
+      <div class="instructions-title-wrapper">
+        <h2>Instructions</h2>
+        <div class="font-controls toggle-group">
+          <button type="button" class="font-btn toggle-btn" data-size="smaller">
+            Smaller
+          </button>
+          <button
+            type="button"
+            class="font-btn toggle-btn active"
+            data-size="default"
+          >
+            Default
+          </button>
+          <button type="button" class="font-btn toggle-btn" data-size="larger">
+            Larger
+          </button>
+        </div>
+      </div>
+      {{ replace .Content `<h2 id="instructions">Instructions</h2>` "" 1 | safeHTML }}
     </div>
   </div>
 
