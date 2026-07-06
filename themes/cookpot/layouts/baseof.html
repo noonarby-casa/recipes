@@ -22,5 +22,26 @@
     <footer>
       {{ partial "footer.html" . }}
     </footer>
+    <div class="modal-backdrop" id="store-selector-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Store Layout</h3>
+          <button
+            type="button"
+            class="modal-close-btn"
+            aria-label="Close modal"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <span class="store-selector-label">Choose your layout route:</span>
+          <div
+            class="store-layout-options"
+            id="global-store-layout-options"
+          ></div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

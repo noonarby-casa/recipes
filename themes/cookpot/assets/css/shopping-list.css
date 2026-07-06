@@ -2,19 +2,6 @@
   scrollbar-gutter: stable;
 }
 
-.ingredients-title-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.ingredients-title-wrapper h2 {
-  margin: 0;
-}
-
 /* Shopping List Content styling */
 .shopping-list-wrapper {
   animation: fadeIn 0.3s ease;
@@ -34,6 +21,7 @@
 /* Actions Row */
 .shopping-actions {
   display: flex;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 

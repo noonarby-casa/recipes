@@ -6,12 +6,7 @@ import {
 import { ShoppingItem } from "./shopping-list/types";
 import { formatNotesArray } from "./shopping-list/utils";
 import { initToggleGroup } from "./components/toggle";
-import {
-  STORE_LAYOUTS,
-  getActiveStoreLayoutId,
-  setActiveStoreLayoutId,
-  getStoreSection,
-} from "./shopping-list/store-sections";
+import { getStoreSection } from "./shopping-list/store-sections";
 
 /**
  * Initializes the shopping list feature: selects DOM elements, sets up initial
@@ -37,9 +32,6 @@ export function initShoppingList(): void {
     ".shopping-staples-list",
   );
   const copyBtn = document.getElementById("btn-copy-shopping-list");
-  const layoutSelect = document.getElementById(
-    "recipe-store-layout-select",
-  ) as HTMLSelectElement | null;
 
   if (
     !btnRecipeView ||
@@ -54,18 +46,10 @@ export function initShoppingList(): void {
   let currentScale = 1.0;
   let activeTab = "recipe"; // 'recipe' or 'shopping'
 
-  // Populate Store Layout selector dropdown
-  if (layoutSelect) {
-    layoutSelect.innerHTML = STORE_LAYOUTS.map(
-      (l) =>
-        `<option value="${l.id}" ${l.id === getActiveStoreLayoutId() ? "selected" : ""}>${l.name}</option>`,
-    ).join("");
-
-    layoutSelect.addEventListener("change", () => {
-      setActiveStoreLayoutId(layoutSelect.value);
-      renderShoppingList(currentScale);
-    });
-  }
+  // Listen to the global store layout selector change
+  document.addEventListener("store-layout:change", () => {
+    renderShoppingList(currentScale);
+  });
 
   // Initialize: Render the list once
   renderShoppingList(currentScale);

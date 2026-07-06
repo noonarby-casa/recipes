@@ -7,9 +7,11 @@ import { initShoppingList } from "./shopping-list";
 import { initDarkMode } from "./darkmode";
 import { initMealPlanner, initRecipePageAddToPlan } from "./meal-plan";
 import { initScrollable } from "./components/scrollable";
+import { initStoreSelector } from "./store-selector";
 
 document.addEventListener("DOMContentLoaded", () => {
   initDarkMode();
+  initStoreSelector();
   initScaler();
   initTimers();
   initFontSize();

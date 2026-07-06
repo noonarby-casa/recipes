@@ -184,27 +184,15 @@
         <input type="checkbox" id="chk-omit-completed" />
         Omit checked items
       </label>
-      <button
-        type="button"
-        class="planner-btn-secondary"
+      <select
         id="btn-copy-combined-list"
+        class="dropdown-select"
+        aria-label="Copy shopping list options"
       >
-        <svg
-          class="copy-icon"
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          stroke="currentColor"
-          stroke-width="2.5"
-          fill="none"
-        >
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path
-            d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-          ></path>
-        </svg>
-        <span>Copy List</span>
-      </button>
+        <option value="" disabled selected>Copy List</option>
+        <option value="markdown">Markdown</option>
+        <option value="google-keep">Google Keep</option>
+      </select>
       <button
         type="button"
         id="btn-copy-menu-text"
@@ -213,11 +201,6 @@
       >
         Copy Menu
       </button>
-      <select
-        id="planner-store-layout-select"
-        class="store-layout-select"
-        aria-label="Store Layout"
-      ></select>
       <button
         type="button"
         class="planner-clear-btn"
@@ -292,7 +275,7 @@
       role="region"
       aria-label="Combined Shopping List"
     >
-      <div class="ingredients-title-wrapper">
+      <div class="column-titlebar">
         <h2>Combined Shopping List</h2>
       </div>
 

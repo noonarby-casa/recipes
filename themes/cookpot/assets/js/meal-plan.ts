@@ -4,12 +4,7 @@ import { formatCookingNumber } from "./units";
 import { ShoppingItem, Ingredient } from "./shopping-list/types";
 import { formatNotesArray } from "./shopping-list/utils";
 import { initToggleGroup } from "./components/toggle";
-import {
-  STORE_LAYOUTS,
-  getActiveStoreLayoutId,
-  setActiveStoreLayoutId,
-  getStoreSection,
-} from "./shopping-list/store-sections";
+import { getStoreSection } from "./shopping-list/store-sections";
 
 // Interface definitions
 interface IngredientData {
@@ -575,20 +570,9 @@ function setupEventListeners(): void {
     });
   }
 
-  const layoutSelect = document.getElementById(
-    "planner-store-layout-select",
-  ) as HTMLSelectElement | null;
-  if (layoutSelect) {
-    layoutSelect.innerHTML = STORE_LAYOUTS.map(
-      (l) =>
-        `<option value="${l.id}" ${l.id === getActiveStoreLayoutId() ? "selected" : ""}>${l.name}</option>`,
-    ).join("");
-
-    layoutSelect.addEventListener("change", () => {
-      setActiveStoreLayoutId(layoutSelect.value);
-      renderUI();
-    });
-  }
+  document.addEventListener("store-layout:change", () => {
+    renderUI();
+  });
 
   const btnToggleStaples = document.getElementById("btn-toggle-staples");
   if (btnToggleStaples) {
