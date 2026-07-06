@@ -397,6 +397,15 @@ export function initScaler(): void {
 
   let currentServings = baseServings;
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const servingsParam = urlParams.get("servings");
+  if (servingsParam) {
+    const parsedServings = parseInt(servingsParam, 10);
+    if (!isNaN(parsedServings) && parsedServings > 0) {
+      currentServings = parsedServings;
+    }
+  }
+
   // Pre-parse and store base metrics for each instruction step inline quantity
   quantities.forEach((el) => {
     if (el.dataset.baseQty) return; // already set for dynamically created ingredient spans
@@ -446,6 +455,6 @@ export function initScaler(): void {
     });
   }
 
-  // Initialize the scaling output view to 1.0x (normal)
-  updateRecipeScale(1.0);
+  // Initialize the scaling output view
+  updateRecipeScale(currentServings / baseServings);
 }

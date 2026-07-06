@@ -1661,7 +1661,7 @@ function renderUI(highlightInstanceId?: string): void {
                 </div>
                 <div class="recipe-card-body">
                   <h4 class="recipe-card-title">
-                    <a href="${dm.permalink}?from=plan">${title}</a>
+                    <a href="${dm.permalink}?from=plan&servings=${portions}">${title}</a>
                   </h4>
                 </div>
                 <div class="recipe-card-footer">
@@ -1737,7 +1737,7 @@ function renderUI(highlightInstanceId?: string): void {
               </div>
               <div class="recipe-card-body">
                 <h4 class="recipe-card-title">
-                  ${editMode ? title : `<a href="${dm.permalink}?from=plan">${title}</a>`}
+                  ${editMode ? title : `<a href="${dm.permalink}?from=plan&servings=${portions}">${title}</a>`}
                 </h4>
               </div>
               <div class="recipe-card-footer">
