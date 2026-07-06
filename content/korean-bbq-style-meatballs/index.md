@@ -9,26 +9,26 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  { category = "Meatballs", items = [
-    "1 pound ground beef (round or chuck)",
-    "1/2 cup panko",
-    "1/2 cup chopped fresh scallions (or 2 tablespoons freeze-dried scallions)",
-    "2 tablespoons low-sodium soy sauce",
-    "2 tablespoons minced garlic",
-    "1 teaspoon kosher salt (such as Diamond Crystal)",
-    "1 teaspoon freshly ground black pepper"
-  ] },
-  { category = "Vegetables & Rice", items = [
-    "1 carrot",
-    "1 red bell pepper",
-    "1 cucumber",
-    "white rice, to serve"
-  ] },
-  { category = "Serving", items = [
-    "spicy mayonnaise, to serve",
-    "low-sodium soy sauce, to serve"
-  ] }
-]
+    { category = "Meatballs", items = [
+      { text = "1 pound ground beef (round or chuck)", item = "beef" },
+      { text = "1/2 cup panko", item = "panko" },
+      { text = "1/2 cup chopped fresh scallions (or 2 tablespoons freeze-dried scallions)", item = "scallion" },
+      { text = "2 tablespoons low-sodium soy sauce", item = "soy sauce" },
+      { text = "2 tablespoons minced garlic", item = "garlic" },
+      { text = "1 teaspoon kosher salt (such as Diamond Crystal)", item = "kosher salt" },
+      { text = "1 teaspoon freshly ground black pepper", item = "freshly ground black pepper" }
+    ] },
+    { category = "Vegetables & Rice", items = [
+      { text = "1 carrot", item = "carrot" },
+      { text = "1 red bell pepper", item = "red bell pepper" },
+      { text = "1 cucumber", item = "cucumber" },
+      { text = "white rice, to serve", item = "white rice, to serve" }
+    ] },
+    { category = "Serving", items = [
+      { text = "spicy mayonnaise, to serve", item = "spicy mayonnaise, to serve" },
+      { text = "low-sodium soy sauce, to serve", item = "soy sauce, to serve" }
+    ] }
+  ]
 tags = [
   "asian",
   "beef",

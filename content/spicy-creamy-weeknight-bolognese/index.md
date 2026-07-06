@@ -8,15 +8,15 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "1 pound ground beef (at least 20 percent fat)",
-  "salt and black pepper, to taste",
-  "1 large onion, finely chopped",
-  "2 carrots, peeled and finely chopped",
-  "3 tablespoons red curry paste",
-  "1 can tomato sauce (15 ounces)",
-  "1 pound short, curled pasta, such as pipettes",
-  "1 cup heavy cream"
-]
+    { text = "1 pound ground beef (at least 20 percent fat)", item = "beef" },
+    { text = "salt and black pepper, to taste", item = "salt and black pepper" },
+    { text = "1 large onion, finely chopped", item = "onion" },
+    { text = "2 carrots, peeled and finely chopped", item = "carrot" },
+    { text = "3 tablespoons red curry paste", item = "red curry paste" },
+    { text = "1 can tomato sauce (15 ounces)", item = "tomato sauce" },
+    { text = "1 pound short, curled pasta, such as pipettes", item = "short, curled pasta, such as pipette" },
+    { text = "1 cup heavy cream", item = "cream" }
+  ]
 tags = [
   "beef",
   "curry-paste",

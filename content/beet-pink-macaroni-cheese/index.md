@@ -9,15 +9,15 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "1 pound beets (red or orange)",
-  "1 head garlic",
-  "1 lemon (for juice and zest)",
-  "3 ounces parmesan, grated",
-  "Diamond Crystal kosher salt",
-  "16 ounces short rigatoni pasta",
-  "1/4 cup extra-virgin olive oil",
-  "1 teaspoon dried basil"
-]
+    { text = "1 pound beets (red or orange)", item = "beet" },
+    { text = "1 head garlic", item = "garlic" },
+    { text = "1 lemon (for juice and zest)", item = "lemon" },
+    { text = "3 ounces parmesan, grated", item = "parmesan" },
+    { text = "Diamond Crystal kosher salt", item = "diamond crystal kosher salt" },
+    { text = "16 ounces short rigatoni pasta", item = "short rigatoni pasta" },
+    { text = "1/4 cup extra-virgin olive oil", item = "olive oil" },
+    { text = "1 teaspoon dried basil", item = "basil" }
+  ]
 tags = [
   "beets",
   "dinner",

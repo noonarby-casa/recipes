@@ -10,20 +10,20 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  { category = "Oats", items = [
-    "1/3 cup vanilla or plain nonfat Greek yogurt",
-    "2/3 cup unsweetened vanilla almond milk",
-    "1/2 tablespoon chia seeds",
-    "1/2 cup rolled oats",
-    "1 tablespoon maple syrup (optional, or to taste)"
-  ] },
-  { category = "Topping", items = [
-    "1 tablespoon natural, drippy peanut butter",
-    "2 tablespoons semisweet or dark chocolate chips",
-    "1/4 teaspoon coconut oil",
-    "Flaky sea salt (optional)"
-  ] }
-]
+    { category = "Oats", items = [
+      { text = "1/3 cup vanilla or plain nonfat Greek yogurt", item = "vanilla or plain nonfat greek yogurt" },
+      { text = "2/3 cup unsweetened vanilla almond milk", item = "unsweetened vanilla almond milk" },
+      { text = "1/2 tablespoon chia seeds", item = "chia seed" },
+      { text = "1/2 cup rolled oats", item = "rolled oat" },
+      { text = "1 tablespoon maple syrup (optional, or to taste)", item = "maple syrup" }
+    ] },
+    { category = "Topping", items = [
+      { text = "1 tablespoon natural, drippy peanut butter", item = "natural, drippy peanut butter" },
+      { text = "2 tablespoons semisweet or dark chocolate chips", item = "semisweet or dark chocolate chip" },
+      { text = "1/4 teaspoon coconut oil", item = "coconut oil" },
+      { text = "Flaky sea salt (optional)", item = "flaky sea salt", optional = true }
+    ] }
+  ]
 tags = [
   "breakfast",
   "easy",

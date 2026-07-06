@@ -10,23 +10,23 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "1 tablespoon butter",
-  "2 strips bacon, chopped",
-  "1 cup chopped yellow onion (about 1/2 large onion)",
-  "2 celery ribs, chopped (about 1/3 cup)",
-  "1 medium carrot, peeled and chopped (about 1/2 cup)",
-  "2 garlic cloves, minced",
-  "1/2 teaspoon dried thyme",
-  "2 medium russet potatoes, peeled and diced into 1/2-inch cubes (about 1 pound)",
-  "4 cups water (or vegetable stock)",
-  "1 bay leaf",
-  "4 ears sweet fresh corn, kernels cut from cob (about 2 3/4 cups)",
-  "1 medium zucchini, diced into 1/2-inch cubes (about 1 1/2 cups)",
-  "1 cup half and half",
-  "Kosher salt and freshly ground black pepper, to taste",
-  "Chopped fresh parsley, to garnish",
-  "Cayenne pepper, to serve (optional)"
-]
+    { text = "1 tablespoon butter", item = "butter" },
+    { text = "2 strips bacon, chopped", item = "bacon" },
+    { text = "1 cup chopped yellow onion (about 1/2 large onion)", item = "yellow onion" },
+    { text = "2 celery ribs, chopped (about 1/3 cup)", item = "celery rib" },
+    { text = "1 medium carrot, peeled and chopped (about 1/2 cup)", item = "carrot" },
+    { text = "2 garlic cloves, minced", item = "garlic clove" },
+    { text = "1/2 teaspoon dried thyme", item = "thyme" },
+    { text = "2 medium russet potatoes, peeled and diced into 1/2-inch cubes (about 1 pound)", item = "russet potato" },
+    { text = "4 cups water (or vegetable stock)", item = "water" },
+    { text = "1 bay leaf", item = "bay leaf" },
+    { text = "4 ears sweet fresh corn, kernels cut from cob (about 2 3/4 cups)", item = "corn, kernels cut from cob" },
+    { text = "1 medium zucchini, diced into 1/2-inch cubes (about 1 1/2 cups)", item = "zucchini" },
+    { text = "1 cup half and half", item = "half and half" },
+    { text = "Kosher salt and freshly ground black pepper, to taste", item = "kosher salt and freshly ground black pepper" },
+    { text = "Chopped fresh parsley, to garnish", item = "parsley, to garnish" },
+    { text = "Cayenne pepper, to serve (optional)", item = "cayenne pepper, to serve", optional = true }
+  ]
 tags = [
   "dinner",
   "easy",

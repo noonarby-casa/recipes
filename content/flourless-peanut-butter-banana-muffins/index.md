@@ -8,18 +8,18 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  "2 large ripe bananas, mashed",
-  "1 cup all-natural peanut butter",
-  "3 large eggs",
-  "1/4 cup honey",
-  "1 1/2 teaspoons baking powder",
-  "1 teaspoon ground cinnamon (optional)",
-  "1 teaspoon vanilla extract",
-  "1/2 teaspoon sea salt",
-  "1/2 cup chocolate chips (optional)",
-  "1 cup fresh berries (optional)",
-  "1/2 cup raisins or dried cranberries (optional)"
-]
+    { text = "2 large ripe bananas, mashed", item = "ripe banana" },
+    { text = "1 cup all-natural peanut butter", item = "all-natural peanut butter" },
+    { text = "3 large eggs", item = "egg" },
+    { text = "1/4 cup honey", item = "honey" },
+    { text = "1 1/2 teaspoons baking powder", item = "baking powder" },
+    { text = "1 teaspoon ground cinnamon (optional)", item = "cinnamon", optional = true },
+    { text = "1 teaspoon vanilla extract", item = "vanilla extract" },
+    { text = "1/2 teaspoon sea salt", item = "sea salt" },
+    { text = "1/2 cup chocolate chips (optional)", item = "chocolate chip", optional = true },
+    { text = "1 cup fresh berries (optional)", item = "berrie", optional = true },
+    { text = "1/2 cup raisins or dried cranberries (optional)", item = "raisins or dried cranberrie", optional = true }
+  ]
 tags = [
   "baking",
   "banana",

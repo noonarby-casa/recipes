@@ -8,23 +8,23 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  "2 tablespoons extra virgin olive oil",
-  "1 yellow onion, chopped",
-  "1 pound boneless skinless chicken thighs or breasts",
-  "2 teaspoons chili powder",
-  "2 teaspoons smoked paprika",
-  "1 teaspoon dried oregano",
-  "kosher salt and black pepper",
-  "1 poblano pepper, chopped (or up to 2)",
-  "2 cups salsa verde",
-  "6 cups low sodium chicken broth",
-  "1 can (14 ounce) black beans, drained",
-  "2 tablespoons lime juice",
-  "1/2 cup cilantro, chopped",
-  "3 cups cooked rice",
-  "tortilla chips, for serving",
-  "yogurt, avocado, cheese, and green onions, for serving"
-]
+    { text = "2 tablespoons extra virgin olive oil", item = "olive oil" },
+    { text = "1 yellow onion, chopped", item = "yellow onion" },
+    { text = "1 pound boneless skinless chicken thighs or breasts", item = "boneless skinless chicken thighs or breast" },
+    { text = "2 teaspoons chili powder", item = "chili powder" },
+    { text = "2 teaspoons smoked paprika", item = "smoked paprika" },
+    { text = "1 teaspoon dried oregano", item = "oregano" },
+    { text = "kosher salt and black pepper", item = "kosher salt and black pepper" },
+    { text = "1 poblano pepper, chopped (or up to 2)", item = "poblano pepper" },
+    { text = "2 cups salsa verde", item = "salsa verde" },
+    { text = "6 cups low sodium chicken broth", item = "chicken broth" },
+    { text = "1 can (14 ounce) black beans, drained", item = "black bean" },
+    { text = "2 tablespoons lime juice", item = "lime juice" },
+    { text = "1/2 cup cilantro, chopped", item = "cilantro" },
+    { text = "3 cups cooked rice", item = "rice" },
+    { text = "tortilla chips, for serving", item = "tortilla chip" },
+    { text = "yogurt, avocado, cheese, and green onions, for serving", item = "yogurt, avocado, cheese, and green onion" }
+  ]
 tags = [
   "chicken",
   "dinner",

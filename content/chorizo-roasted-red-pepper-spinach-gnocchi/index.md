@@ -8,13 +8,13 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "16 ounces potato gnocchi",
-  "1/2 pound fresh chorizo, casing removed",
-  "3/4 cup chopped jarred roasted red peppers",
-  "1 small onion, chopped",
-  "1/2 teaspoon kosher salt",
-  "3 cups loosely packed baby spinach"
-]
+    { text = "16 ounces potato gnocchi", item = "potato gnocchi" },
+    { text = "1/2 pound fresh chorizo, casing removed", item = "chorizo, casing removed" },
+    { text = "3/4 cup chopped jarred roasted red peppers", item = "jarred roasted red pepper" },
+    { text = "1 small onion, chopped", item = "onion" },
+    { text = "1/2 teaspoon kosher salt", item = "kosher salt" },
+    { text = "3 cups loosely packed baby spinach", item = "loosely packed baby spinach" }
+  ]
 tags = [
   "chorizo",
   "dinner",

@@ -8,20 +8,20 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  "1 yellow onion",
-  "1 large garlic clove",
-  "1 teaspoon grated ginger",
-  "1 tablespoon coconut oil or olive oil",
-  "5 ounces baby spinach leaves (or chopped spinach)",
-  "1 can (28 ounce) crushed fire roasted tomatoes",
-  "1 tablespoon curry powder",
-  "1 teaspoon cumin",
-  "1/2 teaspoon coriander",
-  "3/4 teaspoon kosher salt",
-  "2 cans (15 ounce) chickpeas",
-  "1/2 cup full fat canned coconut milk",
-  "white or brown basmati rice, to serve"
-]
+    { text = "1 yellow onion", item = "yellow onion" },
+    { text = "1 large garlic clove", item = "garlic clove" },
+    { text = "1 teaspoon grated ginger", item = "ginger" },
+    { text = "1 tablespoon coconut oil or olive oil", item = "coconut oil or olive oil" },
+    { text = "5 ounces baby spinach leaves (or chopped spinach)", item = "baby spinach leaf" },
+    { text = "1 can (28 ounce) crushed fire roasted tomatoes", item = "fire roasted tomato" },
+    { text = "1 tablespoon curry powder", item = "curry powder" },
+    { text = "1 teaspoon cumin", item = "cumin" },
+    { text = "1/2 teaspoon coriander", item = "coriander" },
+    { text = "3/4 teaspoon kosher salt", item = "kosher salt" },
+    { text = "2 cans (15 ounce) chickpeas", item = "chickpea" },
+    { text = "1/2 cup full fat canned coconut milk", item = "canned coconut milk" },
+    { text = "white or brown basmati rice, to serve", item = "white or brown basmati rice, to serve" }
+  ]
 tags = [
   "chickpeas",
   "curry",

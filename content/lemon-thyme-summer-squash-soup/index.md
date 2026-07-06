@@ -8,18 +8,18 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "2 tablespoons butter or olive oil",
-  "1 small sweet onion, chopped",
-  "3 cloves garlic, minced",
-  "4 summer squash (about 7-8 ounces each), sliced into 1/8-inch half moons",
-  "1 tablespoon fresh thyme",
-  "1 teaspoon sea salt",
-  "black pepper, to taste",
-  "4 cups water",
-  "1 lemon, zested (about 1 teaspoon zest)",
-  "1/2 cup heavy cream",
-  "2 tablespoons fresh lemon juice (plus more to taste)"
-]
+    { text = "2 tablespoons butter or olive oil", item = "butter or olive oil" },
+    { text = "1 small sweet onion, chopped", item = "onion" },
+    { text = "3 cloves garlic, minced", item = "garlic" },
+    { text = "4 summer squash (about 7-8 ounces each), sliced into 1/8-inch half moons", item = "summer squash" },
+    { text = "1 tablespoon fresh thyme", item = "thyme" },
+    { text = "1 teaspoon sea salt", item = "sea salt" },
+    { text = "black pepper, to taste", item = "black pepper" },
+    { text = "4 cups water", item = "water" },
+    { text = "1 lemon, zested (about 1 teaspoon zest)", item = "lemon, zested" },
+    { text = "1/2 cup heavy cream", item = "cream" },
+    { text = "2 tablespoons fresh lemon juice (plus more to taste)", item = "lemon juice" }
+  ]
 tags = [
   "dinner",
   "easy",

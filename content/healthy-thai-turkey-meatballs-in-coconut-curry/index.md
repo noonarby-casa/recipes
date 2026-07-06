@@ -8,28 +8,28 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  { category = "Meatballs", items = [
-    "1 pound organic ground turkey (or ground chicken)",
-    "1 egg",
-    "1 cup gluten-free or grain-free cracker crumbs",
-    "2 cloves garlic, minced",
-    "1 teaspoon ground ginger",
-    "1.5 tablespoons coconut aminos",
-    "1 tablespoon red curry paste",
-    "sea salt and black pepper, to taste"
-  ] },
-  { category = "Coconut Curry Sauce", items = [
-    "2 tablespoons avocado or olive oil",
-    "1 red bell pepper, sliced",
-    "1 small onion, diced",
-    "2 tablespoons red curry paste",
-    "1 can (13.5 ounce) full-fat coconut milk",
-    "1 tablespoon coconut aminos"
-  ] },
-  { category = "Garnish", items = [
-    "cilantro, for garnish"
-  ] }
-]
+    { category = "Meatballs", items = [
+      { text = "1 pound organic ground turkey (or ground chicken)", item = "turkey" },
+      { text = "1 egg", item = "egg" },
+      { text = "1 cup gluten-free or grain-free cracker crumbs", item = "gluten-free or grain-free cracker crumb" },
+      { text = "2 cloves garlic, minced", item = "garlic" },
+      { text = "1 teaspoon ground ginger", item = "ginger" },
+      { text = "1.5 tablespoons coconut aminos", item = "coconut amino" },
+      { text = "1 tablespoon red curry paste", item = "red curry paste" },
+      { text = "sea salt and black pepper, to taste", item = "sea salt and black pepper" }
+    ] },
+    { category = "Coconut Curry Sauce", items = [
+      { text = "2 tablespoons avocado or olive oil", item = "avocado or olive oil" },
+      { text = "1 red bell pepper, sliced", item = "red bell pepper" },
+      { text = "1 small onion, diced", item = "onion" },
+      { text = "2 tablespoons red curry paste", item = "red curry paste" },
+      { text = "1 can (13.5 ounce) full-fat coconut milk", item = "full-fat coconut milk" },
+      { text = "1 tablespoon coconut aminos", item = "coconut amino" }
+    ] },
+    { category = "Garnish", items = [
+      { text = "cilantro, for garnish", item = "cilantro" }
+    ] }
+  ]
 tags = [
   "asian",
   "coconut-milk",

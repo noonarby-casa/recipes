@@ -10,13 +10,13 @@ times = [
 ]
 recipeSource = 'Rickarbys'
 ingredients = [
-  "1 box (16 ounces) pound cake mix (plus ingredients required by package instructions)",
-  "1 1/2 cups heavy cream",
-  "1/4 cup powdered sugar",
-  "1 teaspoon vanilla extract",
-  "1 cup fresh blueberries",
-  "1 cup fresh raspberries"
-]
+    { text = "1 box (16 ounces) pound cake mix (plus ingredients required by package instructions)", item = "pound cake mix" },
+    { text = "1 1/2 cups heavy cream", item = "cream" },
+    { text = "1/4 cup powdered sugar", item = "sugar" },
+    { text = "1 teaspoon vanilla extract", item = "vanilla extract" },
+    { text = "1 cup fresh blueberries", item = "blueberrie" },
+    { text = "1 cup fresh raspberries", item = "raspberrie" }
+  ]
 tags = [
   "baking",
   "cake",

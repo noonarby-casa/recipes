@@ -9,23 +9,23 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "4 tablespoons butter",
-  "1/4 teaspoon cumin powder",
-  "1 1/2 cups finely chopped onion (about 1 large)",
-  "2 large garlic cloves (finely chopped)",
-  "2 teaspoons finely chopped ginger",
-  "1 teaspoon salt (divided, or to taste)",
-  "2 tablespoons Kasoori methi (optional)",
-  "2 1/2 teaspoons coriander powder",
-  "1/2 teaspoon cayenne pepper powder",
-  "1/4 teaspoon garam masala powder",
-  "1 can (15-ounce) tomato sauce",
-  "3 tablespoons cashew powder",
-  "2 cans chickpeas (15-ounce cans) drained and rinsed",
-  "1/2 cup heavy cream",
-  "2 tablespoons maple syrup",
-  "white rice, to serve"
-]
+    { text = "4 tablespoons butter", item = "butter" },
+    { text = "1/4 teaspoon cumin powder", item = "cumin powder" },
+    { text = "1 1/2 cups finely chopped onion (about 1 large)", item = "onion" },
+    { text = "2 large garlic cloves (finely chopped)", item = "garlic clove" },
+    { text = "2 teaspoons finely chopped ginger", item = "ginger" },
+    { text = "1 teaspoon salt (divided, or to taste)", item = "salt" },
+    { text = "2 tablespoons Kasoori methi (optional)", item = "kasoori methi", optional = true },
+    { text = "2 1/2 teaspoons coriander powder", item = "coriander powder" },
+    { text = "1/2 teaspoon cayenne pepper powder", item = "cayenne pepper powder" },
+    { text = "1/4 teaspoon garam masala powder", item = "garam masala powder" },
+    { text = "1 can (15-ounce) tomato sauce", item = "tomato sauce" },
+    { text = "3 tablespoons cashew powder", item = "cashew powder" },
+    { text = "2 cans chickpeas (15-ounce cans) drained and rinsed", item = "chickpeas and rinsed" },
+    { text = "1/2 cup heavy cream", item = "cream" },
+    { text = "2 tablespoons maple syrup", item = "maple syrup" },
+    { text = "white rice, to serve", item = "white rice, to serve" }
+  ]
 tags = [
   "chickpeas",
   "curry",

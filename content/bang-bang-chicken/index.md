@@ -8,31 +8,31 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  { category = "Bang Bang Sauce", items = [
-    "1 cup whole-egg mayonnaise",
-    "1/4 cup sweet chilli sauce",
-    "1 tablespoon sriracha or hot chilli sauce (optional)",
-    "1 tablespoon honey",
-    "1 tablespoon fresh lime juice"
-  ] },
-  { category = "Chicken & Marinade", items = [
-    "1 1/3 pounds boneless chicken thighs, skin on or off",
-    "1 teaspoon sweet paprika",
-    "1 teaspoon onion powder",
-    "1/4 teaspoon freshly cracked black pepper",
-    "1 tablespoon tamari or regular soy sauce",
-    "1 tablespoon brown sugar",
-    "1 tablespoon olive oil"
-  ] },
-  { category = "Serving & Garnish", items = [
-    "1 spring onion (scallion), sliced",
-    "steamed rice, for serving",
-    "75 grams shredded red cabbage",
-    "2 carrots, grated or julienned",
-    "1 cucumber, sliced",
-    "1 spring onion (scallion), finely sliced"
-  ] }
-]
+    { category = "Bang Bang Sauce", items = [
+      { text = "1 cup whole-egg mayonnaise", item = "whole-egg mayonnaise" },
+      { text = "1/4 cup sweet chilli sauce", item = "chilli sauce" },
+      { text = "1 tablespoon sriracha or hot chilli sauce (optional)", item = "sriracha or hot chilli sauce", optional = true },
+      { text = "1 tablespoon honey", item = "honey" },
+      { text = "1 tablespoon fresh lime juice", item = "lime juice" }
+    ] },
+    { category = "Chicken & Marinade", items = [
+      { text = "1 1/3 pounds boneless chicken thighs, skin on or off", item = "boneless chicken thighs, skin on or off" },
+      { text = "1 teaspoon sweet paprika", item = "paprika" },
+      { text = "1 teaspoon onion powder", item = "onion powder" },
+      { text = "1/4 teaspoon freshly cracked black pepper", item = "freshly cracked black pepper" },
+      { text = "1 tablespoon tamari or regular soy sauce", item = "tamari or regular soy sauce" },
+      { text = "1 tablespoon brown sugar", item = "brown sugar" },
+      { text = "1 tablespoon olive oil", item = "olive oil" }
+    ] },
+    { category = "Serving & Garnish", items = [
+      { text = "1 spring onion (scallion), sliced", item = "spring onion" },
+      { text = "steamed rice, for serving", item = "steamed rice" },
+      { text = "75 grams shredded red cabbage", item = "red cabbage" },
+      { text = "2 carrots, grated or julienned", item = "carrot" },
+      { text = "1 cucumber, sliced", item = "cucumber" },
+      { text = "1 spring onion (scallion), finely sliced", item = "spring onion" }
+    ] }
+  ]
 tags = [
   "asian",
   "chicken",

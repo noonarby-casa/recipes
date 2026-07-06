@@ -10,10 +10,10 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "1 can Pillsbury crescent rolls",
-  "1 package cocktail weenies",
-  "Ketchup for serving"
-]
+    { text = "1 can Pillsbury crescent rolls", item = "pillsbury crescent roll" },
+    { text = "1 package cocktail weenies", item = "cocktail weenie" },
+    { text = "Ketchup for serving", item = "ketchup" }
+  ]
 tags = [
   "snack",
   "appetizer"

@@ -10,12 +10,12 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "3 large eggs",
-  "3 teaspoons vanilla extract",
-  "1 1/2 teaspoons ground cinnamon",
-  "3/4 cup milk",
-  "1 loaf brioche, sliced into 12 slices"
-]
+    { text = "3 large eggs", item = "egg" },
+    { text = "3 teaspoons vanilla extract", item = "vanilla extract" },
+    { text = "1 1/2 teaspoons ground cinnamon", item = "cinnamon" },
+    { text = "3/4 cup milk", item = "milk" },
+    { text = "1 loaf brioche, sliced into 12 slices", item = "brioche" }
+  ]
 tags = [
   "breakfast",
   "easy",

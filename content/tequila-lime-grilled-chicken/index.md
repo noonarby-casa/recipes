@@ -10,29 +10,29 @@ times = [
 ]
 recipeSource = 'Rickarbys'
 ingredients = [
-  { category = "Brine", items = [
-    "1/3 cup salt (for brine)",
-    "3 tablespoons sugar (for brine)",
-    "6 cups water (for brine)"
-  ] },
-  { category = "Chicken", items = [
-    "4 12-ounce split bone-in, skin-on chicken breasts"
-  ] },
-  { category = "Sauce", items = [
-    "1/2 cup mayonnaise",
-    "1/2 cup sour cream",
-    "1 1/2 tablespoons tequila",
-    "4 tablespoons fresh lime juice",
-    "2 medium cloves garlic, minced",
-    "1/3 cup chopped fresh cilantro",
-    "1 teaspoon sugar (for sauce)",
-    "1 teaspoon salt (for sauce)"
-  ] },
-  { category = "Serving & Grilling", items = [
-    "Vegetable oil, for the grill",
-    "1 lime, cut into wedges for serving"
-  ] }
-]
+    { category = "Brine", items = [
+      { text = "1/3 cup salt (for brine)", item = "salt" },
+      { text = "3 tablespoons sugar (for brine)", item = "sugar" },
+      { text = "6 cups water (for brine)", item = "water" }
+    ] },
+    { category = "Chicken", items = [
+      { text = "4 12-ounce split bone-in, skin-on chicken breasts", item = "12-ounce split bone-in, skin-on chicken breast" }
+    ] },
+    { category = "Sauce", items = [
+      { text = "1/2 cup mayonnaise", item = "mayonnaise" },
+      { text = "1/2 cup sour cream", item = "sour cream" },
+      { text = "1 1/2 tablespoons tequila", item = "tequila" },
+      { text = "4 tablespoons fresh lime juice", item = "lime juice" },
+      { text = "2 medium cloves garlic, minced", item = "cloves garlic" },
+      { text = "1/3 cup chopped fresh cilantro", item = "cilantro" },
+      { text = "1 teaspoon sugar (for sauce)", item = "sugar" },
+      { text = "1 teaspoon salt (for sauce)", item = "salt" }
+    ] },
+    { category = "Serving & Grilling", items = [
+      { text = "Vegetable oil, for the grill", item = "vegetable oil, for the grill" },
+      { text = "1 lime, cut into wedges for serving", item = "lime" }
+    ] }
+  ]
 tags = [
   "chicken",
   "dinner",

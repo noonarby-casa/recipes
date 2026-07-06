@@ -8,16 +8,16 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "1 package (12- to 18-ounces) shelf-stable potato gnocchi",
-  "1 large head broccoli (about 1 pound), florets cut into 1½- to 2-inch pieces, stems thinly sliced",
-  "1/4 cup extra-virgin olive oil",
-  "2 cloves garlic, finely grated",
-  "Salt",
-  "Crushed red pepper flakes (optional)",
-  "1 pound hot or sweet Italian sausage, casings removed",
-  "1/2 lemon",
-  "1/4 cup grated Parmesan, plus more for serving"
-]
+    { text = "1 package (12- to 18-ounces) shelf-stable potato gnocchi", item = "potato gnocchi" },
+    { text = "1 large head broccoli (about 1 pound), florets cut into 1½- to 2-inch pieces, stems thinly sliced", item = "head broccoli" },
+    { text = "1/4 cup extra-virgin olive oil", item = "olive oil" },
+    { text = "2 cloves garlic, finely grated", item = "garlic" },
+    { text = "Salt", item = "salt" },
+    { text = "Crushed red pepper flakes (optional)", item = "red pepper flake", optional = true },
+    { text = "1 pound hot or sweet Italian sausage, casings removed", item = "or sweet italian sausage, casings removed" },
+    { text = "1/2 lemon", item = "lemon" },
+    { text = "1/4 cup grated Parmesan, plus more for serving", item = "parmesan" }
+  ]
 tags = [
   "broccoli",
   "dinner",

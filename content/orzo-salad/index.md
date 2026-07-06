@@ -10,27 +10,27 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  { category = "Salad", items = [
-    "1 1/2 cups dry orzo pasta",
-    "2 Persian cucumbers, halved vertically and sliced 1/4-inch thick",
-    "2 cups cherry tomatoes, halved",
-    "1 cup cooked chickpeas, drained and rinsed",
-    "4 ounces feta cheese, cut into 1/4-inch cubes",
-    "1/3 cup thinly sliced red onion",
-    "1/2 cup pitted Kalamata olives",
-    "1 cup fresh basil and/or mint leaves"
-  ] },
-  { category = "Dressing", items = [
-    "1/4 cup extra-virgin olive oil",
-    "4 tablespoons red wine vinegar",
-    "1 tablespoon fresh lemon juice",
-    "1 garlic clove, minced",
-    "1 teaspoon dried oregano",
-    "1/4 teaspoon Dijon mustard",
-    "1/2 teaspoon sea salt",
-    "Freshly ground black pepper"
-  ] }
-]
+    { category = "Salad", items = [
+      { text = "1 1/2 cups dry orzo pasta", item = "orzo pasta" },
+      { text = "2 Persian cucumbers, halved vertically and sliced 1/4-inch thick", item = "persian cucumber" },
+      { text = "2 cups cherry tomatoes, halved", item = "cherry tomatoes, halved" },
+      { text = "1 cup cooked chickpeas, drained and rinsed", item = "chickpea" },
+      { text = "4 ounces feta cheese, cut into 1/4-inch cubes", item = "feta cheese, cut into 1/4-inch cube" },
+      { text = "1/3 cup thinly sliced red onion", item = "red onion" },
+      { text = "1/2 cup pitted Kalamata olives", item = "pitted kalamata olive" },
+      { text = "1 cup fresh basil and/or mint leaves", item = "basil and/or mint leaf" }
+    ] },
+    { category = "Dressing", items = [
+      { text = "1/4 cup extra-virgin olive oil", item = "olive oil" },
+      { text = "4 tablespoons red wine vinegar", item = "red wine vinegar" },
+      { text = "1 tablespoon fresh lemon juice", item = "lemon juice" },
+      { text = "1 garlic clove, minced", item = "garlic clove" },
+      { text = "1 teaspoon dried oregano", item = "oregano" },
+      { text = "1/4 teaspoon Dijon mustard", item = "dijon mustard" },
+      { text = "1/2 teaspoon sea salt", item = "sea salt" },
+      { text = "Freshly ground black pepper", item = "freshly ground black pepper" }
+    ] }
+  ]
 tags = [
   "easy",
   "pasta",

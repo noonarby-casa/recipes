@@ -8,19 +8,19 @@ times = [
 ]
 recipeSource = 'Noonarbys'
 ingredients = [
-  "2/3 cup minced bread-and-butter pickles",
-  "4 scallions, trimmed and thinly sliced, plus more for garnish",
-  "3/4 cup mayonnaise",
-  "1/4 cup milk",
-  "1/3 cup finely chopped fresh Italian parsley, plus more for garnish",
-  "1/4 cup chopped fresh dill, plus small sprigs for garnish",
-  "4 teaspoons Dijon mustard",
-  "1 teaspoon fresh lemon zest",
-  "4 teaspoons fresh lemon juice (from 1 large lemon)",
-  "1 teaspoon granulated sugar",
-  "kosher salt and freshly ground pepper, to taste",
-  "16 ounces elbow macaroni"
-]
+    { text = "2/3 cup minced bread-and-butter pickles", item = "bread-and-butter pickle" },
+    { text = "4 scallions, trimmed and thinly sliced, plus more for garnish", item = "scallion" },
+    { text = "3/4 cup mayonnaise", item = "mayonnaise" },
+    { text = "1/4 cup milk", item = "milk" },
+    { text = "1/3 cup finely chopped fresh Italian parsley, plus more for garnish", item = "italian parsley" },
+    { text = "1/4 cup chopped fresh dill, plus small sprigs for garnish", item = "dill, plus small sprig" },
+    { text = "4 teaspoons Dijon mustard", item = "dijon mustard" },
+    { text = "1 teaspoon fresh lemon zest", item = "lemon zest" },
+    { text = "4 teaspoons fresh lemon juice (from 1 large lemon)", item = "lemon juice" },
+    { text = "1 teaspoon granulated sugar", item = "sugar" },
+    { text = "kosher salt and freshly ground pepper, to taste", item = "kosher salt and freshly ground pepper" },
+    { text = "16 ounces elbow macaroni", item = "elbow macaroni" }
+  ]
 tags = [
   "easy",
   "lemon",

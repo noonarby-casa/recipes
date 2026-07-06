@@ -9,11 +9,11 @@ times = [
 ]
 recipeSource = 'Carly Rickarby'
 ingredients = [
-  "1 package grape tomatoes",
-  "1 container mozzarella balls",
-  "Fresh basil",
-  "Balsamic glaze"
-]
+    { text = "1 package grape tomatoes", item = "grape tomato" },
+    { text = "1 container mozzarella balls", item = "mozzarella ball" },
+    { text = "Fresh basil", item = "basil" },
+    { text = "Balsamic glaze", item = "balsamic glaze" }
+  ]
 tags = [
   "appetizer",
   "no-cook",

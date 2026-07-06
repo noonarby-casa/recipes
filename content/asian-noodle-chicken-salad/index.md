@@ -10,25 +10,25 @@ times = [
 ]
 recipeSource = 'Rickarbys'
 ingredients = [
-  { category = "Toppings", items = [
-    "2 tablespoons vegetable oil",
-    "1/4 cup sliced almonds",
-    "1/4 cup sesame seeds"
-  ] },
-  { category = "Salad", items = [
-    "8 green onions, finely sliced",
-    "1 head cabbage, thinly sliced or chopped",
-    "2 packages (3 ounces each) ramen noodles, broken up",
-    "2 cups cooked chicken (or up to 3), chopped or shredded"
-  ] },
-  { category = "Dressing", items = [
-    "1/4 cup sugar",
-    "1 teaspoon black pepper",
-    "1 teaspoon salt",
-    "1 cup vegetable oil",
-    "6 tablespoons rice vinegar"
-  ] }
-]
+    { category = "Toppings", items = [
+      { text = "2 tablespoons vegetable oil", item = "vegetable oil" },
+      { text = "1/4 cup sliced almonds", item = "almond" },
+      { text = "1/4 cup sesame seeds", item = "sesame seed" }
+    ] },
+    { category = "Salad", items = [
+      { text = "8 green onions, finely sliced", item = "green onion" },
+      { text = "1 head cabbage, thinly sliced or chopped", item = "cabbage" },
+      { text = "2 packages (3 ounces each) ramen noodles, broken up", item = "ramen noodles, broken up" },
+      { text = "2 cups cooked chicken (or up to 3), chopped or shredded", item = "chicken" }
+    ] },
+    { category = "Dressing", items = [
+      { text = "1/4 cup sugar", item = "sugar" },
+      { text = "1 teaspoon black pepper", item = "black pepper" },
+      { text = "1 teaspoon salt", item = "salt" },
+      { text = "1 cup vegetable oil", item = "vegetable oil" },
+      { text = "6 tablespoons rice vinegar", item = "rice vinegar" }
+    ] }
+  ]
 tags = [
   "asian",
   "chicken",

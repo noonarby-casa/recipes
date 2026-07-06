@@ -9,24 +9,24 @@ times = [
 ]
 recipeSource = 'Rickarbys'
 ingredients = [
-  { category = "Bread", items = [
-    "1/3 cup butter, melted",
-    "1 cup sugar",
-    "3 tablespoons fresh lemon juice",
-    "2 eggs, room temperature",
-    "1 1/2 cups all-purpose flour",
-    "1 teaspoon baking powder",
-    "1/4 teaspoon baking soda",
-    "1/2 teaspoon kosher salt",
-    "1/2 cup sour cream (or plain Greek yogurt)",
-    "2 tablespoons lemon zest",
-    "1 cup blueberries (fresh or frozen)"
-  ] },
-  { category = "Glaze", items = [
-    "3/4 cup powdered sugar (for glaze)",
-    "2 tablespoons fresh lemon juice (for glaze)"
-  ] }
-]
+    { category = "Bread", items = [
+      { text = "1/3 cup butter, melted", item = "butter" },
+      { text = "1 cup sugar", item = "sugar" },
+      { text = "3 tablespoons fresh lemon juice", item = "lemon juice" },
+      { text = "2 eggs, room temperature", item = "egg" },
+      { text = "1 1/2 cups all-purpose flour", item = "flour" },
+      { text = "1 teaspoon baking powder", item = "baking powder" },
+      { text = "1/4 teaspoon baking soda", item = "baking soda" },
+      { text = "1/2 teaspoon kosher salt", item = "kosher salt" },
+      { text = "1/2 cup sour cream (or plain Greek yogurt)", item = "sour cream" },
+      { text = "2 tablespoons lemon zest", item = "lemon zest" },
+      { text = "1 cup blueberries (fresh or frozen)", item = "blueberrie" }
+    ] },
+    { category = "Glaze", items = [
+      { text = "3/4 cup powdered sugar (for glaze)", item = "sugar" },
+      { text = "2 tablespoons fresh lemon juice (for glaze)", item = "lemon juice" }
+    ] }
+  ]
 tags = [
   "baking",
   "blueberry",

@@ -8,40 +8,40 @@ times = [
 ]
 recipeSource = 'Rickarbys'
 ingredients = [
-  { category = "Cake Batter", items = [
-    "1 cup unsalted butter, at room temperature",
-    "1 1/2 cups granulated sugar",
-    "1/4 cup light brown sugar, packed",
-    "1 tablespoon lemon zest",
-    "1/2 teaspoon pure lemon extract (optional)",
-    "1 teaspoon vanilla extract",
-    "4 large eggs, at room temperature",
-    "2 1/2 cups cake flour",
-    "1 1/2 teaspoons baking powder",
-    "1/2 teaspoon baking soda",
-    "1/2 teaspoon salt",
-    "1/2 cup whole milk",
-    "1/2 cup full-fat sour cream",
-    "1/2 cup fresh squeezed lemon juice",
-    "2 1/2 cups fresh or frozen raspberries (if using frozen, do not thaw)",
-    "2 tablespoons all-purpose flour"
-  ] },
-  { category = "Frosting", items = [
-    "8 ounces full-fat cream cheese, a little softer than room temperature (for frosting)",
-    "10 tablespoons unsalted butter, a little softer than room temperature (for frosting)",
-    "4 cups confectioners' sugar, more if needed (for frosting)",
-    "2 teaspoons fresh lemon zest (for frosting)",
-    "1 tablespoon fresh lemon juice (for frosting)",
-    "1/4 teaspoon pure lemon extract (for frosting, optional)",
-    "1/4 teaspoon salt (for frosting)",
-    "2 tablespoons sour cream (for frosting)"
-  ] },
-  { category = "Garnish", items = [
-    "1/2 cup raspberry preserves (for garnish)",
-    "1 lemon, thinly sliced (for garnish)",
-    "1 cup fresh raspberries (for garnish)"
-  ] }
-]
+    { category = "Cake Batter", items = [
+      { text = "1 cup unsalted butter, at room temperature", item = "butter" },
+      { text = "1 1/2 cups granulated sugar", item = "sugar" },
+      { text = "1/4 cup light brown sugar, packed", item = "brown sugar, packed" },
+      { text = "1 tablespoon lemon zest", item = "lemon zest" },
+      { text = "1/2 teaspoon pure lemon extract (optional)", item = "lemon extract", optional = true },
+      { text = "1 teaspoon vanilla extract", item = "vanilla extract" },
+      { text = "4 large eggs, at room temperature", item = "egg" },
+      { text = "2 1/2 cups cake flour", item = "cake flour" },
+      { text = "1 1/2 teaspoons baking powder", item = "baking powder" },
+      { text = "1/2 teaspoon baking soda", item = "baking soda" },
+      { text = "1/2 teaspoon salt", item = "salt" },
+      { text = "1/2 cup whole milk", item = "milk" },
+      { text = "1/2 cup full-fat sour cream", item = "sour cream" },
+      { text = "1/2 cup fresh squeezed lemon juice", item = "lemon juice" },
+      { text = "2 1/2 cups fresh or frozen raspberries (if using frozen, do not thaw)", item = "or frozen raspberrie" },
+      { text = "2 tablespoons all-purpose flour", item = "flour" }
+    ] },
+    { category = "Frosting", items = [
+      { text = "8 ounces full-fat cream cheese, a little softer than room temperature (for frosting)", item = "cream cheese" },
+      { text = "10 tablespoons unsalted butter, a little softer than room temperature (for frosting)", item = "butter" },
+      { text = "4 cups confectioners' sugar, more if needed (for frosting)", item = "sugar, more if needed" },
+      { text = "2 teaspoons fresh lemon zest (for frosting)", item = "lemon zest" },
+      { text = "1 tablespoon fresh lemon juice (for frosting)", item = "lemon juice" },
+      { text = "1/4 teaspoon pure lemon extract (for frosting, optional)", item = "lemon extract" },
+      { text = "1/4 teaspoon salt (for frosting)", item = "salt" },
+      { text = "2 tablespoons sour cream (for frosting)", item = "sour cream" }
+    ] },
+    { category = "Garnish", items = [
+      { text = "1/2 cup raspberry preserves (for garnish)", item = "raspberry preserve" },
+      { text = "1 lemon, thinly sliced (for garnish)", item = "lemon" },
+      { text = "1 cup fresh raspberries (for garnish)", item = "raspberrie" }
+    ] }
+  ]
 tags = [
   "baking",
   "cake",
