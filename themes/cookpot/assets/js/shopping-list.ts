@@ -1,8 +1,17 @@
 import { formatCookingNumber } from "./units";
-import { processShoppingList } from "./shopping-list/pipeline";
+import {
+  processShoppingList,
+  extractIngredientsFromDOM,
+} from "./shopping-list/pipeline";
 import { ShoppingItem } from "./shopping-list/types";
 import { formatNotesArray } from "./shopping-list/utils";
 import { initToggleGroup } from "./components/toggle";
+import {
+  STORE_LAYOUTS,
+  getActiveStoreLayoutId,
+  setActiveStoreLayoutId,
+  getStoreSection,
+} from "./shopping-list/store-sections";
 
 /**
  * Initializes the shopping list feature: selects DOM elements, sets up initial
@@ -21,10 +30,16 @@ export function initShoppingList(): void {
     ".shopping-list-wrapper",
   );
   const buyList = document.querySelector<HTMLElement>(".shopping-buy-list");
+  const optionalList = document.querySelector<HTMLElement>(
+    ".shopping-optional-list",
+  );
   const staplesList = document.querySelector<HTMLElement>(
     ".shopping-staples-list",
   );
   const copyBtn = document.getElementById("btn-copy-shopping-list");
+  const layoutSelect = document.getElementById(
+    "recipe-store-layout-select",
+  ) as HTMLSelectElement | null;
 
   if (
     !btnRecipeView ||
@@ -38,6 +53,19 @@ export function initShoppingList(): void {
 
   let currentScale = 1.0;
   let activeTab = "recipe"; // 'recipe' or 'shopping'
+
+  // Populate Store Layout selector dropdown
+  if (layoutSelect) {
+    layoutSelect.innerHTML = STORE_LAYOUTS.map(
+      (l) =>
+        `<option value="${l.id}" ${l.id === getActiveStoreLayoutId() ? "selected" : ""}>${l.name}</option>`,
+    ).join("");
+
+    layoutSelect.addEventListener("change", () => {
+      setActiveStoreLayoutId(layoutSelect.value);
+      renderShoppingList(currentScale);
+    });
+  }
 
   // Initialize: Render the list once
   renderShoppingList(currentScale);
@@ -75,29 +103,63 @@ export function initShoppingList(): void {
       let text = `SHOPPING LIST: ${recipeTitle}\n\n`;
 
       const buyItems = buyList.querySelectorAll<HTMLElement>(".shopping-item");
-      buyItems.forEach((item) => {
-        const mainRow =
-          item.querySelector(".shopping-item-main-row")?.textContent?.trim() ||
-          "";
-        const noteText =
-          item.querySelector(".shopping-item-note")?.textContent?.trim() || "";
-        text += `- ${mainRow}${noteText ? ` ${noteText}` : ""}\n`;
-      });
+      if (buyItems.length > 0) {
+        // Exclude headers when copying items
+        buyList
+          .querySelectorAll<HTMLElement>(
+            ".shopping-item, .shopping-section-header",
+          )
+          .forEach((el) => {
+            if (el.classList.contains("shopping-section-header")) {
+              text += `\n[ ${el.textContent?.trim()} ]\n`;
+            } else {
+              const mainRow =
+                el
+                  .querySelector(".shopping-item-main-row")
+                  ?.textContent?.trim() || "";
+              const noteText =
+                el.querySelector(".shopping-item-note")?.textContent?.trim() ||
+                "";
+              text += `- ${mainRow}${noteText ? ` ${noteText}` : ""}\n`;
+            }
+          });
+        text += "\n";
+      }
+
+      if (optionalList) {
+        const optionalItems =
+          optionalList.querySelectorAll<HTMLElement>(".shopping-item");
+        if (optionalItems.length > 0) {
+          text += `OPTIONAL:\n`;
+          optionalItems.forEach((item) => {
+            const mainRow =
+              item
+                .querySelector(".shopping-item-main-row")
+                ?.textContent?.trim() || "";
+            const noteText =
+              item.querySelector(".shopping-item-note")?.textContent?.trim() ||
+              "";
+            text += `- ${mainRow}${noteText ? ` ${noteText}` : ""}\n`;
+          });
+          text += "\n";
+        }
+      }
 
       const stapleItems =
         staplesList.querySelectorAll<HTMLElement>(".shopping-item");
-      if (buyItems.length > 0 && stapleItems.length > 0) {
-        text += `\n---\n\n`;
+      if (stapleItems.length > 0) {
+        text += `PANTRY STAPLES:\n`;
+        stapleItems.forEach((item) => {
+          const mainRow =
+            item
+              .querySelector(".shopping-item-main-row")
+              ?.textContent?.trim() || "";
+          const noteText =
+            item.querySelector(".shopping-item-note")?.textContent?.trim() ||
+            "";
+          text += `- ${mainRow}${noteText ? ` ${noteText}` : ""}\n`;
+        });
       }
-
-      stapleItems.forEach((item) => {
-        const mainRow =
-          item.querySelector(".shopping-item-main-row")?.textContent?.trim() ||
-          "";
-        const noteText =
-          item.querySelector(".shopping-item-note")?.textContent?.trim() || "";
-        text += `- ${mainRow}${noteText ? ` ${noteText}` : ""}\n`;
-      });
 
       navigator.clipboard
         .writeText(text)
@@ -122,23 +184,48 @@ export function initShoppingList(): void {
   }
 
   /**
-   * Triggers pipeline execution and renders the resulting buy list and staples list.
+   * Triggers pipeline execution and renders the resulting buy list, optional list, and staples list.
    * Updates display layout visibility.
    */
   function renderShoppingList(scale: number): void {
     if (!buyList || !staplesList) return;
     buyList.innerHTML = "";
     staplesList.innerHTML = "";
+    if (optionalList) optionalList.innerHTML = "";
 
     const elements =
       document.querySelectorAll<HTMLElement>(".recipe-ingredient");
-    const { buyItems, stapleItems } = processShoppingList(scale, elements);
+    const ingredients = extractIngredientsFromDOM(scale, elements);
+    const { buyItems, optionalItems, stapleItems } =
+      processShoppingList(ingredients);
 
     const hasBuyItems = buyItems.length > 0;
+    const hasOptional = optionalItems.length > 0;
     const hasStaples = stapleItems.length > 0;
 
-    // Render Need to Buy items
-    buyItems.forEach((converted) => renderItem(converted, buyList));
+    // Render Need to Buy items with store section headers
+    let currentSectionId = "";
+    buyItems.forEach((converted) => {
+      const section = getStoreSection(converted.rest, converted.item);
+      if (section.id !== currentSectionId) {
+        currentSectionId = section.id;
+        buyList.insertAdjacentHTML(
+          "beforeend",
+          `<li class="shopping-section-header">${section.name}</li>`,
+        );
+      }
+      renderItem(converted, buyList);
+    });
+
+    // Render Optional items
+    if (optionalList) {
+      optionalItems.forEach((converted) => renderItem(converted, optionalList));
+      const optionalSection =
+        document.querySelector<HTMLElement>(".optional-section");
+      if (optionalSection) {
+        optionalSection.style.display = hasOptional ? "block" : "none";
+      }
+    }
 
     // Render Pantry Staples items
     stapleItems.forEach((converted) => renderItem(converted, staplesList));
@@ -157,7 +244,8 @@ export function initShoppingList(): void {
 
     const divider = document.querySelector<HTMLElement>(".shopping-divider");
     if (divider) {
-      divider.style.display = hasBuyItems && hasStaples ? "block" : "none";
+      divider.style.display =
+        (hasBuyItems || hasOptional) && hasStaples ? "block" : "none";
     }
   }
 
@@ -170,6 +258,11 @@ export function initShoppingList(): void {
         ? `${formatCookingNumber(item.qty)}${item.unit ? " " + item.unit : ""}`
         : "";
 
+    // Show sizeNote if available (Edge Case 1)
+    const displayRest =
+      item.rest +
+      (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
     const noteHtml =
       item.note && item.note.length > 0
         ? `<div class="shopping-item-details">
@@ -180,7 +273,7 @@ export function initShoppingList(): void {
     targetList.insertAdjacentHTML(
       "beforeend",
       `<li class="shopping-item">
-         <div class="shopping-item-main-row">${qtyStr ? qtyStr + " " : ""}${item.rest}</div>
+         <div class="shopping-item-main-row">${qtyStr ? qtyStr + " " : ""}${displayRest}</div>
          ${noteHtml}
        </li>`,
     );

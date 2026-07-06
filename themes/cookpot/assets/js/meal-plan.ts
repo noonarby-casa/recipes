@@ -1,11 +1,23 @@
-import { parseIngredientText, scaleTextQuantities } from "./scaler";
+import { parseIngredient, scaleTextQuantities } from "./scaler";
 import { processShoppingList } from "./shopping-list/pipeline";
 import { formatCookingNumber } from "./units";
-import { ShoppingItem } from "./shopping-list/types";
+import { ShoppingItem, Ingredient } from "./shopping-list/types";
 import { formatNotesArray } from "./shopping-list/utils";
 import { initToggleGroup } from "./components/toggle";
+import {
+  STORE_LAYOUTS,
+  getActiveStoreLayoutId,
+  setActiveStoreLayoutId,
+  getStoreSection,
+} from "./shopping-list/store-sections";
 
 // Interface definitions
+interface IngredientData {
+  text: string;
+  item?: string;
+  optional?: boolean;
+}
+
 interface Recipe {
   title: string;
   permalink: string;
@@ -14,7 +26,7 @@ interface Recipe {
   times: { step: string; time: string }[];
   recipeSource?: string;
   tags?: string[];
-  ingredients: string[];
+  ingredients: (string | IngredientData)[];
   servings: number;
   summary: string;
 }
@@ -559,6 +571,21 @@ function setupEventListeners(): void {
   if (chkOmit) {
     chkOmit.addEventListener("change", () => {
       saveSettings();
+      renderUI();
+    });
+  }
+
+  const layoutSelect = document.getElementById(
+    "planner-store-layout-select",
+  ) as HTMLSelectElement | null;
+  if (layoutSelect) {
+    layoutSelect.innerHTML = STORE_LAYOUTS.map(
+      (l) =>
+        `<option value="${l.id}" ${l.id === getActiveStoreLayoutId() ? "selected" : ""}>${l.name}</option>`,
+    ).join("");
+
+    layoutSelect.addEventListener("change", () => {
+      setActiveStoreLayoutId(layoutSelect.value);
       renderUI();
     });
   }
@@ -2230,6 +2257,7 @@ function renderCombinedShoppingList(): void {
   loadCheckedState();
   const buyList = document.getElementById("combined-buy-list");
   const staplesList = document.getElementById("combined-staples-list");
+  const optionalList = document.getElementById("combined-optional-list");
   const divider = document.querySelector(".shopping-divider");
 
   if (!buyList || !staplesList) return;
@@ -2237,45 +2265,68 @@ function renderCombinedShoppingList(): void {
   if (planState.length === 0) {
     buyList.innerHTML = `<div class="planner-empty-state">Add some recipes to generate your combined shopping list.</div>`;
     staplesList.innerHTML = "";
+    if (optionalList) optionalList.innerHTML = "";
     if (divider) (divider as HTMLElement).style.display = "none";
     return;
   }
 
   if (divider) (divider as HTMLElement).style.display = "block";
 
-  // Mock DOM elements mapping scale multipliers
-  const mockElements: HTMLElement[] = [];
+  const ingredients: Ingredient[] = [];
   planState.forEach((item) => {
     const rec = recipesIndex.find((r) => r.permalink === item.permalink);
     if (!rec) return;
 
-    rec.ingredients.forEach((ingStr) => {
-      const parsed = parseIngredientText(ingStr);
-      const el = document.createElement("div");
-      el.textContent = ingStr;
+    rec.ingredients.forEach((ing) => {
+      const text = typeof ing === "object" && ing !== null ? ing.text : ing;
+      const overrideItem =
+        (typeof ing === "object" && ing !== null && ing.item) || "";
+      const overrideOptional =
+        (typeof ing === "object" && ing !== null && ing.optional) || false;
 
+      const parsed = parseIngredient(
+        text,
+        null,
+        overrideItem,
+        overrideOptional,
+      );
       if (parsed.quantity !== null) {
-        // Pre-multiply quantities by the instance serving scale factor
-        const scaledQty = parsed.quantity * item.scale;
-        el.setAttribute("data-base-qty", scaledQty.toString());
-        el.setAttribute("data-unit", parsed.unit);
-        el.setAttribute(
-          "data-rest",
-          scaleTextQuantities(parsed.rest, item.scale),
-        );
+        parsed.quantity = parsed.quantity * item.scale;
+        parsed.secondarySegments = parsed.secondarySegments.map((seg) => ({
+          ...seg,
+          quantity: seg.quantity * item.scale,
+        }));
       }
-      mockElements.push(el);
+      parsed.rest = scaleTextQuantities(parsed.rest, item.scale);
+      parsed.category = rec.title; // recipe attribution context
+
+      ingredients.push(parsed);
     });
   });
 
-  // Call the converter pipeline with multiplier = 1.0 (since we already scaled inside dataset attributes)
-  const { buyItems, stapleItems } = processShoppingList(1.0, mockElements);
+  const { buyItems, optionalItems, stapleItems } =
+    processShoppingList(ingredients);
 
-  // Render Need to Buy Column
+  // Render Need to Buy Column with sections
   if (buyItems.length === 0) {
     buyList.innerHTML = `<div class="planner-empty-state">No items needed.</div>`;
   } else {
-    buyList.innerHTML = renderItemsBlock(buyItems, false);
+    buyList.innerHTML = renderBuyItemsWithSections(buyItems);
+  }
+
+  // Render Optional Section
+  if (optionalList) {
+    if (optionalItems.length === 0) {
+      optionalList.innerHTML = "";
+      const optionalSection = document.querySelector(".optional-section");
+      if (optionalSection)
+        (optionalSection as HTMLElement).style.display = "none";
+    } else {
+      optionalList.innerHTML = renderItemsBlock(optionalItems, false);
+      const optionalSection = document.querySelector(".optional-section");
+      if (optionalSection)
+        (optionalSection as HTMLElement).style.display = "block";
+    }
   }
 
   // Render Pantry Staples Column
@@ -2310,9 +2361,53 @@ function renderCombinedShoppingList(): void {
   });
 }
 
-/**
- * Generates Checklist HTML segments
- */
+function renderBuyItemsWithSections(items: ShoppingItem[]): string {
+  let html = "";
+  let currentSectionId = "";
+
+  items.forEach((item) => {
+    const section = getStoreSection(item.rest, item.item);
+    if (section.id !== currentSectionId) {
+      currentSectionId = section.id;
+      html += `
+        <li class="shopping-section-header">
+          <strong>${section.name}</strong>
+        </li>
+      `;
+    }
+
+    const key = getIngredientKey(false, item.unit, item.rest);
+    const isChecked = checkedIngredients.has(key);
+    const checkedAttr = isChecked ? "checked" : "";
+    const checkedClass = isChecked ? "checked" : "";
+
+    const notesHtml =
+      item.note && item.note.length > 0
+        ? ` <span class="shopping-notes">(${formatNotesArray(item.note, true)})</span>`
+        : "";
+    const qtyStr =
+      item.qty !== null && item.qty > 0
+        ? `${formatCookingNumber(item.qty)} `
+        : "";
+    const unitStr = item.unit ? `${item.unit} ` : "";
+
+    const displayRest =
+      item.rest +
+      (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
+    html += `
+      <li class="shopping-item ${checkedClass}">
+        <label class="shopping-item-label">
+          <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" ${checkedAttr} />
+          <span>${qtyStr}${unitStr}${displayRest}${notesHtml}</span>
+        </label>
+      </li>
+    `;
+  });
+
+  return html;
+}
+
 function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
   return items
     .map((item) => {
@@ -2331,11 +2426,15 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
           : "";
       const unitStr = item.unit ? `${item.unit} ` : "";
 
+      const displayRest =
+        item.rest +
+        (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
       return `
         <li class="shopping-item ${checkedClass}">
           <label class="shopping-item-label">
             <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" ${checkedAttr} />
-            <span>${qtyStr}${unitStr}${item.rest}${notesHtml}</span>
+            <span>${qtyStr}${unitStr}${displayRest}${notesHtml}</span>
           </label>
         </li>
       `;
@@ -2387,31 +2486,44 @@ function copyShoppingListToClipboard(): void {
   ) as HTMLInputElement;
   const omitChecked = chkOmit ? chkOmit.checked : false;
 
-  const mockElements: HTMLElement[] = [];
+  const ingredients: Ingredient[] = [];
   planState.forEach((item) => {
     const rec = recipesIndex.find((r) => r.permalink === item.permalink);
     if (!rec) return;
 
-    rec.ingredients.forEach((ingStr) => {
-      const parsed = parseIngredientText(ingStr);
-      const el = document.createElement("div");
-      el.textContent = ingStr;
+    rec.ingredients.forEach((ing) => {
+      const text = typeof ing === "object" && ing !== null ? ing.text : ing;
+      const overrideItem =
+        (typeof ing === "object" && ing !== null && ing.item) || "";
+      const overrideOptional =
+        (typeof ing === "object" && ing !== null && ing.optional) || false;
 
+      const parsed = parseIngredient(
+        text,
+        null,
+        overrideItem,
+        overrideOptional,
+      );
       if (parsed.quantity !== null) {
-        const scaledQty = parsed.quantity * item.scale;
-        el.setAttribute("data-base-qty", scaledQty.toString());
-        el.setAttribute("data-unit", parsed.unit);
-        el.setAttribute("data-rest", parsed.rest);
+        parsed.quantity = parsed.quantity * item.scale;
+        parsed.secondarySegments = parsed.secondarySegments.map((seg) => ({
+          ...seg,
+          quantity: seg.quantity * item.scale,
+        }));
       }
-      mockElements.push(el);
+      parsed.rest = scaleTextQuantities(parsed.rest, item.scale);
+      parsed.category = rec.title; // recipe attribution context
+
+      ingredients.push(parsed);
     });
   });
 
-  const { buyItems, stapleItems } = processShoppingList(1.0, mockElements);
+  const { buyItems, optionalItems, stapleItems } =
+    processShoppingList(ingredients);
 
   let clipboardText = "## Combined Shopping List\n";
 
-  // Need to Buy Block
+  // Need to Buy Block (grouped by store sections)
   const filteredBuy = buyItems.filter((item) => {
     const key = getIngredientKey(false, item.unit, item.rest);
     const isChecked = checkedIngredients.has(key);
@@ -2420,7 +2532,14 @@ function copyShoppingListToClipboard(): void {
 
   if (filteredBuy.length > 0) {
     clipboardText += "\n### Need to Buy\n";
+    let currentSectionId = "";
     filteredBuy.forEach((item) => {
+      const section = getStoreSection(item.rest, item.item);
+      if (section.id !== currentSectionId) {
+        currentSectionId = section.id;
+        clipboardText += `\n[ ${section.name} ]\n`;
+      }
+
       const key = getIngredientKey(false, item.unit, item.rest);
       const isChecked = checkedIngredients.has(key);
       const mark = isChecked ? "[x]" : "[ ]";
@@ -2435,7 +2554,43 @@ function copyShoppingListToClipboard(): void {
           ? ` (${formatNotesArray(item.note, !item.isStaple)})`
           : "";
 
-      clipboardText += `- ${mark} ${qtyStr}${unitStr}${item.rest}${notesStr}\n`;
+      const displayRest =
+        item.rest +
+        (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
+      clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+    });
+  }
+
+  // Optional Block
+  const filteredOptional = optionalItems.filter((item) => {
+    const key = getIngredientKey(false, item.unit, item.rest);
+    const isChecked = checkedIngredients.has(key);
+    return !(omitChecked && isChecked);
+  });
+
+  if (filteredOptional.length > 0) {
+    clipboardText += "\n### Optional\n";
+    filteredOptional.forEach((item) => {
+      const key = getIngredientKey(false, item.unit, item.rest);
+      const isChecked = checkedIngredients.has(key);
+      const mark = isChecked ? "[x]" : "[ ]";
+
+      const qtyStr =
+        item.qty !== null && item.qty > 0
+          ? `${formatCookingNumber(item.qty)} `
+          : "";
+      const unitStr = item.unit ? `${item.unit} ` : "";
+      const notesStr =
+        item.note && item.note.length > 0
+          ? ` (${formatNotesArray(item.note, !item.isStaple)})`
+          : "";
+
+      const displayRest =
+        item.rest +
+        (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
+      clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
     });
   }
 
@@ -2463,7 +2618,11 @@ function copyShoppingListToClipboard(): void {
           ? ` (${formatNotesArray(item.note, !item.isStaple)})`
           : "";
 
-      clipboardText += `- ${mark} ${qtyStr}${unitStr}${item.rest}${notesStr}\n`;
+      const displayRest =
+        item.rest +
+        (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
+      clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
     });
   }
 

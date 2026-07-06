@@ -14,42 +14,50 @@ export interface IngredientMatchConfig {
   unit?: StringMatchConfig;
 }
 
-export interface BaseIngredient {
+export interface QuantitySegment {
+  quantity: number;
+  unit: string;
+  text: string;
+}
+
+export interface Ingredient {
+  quantity: number | null;
+  unit: string;
+  item: string;
   rest: string;
   prep: string;
+  optional: boolean;
+  secondarySegments: QuantitySegment[];
+  category: string | null;
+  sizeNote?: string; // For parenthetical size descriptors
 }
-
-export interface ScalableIngredient extends BaseIngredient {
-  isScalable: true;
-  scaledQty: number;
-  unit: string;
-}
-
-export interface FixedIngredient extends BaseIngredient {
-  isScalable: false;
-}
-
-export type Ingredient = ScalableIngredient | FixedIngredient;
 
 export interface ConverterContext {
   scaledQty: number;
   unit: string;
   unitLower: string;
+  item: string;
+  itemLower: string;
   rest: string;
   restLower: string;
   prep: string;
   prepLower: string;
   isStaple: boolean;
+  optional: boolean;
 }
 
 export interface ShoppingItem {
   qty: number | null;
   unit: string;
+  item?: string;
   rest: string;
   notes: Record<string, NoteItem[]>;
   note: NoteItem[];
   isStaple: boolean;
   parts?: { [partName: string]: number };
+  optional?: boolean;
+  section?: string;
+  sizeNote?: string;
 }
 
 export interface NoteItem {
@@ -67,6 +75,7 @@ export interface CleanedPrepResult {
 
 export interface ProcessedShoppingList {
   buyItems: ShoppingItem[];
+  optionalItems: ShoppingItem[];
   stapleItems: ShoppingItem[];
 }
 

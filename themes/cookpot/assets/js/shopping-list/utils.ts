@@ -13,9 +13,6 @@ import {
 import {
   StringMatchConfig,
   IngredientMatchConfig,
-  BaseIngredient,
-  ScalableIngredient,
-  FixedIngredient,
   Ingredient,
   ConverterContext,
   ShoppingItem,
@@ -24,9 +21,6 @@ import {
 } from "./types";
 export {
   StringMatchConfig,
-  BaseIngredient,
-  ScalableIngredient,
-  FixedIngredient,
   Ingredient,
   ConverterContext,
   ShoppingItem,
@@ -94,8 +88,13 @@ export function cleanPrepTerms(text: string): CleanedPrepResult {
   const textLower = text.toLowerCase();
   const prep = PREP_KEYWORDS.find((k) => textLower.includes(k)) || "";
 
-  // Remove "for serving" or "plus more for serving" phrases
-  text = text.replace(/,?\s+(?:plus\s+more\s+)?for\s+serving\b/gi, "").trim();
+  // Remove suffixes like "for serving", "to taste", "for garnish", etc.
+  text = text
+    .replace(
+      /,?\s+(?:plus\s+more\s+)?(?:for\s+(?:serving|garnish|topping|dipping|drizzling)|to\s+taste|as\s+needed)\b/gi,
+      "",
+    )
+    .trim();
 
   // 1. Remove suffixes (comma-separated instructions at the end) if they contain prep words
   const parts = text.split(",");

@@ -36,6 +36,8 @@ export const SINGULAR_TO_PLURAL: Record<string, string> = {
   scallion: "scallions",
   lb: "lbs",
   bulb: "bulbs",
+  leaf: "leaves",
+  half: "halves",
 };
 
 export const PLURAL_TO_SINGULAR: Record<string, string> = Object.fromEntries(

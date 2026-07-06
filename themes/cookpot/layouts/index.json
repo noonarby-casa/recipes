@@ -32,7 +32,7 @@
     "tags": {{ $page.Params.tags | default slice | jsonify }},
     {{- $flatIngredients := slice }}
     {{- range $page.Params.ingredients }}
-      {{- if reflect.IsMap . }}
+      {{- if and (reflect.IsMap .) (isset . "category") }}
         {{- range .items }}
           {{- $flatIngredients = $flatIngredients | append . }}
         {{- end }}
@@ -40,7 +40,21 @@
         {{- $flatIngredients = $flatIngredients | append . }}
       {{- end }}
     {{- end }}
-    "ingredients": {{ $flatIngredients | jsonify }},
+    {{- $structuredIngredients := slice }}
+    {{- range $flatIngredients }}
+      {{- $text := "" }}
+      {{- $item := "" }}
+      {{- $optional := false }}
+      {{- if reflect.IsMap . }}
+        {{- $text = .text }}
+        {{- $item = .item | default "" }}
+        {{- $optional = .optional | default false }}
+      {{- else }}
+        {{- $text = . }}
+      {{- end }}
+      {{- $structuredIngredients = $structuredIngredients | append (dict "text" $text "item" $item "optional" $optional) }}
+    {{- end }}
+    "ingredients": {{ $structuredIngredients | jsonify }},
     "summary": {{ $page.Summary | plainify | jsonify }},
     {{- $img := "" }}
     {{- $img90 := "" }}

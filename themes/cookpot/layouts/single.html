@@ -74,34 +74,36 @@
     </div>
 
     <div class="recipe-header-right">
-      <div class="recipe-scale-panel">
+      <div
+        class="recipe-scale-panel"
+        data-base-servings="{{ .Params.servings | default 4 }}"
+      >
         <div class="scale-header">
-          <span class="scale-label">Adjust Servings / Scale</span>
-          <span class="scale-display"
-            ><strong id="scale-display-val">1.0</strong>x</span
-          >
+          <span class="scale-label">Servings</span>
         </div>
         <div class="scale-controls">
-          <input
-            type="range"
-            id="recipe-scale-slider"
-            min="0.25"
-            max="4"
-            step="0.25"
-            value="1.0"
-            aria-label="Scale recipe"
-          />
-          <div class="scale-presets">
-            <button type="button" class="scale-btn" data-val="0.25">
-              0.25x
+          <div class="portion-picker">
+            <button
+              type="button"
+              class="portion-btn dec-btn"
+              id="recipe-dec-btn"
+            >
+              −
             </button>
-            <button type="button" class="scale-btn" data-val="0.5">0.5x</button>
-            <button type="button" class="scale-btn active" data-val="1.0">
-              1x (Original)
+            <span class="portion-val" id="recipe-serving-count"
+              >{{ .Params.servings | default 4 }}</span
+            >
+            <button
+              type="button"
+              class="portion-btn inc-btn"
+              id="recipe-inc-btn"
+            >
+              +
             </button>
-            <button type="button" class="scale-btn" data-val="2.0">2x</button>
-            <button type="button" class="scale-btn" data-val="4.0">4x</button>
           </div>
+          <span class="scale-subtitle"
+            >(Original: {{ .Params.servings | default 4 }})</span
+          >
         </div>
       </div>
 
@@ -153,28 +155,60 @@
       </div>
 
       <div class="recipe-ingredients-list">
-        {{ $isMap := false }}
+        {{ $isCategorized := false }}
         {{ range first 1 .Params.ingredients }}
-          {{ if reflect.IsMap . }}
-            {{ $isMap = true }}
+          {{ if and (reflect.IsMap .) (isset . "category") }}
+            {{ $isCategorized = true }}
           {{ end }}
         {{ end }}
 
-        {{ if $isMap }}
+        {{ if $isCategorized }}
           {{ range .Params.ingredients }}
             {{ if .category }}
               <h3 class="ingredient-category">{{ .category }}</h3>
             {{ end }}
             <ul class="recipe-ingredients-sublist">
               {{ range .items }}
-                <li class="recipe-ingredient">{{ . }}</li>
+                {{ $text := "" }}
+                {{ $item := "" }}
+                {{ $optional := false }}
+                {{ if reflect.IsMap . }}
+                  {{ $text = .text }}
+                  {{ $item = .item | default "" }}
+                  {{ $optional = .optional | default false }}
+                {{ else }}
+                  {{ $text = . }}
+                {{ end }}
+                <li
+                  class="recipe-ingredient"
+                  {{ with $item }}data-item="{{ . }}"{{ end }}
+                  {{ if $optional }}data-optional="true"{{ end }}
+                >
+                  {{ $text }}
+                </li>
               {{ end }}
             </ul>
           {{ end }}
         {{ else }}
           <ul class="recipe-ingredients-sublist">
             {{ range .Params.ingredients }}
-              <li class="recipe-ingredient">{{ . }}</li>
+              {{ $text := "" }}
+              {{ $item := "" }}
+              {{ $optional := false }}
+              {{ if reflect.IsMap . }}
+                {{ $text = .text }}
+                {{ $item = .item | default "" }}
+                {{ $optional = .optional | default false }}
+              {{ else }}
+                {{ $text = . }}
+              {{ end }}
+              <li
+                class="recipe-ingredient"
+                {{ with $item }}data-item="{{ . }}"{{ end }}
+                {{ if $optional }}data-optional="true"{{ end }}
+              >
+                {{ $text }}
+              </li>
             {{ end }}
           </ul>
         {{ end }}
@@ -206,9 +240,18 @@
             </svg>
             <span>Copy List</span>
           </button>
+          <select
+            id="recipe-store-layout-select"
+            class="store-layout-select"
+            aria-label="Store Layout"
+          ></select>
         </div>
         <div class="shopping-section buy-section">
           <ul class="shopping-buy-list"></ul>
+        </div>
+        <div class="shopping-section optional-section" style="display: none;">
+          <h4 class="shopping-section-title">🔸 Optional</h4>
+          <ul class="shopping-optional-list"></ul>
         </div>
         <hr class="shopping-divider" style="display: none;" />
         <div class="shopping-section staples-section">

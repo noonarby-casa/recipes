@@ -1,5 +1,4 @@
 import {
-  cleanPrepTerms,
   getSingularUnit,
   isVolumeUnit,
   getPackExplanation,
@@ -10,84 +9,170 @@ import { convertIngredient } from "./converters";
 import { TO_TEASPOONS } from "./config";
 import { getAdaptiveUnit } from "../units";
 import { getIngredientKey, getShoppingItemKey, findRule } from "./rules";
-import { scaleTextQuantities } from "../scaler";
+import { scaleTextQuantities, parseIngredient } from "../scaler";
+import { getStoreSection } from "./store-sections";
 import {
   Ingredient,
-  ScalableIngredient,
   ShoppingItem,
   NoteItem,
   ProcessedShoppingList,
 } from "./types";
 
+const TO_OUNCES: Record<string, number> = {
+  ounce: 1,
+  oz: 1,
+  ounces: 1,
+  pound: 16,
+  lb: 16,
+  lbs: 16,
+  pounds: 16,
+  gram: 0.03527396,
+  g: 0.03527396,
+  grams: 0.03527396,
+};
+
+function isWeightUnit(unit: string): boolean {
+  if (!unit) return false;
+  const singular = getSingularUnit(unit);
+  return ["ounce", "oz", "pound", "lb", "gram", "g"].includes(singular);
+}
+
+function convertWeight(qty: number, fromUnit: string, toUnit: string): number {
+  const fromSing = getSingularUnit(fromUnit);
+  const toSing = getSingularUnit(toUnit);
+
+  const fromFactor = TO_OUNCES[fromSing];
+  const toFactor = TO_OUNCES[toSing];
+
+  if (fromFactor && toFactor) {
+    return qty * (fromFactor / toFactor);
+  }
+  return qty;
+}
+
 /**
  * Runs the complete processing pipeline on the recipe ingredients. Merges inputs,
- * converts units, aggregates package duplicates, and splits results into buy list and staple list.
+ * converts units, aggregates package duplicates, and splits results into buy list, optional list, and staples list.
  */
 export function processShoppingList(
-  scale: number,
-  elements: NodeListOf<HTMLElement> | HTMLElement[],
+  ingredients: Ingredient[],
 ): ProcessedShoppingList {
-  const ingredients = getIngredients(scale, elements);
-  const shoppingItems = ingredients.map((item) => convertIngredient(item));
+  const aggregatedIngredients = getAggregatedIngredients(ingredients);
+  const shoppingItems = aggregatedIngredients.map((item) =>
+    convertIngredient(item),
+  );
   const mergedShoppingItems = getMergedShoppingItems(shoppingItems);
   const finalizedItems = mergedShoppingItems.map(finalizeItem);
 
-  const stapleItems = finalizedItems.filter((item) => item.isStaple);
-  const buyItems = finalizedItems.filter((item) => !item.isStaple);
+  const sortedItems = sortShoppingItemsByStoreSection(finalizedItems);
 
-  return { buyItems, stapleItems };
+  const stapleItems = sortedItems.filter((item) => item.isStaple);
+  const buyItems = sortedItems.filter(
+    (item) => !item.isStaple && !item.optional,
+  );
+  const optionalItems = sortedItems.filter(
+    (item) => !item.isStaple && item.optional,
+  );
+
+  return { buyItems, optionalItems, stapleItems };
 }
 
 /**
  * Extracts raw ingredients from DOM element attributes or text content, cleans preparation
- * terms, scales their amounts, and aggregates items with matching name/unit.
+ * terms, scales their amounts, and returns structured Ingredient objects.
+ */
+export function extractIngredientsFromDOM(
+  scale: number,
+  elements: NodeListOf<HTMLElement> | HTMLElement[],
+): Ingredient[] {
+  scale = Number.isFinite(scale) ? scale : 1.0;
+  const list: Ingredient[] = [];
+
+  elements.forEach((el) => {
+    const rawText = (el.textContent || "").trim();
+    if (shouldSkipIngredient(rawText)) {
+      return;
+    }
+
+    const baseQty = el.dataset.baseQty ? parseFloat(el.dataset.baseQty) : null;
+    const rawRest = el.dataset.rest || "";
+    const overrideItem = el.dataset.item || "";
+    const overrideOptional = el.dataset.optional === "true";
+    const sizeNote = el.dataset.sizeNote || undefined;
+
+    const parsed = parseIngredient(
+      rawRest || rawText,
+      null,
+      overrideItem,
+      overrideOptional,
+    );
+    if (baseQty !== null && !isNaN(baseQty)) {
+      parsed.quantity = baseQty * scale;
+      // Also scale secondarySegments
+      parsed.secondarySegments = parsed.secondarySegments.map((seg) => ({
+        ...seg,
+        quantity: seg.quantity * scale,
+      }));
+    }
+
+    parsed.rest = scaleTextQuantities(parsed.rest, scale);
+    if (sizeNote) {
+      parsed.sizeNote = sizeNote;
+    }
+
+    list.push(parsed);
+  });
+
+  return list;
+}
+
+/**
+ * Legacy wrapper function for backward compatibility.
  */
 export function getIngredients(
   scale: number,
   elements: NodeListOf<HTMLElement> | HTMLElement[],
 ): Ingredient[] {
-  const parsedMap = new Map<string, ScalableIngredient>();
+  return extractIngredientsFromDOM(scale, elements);
+}
+
+/**
+ * Deduplicates and aggregates ingredients by their cleaned names and units.
+ */
+export function getAggregatedIngredients(
+  ingredients: Ingredient[],
+): Ingredient[] {
+  const parsedMap = new Map<string, Ingredient>();
   const unquantified: Ingredient[] = [];
 
-  scale = Number.isFinite(scale) ? scale : 1.0;
-
-  elements.forEach((el) => {
-    const rawText = (el.textContent || "").trim();
-
-    if (shouldSkipIngredient(rawText)) {
-      return; // skip completely
-    }
-
-    const baseQty = el.dataset.baseQty ? parseFloat(el.dataset.baseQty) : null;
-    const unit = el.dataset.unit || "";
-    const rawRest = el.dataset.rest || "";
-
-    const { rest, prep } = cleanPrepTerms(rawRest || rawText);
-
-    if (baseQty === null || isNaN(baseQty)) {
-      unquantified.push({
-        isScalable: false,
-        rest,
-        prep,
-      });
+  ingredients.forEach((item) => {
+    if (item.quantity === null) {
+      unquantified.push(item);
       return;
     }
 
-    const scaledRest = scaleTextQuantities(rest, scale);
-    const key = getIngredientKey(unit, scaledRest, prep);
-    const scaledQty = baseQty * scale;
+    // Use item field as primary key, fallback to rest
+    const key = getIngredientKey(item.unit, item.item || item.rest, item.prep);
+    const existing = parsedMap.get(key);
+    if (existing) {
+      existing.quantity = (existing.quantity ?? 0) + item.quantity;
+      existing.prep = item.prep || existing.prep;
 
-    const item = parsedMap.get(key);
-    if (item) {
-      item.scaledQty += scaledQty;
-      item.prep = prep || item.prep;
+      // Merge secondary segments
+      item.secondarySegments.forEach((seg) => {
+        const match = existing.secondarySegments.find(
+          (s) => s.unit === seg.unit,
+        );
+        if (match) {
+          match.quantity += seg.quantity;
+        } else {
+          existing.secondarySegments.push({ ...seg });
+        }
+      });
     } else {
       parsedMap.set(key, {
-        isScalable: true,
-        scaledQty,
-        unit,
-        rest: scaledRest,
-        prep,
+        ...item,
+        secondarySegments: item.secondarySegments.map((s) => ({ ...s })),
       });
     }
   });
@@ -97,13 +182,41 @@ export function getIngredients(
 
 /**
  * Deduplicates and aggregates converted shopping items by their package keys,
- * merging quantities and notes for duplicates.
+ * merging quantities and notes for duplicates, with weight normalization.
  */
 export function getMergedShoppingItems(items: ShoppingItem[]): ShoppingItem[] {
+  // Normalize weight units to oz (ounces) before merging to allow cross-unit merging
+  const normalizedItems = items.map((item) => {
+    if (item.qty !== null && item.unit && isWeightUnit(item.unit)) {
+      const convertedQty = convertWeight(item.qty, item.unit, "oz");
+      const normalizedNotes: Record<string, NoteItem[]> = {};
+      for (const [key, notesArr] of Object.entries(item.notes)) {
+        normalizedNotes[key] = notesArr.map((n) => {
+          if (n.qty !== null && n.unit && isWeightUnit(n.unit)) {
+            return {
+              ...n,
+              qty: convertWeight(n.qty, n.unit, "oz"),
+              unit: "oz",
+            };
+          }
+          return n;
+        });
+      }
+      return {
+        ...item,
+        qty: convertedQty,
+        unit: "oz",
+        notes: normalizedNotes,
+      };
+    }
+    return item;
+  });
+
   const mergedMap = new Map<string, ShoppingItem>();
 
-  items.forEach((item) => {
-    const key = getShoppingItemKey(item.unit, item.rest);
+  normalizedItems.forEach((item) => {
+    // Descriptor Collisions: Use item field as primary merge key
+    const key = getShoppingItemKey(item.unit, item.item || item.rest);
 
     const existing = mergedMap.get(key);
     if (existing) {
@@ -168,16 +281,19 @@ export function mergeShoppingItems(
     note: [],
     isStaple,
     parts,
+    optional: item1.optional || item2.optional,
+    item: item1.item || item2.item,
   };
 }
 
 /**
- * Finalizes a shopping item by re-evaluating staple status and flattening notes for rendering.
+ * Finalizes a shopping item by re-evaluating staple status, flattening notes,
+ * converting weights back to lb if >= 16 oz, and assigning store section.
  */
 function finalizeItem(item: ShoppingItem): ShoppingItem {
   // 1. Re-evaluate staple status using rules
   let isStaple = item.isStaple;
-  const rule = findRule(item.rest, "", item.unit);
+  const rule = findRule(item.item || item.rest, "", item.unit);
   if (rule && typeof rule.isStaple === "function") {
     isStaple = rule.isStaple(item.qty, item.unit);
   }
@@ -185,14 +301,29 @@ function finalizeItem(item: ShoppingItem): ShoppingItem {
   // 2. Flatten notes
   const note = Object.values(item.notes).flatMap(normalizeNotesGroup);
 
+  let finalQty = item.qty;
+  let finalUnit = item.unit;
+
+  // Weight normalization: if unit is oz and qty >= 16, convert to lb
+  if (finalUnit === "oz" && finalQty !== null && finalQty >= 16) {
+    finalQty = finalQty / 16;
+    finalUnit = getAdaptiveUnit(finalQty, "lb");
+  }
+
+  // 3. Assign store section
+  const section = getStoreSection(item.rest, item.item);
+
   return {
-    qty: item.qty,
-    unit: item.unit,
+    qty: finalQty,
+    unit: finalUnit,
     rest: item.rest,
     notes: item.notes,
     note,
     isStaple,
     parts: item.parts,
+    optional: item.optional,
+    item: item.item,
+    section: section.id,
   };
 }
 
@@ -262,4 +393,20 @@ function getWholeQty(item: ShoppingItem): number {
   const parts = Object.values(item.parts || {});
   const maxPart = Math.max(...parts, 0);
   return Math.max(0, (item.qty ?? 0) - maxPart);
+}
+
+/**
+ * Sorts shopping items by the order of their store section.
+ */
+function sortShoppingItemsByStoreSection(
+  items: ShoppingItem[],
+): ShoppingItem[] {
+  return [...items].sort((a, b) => {
+    const secA = getStoreSection(a.rest, a.item);
+    const secB = getStoreSection(b.rest, b.item);
+    if (secA.order !== secB.order) {
+      return secA.order - secB.order;
+    }
+    return (a.item || a.rest).localeCompare(b.item || b.rest);
+  });
 }
