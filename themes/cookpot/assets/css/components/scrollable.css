@@ -1,0 +1,76 @@
+/* Reusable Scrollable Area Component */
+.scrollable-area {
+  overflow-y: auto;
+  transition: box-shadow 0.3s ease;
+  box-shadow:
+    inset 0 0 0 transparent,
+    inset 0 0 0 transparent;
+}
+
+.scrollable-area:focus-visible {
+  outline: 2px solid var(--noonblue);
+  outline-offset: -2px;
+}
+
+/* For browsers that support standard `scrollbar-*` properties (e.g., Firefox) */
+@supports (scrollbar-color: auto) {
+  .scrollable-area {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+}
+
+/* Otherwise, use `::-webkit-scrollbar-*` pseudo-elements for custom styling */
+@supports selector(::-webkit-scrollbar) {
+  .scrollable-area::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollable-area::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  .scrollable-area::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollable-area::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
+  }
+
+  .scrollable-area::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+}
+
+/* Premium Scroll Shadow Indicators */
+.scrollable-area.can-scroll-up {
+  box-shadow: inset 0 10px 10px -10px rgba(0, 0, 0, 0.15);
+}
+
+.scrollable-area.can-scroll-down {
+  box-shadow: inset 0 -10px 10px -10px rgba(0, 0, 0, 0.15);
+}
+
+.scrollable-area.can-scroll-up.can-scroll-down {
+  box-shadow:
+    inset 0 10px 10px -10px rgba(0, 0, 0, 0.15),
+    inset 0 -10px 10px -10px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark mode adjustment for premium scroll shadows */
+html.dark-mode .scrollable-area.can-scroll-up {
+  box-shadow: inset 0 10px 10px -10px rgba(0, 0, 0, 0.4);
+}
+
+html.dark-mode .scrollable-area.can-scroll-down {
+  box-shadow: inset 0 -10px 10px -10px rgba(0, 0, 0, 0.4);
+}
+
+html.dark-mode .scrollable-area.can-scroll-up.can-scroll-down {
+  box-shadow:
+    inset 0 10px 10px -10px rgba(0, 0, 0, 0.4),
+    inset 0 -10px 10px -10px rgba(0, 0, 0, 0.4);
+}

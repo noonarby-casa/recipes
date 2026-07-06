@@ -664,27 +664,6 @@
     border-right: 1px solid var(--border-subtle);
   }
 
-  .ingredients-column::-webkit-scrollbar,
-  .instructions-column::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .ingredients-column::-webkit-scrollbar-track,
-  .instructions-column::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .ingredients-column::-webkit-scrollbar-thumb,
-  .instructions-column::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
-    border-radius: 3px;
-  }
-
-  .ingredients-column::-webkit-scrollbar-thumb:hover,
-  .instructions-column::-webkit-scrollbar-thumb:hover {
-    background: var(--scrollbar-thumb-hover);
-  }
-
   .ingredients-column h2,
   .instructions-column h2 {
     margin-top: 0;

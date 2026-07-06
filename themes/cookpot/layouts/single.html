@@ -131,7 +131,12 @@
   </div>
 
   <div class="recipe-container">
-    <div class="ingredients-column">
+    <div
+      class="ingredients-column scrollable-area"
+      tabindex="0"
+      role="region"
+      aria-label="Ingredients List"
+    >
       <div class="ingredients-title-wrapper">
         <h2>Ingredients</h2>
         <div class="shopping-view-toggle toggle-group">
@@ -259,7 +264,12 @@
         </div>
       </div>
     </div>
-    <div class="instructions-column">
+    <div
+      class="instructions-column scrollable-area"
+      tabindex="0"
+      role="region"
+      aria-label="Cooking Instructions"
+    >
       {{ .Content }}
     </div>
   </div>

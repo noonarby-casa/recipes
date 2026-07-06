@@ -37,8 +37,8 @@
   --font-btn-text: #555555;
   --font-btn-hover: #000000;
   --slider-bg: #e2e8f0;
-  --scrollbar-thumb: rgba(0, 0, 0, 0.08);
-  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.45);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.62);
   --recipe-title-bg: #f8f9fa;
   --search-placeholder: #999999;
 }
@@ -68,8 +68,8 @@ html.dark-mode {
   --font-btn-text: #a0a0a0;
   --font-btn-hover: #ffffff;
   --slider-bg: #3a3a3a;
-  --scrollbar-thumb: rgba(255, 255, 255, 0.15);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.38);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.55);
   --recipe-title-bg: #1e1e1e;
   --search-placeholder: #666666;
 }

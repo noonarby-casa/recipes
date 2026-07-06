@@ -6,6 +6,7 @@ import { initRandomRecipe } from "./random";
 import { initShoppingList } from "./shopping-list";
 import { initDarkMode } from "./darkmode";
 import { initMealPlanner, initRecipePageAddToPlan } from "./meal-plan";
+import { initScrollable } from "./components/scrollable";
 
 document.addEventListener("DOMContentLoaded", () => {
   initDarkMode();
@@ -17,4 +18,5 @@ document.addEventListener("DOMContentLoaded", () => {
   initShoppingList();
   initMealPlanner();
   initRecipePageAddToPlan();
+  initScrollable();
 });

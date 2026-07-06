@@ -898,28 +898,6 @@
     padding-right: 0.5rem;
   }
 
-  /* Thin custom scrollbars */
-  .planner-column::-webkit-scrollbar,
-  .ingredients-column::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .planner-column::-webkit-scrollbar-track,
-  .ingredients-column::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .planner-column::-webkit-scrollbar-thumb,
-  .ingredients-column::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
-    border-radius: 3px;
-  }
-
-  .planner-column::-webkit-scrollbar-thumb:hover,
-  .ingredients-column::-webkit-scrollbar-thumb:hover {
-    background: var(--scrollbar-thumb-hover);
-  }
-
   .ingredients-column {
     height: 100%;
     overflow-y: auto;
