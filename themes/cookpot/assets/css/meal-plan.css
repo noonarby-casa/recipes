@@ -1265,7 +1265,7 @@ a.planned-recipe-item {
     page-break-before: always;
   }
 
-  .ingredients-title-wrapper h2 {
+  .column-titlebar h2 {
     font-size: 1.5rem !important;
     color: #000000 !important;
     border-bottom: 2px solid #000000 !important;

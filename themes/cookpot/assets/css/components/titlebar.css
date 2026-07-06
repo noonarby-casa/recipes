@@ -1,0 +1,14 @@
+/* Column/Section Titlebar Component */
+.column-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Trim bottom/top margin on headings to keep titlebar layout clean and vertically consistent */
+.column-titlebar h2 {
+  margin: 0 !important;
+}

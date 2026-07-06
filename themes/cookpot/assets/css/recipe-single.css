@@ -74,20 +74,6 @@
   transform: scale(1.03);
 }
 
-/* Base styles for instructions font size controls */
-.instructions-title-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.instructions-title-wrapper h2 {
-  margin: 0;
-}
-
 .font-btn {
   flex: 1;
 }
