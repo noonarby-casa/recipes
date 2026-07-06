@@ -398,6 +398,15 @@
   border-color: var(--noonblue-border-light);
 }
 
+a.planned-recipe-item {
+  text-decoration: none;
+  color: inherit;
+}
+
+.planned-recipe-item:hover .recipe-card-title {
+  color: var(--noonblue);
+}
+
 .recipe-card-media-wrapper {
   position: relative;
   width: 100%;

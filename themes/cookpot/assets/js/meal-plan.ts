@@ -1655,19 +1655,17 @@ function renderUI(highlightInstanceId?: string): void {
             const stepper = `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? "s" : ""}</span>`;
 
             return `
-              <div class="planned-recipe-item" data-instance-id="${dm.instanceId}">
+              <a href="${dm.permalink}?from=plan&servings=${portions}" class="planned-recipe-item" data-instance-id="${dm.instanceId}">
                 <div class="recipe-card-media-wrapper">
                   <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
                 </div>
                 <div class="recipe-card-body">
-                  <h4 class="recipe-card-title">
-                    <a href="${dm.permalink}?from=plan&servings=${portions}">${title}</a>
-                  </h4>
+                  <h4 class="recipe-card-title">${title}</h4>
                 </div>
                 <div class="recipe-card-footer">
                   ${stepper}
                 </div>
-              </div>
+              </a>
             `;
           })
           .join("");
@@ -1726,9 +1724,13 @@ function renderUI(highlightInstanceId?: string): void {
             : `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? "s" : ""}</span>`;
 
           const draggableAttr = editMode ? 'draggable="true"' : "";
+          const cardTag = editMode ? "div" : "a";
+          const hrefAttr = editMode
+            ? ""
+            : ` href="${dm.permalink}?from=plan&servings=${portions}"`;
 
           return `
-            <div class="planned-recipe-item ${highlightClass}" data-instance-id="${dm.instanceId}" data-day="supplemental">
+            <${cardTag}${hrefAttr} class="planned-recipe-item ${highlightClass}" data-instance-id="${dm.instanceId}" data-day="supplemental">
               <div class="recipe-card-media-wrapper" ${draggableAttr}>
                 <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
                 ${handle}
@@ -1736,14 +1738,12 @@ function renderUI(highlightInstanceId?: string): void {
                 ${deleteBtn}
               </div>
               <div class="recipe-card-body">
-                <h4 class="recipe-card-title">
-                  ${editMode ? title : `<a href="${dm.permalink}?from=plan&servings=${portions}">${title}</a>`}
-                </h4>
+                <h4 class="recipe-card-title">${title}</h4>
               </div>
               <div class="recipe-card-footer">
                 ${stepper}
               </div>
-            </div>
+            </${cardTag}>
           `;
         })
         .join("");
