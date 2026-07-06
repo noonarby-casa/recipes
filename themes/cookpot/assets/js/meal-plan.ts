@@ -553,8 +553,21 @@ function setupEventListeners(): void {
   }
 
   const btnCopyList = document.getElementById("btn-copy-combined-list");
-  if (btnCopyList)
-    btnCopyList.addEventListener("click", copyShoppingListToClipboard);
+  if (btnCopyList) {
+    if (btnCopyList.tagName === "SELECT") {
+      btnCopyList.addEventListener("change", (e) => {
+        const select = e.currentTarget as HTMLSelectElement;
+        const format = select.value;
+        if (format === "markdown" || format === "google-keep") {
+          copyShoppingListToClipboard(format as "markdown" | "google-keep");
+        }
+      });
+    } else {
+      btnCopyList.addEventListener("click", () =>
+        copyShoppingListToClipboard("markdown"),
+      );
+    }
+  }
 
   const btnCopyMenu = document.getElementById("btn-copy-menu-text");
   if (btnCopyMenu)
@@ -2464,7 +2477,9 @@ function copyMenuTextToClipboard(): void {
 /**
  * Formats and copies compiled ingredients list to clipboard
  */
-function copyShoppingListToClipboard(): void {
+function copyShoppingListToClipboard(
+  format: "markdown" | "google-keep" = "markdown",
+): void {
   const chkOmit = document.getElementById(
     "chk-omit-completed",
   ) as HTMLInputElement;
@@ -2505,93 +2520,30 @@ function copyShoppingListToClipboard(): void {
   const { buyItems, optionalItems, stapleItems } =
     processShoppingList(ingredients);
 
-  let clipboardText = "## Combined Shopping List\n";
+  let clipboardText = "";
 
-  // Need to Buy Block (grouped by store sections)
-  const filteredBuy = buyItems.filter((item) => {
-    const key = getIngredientKey(false, item.unit, item.rest);
-    const isChecked = checkedIngredients.has(key);
-    return !(omitChecked && isChecked);
-  });
-
-  if (filteredBuy.length > 0) {
-    clipboardText += "\n### Need to Buy\n";
-    let currentSectionId = "";
-    filteredBuy.forEach((item) => {
-      const section = getStoreSection(item.rest, item.item);
-      if (section.id !== currentSectionId) {
-        currentSectionId = section.id;
-        clipboardText += `\n[ ${section.name} ]\n`;
-      }
-
+  if (format === "google-keep") {
+    // Google Keep format: Sorted order, no store section headings or titles, only items, each on a single line
+    const filteredBuy = buyItems.filter((item) => {
       const key = getIngredientKey(false, item.unit, item.rest);
       const isChecked = checkedIngredients.has(key);
-      const mark = isChecked ? "[x]" : "[ ]";
-
-      const qtyStr =
-        item.qty !== null && item.qty > 0
-          ? `${formatCookingNumber(item.qty)} `
-          : "";
-      const unitStr = item.unit ? `${item.unit} ` : "";
-      const notesStr =
-        item.note && item.note.length > 0
-          ? ` (${formatNotesArray(item.note, !item.isStaple)})`
-          : "";
-
-      const displayRest =
-        item.rest +
-        (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
-
-      clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+      return !(omitChecked && isChecked);
     });
-  }
 
-  // Optional Block
-  const filteredOptional = optionalItems.filter((item) => {
-    const key = getIngredientKey(false, item.unit, item.rest);
-    const isChecked = checkedIngredients.has(key);
-    return !(omitChecked && isChecked);
-  });
-
-  if (filteredOptional.length > 0) {
-    clipboardText += "\n### Optional\n";
-    filteredOptional.forEach((item) => {
+    const filteredOptional = optionalItems.filter((item) => {
       const key = getIngredientKey(false, item.unit, item.rest);
       const isChecked = checkedIngredients.has(key);
-      const mark = isChecked ? "[x]" : "[ ]";
-
-      const qtyStr =
-        item.qty !== null && item.qty > 0
-          ? `${formatCookingNumber(item.qty)} `
-          : "";
-      const unitStr = item.unit ? `${item.unit} ` : "";
-      const notesStr =
-        item.note && item.note.length > 0
-          ? ` (${formatNotesArray(item.note, !item.isStaple)})`
-          : "";
-
-      const displayRest =
-        item.rest +
-        (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
-
-      clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+      return !(omitChecked && isChecked);
     });
-  }
 
-  // Staples Block
-  const filteredStaples = stapleItems.filter((item) => {
-    const key = getIngredientKey(true, item.unit, item.rest);
-    const isChecked = checkedIngredients.has(key);
-    return !(omitChecked && isChecked);
-  });
-
-  if (filteredStaples.length > 0) {
-    clipboardText += "\n### Pantry Staples\n";
-    filteredStaples.forEach((item) => {
+    const filteredStaples = stapleItems.filter((item) => {
       const key = getIngredientKey(true, item.unit, item.rest);
       const isChecked = checkedIngredients.has(key);
-      const mark = isChecked ? "[x]" : "[ ]";
+      return !(omitChecked && isChecked);
+    });
 
+    const allItems = [...filteredBuy, ...filteredOptional, ...filteredStaples];
+    const lines = allItems.map((item) => {
       const qtyStr =
         item.qty !== null && item.qty > 0
           ? `${formatCookingNumber(item.qty)} `
@@ -2606,8 +2558,116 @@ function copyShoppingListToClipboard(): void {
         item.rest +
         (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
 
-      clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+      return `${qtyStr}${unitStr}${displayRest}${notesStr}`;
     });
+
+    clipboardText = lines.join("\n");
+  } else {
+    // Markdown format
+    clipboardText = "## Combined Shopping List\n";
+
+    // Need to Buy Block (grouped by store sections)
+    const filteredBuy = buyItems.filter((item) => {
+      const key = getIngredientKey(false, item.unit, item.rest);
+      const isChecked = checkedIngredients.has(key);
+      return !(omitChecked && isChecked);
+    });
+
+    if (filteredBuy.length > 0) {
+      clipboardText += "\n### Need to Buy\n";
+      let currentSectionId = "";
+      filteredBuy.forEach((item) => {
+        const section = getStoreSection(item.rest, item.item);
+        if (section.id !== currentSectionId) {
+          currentSectionId = section.id;
+          clipboardText += `\n[ ${section.name} ]\n`;
+        }
+
+        const key = getIngredientKey(false, item.unit, item.rest);
+        const isChecked = checkedIngredients.has(key);
+        const mark = isChecked ? "[x]" : "[ ]";
+
+        const qtyStr =
+          item.qty !== null && item.qty > 0
+            ? `${formatCookingNumber(item.qty)} `
+            : "";
+        const unitStr = item.unit ? `${item.unit} ` : "";
+        const notesStr =
+          item.note && item.note.length > 0
+            ? ` (${formatNotesArray(item.note, !item.isStaple)})`
+            : "";
+
+        const displayRest =
+          item.rest +
+          (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
+        clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+      });
+    }
+
+    // Optional Block
+    const filteredOptional = optionalItems.filter((item) => {
+      const key = getIngredientKey(false, item.unit, item.rest);
+      const isChecked = checkedIngredients.has(key);
+      return !(omitChecked && isChecked);
+    });
+
+    if (filteredOptional.length > 0) {
+      clipboardText += "\n### Optional\n";
+      filteredOptional.forEach((item) => {
+        const key = getIngredientKey(false, item.unit, item.rest);
+        const isChecked = checkedIngredients.has(key);
+        const mark = isChecked ? "[x]" : "[ ]";
+
+        const qtyStr =
+          item.qty !== null && item.qty > 0
+            ? `${formatCookingNumber(item.qty)} `
+            : "";
+        const unitStr = item.unit ? `${item.unit} ` : "";
+        const notesStr =
+          item.note && item.note.length > 0
+            ? ` (${formatNotesArray(item.note, !item.isStaple)})`
+            : "";
+
+        const displayRest =
+          item.rest +
+          (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
+        clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+      });
+    }
+
+    // Staples Block
+    const filteredStaples = stapleItems.filter((item) => {
+      const key = getIngredientKey(true, item.unit, item.rest);
+      const isChecked = checkedIngredients.has(key);
+      return !(omitChecked && isChecked);
+    });
+
+    if (filteredStaples.length > 0) {
+      clipboardText += "\n### Pantry Staples\n";
+      filteredStaples.forEach((item) => {
+        const key = getIngredientKey(true, item.unit, item.rest);
+        const isChecked = checkedIngredients.has(key);
+        const mark = isChecked ? "[x]" : "[ ]";
+
+        const qtyStr =
+          item.qty !== null && item.qty > 0
+            ? `${formatCookingNumber(item.qty)} `
+            : "";
+        const unitStr = item.unit ? `${item.unit} ` : "";
+        const notesStr =
+          item.note && item.note.length > 0
+            ? ` (${formatNotesArray(item.note, !item.isStaple)})`
+            : "";
+
+        const displayRest =
+          item.rest +
+          (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+
+        clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+      });
+    }
   }
 
   navigator.clipboard
@@ -2615,13 +2675,26 @@ function copyShoppingListToClipboard(): void {
     .then(() => {
       const copyBtn = document.getElementById("btn-copy-combined-list");
       if (copyBtn) {
-        const textSpan = copyBtn.querySelector("span");
-        if (textSpan) {
-          const originalText = textSpan.textContent;
-          textSpan.textContent = "Copied!";
+        if (copyBtn.tagName === "SELECT") {
+          const copySelect = copyBtn as HTMLSelectElement;
+          const placeholderOpt = copySelect.options[0];
+          const originalText = placeholderOpt.textContent || "Copy List";
+          placeholderOpt.textContent = "Copied!";
+          copySelect.value = "";
+          copySelect.classList.add("success");
           setTimeout(() => {
-            textSpan.textContent = originalText;
+            placeholderOpt.textContent = originalText;
+            copySelect.classList.remove("success");
           }, 2000);
+        } else {
+          const textSpan = copyBtn.querySelector("span");
+          if (textSpan) {
+            const originalText = textSpan.textContent;
+            textSpan.textContent = "Copied!";
+            setTimeout(() => {
+              textSpan.textContent = originalText;
+            }, 2000);
+          }
         }
       }
     })
