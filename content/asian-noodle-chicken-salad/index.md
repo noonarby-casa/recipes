@@ -1,34 +1,15 @@
 +++
-title = 'Asian Noodle Chicken Salad'
+title = "Asian Noodle Chicken Salad"
 date = 2026-07-02T15:45:56-04:00
-slug = 'asian-noodle-chicken-salad'
-shortId = 'anc'
+slug = "asian-noodle-chicken-salad"
+shortId = "anc"
+servings = 4
 times = [
-  { step = 'prep', time = '20 min' },
-  { step = 'cook', time = '5 min' },
-  { step = 'chill', time = '2 hours' }
+  { time = "20 min", step = "prep" },
+  { time = "5 min", step = "cook" },
+  { time = "2 hours", step = "chill" }
 ]
-recipeSource = 'Rickarbys'
-ingredients = [
-    { category = "Toppings", items = [
-      { text = "2 tablespoons vegetable oil", item = "vegetable oil" },
-      { text = "1/4 cup sliced almonds", item = "almond" },
-      { text = "1/4 cup sesame seeds", item = "sesame seed" }
-    ] },
-    { category = "Salad", items = [
-      { text = "8 green onions, finely sliced", item = "green onion" },
-      { text = "1 head cabbage, thinly sliced or chopped", item = "cabbage" },
-      { text = "2 packages (3 ounces each) ramen noodles, broken up", item = "ramen noodles, broken up" },
-      { text = "2 cups cooked chicken (or up to 3), chopped or shredded", item = "chicken" }
-    ] },
-    { category = "Dressing", items = [
-      { text = "1/4 cup sugar", item = "sugar" },
-      { text = "1 teaspoon black pepper", item = "black pepper" },
-      { text = "1 teaspoon salt", item = "salt" },
-      { text = "1 cup vegetable oil", item = "vegetable oil" },
-      { text = "6 tablespoons rice vinegar", item = "rice vinegar" }
-    ] }
-  ]
+recipeSource = "Rickarbys"
 tags = [
   "asian",
   "chicken",
@@ -38,7 +19,26 @@ tags = [
   "lunch",
   "weeknight"
 ]
-servings = 4
+ingredients = [
+  { category = "Toppings", items = [
+    { qty = 2, unit = "tablespoon", item = "vegetable oil" },
+    { qty = 0.25, unit = "cup", item = "almond", prep = "sliced" },
+    { qty = 0.25, unit = "cup", item = "sesame seed" }
+  ] },
+  { category = "Salad", items = [
+    { qty = 8, item = "green onion", prep = "finely sliced" },
+    { qty = 1, unit = "head", item = "cabbage", prep = "thinly sliced or chopped" },
+    { qty = 2, unit = "package", item = "ramen noodles", prep = "broken up", alt = { qty = 3, unit = "ounce", each = true } },
+    { qty = 2, unit = "cup", item = "chicken", desc = "cooked", prep = "chopped or shredded", alt = { qty = 3, unit = "cup" } }
+  ] },
+  { category = "Dressing", items = [
+    { qty = 0.25, unit = "cup", item = "sugar" },
+    { qty = 1, unit = "teaspoon", item = "black pepper" },
+    { qty = 1, unit = "teaspoon", item = "salt" },
+    { qty = 1, unit = "cup", item = "vegetable oil" },
+    { qty = 6, unit = "tablespoon", item = "rice vinegar" }
+  ] }
+]
 +++
 
 ## Instructions

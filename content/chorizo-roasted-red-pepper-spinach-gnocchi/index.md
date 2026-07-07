@@ -1,20 +1,13 @@
 +++
-title = 'Chorizo Roasted Red Pepper Spinach Gnocchi'
+title = "Chorizo Roasted Red Pepper Spinach Gnocchi"
 date = 2025-05-06T11:12:26-04:00
-slug = 'chorizo-gnocchi'
-shortId = 'crg'
+slug = "chorizo-gnocchi"
+shortId = "crg"
+servings = 4
 times = [
-  { step = 'cook', time = '20 min' }
+  { time = "20 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "16 ounces potato gnocchi", item = "potato gnocchi" },
-    { text = "1/2 pound fresh chorizo, casing removed", item = "chorizo, casing removed" },
-    { text = "3/4 cup chopped jarred roasted red peppers", item = "jarred roasted red pepper" },
-    { text = "1 small onion, chopped", item = "onion" },
-    { text = "1/2 teaspoon kosher salt", item = "kosher salt" },
-    { text = "3 cups loosely packed baby spinach", item = "loosely packed baby spinach" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "chorizo",
   "dinner",
@@ -24,7 +17,16 @@ tags = [
   "sausage",
   "weeknight"
 ]
-servings = 4
+ingredients = [
+  { items = [
+    { qty = 16, unit = "ounce", item = "potato gnocchi" },
+    { qty = 0.5, unit = "pound", item = "chorizo", desc = "fresh", prep = "casing removed" },
+    { qty = 0.75, unit = "cup", item = "jarred roasted red pepper", prep = "chopped" },
+    { qty = 1, unit = "small", item = "onion", prep = "chopped" },
+    { qty = 0.5, unit = "teaspoon", item = "kosher salt" },
+    { qty = 3, unit = "cup", item = "baby spinach", prep = "loosely packed" }
+  ] }
+]
 +++
 
 ## Instructions

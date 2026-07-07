@@ -1,25 +1,27 @@
 +++
-title = 'Easy French Toast'
+title = "Easy French Toast"
 date = 2026-07-03T21:28:45-04:00
-slug = 'easy-french-toast'
-shortId = 'eft'
+slug = "easy-french-toast"
+shortId = "eft"
 servings = 6
 times = [
-  { step = 'prep', time = '5 min' },
-  { step = 'cook', time = '10 min' }
+  { time = "5 min", step = "prep" },
+  { time = "10 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "3 large eggs", item = "egg" },
-    { text = "3 teaspoons vanilla extract", item = "vanilla extract" },
-    { text = "1 1/2 teaspoons ground cinnamon", item = "cinnamon" },
-    { text = "3/4 cup milk", item = "milk" },
-    { text = "1 loaf brioche, sliced into 12 slices", item = "brioche" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "breakfast",
   "easy",
   "vegetarian"
+]
+ingredients = [
+  { items = [
+    { qty = 3, unit = "large", item = "egg" },
+    { qty = 3, unit = "teaspoon", item = "vanilla extract" },
+    { qty = 1.5, unit = "teaspoon", item = "cinnamon", desc = "ground" },
+    { qty = 0.75, unit = "cup", item = "milk" },
+    { qty = 1, unit = "loaf", item = "brioche", prep = "sliced into 12 slices" }
+  ] }
 ]
 +++
 

@@ -1,23 +1,14 @@
 +++
-title = 'Beet Pink Macaroni Cheese'
+title = "Beet Pink Macaroni Cheese"
 date = 2026-06-23T20:42:44-04:00
-slug = 'beet-pink-macaroni-cheese'
-shortId = 'bpm'
+slug = "beet-pink-macaroni-cheese"
+shortId = "bpm"
+servings = 4
 times = [
-  { step = 'prep', time = '15 min' },
-  { step = 'cook', time = '45 min' }
+  { time = "15 min", step = "prep" },
+  { time = "45 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "1 pound beets (red or orange)", item = "beet" },
-    { text = "1 head garlic", item = "garlic" },
-    { text = "1 lemon (for juice and zest)", item = "lemon" },
-    { text = "3 ounces parmesan, grated", item = "parmesan" },
-    { text = "Diamond Crystal kosher salt", item = "diamond crystal kosher salt" },
-    { text = "16 ounces short rigatoni pasta", item = "short rigatoni pasta" },
-    { text = "1/4 cup extra-virgin olive oil", item = "olive oil" },
-    { text = "1 teaspoon dried basil", item = "basil" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "beets",
   "dinner",
@@ -26,7 +17,18 @@ tags = [
   "vegetarian",
   "weeknight"
 ]
-servings = 4
+ingredients = [
+  { items = [
+    { qty = 1, unit = "pound", item = "beet", prep = "red or orange" },
+    { qty = 1, unit = "head", item = "garlic" },
+    { qty = 1, item = "lemon", prep = "for juice and zest" },
+    { qty = 3, unit = "ounce", item = "parmesan", prep = "grated" },
+    { item = "Diamond Crystal kosher salt" },
+    { qty = 16, unit = "ounce", item = "rigatoni pasta", desc = "short" },
+    { qty = 0.25, unit = "cup", item = "olive oil", desc = "extra-virgin" },
+    { qty = 1, unit = "teaspoon", item = "basil", desc = "dried" }
+  ] }
+]
 +++
 
 ## Instructions

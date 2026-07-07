@@ -1,22 +1,24 @@
 +++
-title = 'Pigs in a Blanket'
+title = "Pigs in a Blanket"
 date = 2026-07-04T21:04:31-04:00
-slug = 'pigs-in-a-blanket'
-shortId = 'pib'
+slug = "pigs-in-a-blanket"
+shortId = "pib"
 servings = 24
 times = [
-  { step = 'prep', time = '5 min' },
-  { step = 'cook', time = '15 min' }
+  { time = "5 min", step = "prep" },
+  { time = "15 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "1 can Pillsbury crescent rolls", item = "pillsbury crescent roll" },
-    { text = "1 package cocktail weenies", item = "cocktail weenie" },
-    { text = "Ketchup for serving", item = "ketchup" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "snack",
   "appetizer"
+]
+ingredients = [
+  { items = [
+    { qty = 1, unit = "can", item = "Pillsbury crescent roll" },
+    { qty = 1, unit = "package", item = "cocktail weenie" },
+    { item = "ketchup", prep = "for serving" }
+  ] }
 ]
 +++
 

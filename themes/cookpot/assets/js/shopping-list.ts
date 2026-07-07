@@ -4,7 +4,7 @@ import {
   extractIngredientsFromDOM,
 } from "./shopping-list/pipeline";
 import { ShoppingItem } from "./shopping-list/types";
-import { formatNotesArray } from "./shopping-list/utils";
+// removed formatNotesArray
 import { initToggleGroup } from "./components/toggle";
 import { getStoreSection } from "./shopping-list/store-sections";
 
@@ -243,16 +243,25 @@ export function initShoppingList(): void {
         : "";
 
     // Show sizeNote if available (Edge Case 1)
-    const displayRest =
-      item.rest +
-      (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+    const displayRest = item.rest;
 
-    const noteHtml =
-      item.note && item.note.length > 0
-        ? `<div class="shopping-item-details">
-             <span class="shopping-item-note">${formatNotesArray(item.note, !item.isStaple)}</span>
+    const notesArr = item.notes || [];
+    const recipes = Array.from(
+      new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+    );
+    const alts = Array.from(
+      new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
+    );
+    const notesStrs = [];
+    if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
+    if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
+    const notesStr = notesStrs.length > 0 ? notesStrs.join("; ") : "";
+
+    const noteHtml = notesStr
+      ? `<div class="shopping-item-details">
+             <span class="shopping-item-note">${notesStr}</span>
            </div>`
-        : "";
+      : "";
 
     targetList.insertAdjacentHTML(
       "beforeend",

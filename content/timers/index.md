@@ -1,8 +1,8 @@
 +++
 title = "Timer Test Suite"
-type = "timers"
-layout = "timers"
 slug = "timers"
+layout = "timers"
+type = "timers"
 +++
 
 <div class="timers-grid">

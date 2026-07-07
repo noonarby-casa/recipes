@@ -1,48 +1,38 @@
 +++
-title = 'Bang Bang Chicken'
+title = "Bang Bang Chicken"
 date = 2026-06-22T05:53:17-04:00
-slug = 'bang-bang-chicken'
-shortId = 'bbc'
+slug = "bang-bang-chicken"
+shortId = "bbc"
 times = [
-  { step = 'cook', time = '30 min' }
+  { time = "30 min", step = "cook" }
 ]
-recipeSource = 'Carly Rickarby'
+recipeSource = "Carly Rickarby"
 ingredients = [
-    { category = "Bang Bang Sauce", items = [
-      { text = "1 cup whole-egg mayonnaise", item = "whole-egg mayonnaise" },
-      { text = "1/4 cup sweet chilli sauce", item = "chilli sauce" },
-      { text = "1 tablespoon sriracha or hot chilli sauce (optional)", item = "sriracha or hot chilli sauce", optional = true },
-      { text = "1 tablespoon honey", item = "honey" },
-      { text = "1 tablespoon fresh lime juice", item = "lime juice" }
-    ] },
-    { category = "Chicken & Marinade", items = [
-      { text = "1 1/3 pounds boneless chicken thighs, skin on or off", item = "boneless chicken thighs, skin on or off" },
-      { text = "1 teaspoon sweet paprika", item = "paprika" },
-      { text = "1 teaspoon onion powder", item = "onion powder" },
-      { text = "1/4 teaspoon freshly cracked black pepper", item = "freshly cracked black pepper" },
-      { text = "1 tablespoon tamari or regular soy sauce", item = "tamari or regular soy sauce" },
-      { text = "1 tablespoon brown sugar", item = "brown sugar" },
-      { text = "1 tablespoon olive oil", item = "olive oil" }
-    ] },
-    { category = "Serving & Garnish", items = [
-      { text = "1 spring onion (scallion), sliced", item = "spring onion" },
-      { text = "steamed rice, for serving", item = "steamed rice" },
-      { text = "75 grams shredded red cabbage", item = "red cabbage" },
-      { text = "2 carrots, grated or julienned", item = "carrot" },
-      { text = "1 cucumber, sliced", item = "cucumber" },
-      { text = "1 spring onion (scallion), finely sliced", item = "spring onion" }
-    ] }
-  ]
-tags = [
-  "asian",
-  "chicken",
-  "dairy-free",
-  "dinner",
-  "easy",
-  "gluten-free",
-  "weeknight"
+  { category = "Bang Bang Sauce", items = [
+    { qty = 1, unit = "cup", item = "whole-egg mayonnaise" },
+    { qty = 0.25, unit = "cup", item = "sweet chilli sauce" },
+    { qty = 1, unit = "tablespoon", item = "sriracha", optional = true, alt = { item = "hot chilli sauce" } },
+    { qty = 1, unit = "tablespoon", item = "honey" },
+    { qty = 1, unit = "tablespoon", item = "lime juice", desc = "fresh" }
+  ] },
+  { category = "Chicken & Marinade", items = [
+    { qty = 1.333, unit = "pound", item = "boneless chicken thighs", prep = "skin on or off" },
+    { qty = 1, unit = "teaspoon", item = "paprika", desc = "sweet" },
+    { qty = 1, unit = "teaspoon", item = "onion powder" },
+    { qty = 0.25, unit = "teaspoon", item = "black pepper", desc = "freshly cracked" },
+    { qty = 1, unit = "tablespoon", item = "tamari", alt = { item = "regular soy sauce" } },
+    { qty = 1, unit = "tablespoon", item = "brown sugar" },
+    { qty = 1, unit = "tablespoon", item = "olive oil" }
+  ] },
+  { category = "Serving & Garnish", items = [
+    { qty = 1, item = "spring onion", prep = "sliced", alt = { item = "scallion" } },
+    { item = "steamed rice", prep = "for serving" },
+    { qty = 75, unit = "gram", item = "red cabbage", prep = "shredded" },
+    { qty = 2, item = "carrot", prep = "grated or julienned" },
+    { qty = 1, item = "cucumber", prep = "sliced" },
+    { qty = 1, item = "spring onion", prep = "finely sliced", alt = { item = "scallion" } }
+  ] }
 ]
-servings = 4
 +++
 
 ## Instructions

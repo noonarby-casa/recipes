@@ -1,38 +1,41 @@
 +++
-title = 'Zucchini Corn Chowder'
+title = "Zucchini Corn Chowder"
 date = 2026-07-02T21:44:41-04:00
-slug = 'zucchini-corn-chowder'
-shortId = 'zcc'
+slug = "zucchini-corn-chowder"
+shortId = "zcc"
 servings = 6
 times = [
-  { step = 'prep', time = '15 min' },
-  { step = 'cook', time = '40 min' }
+  { time = "15 min", step = "prep" },
+  { time = "40 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "1 tablespoon butter", item = "butter" },
-    { text = "2 strips bacon, chopped", item = "bacon" },
-    { text = "1 cup chopped yellow onion (about 1/2 large onion)", item = "yellow onion" },
-    { text = "2 celery ribs, chopped (about 1/3 cup)", item = "celery rib" },
-    { text = "1 medium carrot, peeled and chopped (about 1/2 cup)", item = "carrot" },
-    { text = "2 garlic cloves, minced", item = "garlic clove" },
-    { text = "1/2 teaspoon dried thyme", item = "thyme" },
-    { text = "2 medium russet potatoes, peeled and diced into 1/2-inch cubes (about 1 pound)", item = "russet potato" },
-    { text = "4 cups water (or vegetable stock)", item = "water" },
-    { text = "1 bay leaf", item = "bay leaf" },
-    { text = "4 ears sweet fresh corn, kernels cut from cob (about 2 3/4 cups)", item = "corn, kernels cut from cob" },
-    { text = "1 medium zucchini, diced into 1/2-inch cubes (about 1 1/2 cups)", item = "zucchini" },
-    { text = "1 cup half and half", item = "half and half" },
-    { text = "Kosher salt and freshly ground black pepper, to taste", item = "kosher salt and freshly ground black pepper" },
-    { text = "Chopped fresh parsley, to garnish", item = "parsley, to garnish" },
-    { text = "Cayenne pepper, to serve (optional)", item = "cayenne pepper, to serve", optional = true }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "dinner",
   "easy",
   "soup",
   "summer",
   "zucchini"
+]
+ingredients = [
+  { items = [
+    { qty = 1, unit = "tablespoon", item = "butter" },
+    { qty = 2, unit = "strip", item = "bacon", prep = "chopped" },
+    { qty = 1, unit = "cup", item = "yellow onion", prep = "chopped (about 1/2 large onion)" },
+    { qty = 2, item = "celery rib", prep = "chopped (about 1/3 cup)" },
+    { qty = 1, unit = "medium", item = "carrot", prep = "peeled and chopped (about 1/2 cup)" },
+    { qty = 2, unit = "clove", item = "garlic", prep = "minced" },
+    { qty = 0.5, unit = "teaspoon", item = "thyme", desc = "dried" },
+    { qty = 2, unit = "medium", item = "russet potato", prep = "peeled and diced into 1/2-inch cubes (about 1 pound)" },
+    { qty = 4, unit = "cup", item = "water", alt = { item = "vegetable stock" } },
+    { qty = 1, item = "bay leaf" },
+    { qty = 4, unit = "ear", item = "corn", desc = "sweet fresh", prep = "kernels cut from cob (about 2 3/4 cups)" },
+    { qty = 1, unit = "medium", item = "zucchini", prep = "diced into 1/2-inch cubes (about 1 1/2 cups)" },
+    { qty = 1, unit = "cup", item = "half and half" },
+    { item = "kosher salt", prep = "to taste" },
+    { item = "black pepper", desc = "freshly ground", prep = "to taste" },
+    { item = "parsley", desc = "fresh", prep = "chopped, to garnish" },
+    { item = "cayenne pepper", prep = "to serve", optional = true }
+  ] }
 ]
 +++
 

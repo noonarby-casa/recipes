@@ -1,22 +1,13 @@
 +++
-title = 'Spicy, Creamy Weeknight Bolognese'
+title = "Spicy, Creamy Weeknight Bolognese"
 date = 2026-06-17T22:19:42-04:00
-slug = 'spicy-creamy-weeknight-bolognese'
-shortId = 'scb'
+slug = "spicy-creamy-weeknight-bolognese"
+shortId = "scb"
+servings = 4
 times = [
-  { step = 'cook', time = '20 min' }
+  { time = "20 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "1 pound ground beef (at least 20 percent fat)", item = "beef" },
-    { text = "salt and black pepper, to taste", item = "salt and black pepper" },
-    { text = "1 large onion, finely chopped", item = "onion" },
-    { text = "2 carrots, peeled and finely chopped", item = "carrot" },
-    { text = "3 tablespoons red curry paste", item = "red curry paste" },
-    { text = "1 can tomato sauce (15 ounces)", item = "tomato sauce" },
-    { text = "1 pound short, curled pasta, such as pipettes", item = "short, curled pasta, such as pipette" },
-    { text = "1 cup heavy cream", item = "cream" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "beef",
   "curry-paste",
@@ -26,7 +17,19 @@ tags = [
   "pasta",
   "weeknight"
 ]
-servings = 4
+ingredients = [
+  { items = [
+    { qty = 1, unit = "pound", item = "ground beef", prep = "(at least 20 percent fat)" },
+    { item = "salt", prep = "to taste" },
+    { item = "black pepper", prep = "to taste" },
+    { qty = 1, unit = "large", item = "onion", prep = "finely chopped" },
+    { qty = 2, item = "carrot", prep = "peeled and finely chopped" },
+    { qty = 3, unit = "tablespoon", item = "red curry paste" },
+    { qty = 1, unit = "can (15 ounces)", item = "tomato sauce" },
+    { qty = 1, unit = "pound", item = "pasta", desc = "short, curled", prep = "such as pipettes" },
+    { qty = 1, unit = "cup", item = "heavy cream" }
+  ] }
+]
 +++
 
 ## Instructions

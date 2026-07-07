@@ -1,23 +1,13 @@
 +++
-title = 'Crispy Gnocchi with Sausage and Broccoli'
+title = "Crispy Gnocchi with Sausage and Broccoli"
 date = 2026-06-17T22:32:14-04:00
-slug = 'crispy-gnocchi-sausage-broccoli'
-shortId = 'cgs'
+slug = "crispy-gnocchi-sausage-broccoli"
+shortId = "cgs"
+servings = 4
 times = [
-  { step = 'cook', time = '25 min' }
+  { time = "25 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "1 package (12- to 18-ounces) shelf-stable potato gnocchi", item = "potato gnocchi" },
-    { text = "1 large head broccoli (about 1 pound), florets cut into 1½- to 2-inch pieces, stems thinly sliced", item = "head broccoli" },
-    { text = "1/4 cup extra-virgin olive oil", item = "olive oil" },
-    { text = "2 cloves garlic, finely grated", item = "garlic" },
-    { text = "Salt", item = "salt" },
-    { text = "Crushed red pepper flakes (optional)", item = "red pepper flake", optional = true },
-    { text = "1 pound hot or sweet Italian sausage, casings removed", item = "or sweet italian sausage, casings removed" },
-    { text = "1/2 lemon", item = "lemon" },
-    { text = "1/4 cup grated Parmesan, plus more for serving", item = "parmesan" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "broccoli",
   "dinner",
@@ -28,7 +18,19 @@ tags = [
   "sheet-pan",
   "weeknight"
 ]
-servings = 4
+ingredients = [
+  { items = [
+    { qty = 1, unit = "package (12- to 18-ounces)", item = "potato gnocchi", desc = "shelf-stable" },
+    { qty = 1, unit = "large head", item = "broccoli", prep = "florets cut into 1.5- to 2-inch pieces, stems thinly sliced" },
+    { qty = 0.25, unit = "cup", item = "olive oil", desc = "extra-virgin" },
+    { qty = 2, unit = "clove", item = "garlic", prep = "finely grated" },
+    { item = "salt" },
+    { item = "red pepper flake", prep = "crushed", optional = true },
+    { qty = 1, unit = "pound", item = "Italian sausage", desc = "hot or sweet", prep = "casings removed" },
+    { qty = 0.5, item = "lemon" },
+    { qty = 0.25, unit = "cup", item = "Parmesan", prep = "grated, plus more for serving" }
+  ] }
+]
 +++
 
 ## Instructions

@@ -1,6 +1,6 @@
 +++
 title = "Meal Plan"
-type = "plan"
-layout = "plan"
 slug = "plan"
+layout = "plan"
+type = "plan"
 +++

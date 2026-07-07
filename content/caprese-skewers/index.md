@@ -1,23 +1,25 @@
 +++
-title = 'Caprese Skewers'
+title = "Caprese Skewers"
 date = 2026-07-04T21:56:33-04:00
-slug = 'caprese-skewers'
-shortId = 'csk'
+slug = "caprese-skewers"
+shortId = "csk"
 servings = 20
 times = [
-  { step = 'prep', time = '10 min' }
+  { time = "10 min", step = "prep" }
 ]
-recipeSource = 'Carly Rickarby'
-ingredients = [
-    { text = "1 package grape tomatoes", item = "grape tomato" },
-    { text = "1 container mozzarella balls", item = "mozzarella ball" },
-    { text = "Fresh basil", item = "basil" },
-    { text = "Balsamic glaze", item = "balsamic glaze" }
-  ]
+recipeSource = "Carly Rickarby"
 tags = [
   "appetizer",
   "no-cook",
   "vegetarian"
+]
+ingredients = [
+  { items = [
+    { qty = 1, unit = "package", item = "grape tomato" },
+    { qty = 1, unit = "container", item = "mozzarella ball" },
+    { item = "basil", desc = "fresh" },
+    { item = "balsamic glaze" }
+  ] }
 ]
 +++
 

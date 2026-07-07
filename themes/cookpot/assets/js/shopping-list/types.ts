@@ -1,112 +1,55 @@
-/**
- * Configuration options for text matching. All pattern strings (terms, excludeIf, keepIf)
- * MUST be defined in lowercase.
- */
-export interface StringMatchConfig {
-  terms: string | string[];
-  excludeIf?: string[];
-  keepIf?: string[];
+/** A quantity value: either a scalar or a [min, max] range tuple. */
+export type QtyValue = number | [number, number];
+
+/** Alternate structure: handles secondary measurements AND alternative ingredients. */
+export interface IngredientInputAlt {
+  qty?: QtyValue;
+  unit?: string;
+  each?: boolean;
+  item?: string;
+  desc?: string;
+  prep?: string;
 }
 
-export interface IngredientMatchConfig {
-  rest?: StringMatchConfig;
-  prep?: StringMatchConfig;
-  unit?: StringMatchConfig;
-}
-
-export interface QuantitySegment {
-  quantity: number;
-  unit: string;
-  text: string;
-}
-
-export interface Ingredient {
-  quantity: number | null;
-  unit: string;
+/** Fully structured recipe ingredient — no runtime parsing needed. */
+export interface IngredientInput {
+  qty?: QtyValue;
+  unit?: string;
   item: string;
-  rest: string;
-  prep: string;
-  optional: boolean;
-  secondarySegments: QuantitySegment[];
-  category: string | null;
-  sizeNote?: string; // For parenthetical size descriptors
+  desc?: string;
+  prep?: string;
+  optional?: boolean;
+  alt?: IngredientInputAlt;
+  category?: string; // added dynamically by meal planner to track recipe attribution
 }
 
-export interface ConverterContext {
-  scaledQty: number;
-  unit: string;
-  unitLower: string;
-  item: string;
-  itemLower: string;
-  rest: string;
-  restLower: string;
-  prep: string;
-  prepLower: string;
-  isStaple: boolean;
-  optional: boolean;
+export interface ShoppingItemNote {
+  recipe: string;
+  altItem?: string;
 }
 
 export interface ShoppingItem {
   qty: number | null;
   unit: string;
-  item?: string;
-  rest: string;
-  notes: Record<string, NoteItem[]>;
-  note: NoteItem[];
+  item: string; // Made required since we always merge by item
+  rest: string; // The display name
+  notes: ShoppingItemNote[];
   isStaple: boolean;
-  parts?: { [partName: string]: number };
   optional?: boolean;
   section?: string;
-  sizeNote?: string;
 }
 
-export interface NoteItem {
-  prefix: string;
-  qty: number | null;
-  unit: string;
-  rest: string;
-  explanation: string;
-}
-
-export interface CleanedPrepResult {
-  rest: string;
-  prep: string;
+export interface ItemRule {
+  /** Exact item name(s) this rule applies to. */
+  items: string[];
+  /** Available package sizes at the store, ordered small → large. */
+  itemSizes?: [number, string][];
+  /** Item-specific unit conversions. */
+  unitEquivalences?: Record<string, { base: string; factor: number }>;
 }
 
 export interface ProcessedShoppingList {
   buyItems: ShoppingItem[];
   optionalItems: ShoppingItem[];
   stapleItems: ShoppingItem[];
-}
-
-export interface ConversionOutput {
-  qty?: number;
-  unit?: string;
-  rest?: string;
-}
-
-export interface NoteOutput {
-  explanation?: string;
-  defaultUnit?: string;
-}
-
-export interface ConversionProps {
-  // Matching criteria:
-  units?: string | string[];
-  matchPattern?: StringMatchConfig;
-
-  // Conversion properties:
-  unitMultiplier?: number | Record<string, number>;
-  packageSizes?: [number, string][];
-  output?: ConversionOutput;
-  note?: NoteOutput;
-  partName?: string;
-}
-
-export interface RuleConfig {
-  name: string;
-  match: IngredientMatchConfig;
-  groupKey?: string;
-  isStaple?: boolean | ((qty: number | null, unit: string) => boolean);
-  conversions: ConversionProps[];
 }

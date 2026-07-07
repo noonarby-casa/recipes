@@ -1,26 +1,13 @@
 +++
-title = 'Macaroni Salad With Lemon and Herbs'
+title = "Macaroni Salad With Lemon and Herbs"
 date = 2026-06-17T22:30:58-04:00
-slug = 'macaroni-salad-with-lemon-and-herbs'
-shortId = 'msl'
+slug = "macaroni-salad-with-lemon-and-herbs"
+shortId = "msl"
+servings = 6
 times = [
-  { step = 'cook', time = '10 min' }
+  { time = "10 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "2/3 cup minced bread-and-butter pickles", item = "bread-and-butter pickle" },
-    { text = "4 scallions, trimmed and thinly sliced, plus more for garnish", item = "scallion" },
-    { text = "3/4 cup mayonnaise", item = "mayonnaise" },
-    { text = "1/4 cup milk", item = "milk" },
-    { text = "1/3 cup finely chopped fresh Italian parsley, plus more for garnish", item = "italian parsley" },
-    { text = "1/4 cup chopped fresh dill, plus small sprigs for garnish", item = "dill, plus small sprig" },
-    { text = "4 teaspoons Dijon mustard", item = "dijon mustard" },
-    { text = "1 teaspoon fresh lemon zest", item = "lemon zest" },
-    { text = "4 teaspoons fresh lemon juice (from 1 large lemon)", item = "lemon juice" },
-    { text = "1 teaspoon granulated sugar", item = "sugar" },
-    { text = "kosher salt and freshly ground pepper, to taste", item = "kosher salt and freshly ground pepper" },
-    { text = "16 ounces elbow macaroni", item = "elbow macaroni" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "easy",
   "lemon",
@@ -31,7 +18,23 @@ tags = [
   "summer",
   "vegetarian"
 ]
-servings = 6
+ingredients = [
+  { items = [
+    { qty = 0.666, unit = "cup", item = "bread-and-butter pickle", prep = "minced" },
+    { qty = 4, item = "scallion", prep = "trimmed and thinly sliced, plus more for garnish" },
+    { qty = 0.75, unit = "cup", item = "mayonnaise" },
+    { qty = 0.25, unit = "cup", item = "milk" },
+    { qty = 0.333, unit = "cup", item = "Italian parsley", desc = "fresh", prep = "finely chopped, plus more for garnish" },
+    { qty = 0.25, unit = "cup", item = "dill", desc = "fresh", prep = "chopped, plus small sprigs for garnish" },
+    { qty = 4, unit = "teaspoon", item = "Dijon mustard" },
+    { qty = 1, unit = "teaspoon", item = "lemon zest", desc = "fresh" },
+    { qty = 4, unit = "teaspoon", item = "lemon juice", desc = "fresh", prep = "(from 1 large lemon)" },
+    { qty = 1, unit = "teaspoon", item = "granulated sugar" },
+    { item = "kosher salt", prep = "to taste" },
+    { item = "black pepper", desc = "freshly ground", prep = "to taste" },
+    { qty = 16, unit = "ounce", item = "elbow macaroni" }
+  ] }
+]
 +++
 
 ## Instructions

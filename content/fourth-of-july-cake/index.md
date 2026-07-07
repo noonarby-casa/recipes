@@ -1,22 +1,14 @@
 +++
-title = '4th of July Cake'
+title = "4th of July Cake"
 date = 2026-06-30T15:47:32-04:00
-slug = 'fourth-of-july-cake'
-shortId = 'fjc'
+slug = "fourth-of-july-cake"
+shortId = "fjc"
 servings = 8
 times = [
-  { step = 'prep', time = '15 min' },
-  { step = 'cook', time = '50 min' }
+  { time = "15 min", step = "prep" },
+  { time = "50 min", step = "cook" }
 ]
-recipeSource = 'Rickarbys'
-ingredients = [
-    { text = "1 box (16 ounces) pound cake mix (plus ingredients required by package instructions)", item = "pound cake mix" },
-    { text = "1 1/2 cups heavy cream", item = "cream" },
-    { text = "1/4 cup powdered sugar", item = "sugar" },
-    { text = "1 teaspoon vanilla extract", item = "vanilla extract" },
-    { text = "1 cup fresh blueberries", item = "blueberrie" },
-    { text = "1 cup fresh raspberries", item = "raspberrie" }
-  ]
+recipeSource = "Rickarbys"
 tags = [
   "baking",
   "cake",
@@ -24,6 +16,16 @@ tags = [
   "blueberries",
   "raspberries",
   "vegetarian"
+]
+ingredients = [
+  { items = [
+    { qty = 1, unit = "box (16 ounces)", item = "pound cake mix", prep = "(plus ingredients required by package instructions)" },
+    { qty = 1.5, unit = "cup", item = "heavy cream" },
+    { qty = 0.25, unit = "cup", item = "powdered sugar" },
+    { qty = 1, unit = "teaspoon", item = "vanilla extract" },
+    { qty = 1, unit = "cup", item = "blueberry", desc = "fresh" },
+    { qty = 1, unit = "cup", item = "raspberry", desc = "fresh" }
+  ] }
 ]
 +++
 

@@ -139,59 +139,45 @@
       </div>
 
       <div class="recipe-ingredients-list">
-        {{ $isCategorized := false }}
-        {{ range first 1 .Params.ingredients }}
-          {{ if and (reflect.IsMap .) (isset . "category") }}
-            {{ $isCategorized = true }}
+        {{ range .Params.ingredients }}
+          {{ if .category }}
+            <h3 class="ingredient-category">{{ .category }}</h3>
           {{ end }}
-        {{ end }}
-
-        {{ if $isCategorized }}
-          {{ range .Params.ingredients }}
-            {{ if .category }}
-              <h3 class="ingredient-category">{{ .category }}</h3>
-            {{ end }}
-            <ul class="recipe-ingredients-sublist">
-              {{ range .items }}
-                {{ $text := "" }}
-                {{ $item := "" }}
-                {{ $optional := false }}
-                {{ if reflect.IsMap . }}
-                  {{ $text = .text }}
-                  {{ $item = .item | default "" }}
-                  {{ $optional = .optional | default false }}
-                {{ else }}
-                  {{ $text = . }}
-                {{ end }}
-                <li
-                  class="recipe-ingredient"
-                  {{ with $item }}data-item="{{ . }}"{{ end }}
-                  {{ if $optional }}data-optional="true"{{ end }}
-                >
-                  {{ $text }}
-                </li>
-              {{ end }}
-            </ul>
-          {{ end }}
-        {{ else }}
           <ul class="recipe-ingredients-sublist">
-            {{ range .Params.ingredients }}
-              {{ $text := "" }}
-              {{ $item := "" }}
-              {{ $optional := false }}
-              {{ if reflect.IsMap . }}
-                {{ $text = .text }}
-                {{ $item = .item | default "" }}
-                {{ $optional = .optional | default false }}
-              {{ else }}
-                {{ $text = . }}
+            {{ range .items }}
+              {{ $ing := . }}
+              {{ if not (reflect.IsMap $ing) }}
+                {{ $ing = dict "item" $ing }}
               {{ end }}
               <li
                 class="recipe-ingredient"
-                {{ with $item }}data-item="{{ . }}"{{ end }}
-                {{ if $optional }}data-optional="true"{{ end }}
+                data-item="{{ $ing.item }}"
+                {{ if isset $ing "qty" }}
+                  {{ if reflect.IsSlice $ing.qty }}
+                    data-qty="{{ index $ing.qty 0 }}-{{ index $ing.qty 1 }}"
+                  {{ else }}
+                    data-qty="{{ $ing.qty }}"
+                  {{ end }}
+                {{ end }}
+                {{ with $ing.unit }}data-unit="{{ . }}"{{ end }}
+                {{ with $ing.desc }}data-desc="{{ . }}"{{ end }}
+                {{ with $ing.prep }}data-prep="{{ . }}"{{ end }}
+                {{ if $ing.optional }}data-optional="true"{{ end }}
+                {{ with $ing.alt }}
+                  {{ with .item }}data-alt-item="{{ . }}"{{ end }}
+                  {{ if isset . "qty" }}
+                    {{ if reflect.IsSlice .qty }}
+                      data-alt-qty="{{ index .qty 0 }}-{{ index .qty 1 }}"
+                    {{ else }}
+                      data-alt-qty="{{ .qty }}"
+                    {{ end }}
+                  {{ end }}
+                  {{ with .unit }}data-alt-unit="{{ . }}"{{ end }}
+                  {{ with .desc }}data-alt-desc="{{ . }}"{{ end }}
+                  {{ with .prep }}data-alt-prep="{{ . }}"{{ end }}
+                {{ end }}
               >
-                {{ $text }}
+                {{ partial "ingredient.html" $ing }}
               </li>
             {{ end }}
           </ul>

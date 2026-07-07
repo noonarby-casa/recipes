@@ -1,38 +1,15 @@
 +++
-title = 'Tequila Lime Grilled Chicken'
+title = "Tequila Lime Grilled Chicken"
 date = 2026-06-20T15:42:56-04:00
-slug = 'tequila-lime-grilled-chicken'
-shortId = 'tlc'
+slug = "tequila-lime-grilled-chicken"
+shortId = "tlc"
+servings = 4
 times = [
-  { step = 'prep', time = '15 min' },
-  { step = 'brine', time = '1 hour' },
-  { step = 'cook', time = '30 min' }
+  { time = "15 min", step = "prep" },
+  { time = "1 hour", step = "brine" },
+  { time = "30 min", step = "cook" }
 ]
-recipeSource = 'Rickarbys'
-ingredients = [
-    { category = "Brine", items = [
-      { text = "1/3 cup salt (for brine)", item = "salt" },
-      { text = "3 tablespoons sugar (for brine)", item = "sugar" },
-      { text = "6 cups water (for brine)", item = "water" }
-    ] },
-    { category = "Chicken", items = [
-      { text = "4 12-ounce split bone-in, skin-on chicken breasts", item = "12-ounce split bone-in, skin-on chicken breast" }
-    ] },
-    { category = "Sauce", items = [
-      { text = "1/2 cup mayonnaise", item = "mayonnaise" },
-      { text = "1/2 cup sour cream", item = "sour cream" },
-      { text = "1 1/2 tablespoons tequila", item = "tequila" },
-      { text = "4 tablespoons fresh lime juice", item = "lime juice" },
-      { text = "2 medium cloves garlic, minced", item = "cloves garlic" },
-      { text = "1/3 cup chopped fresh cilantro", item = "cilantro" },
-      { text = "1 teaspoon sugar (for sauce)", item = "sugar" },
-      { text = "1 teaspoon salt (for sauce)", item = "salt" }
-    ] },
-    { category = "Serving & Grilling", items = [
-      { text = "Vegetable oil, for the grill", item = "vegetable oil, for the grill" },
-      { text = "1 lime, cut into wedges for serving", item = "lime" }
-    ] }
-  ]
+recipeSource = "Rickarbys"
 tags = [
   "chicken",
   "dinner",
@@ -43,7 +20,30 @@ tags = [
   "nut-free",
   "summer"
 ]
-servings = 4
+ingredients = [
+  { category = "Brine", items = [
+    { qty = 0.333, unit = "cup", item = "salt", prep = "(for brine)" },
+    { qty = 3, unit = "tablespoon", item = "sugar", prep = "(for brine)" },
+    { qty = 6, unit = "cup", item = "water", prep = "(for brine)" }
+  ] },
+  { category = "Chicken", items = [
+    { qty = 4, item = "chicken breast", desc = "12-ounce split bone-in, skin-on" }
+  ] },
+  { category = "Sauce", items = [
+    { qty = 0.5, unit = "cup", item = "mayonnaise" },
+    { qty = 0.5, unit = "cup", item = "sour cream" },
+    { qty = 1.5, unit = "tablespoon", item = "tequila" },
+    { qty = 4, unit = "tablespoon", item = "lime juice", desc = "fresh" },
+    { qty = 2, unit = "medium clove", item = "garlic", prep = "minced" },
+    { qty = 0.333, unit = "cup", item = "cilantro", desc = "fresh", prep = "chopped" },
+    { qty = 1, unit = "teaspoon", item = "sugar", prep = "(for sauce)" },
+    { qty = 1, unit = "teaspoon", item = "salt", prep = "(for sauce)" }
+  ] },
+  { category = "Serving & Grilling", items = [
+    { item = "vegetable oil", prep = "for the grill" },
+    { qty = 1, item = "lime", prep = "cut into wedges for serving" }
+  ] }
+]
 +++
 
 ## Instructions

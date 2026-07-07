@@ -1,17 +1,9 @@
-import { parseIngredient, scaleTextQuantities } from "./scaler";
+// removed scaleTextQuantities
 import { processShoppingList } from "./shopping-list/pipeline";
 import { formatCookingNumber } from "./units";
-import { ShoppingItem, Ingredient } from "./shopping-list/types";
-import { formatNotesArray } from "./shopping-list/utils";
+import { ShoppingItem, IngredientInput } from "./shopping-list/types";
 import { initToggleGroup } from "./components/toggle";
 import { getStoreSection } from "./shopping-list/store-sections";
-
-// Interface definitions
-interface IngredientData {
-  text: string;
-  item?: string;
-  optional?: boolean;
-}
 
 interface Recipe {
   title: string;
@@ -21,7 +13,7 @@ interface Recipe {
   times: { step: string; time: string }[];
   recipeSource?: string;
   tags?: string[];
-  ingredients: (string | IngredientData)[];
+  ingredients: (string | IngredientInput)[];
   servings: number;
   summary: string;
 }
@@ -103,8 +95,8 @@ function getIngredientKey(
   rest: string,
 ): string {
   const stapleStr = isStaple ? "staple" : "buy";
-  const normalizedUnit = unit.trim().toLowerCase();
-  const normalizedRest = rest.trim().toLowerCase().replace(/\s+/g, " ");
+  const normalizedUnit = (unit || "").trim().toLowerCase();
+  const normalizedRest = (rest || "").trim().toLowerCase().replace(/\s+/g, " ");
   return `${stapleStr}_${normalizedUnit}_${normalizedRest}`;
 }
 
@@ -2269,34 +2261,37 @@ function renderCombinedShoppingList(): void {
 
   if (divider) (divider as HTMLElement).style.display = "block";
 
-  const ingredients: Ingredient[] = [];
+  const ingredients: IngredientInput[] = [];
   planState.forEach((item) => {
     const rec = recipesIndex.find((r) => r.permalink === item.permalink);
     if (!rec) return;
 
     rec.ingredients.forEach((ing) => {
-      const text = typeof ing === "object" && ing !== null ? ing.text : ing;
-      const overrideItem =
-        (typeof ing === "object" && ing !== null && ing.item) || "";
-      const overrideOptional =
-        (typeof ing === "object" && ing !== null && ing.optional) || false;
-
-      const parsed = parseIngredient(
-        text,
-        null,
-        overrideItem,
-        overrideOptional,
-      );
-      if (parsed.quantity !== null) {
-        parsed.quantity = parsed.quantity * item.scale;
-        parsed.secondarySegments = parsed.secondarySegments.map((seg) => ({
-          ...seg,
-          quantity: seg.quantity * item.scale,
-        }));
+      let parsed: IngredientInput;
+      if (typeof ing === "string") {
+        parsed = { item: ing };
+      } else {
+        parsed = JSON.parse(JSON.stringify(ing));
       }
-      parsed.rest = scaleTextQuantities(parsed.rest, item.scale);
-      parsed.category = rec.title; // recipe attribution context
 
+      if (parsed.qty !== undefined) {
+        if (Array.isArray(parsed.qty)) {
+          parsed.qty = [parsed.qty[0] * item.scale, parsed.qty[1] * item.scale];
+        } else {
+          parsed.qty = parsed.qty * item.scale;
+        }
+      }
+      if (parsed.alt?.qty !== undefined) {
+        if (Array.isArray(parsed.alt.qty)) {
+          parsed.alt.qty = [
+            parsed.alt.qty[0] * item.scale,
+            parsed.alt.qty[1] * item.scale,
+          ];
+        } else {
+          parsed.alt.qty = parsed.alt.qty * item.scale;
+        }
+      }
+      parsed.category = rec.title;
       ingredients.push(parsed);
     });
   });
@@ -2378,9 +2373,19 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
     const checkedAttr = isChecked ? "checked" : "";
     const checkedClass = isChecked ? "checked" : "";
 
+    const notesArr = item.notes || [];
+    const recipes = Array.from(
+      new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+    );
+    const alts = Array.from(
+      new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
+    );
+    const notesStrs = [];
+    if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
+    if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
     const notesHtml =
-      item.note && item.note.length > 0
-        ? ` <span class="shopping-notes">(${formatNotesArray(item.note, true)})</span>`
+      notesStrs.length > 0
+        ? ` <span class="shopping-notes">(${notesStrs.join("; ")})</span>`
         : "";
     const qtyStr =
       item.qty !== null && item.qty > 0
@@ -2388,9 +2393,7 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
         : "";
     const unitStr = item.unit ? `${item.unit} ` : "";
 
-    const displayRest =
-      item.rest +
-      (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+    const displayRest = item.rest;
 
     html += `
       <li class="shopping-item ${checkedClass}">
@@ -2413,9 +2416,19 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
       const checkedAttr = isChecked ? "checked" : "";
       const checkedClass = isChecked ? "checked" : "";
 
+      const notesArr = item.notes || [];
+      const recipes = Array.from(
+        new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+      );
+      const alts = Array.from(
+        new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
+      );
+      const notesStrs = [];
+      if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
+      if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
       const notesHtml =
-        item.note && item.note.length > 0
-          ? ` <span class="shopping-notes">(${formatNotesArray(item.note, !isStaple)})</span>`
+        notesStrs.length > 0
+          ? ` <span class="shopping-notes">(${notesStrs.join("; ")})</span>`
           : "";
       const qtyStr =
         item.qty !== null && item.qty > 0
@@ -2423,9 +2436,7 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
           : "";
       const unitStr = item.unit ? `${item.unit} ` : "";
 
-      const displayRest =
-        item.rest +
-        (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+      const displayRest = item.rest;
 
       return `
         <li class="shopping-item ${checkedClass}">
@@ -2485,34 +2496,37 @@ function copyShoppingListToClipboard(
   ) as HTMLInputElement;
   const omitChecked = chkOmit ? chkOmit.checked : false;
 
-  const ingredients: Ingredient[] = [];
+  const ingredients: IngredientInput[] = [];
   planState.forEach((item) => {
     const rec = recipesIndex.find((r) => r.permalink === item.permalink);
     if (!rec) return;
 
     rec.ingredients.forEach((ing) => {
-      const text = typeof ing === "object" && ing !== null ? ing.text : ing;
-      const overrideItem =
-        (typeof ing === "object" && ing !== null && ing.item) || "";
-      const overrideOptional =
-        (typeof ing === "object" && ing !== null && ing.optional) || false;
-
-      const parsed = parseIngredient(
-        text,
-        null,
-        overrideItem,
-        overrideOptional,
-      );
-      if (parsed.quantity !== null) {
-        parsed.quantity = parsed.quantity * item.scale;
-        parsed.secondarySegments = parsed.secondarySegments.map((seg) => ({
-          ...seg,
-          quantity: seg.quantity * item.scale,
-        }));
+      let parsed: IngredientInput;
+      if (typeof ing === "string") {
+        parsed = { item: ing };
+      } else {
+        parsed = JSON.parse(JSON.stringify(ing));
       }
-      parsed.rest = scaleTextQuantities(parsed.rest, item.scale);
-      parsed.category = rec.title; // recipe attribution context
 
+      if (parsed.qty !== undefined) {
+        if (Array.isArray(parsed.qty)) {
+          parsed.qty = [parsed.qty[0] * item.scale, parsed.qty[1] * item.scale];
+        } else {
+          parsed.qty = parsed.qty * item.scale;
+        }
+      }
+      if (parsed.alt?.qty !== undefined) {
+        if (Array.isArray(parsed.alt.qty)) {
+          parsed.alt.qty = [
+            parsed.alt.qty[0] * item.scale,
+            parsed.alt.qty[1] * item.scale,
+          ];
+        } else {
+          parsed.alt.qty = parsed.alt.qty * item.scale;
+        }
+      }
+      parsed.category = rec.title;
       ingredients.push(parsed);
     });
   });
@@ -2549,14 +2563,19 @@ function copyShoppingListToClipboard(
           ? `${formatCookingNumber(item.qty)} `
           : "";
       const unitStr = item.unit ? `${item.unit} ` : "";
-      const notesStr =
-        item.note && item.note.length > 0
-          ? ` (${formatNotesArray(item.note, !item.isStaple)})`
-          : "";
+      const notesArr = item.notes || [];
+      const recipes = Array.from(
+        new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+      );
+      const alts = Array.from(
+        new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
+      );
+      const notesStrs = [];
+      if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
+      if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
+      const notesStr = notesStrs.length > 0 ? ` (${notesStrs.join("; ")})` : "";
 
-      const displayRest =
-        item.rest +
-        (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+      const displayRest = item.rest;
 
       return `${qtyStr}${unitStr}${displayRest}${notesStr}`;
     });
@@ -2592,14 +2611,20 @@ function copyShoppingListToClipboard(
             ? `${formatCookingNumber(item.qty)} `
             : "";
         const unitStr = item.unit ? `${item.unit} ` : "";
+        const notesArr = item.notes || [];
+        const recipes = Array.from(
+          new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+        );
+        const alts = Array.from(
+          new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
+        );
+        const notesStrs = [];
+        if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
+        if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
         const notesStr =
-          item.note && item.note.length > 0
-            ? ` (${formatNotesArray(item.note, !item.isStaple)})`
-            : "";
+          notesStrs.length > 0 ? ` (${notesStrs.join("; ")})` : "";
 
-        const displayRest =
-          item.rest +
-          (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+        const displayRest = item.rest;
 
         clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
       });
@@ -2624,14 +2649,20 @@ function copyShoppingListToClipboard(
             ? `${formatCookingNumber(item.qty)} `
             : "";
         const unitStr = item.unit ? `${item.unit} ` : "";
+        const notesArr = item.notes || [];
+        const recipes = Array.from(
+          new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+        );
+        const alts = Array.from(
+          new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
+        );
+        const notesStrs = [];
+        if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
+        if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
         const notesStr =
-          item.note && item.note.length > 0
-            ? ` (${formatNotesArray(item.note, !item.isStaple)})`
-            : "";
+          notesStrs.length > 0 ? ` (${notesStrs.join("; ")})` : "";
 
-        const displayRest =
-          item.rest +
-          (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+        const displayRest = item.rest;
 
         clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
       });
@@ -2656,14 +2687,20 @@ function copyShoppingListToClipboard(
             ? `${formatCookingNumber(item.qty)} `
             : "";
         const unitStr = item.unit ? `${item.unit} ` : "";
+        const notesArr = item.notes || [];
+        const recipes = Array.from(
+          new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+        );
+        const alts = Array.from(
+          new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
+        );
+        const notesStrs = [];
+        if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
+        if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
         const notesStr =
-          item.note && item.note.length > 0
-            ? ` (${formatNotesArray(item.note, !item.isStaple)})`
-            : "";
+          notesStrs.length > 0 ? ` (${notesStrs.join("; ")})` : "";
 
-        const displayRest =
-          item.rest +
-          (item.qty !== null && item.sizeNote ? ` (${item.sizeNote})` : "");
+        const displayRest = item.rest;
 
         clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
       });

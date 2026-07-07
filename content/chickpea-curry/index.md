@@ -1,27 +1,13 @@
 +++
-title = 'Cozy Chickpea Curry'
+title = "Cozy Chickpea Curry"
 date = 2026-06-22T05:53:17-04:00
-slug = 'chickpea-curry'
-shortId = 'cpc'
+slug = "chickpea-curry"
+shortId = "cpc"
+servings = 4
 times = [
-  { step = 'cook', time = '15 min' }
+  { time = "15 min", step = "cook" }
 ]
-recipeSource = 'Carly Rickarby'
-ingredients = [
-    { text = "1 yellow onion", item = "yellow onion" },
-    { text = "1 large garlic clove", item = "garlic clove" },
-    { text = "1 teaspoon grated ginger", item = "ginger" },
-    { text = "1 tablespoon coconut oil or olive oil", item = "coconut oil or olive oil" },
-    { text = "5 ounces baby spinach leaves (or chopped spinach)", item = "baby spinach leaf" },
-    { text = "1 can (28 ounce) crushed fire roasted tomatoes", item = "fire roasted tomato" },
-    { text = "1 tablespoon curry powder", item = "curry powder" },
-    { text = "1 teaspoon cumin", item = "cumin" },
-    { text = "1/2 teaspoon coriander", item = "coriander" },
-    { text = "3/4 teaspoon kosher salt", item = "kosher salt" },
-    { text = "2 cans (15 ounce) chickpeas", item = "chickpea" },
-    { text = "1/2 cup full fat canned coconut milk", item = "canned coconut milk" },
-    { text = "white or brown basmati rice, to serve", item = "white or brown basmati rice, to serve" }
-  ]
+recipeSource = "Carly Rickarby"
 tags = [
   "chickpeas",
   "curry",
@@ -33,7 +19,23 @@ tags = [
   "vegetarian",
   "weeknight"
 ]
-servings = 4
+ingredients = [
+  { items = [
+    { qty = 1, item = "yellow onion" },
+    { qty = 1, unit = "large clove", item = "garlic" },
+    { qty = 1, unit = "teaspoon", item = "ginger", prep = "grated" },
+    { qty = 1, unit = "tablespoon", item = "coconut oil", alt = { item = "olive oil" } },
+    { qty = 5, unit = "ounce", item = "baby spinach", desc = "leaves", alt = { item = "spinach", prep = "chopped" } },
+    { qty = 1, unit = "can (28 ounce)", item = "fire roasted tomato", prep = "crushed" },
+    { qty = 1, unit = "tablespoon", item = "curry powder" },
+    { qty = 1, unit = "teaspoon", item = "cumin" },
+    { qty = 0.5, unit = "teaspoon", item = "coriander" },
+    { qty = 0.75, unit = "teaspoon", item = "kosher salt" },
+    { qty = 2, unit = "can (15 ounce)", item = "chickpea" },
+    { qty = 0.5, unit = "cup", item = "coconut milk", desc = "full fat canned" },
+    { item = "basmati rice", desc = "white or brown", prep = "to serve" }
+  ] }
+]
 +++
 
 ## Instructions

@@ -1,29 +1,14 @@
 +++
-title = 'Peanut Butter Cup Overnight Oats'
+title = "Peanut Butter Cup Overnight Oats"
 date = 2026-07-02T21:02:20-04:00
-slug = 'peanut-butter-overnight-oats'
-shortId = 'pco'
+slug = "peanut-butter-overnight-oats"
+shortId = "pco"
 servings = 1
 times = [
-  { step = 'prep', time = '20 min' },
-  { step = 'soak', time = '3 hours' }
+  { time = "20 min", step = "prep" },
+  { time = "3 hours", step = "soak" }
 ]
-recipeSource = 'Carly Rickarby'
-ingredients = [
-    { category = "Oats", items = [
-      { text = "1/3 cup vanilla or plain nonfat Greek yogurt", item = "vanilla or plain nonfat greek yogurt" },
-      { text = "2/3 cup unsweetened vanilla almond milk", item = "unsweetened vanilla almond milk" },
-      { text = "1/2 tablespoon chia seeds", item = "chia seed" },
-      { text = "1/2 cup rolled oats", item = "rolled oat" },
-      { text = "1 tablespoon maple syrup (optional, or to taste)", item = "maple syrup" }
-    ] },
-    { category = "Topping", items = [
-      { text = "1 tablespoon natural, drippy peanut butter", item = "natural, drippy peanut butter" },
-      { text = "2 tablespoons semisweet or dark chocolate chips", item = "semisweet or dark chocolate chip" },
-      { text = "1/4 teaspoon coconut oil", item = "coconut oil" },
-      { text = "Flaky sea salt (optional)", item = "flaky sea salt", optional = true }
-    ] }
-  ]
+recipeSource = "Carly Rickarby"
 tags = [
   "breakfast",
   "easy",
@@ -31,6 +16,21 @@ tags = [
   "oats",
   "peanut-butter",
   "vegetarian"
+]
+ingredients = [
+  { category = "Oats", items = [
+    { qty = 0.333, unit = "cup", item = "Greek yogurt", desc = "vanilla or plain nonfat" },
+    { qty = 0.666, unit = "cup", item = "almond milk", desc = "unsweetened vanilla" },
+    { qty = 0.5, unit = "tablespoon", item = "chia seed" },
+    { qty = 0.5, unit = "cup", item = "rolled oat" },
+    { qty = 1, unit = "tablespoon", item = "maple syrup", prep = "(or to taste)", optional = true }
+  ] },
+  { category = "Topping", items = [
+    { qty = 1, unit = "tablespoon", item = "peanut butter", desc = "natural, drippy" },
+    { qty = 2, unit = "tablespoon", item = "chocolate chip", desc = "semisweet or dark" },
+    { qty = 0.25, unit = "teaspoon", item = "coconut oil" },
+    { item = "sea salt", desc = "flaky", optional = true }
+  ] }
 ]
 +++
 

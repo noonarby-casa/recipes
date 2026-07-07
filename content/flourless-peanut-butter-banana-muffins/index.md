@@ -1,36 +1,27 @@
 +++
-title = 'Flourless Peanut Butter Banana Muffins'
+title = "Flourless Peanut Butter Banana Muffins"
 date = 2026-06-22T05:53:17-04:00
-slug = 'flourless-peanut-butter-banana-muffins'
-shortId = 'pbm'
+slug = "flourless-peanut-butter-banana-muffins"
+shortId = "pbm"
 times = [
-  { step = 'cook', time = '25 min' }
+  { time = "25 min", step = "cook" }
 ]
-recipeSource = 'Carly Rickarby'
+recipeSource = "Carly Rickarby"
 ingredients = [
-    { text = "2 large ripe bananas, mashed", item = "ripe banana" },
-    { text = "1 cup all-natural peanut butter", item = "all-natural peanut butter" },
-    { text = "3 large eggs", item = "egg" },
-    { text = "1/4 cup honey", item = "honey" },
-    { text = "1 1/2 teaspoons baking powder", item = "baking powder" },
-    { text = "1 teaspoon ground cinnamon (optional)", item = "cinnamon", optional = true },
-    { text = "1 teaspoon vanilla extract", item = "vanilla extract" },
-    { text = "1/2 teaspoon sea salt", item = "sea salt" },
-    { text = "1/2 cup chocolate chips (optional)", item = "chocolate chip", optional = true },
-    { text = "1 cup fresh berries (optional)", item = "berrie", optional = true },
-    { text = "1/2 cup raisins or dried cranberries (optional)", item = "raisins or dried cranberrie", optional = true }
-  ]
-tags = [
-  "baking",
-  "banana",
-  "breakfast",
-  "dairy-free",
-  "gluten-free",
-  "muffins",
-  "peanut-butter",
-  "vegetarian"
+  { items = [
+    { qty = 2, unit = "large", item = "banana", desc = "ripe", prep = "mashed" },
+    { qty = 1, unit = "cup", item = "peanut butter", desc = "all-natural" },
+    { qty = 3, unit = "large", item = "egg" },
+    { qty = 0.25, unit = "cup", item = "honey" },
+    { qty = 1.5, unit = "teaspoon", item = "baking powder" },
+    { qty = 1, unit = "teaspoon", item = "cinnamon", desc = "ground", optional = true },
+    { qty = 1, unit = "teaspoon", item = "vanilla extract" },
+    { qty = 0.5, unit = "teaspoon", item = "sea salt" },
+    { qty = 0.5, unit = "cup", item = "chocolate chip", optional = true },
+    { qty = 1, unit = "cup", item = "berry", desc = "fresh", optional = true },
+    { qty = 0.5, unit = "cup", item = "raisin", optional = true, alt = { item = "dried cranberry" } }
+  ] }
 ]
-servings = 12
 +++
 
 ## Instructions

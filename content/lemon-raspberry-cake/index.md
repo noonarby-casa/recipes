@@ -1,47 +1,13 @@
 +++
-title = 'Lemon Raspberry Cake'
+title = "Lemon Raspberry Cake"
 date = 2026-06-20T21:15:00-04:00
-slug = 'lemon-raspberry-cake'
-shortId = 'lrc'
+slug = "lemon-raspberry-cake"
+shortId = "lrc"
+servings = 8
 times = [
-  { step = 'cook', time = '40 min' }
+  { time = "40 min", step = "cook" }
 ]
-recipeSource = 'Rickarbys'
-ingredients = [
-    { category = "Cake Batter", items = [
-      { text = "1 cup unsalted butter, at room temperature", item = "butter" },
-      { text = "1 1/2 cups granulated sugar", item = "sugar" },
-      { text = "1/4 cup light brown sugar, packed", item = "brown sugar, packed" },
-      { text = "1 tablespoon lemon zest", item = "lemon zest" },
-      { text = "1/2 teaspoon pure lemon extract (optional)", item = "lemon extract", optional = true },
-      { text = "1 teaspoon vanilla extract", item = "vanilla extract" },
-      { text = "4 large eggs, at room temperature", item = "egg" },
-      { text = "2 1/2 cups cake flour", item = "cake flour" },
-      { text = "1 1/2 teaspoons baking powder", item = "baking powder" },
-      { text = "1/2 teaspoon baking soda", item = "baking soda" },
-      { text = "1/2 teaspoon salt", item = "salt" },
-      { text = "1/2 cup whole milk", item = "milk" },
-      { text = "1/2 cup full-fat sour cream", item = "sour cream" },
-      { text = "1/2 cup fresh squeezed lemon juice", item = "lemon juice" },
-      { text = "2 1/2 cups fresh or frozen raspberries (if using frozen, do not thaw)", item = "or frozen raspberrie" },
-      { text = "2 tablespoons all-purpose flour", item = "flour" }
-    ] },
-    { category = "Frosting", items = [
-      { text = "8 ounces full-fat cream cheese, a little softer than room temperature (for frosting)", item = "cream cheese" },
-      { text = "10 tablespoons unsalted butter, a little softer than room temperature (for frosting)", item = "butter" },
-      { text = "4 cups confectioners' sugar, more if needed (for frosting)", item = "sugar, more if needed" },
-      { text = "2 teaspoons fresh lemon zest (for frosting)", item = "lemon zest" },
-      { text = "1 tablespoon fresh lemon juice (for frosting)", item = "lemon juice" },
-      { text = "1/4 teaspoon pure lemon extract (for frosting, optional)", item = "lemon extract" },
-      { text = "1/4 teaspoon salt (for frosting)", item = "salt" },
-      { text = "2 tablespoons sour cream (for frosting)", item = "sour cream" }
-    ] },
-    { category = "Garnish", items = [
-      { text = "1/2 cup raspberry preserves (for garnish)", item = "raspberry preserve" },
-      { text = "1 lemon, thinly sliced (for garnish)", item = "lemon" },
-      { text = "1 cup fresh raspberries (for garnish)", item = "raspberrie" }
-    ] }
-  ]
+recipeSource = "Rickarbys"
 tags = [
   "baking",
   "cake",
@@ -50,7 +16,41 @@ tags = [
   "raspberry",
   "vegetarian"
 ]
-servings = 8
+ingredients = [
+  { category = "Cake Batter", items = [
+    { qty = 1, unit = "cup", item = "butter", desc = "unsalted", prep = "at room temperature" },
+    { qty = 1.5, unit = "cup", item = "granulated sugar" },
+    { qty = 0.25, unit = "cup", item = "light brown sugar", prep = "packed" },
+    { qty = 1, unit = "tablespoon", item = "lemon zest" },
+    { qty = 0.5, unit = "teaspoon", item = "lemon extract", desc = "pure", optional = true },
+    { qty = 1, unit = "teaspoon", item = "vanilla extract" },
+    { qty = 4, unit = "large", item = "egg", prep = "at room temperature" },
+    { qty = 2.5, unit = "cup", item = "cake flour" },
+    { qty = 1.5, unit = "teaspoon", item = "baking powder" },
+    { qty = 0.5, unit = "teaspoon", item = "baking soda" },
+    { qty = 0.5, unit = "teaspoon", item = "salt" },
+    { qty = 0.5, unit = "cup", item = "milk", desc = "whole" },
+    { qty = 0.5, unit = "cup", item = "sour cream", desc = "full-fat" },
+    { qty = 0.5, unit = "cup", item = "lemon juice", desc = "fresh squeezed" },
+    { qty = 2.5, unit = "cup", item = "raspberry", desc = "fresh or frozen", prep = "(if using frozen, do not thaw)" },
+    { qty = 2, unit = "tablespoon", item = "all-purpose flour" }
+  ] },
+  { category = "Frosting", items = [
+    { qty = 8, unit = "ounce", item = "cream cheese", desc = "full-fat", prep = "a little softer than room temperature (for frosting)" },
+    { qty = 10, unit = "tablespoon", item = "butter", desc = "unsalted", prep = "a little softer than room temperature (for frosting)" },
+    { qty = 4, unit = "cup", item = "confectioners' sugar", prep = "more if needed (for frosting)" },
+    { qty = 2, unit = "teaspoon", item = "lemon zest", desc = "fresh", prep = "(for frosting)" },
+    { qty = 1, unit = "tablespoon", item = "lemon juice", desc = "fresh", prep = "(for frosting)" },
+    { qty = 0.25, unit = "teaspoon", item = "lemon extract", desc = "pure", prep = "(for frosting)", optional = true },
+    { qty = 0.25, unit = "teaspoon", item = "salt", prep = "(for frosting)" },
+    { qty = 2, unit = "tablespoon", item = "sour cream", prep = "(for frosting)" }
+  ] },
+  { category = "Garnish", items = [
+    { qty = 0.5, unit = "cup", item = "raspberry preserve", prep = "(for garnish)" },
+    { qty = 1, item = "lemon", prep = "thinly sliced (for garnish)" },
+    { qty = 1, unit = "cup", item = "raspberry", desc = "fresh", prep = "(for garnish)" }
+  ] }
+]
 +++
 
 ## Instructions

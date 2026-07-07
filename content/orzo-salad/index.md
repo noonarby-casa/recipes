@@ -1,36 +1,14 @@
 +++
-title = 'Orzo Salad'
+title = "Orzo Salad"
 date = 2026-07-02T20:58:03-04:00
-slug = 'orzo-salad'
-shortId = 'ozs'
+slug = "orzo-salad"
+shortId = "ozs"
 servings = 6
 times = [
-  { step = 'prep', time = '30 min' },
-  { step = 'cook', time = '8 min' }
+  { time = "30 min", step = "prep" },
+  { time = "8 min", step = "cook" }
 ]
-recipeSource = 'Carly Rickarby'
-ingredients = [
-    { category = "Salad", items = [
-      { text = "1 1/2 cups dry orzo pasta", item = "orzo pasta" },
-      { text = "2 Persian cucumbers, halved vertically and sliced 1/4-inch thick", item = "persian cucumber" },
-      { text = "2 cups cherry tomatoes, halved", item = "cherry tomatoes, halved" },
-      { text = "1 cup cooked chickpeas, drained and rinsed", item = "chickpea" },
-      { text = "4 ounces feta cheese, cut into 1/4-inch cubes", item = "feta cheese, cut into 1/4-inch cube" },
-      { text = "1/3 cup thinly sliced red onion", item = "red onion" },
-      { text = "1/2 cup pitted Kalamata olives", item = "pitted kalamata olive" },
-      { text = "1 cup fresh basil and/or mint leaves", item = "basil and/or mint leaf" }
-    ] },
-    { category = "Dressing", items = [
-      { text = "1/4 cup extra-virgin olive oil", item = "olive oil" },
-      { text = "4 tablespoons red wine vinegar", item = "red wine vinegar" },
-      { text = "1 tablespoon fresh lemon juice", item = "lemon juice" },
-      { text = "1 garlic clove, minced", item = "garlic clove" },
-      { text = "1 teaspoon dried oregano", item = "oregano" },
-      { text = "1/4 teaspoon Dijon mustard", item = "dijon mustard" },
-      { text = "1/2 teaspoon sea salt", item = "sea salt" },
-      { text = "Freshly ground black pepper", item = "freshly ground black pepper" }
-    ] }
-  ]
+recipeSource = "Carly Rickarby"
 tags = [
   "easy",
   "pasta",
@@ -39,6 +17,28 @@ tags = [
   "side-dish",
   "summer",
   "vegetarian"
+]
+ingredients = [
+  { category = "Salad", items = [
+    { qty = 1.5, unit = "cup", item = "orzo pasta", desc = "dry" },
+    { qty = 2, item = "Persian cucumber", prep = "halved vertically and sliced 1/4-inch thick" },
+    { qty = 2, unit = "cup", item = "cherry tomato", prep = "halved" },
+    { qty = 1, unit = "cup", item = "chickpea", desc = "cooked", prep = "drained and rinsed" },
+    { qty = 4, unit = "ounce", item = "feta cheese", prep = "cut into 1/4-inch cubes" },
+    { qty = 0.333, unit = "cup", item = "red onion", prep = "thinly sliced" },
+    { qty = 0.5, unit = "cup", item = "Kalamata olive", desc = "pitted" },
+    { qty = 1, unit = "cup", item = "basil leaf", desc = "fresh", alt = { item = "mint leaf" } }
+  ] },
+  { category = "Dressing", items = [
+    { qty = 0.25, unit = "cup", item = "olive oil", desc = "extra-virgin" },
+    { qty = 4, unit = "tablespoon", item = "red wine vinegar" },
+    { qty = 1, unit = "tablespoon", item = "lemon juice", desc = "fresh" },
+    { qty = 1, unit = "clove", item = "garlic", prep = "minced" },
+    { qty = 1, unit = "teaspoon", item = "oregano", desc = "dried" },
+    { qty = 0.25, unit = "teaspoon", item = "Dijon mustard" },
+    { qty = 0.5, unit = "teaspoon", item = "sea salt" },
+    { item = "black pepper", desc = "freshly ground" }
+  ] }
 ]
 +++
 

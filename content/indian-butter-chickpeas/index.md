@@ -1,31 +1,14 @@
 +++
-title = 'Indian Butter Chickpeas'
+title = "Indian Butter Chickpeas"
 date = 2026-07-05T14:38:00-04:00
-slug = 'indian-butter-chickpeas'
-shortId = 'ibc'
+slug = "indian-butter-chickpeas"
+shortId = "ibc"
+servings = 6
 times = [
-  { step = 'prep', time = '15 min' },
-  { step = 'cook', time = '25 min' }
+  { time = "15 min", step = "prep" },
+  { time = "25 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "4 tablespoons butter", item = "butter" },
-    { text = "1/4 teaspoon cumin powder", item = "cumin powder" },
-    { text = "1 1/2 cups finely chopped onion (about 1 large)", item = "onion" },
-    { text = "2 large garlic cloves (finely chopped)", item = "garlic clove" },
-    { text = "2 teaspoons finely chopped ginger", item = "ginger" },
-    { text = "1 teaspoon salt (divided, or to taste)", item = "salt" },
-    { text = "2 tablespoons Kasoori methi (optional)", item = "kasoori methi", optional = true },
-    { text = "2 1/2 teaspoons coriander powder", item = "coriander powder" },
-    { text = "1/2 teaspoon cayenne pepper powder", item = "cayenne pepper powder" },
-    { text = "1/4 teaspoon garam masala powder", item = "garam masala powder" },
-    { text = "1 can (15-ounce) tomato sauce", item = "tomato sauce" },
-    { text = "3 tablespoons cashew powder", item = "cashew powder" },
-    { text = "2 cans chickpeas (15-ounce cans) drained and rinsed", item = "chickpeas and rinsed" },
-    { text = "1/2 cup heavy cream", item = "cream" },
-    { text = "2 tablespoons maple syrup", item = "maple syrup" },
-    { text = "white rice, to serve", item = "white rice, to serve" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "chickpeas",
   "curry",
@@ -34,7 +17,26 @@ tags = [
   "vegetarian",
   "weeknight"
 ]
-servings = 6
+ingredients = [
+  { items = [
+    { qty = 4, unit = "tablespoon", item = "butter" },
+    { qty = 0.25, unit = "teaspoon", item = "cumin powder" },
+    { qty = 1.5, unit = "cup", item = "onion", prep = "finely chopped (about 1 large)" },
+    { qty = 2, unit = "large clove", item = "garlic", prep = "finely chopped" },
+    { qty = 2, unit = "teaspoon", item = "ginger", prep = "finely chopped" },
+    { qty = 1, unit = "teaspoon", item = "salt", prep = "divided, or to taste" },
+    { qty = 2, unit = "tablespoon", item = "kasoori methi", optional = true },
+    { qty = 2.5, unit = "teaspoon", item = "coriander powder" },
+    { qty = 0.5, unit = "teaspoon", item = "cayenne pepper powder" },
+    { qty = 0.25, unit = "teaspoon", item = "garam masala powder" },
+    { qty = 1, unit = "can (15-ounce)", item = "tomato sauce" },
+    { qty = 3, unit = "tablespoon", item = "cashew powder" },
+    { qty = 2, unit = "can (15-ounce)", item = "chickpeas", prep = "drained and rinsed" },
+    { qty = 0.5, unit = "cup", item = "heavy cream" },
+    { qty = 2, unit = "tablespoon", item = "maple syrup" },
+    { item = "white rice", prep = "to serve" }
+  ] }
+]
 +++
 
 ## Instructions

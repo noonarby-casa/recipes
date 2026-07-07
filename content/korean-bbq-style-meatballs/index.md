@@ -1,34 +1,14 @@
 +++
-title = 'Korean BBQ-Style Meatballs'
+title = "Korean BBQ-Style Meatballs"
 date = 2026-06-06T22:04:32-04:00
-slug = 'korean-bbq-style-meatballs'
-shortId = 'kbq'
+slug = "korean-bbq-style-meatballs"
+shortId = "kbq"
+servings = 4
 times = [
-  { step = 'prep', time = '15 min' },
-  { step = 'cook', time = '15 min' }
+  { time = "15 min", step = "prep" },
+  { time = "15 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { category = "Meatballs", items = [
-      { text = "1 pound ground beef (round or chuck)", item = "beef" },
-      { text = "1/2 cup panko", item = "panko" },
-      { text = "1/2 cup chopped fresh scallions (or 2 tablespoons freeze-dried scallions)", item = "scallion" },
-      { text = "2 tablespoons low-sodium soy sauce", item = "soy sauce" },
-      { text = "2 tablespoons minced garlic", item = "garlic" },
-      { text = "1 teaspoon kosher salt (such as Diamond Crystal)", item = "kosher salt" },
-      { text = "1 teaspoon freshly ground black pepper", item = "freshly ground black pepper" }
-    ] },
-    { category = "Vegetables & Rice", items = [
-      { text = "1 carrot", item = "carrot" },
-      { text = "1 red bell pepper", item = "red bell pepper" },
-      { text = "1 cucumber", item = "cucumber" },
-      { text = "white rice, to serve", item = "white rice, to serve" }
-    ] },
-    { category = "Serving", items = [
-      { text = "spicy mayonnaise, to serve", item = "spicy mayonnaise, to serve" },
-      { text = "low-sodium soy sauce, to serve", item = "soy sauce, to serve" }
-    ] }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "asian",
   "beef",
@@ -38,7 +18,27 @@ tags = [
   "meatballs",
   "weeknight"
 ]
-servings = 4
+ingredients = [
+  { category = "Meatballs", items = [
+    { qty = 1, unit = "pound", item = "ground beef", prep = "round or chuck" },
+    { qty = 0.5, unit = "cup", item = "panko" },
+    { qty = 0.5, unit = "cup", item = "scallion", desc = "fresh", prep = "chopped", alt = { qty = 2, unit = "tablespoon", desc = "freeze-dried" } },
+    { qty = 2, unit = "tablespoon", item = "soy sauce", desc = "low-sodium" },
+    { qty = 2, unit = "tablespoon", item = "garlic", prep = "minced" },
+    { qty = 1, unit = "teaspoon", item = "kosher salt" },
+    { qty = 1, unit = "teaspoon", item = "black pepper", desc = "freshly ground" }
+  ] },
+  { category = "Vegetables & Rice", items = [
+    { qty = 1, item = "carrot" },
+    { qty = 1, item = "red bell pepper" },
+    { qty = 1, item = "cucumber" },
+    { item = "white rice", prep = "to serve" }
+  ] },
+  { category = "Serving", items = [
+    { item = "spicy mayonnaise", prep = "to serve" },
+    { item = "soy sauce", desc = "low-sodium", prep = "to serve" }
+  ] }
+]
 +++
 
 ## Instructions

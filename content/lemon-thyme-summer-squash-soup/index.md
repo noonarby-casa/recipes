@@ -1,25 +1,13 @@
 +++
-title = 'Lemon Thyme Summer Squash Soup'
+title = "Lemon Thyme Summer Squash Soup"
 date = 2026-06-17T16:21:20-04:00
-slug = 'lemon-thyme-summer-squash-soup'
-shortId = 'lss'
+slug = "lemon-thyme-summer-squash-soup"
+shortId = "lss"
+servings = 4
 times = [
-  { step = 'cook', time = '30 min' }
+  { time = "30 min", step = "cook" }
 ]
-recipeSource = 'Noonarbys'
-ingredients = [
-    { text = "2 tablespoons butter or olive oil", item = "butter or olive oil" },
-    { text = "1 small sweet onion, chopped", item = "onion" },
-    { text = "3 cloves garlic, minced", item = "garlic" },
-    { text = "4 summer squash (about 7-8 ounces each), sliced into 1/8-inch half moons", item = "summer squash" },
-    { text = "1 tablespoon fresh thyme", item = "thyme" },
-    { text = "1 teaspoon sea salt", item = "sea salt" },
-    { text = "black pepper, to taste", item = "black pepper" },
-    { text = "4 cups water", item = "water" },
-    { text = "1 lemon, zested (about 1 teaspoon zest)", item = "lemon, zested" },
-    { text = "1/2 cup heavy cream", item = "cream" },
-    { text = "2 tablespoons fresh lemon juice (plus more to taste)", item = "lemon juice" }
-  ]
+recipeSource = "Noonarbys"
 tags = [
   "dinner",
   "easy",
@@ -31,7 +19,21 @@ tags = [
   "summer-squash",
   "vegetarian"
 ]
-servings = 4
+ingredients = [
+  { items = [
+    { qty = 2, unit = "tablespoon", item = "butter", alt = { item = "olive oil" } },
+    { qty = 1, unit = "small", item = "sweet onion", prep = "chopped" },
+    { qty = 3, unit = "clove", item = "garlic", prep = "minced" },
+    { qty = 4, item = "summer squash", desc = "(about 7-8 ounces each)", prep = "sliced into 1/8-inch half moons" },
+    { qty = 1, unit = "tablespoon", item = "thyme", desc = "fresh" },
+    { qty = 1, unit = "teaspoon", item = "sea salt" },
+    { item = "black pepper", prep = "to taste" },
+    { qty = 4, unit = "cup", item = "water" },
+    { qty = 1, item = "lemon", prep = "zested (about 1 teaspoon zest)" },
+    { qty = 0.5, unit = "cup", item = "heavy cream" },
+    { qty = 2, unit = "tablespoon", item = "lemon juice", desc = "fresh", prep = "(plus more to taste)" }
+  ] }
+]
 +++
 
 ## Instructions

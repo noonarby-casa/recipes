@@ -1,32 +1,15 @@
 +++
-title = 'Lemon Icebox Pie'
+title = "Lemon Icebox Pie"
 date = 2026-06-20T21:06:01-04:00
-slug = 'lemon-icebox-pie'
-shortId = 'lip'
+slug = "lemon-icebox-pie"
+shortId = "lip"
+servings = 8
 times = [
-  { step = 'prep', time = '15 min' },
-  { step = 'freeze', time = '6 hours' },
-  { step = 'cook', time = '10 min' }
+  { time = "15 min", step = "prep" },
+  { time = "6 hours", step = "freeze" },
+  { time = "10 min", step = "cook" }
 ]
-recipeSource = 'Rickarbys'
-ingredients = [
-    { category = "Crust", items = [
-      { text = "9 ounces shortbread cookies", item = "shortbread cookie" },
-      { text = "1/4 cup granulated sugar (for crust)", item = "sugar" },
-      { text = "4 tablespoons unsalted butter, melted", item = "butter" }
-    ] },
-    { category = "Filling", items = [
-      { text = "6 large egg yolks", item = "egg yolk" },
-      { text = "1/4 cup granulated sugar (for filling)", item = "sugar" },
-      { text = "1 pinch kosher salt", item = "kosher salt" },
-      { text = "1 14-ounce can sweetened condensed milk", item = "14-ounce can sweetened condensed milk" },
-      { text = "2 tablespoons grated lemon zest", item = "lemon zest" },
-      { text = "3/4 cup fresh lemon juice", item = "lemon juice" }
-    ] },
-    { category = "For Serving", items = [
-      { text = "Freshly whipped cream, for serving", item = "freshly whipped cream" }
-    ] }
-  ]
+recipeSource = "Rickarbys"
 tags = [
   "dessert",
   "easy",
@@ -34,7 +17,24 @@ tags = [
   "pie",
   "vegetarian"
 ]
-servings = 8
+ingredients = [
+  { category = "Crust", items = [
+    { qty = 9, unit = "ounce", item = "shortbread cookie" },
+    { qty = 0.25, unit = "cup", item = "granulated sugar", prep = "for crust" },
+    { qty = 4, unit = "tablespoon", item = "butter", desc = "unsalted", prep = "melted" }
+  ] },
+  { category = "Filling", items = [
+    { qty = 6, unit = "large", item = "egg yolk" },
+    { qty = 0.25, unit = "cup", item = "granulated sugar", prep = "for filling" },
+    { qty = 1, unit = "pinch", item = "kosher salt" },
+    { qty = 1, unit = "can (14-ounce)", item = "sweetened condensed milk" },
+    { qty = 2, unit = "tablespoon", item = "lemon zest", prep = "grated" },
+    { qty = 0.75, unit = "cup", item = "lemon juice", desc = "fresh" }
+  ] },
+  { category = "For Serving", items = [
+    { item = "whipped cream", desc = "freshly", prep = "for serving" }
+  ] }
+]
 +++
 
 ## Instructions

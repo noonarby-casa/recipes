@@ -1,0 +1,112 @@
+{{- $ing := . -}}
+
+{{- $text := "" -}}
+{{- $mainItemParts := slice -}}
+{{- if $ing.desc -}}
+  {{- $mainItemParts = $mainItemParts | append $ing.desc -}}
+{{- end -}}
+
+{{- $itemName := $ing.item | default "" -}}
+
+{{- $primaryQtyStr := "" -}}
+{{- $primaryUnitStr := "" -}}
+
+{{- if isset $ing "qty" -}}
+  {{- $qty := $ing.qty -}}
+  {{- /* We can output the qty in a recipe-quantity span */ -}}
+  {{- if reflect.IsSlice $qty -}}
+    {{- $primaryQtyStr = printf "%v-%v" (index $qty 0) (index $qty 1) -}}
+  {{- else -}}
+    {{- $primaryQtyStr = printf "%v" $qty -}}
+  {{- end -}}
+
+  {{- if $ing.unit -}}
+    {{- $primaryUnitStr = $ing.unit -}}
+  {{- end -}}
+
+  {{- /* Format the quantity inline */ -}}
+  {{- $displayStr := $primaryQtyStr -}}
+  {{- if $primaryUnitStr -}}
+    {{- $displayStr = printf "%s %s" $primaryQtyStr $primaryUnitStr -}}
+  {{- end -}}
+  {{- $text = printf "<span class=\"recipe-quantity\" data-base-qty=\"%s\" data-unit=\"%s\">%s</span>" $primaryQtyStr $primaryUnitStr $displayStr -}}
+{{- end -}}
+
+{{- $mainItemParts = $mainItemParts | append $itemName -}}
+{{- $mainItemText := delimit $mainItemParts " " -}}
+
+{{- if $mainItemText -}}
+  {{- if $text -}}
+    {{- $text = printf "%s %s" (trim $text " ") (trim $mainItemText " ") -}}
+  {{- else -}}
+    {{- $text = trim $mainItemText " " -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if $ing.prep -}}
+  {{- $text = printf "%s, %s" (trim $text " ") (trim $ing.prep " ") -}}
+{{- end -}}
+
+{{- if $ing.alt -}}
+  {{- $altText := "" -}}
+  {{- $altQtyStr := "" -}}
+  {{- $altUnitStr := "" -}}
+  {{- if isset $ing.alt "qty" -}}
+    {{- if reflect.IsSlice $ing.alt.qty -}}
+      {{- $altQtyStr = printf "%v-%v" (index $ing.alt.qty 0) (index $ing.alt.qty 1) -}}
+    {{- else -}}
+      {{- $altQtyStr = printf "%v" $ing.alt.qty -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $ing.alt.unit -}}{{- $altUnitStr = $ing.alt.unit -}}{{- end -}}
+
+  {{- if or $ing.alt.item $ing.alt.desc $ing.alt.prep -}}
+    {{- $altParts := slice -}}
+    {{- $altDescItem := slice -}}
+
+    {{- if $altQtyStr -}}
+      {{- $altDisplayStr := $altQtyStr -}}
+      {{- if $altUnitStr -}}
+        {{- $altDisplayStr = printf "%s %s" $altQtyStr $altUnitStr -}}
+      {{- end -}}
+      {{- $altQtyHTML := printf "<span class=\"recipe-quantity\" data-base-qty=\"%s\" data-unit=\"%s\">%s</span>" $altQtyStr $altUnitStr $altDisplayStr -}}
+      {{- $altParts = $altParts | append (trim $altQtyHTML " ") -}}
+    {{- end -}}
+
+    {{- if $ing.alt.desc -}}
+      {{- $altDescItem = $altDescItem | append $ing.alt.desc -}}
+    {{- end -}}
+    {{- if $ing.alt.item -}}
+      {{- $altDescItem = $altDescItem | append $ing.alt.item -}}
+    {{- end -}}
+
+    {{- $altMain := delimit $altDescItem " " -}}
+    {{- if $ing.alt.prep -}}
+      {{- if $altMain -}}
+        {{- $altMain = printf "%s, %s" $altMain $ing.alt.prep -}}
+      {{- else -}}
+        {{- $altMain = $ing.alt.prep -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- if $altMain -}}
+      {{- $altParts = $altParts | append $altMain -}}
+    {{- end -}}
+    {{- $altText = printf "(or %s)" (delimit $altParts " ") -}}
+  {{- else -}}
+    {{- if $altQtyStr -}}
+      {{- $altDisplayStr := $altQtyStr -}}
+      {{- if $altUnitStr -}}
+        {{- $altDisplayStr = printf "%s %s" $altQtyStr $altUnitStr -}}
+      {{- end -}}
+      {{- $altQtyHTML := printf "<span class=\"recipe-quantity\" data-base-qty=\"%s\" data-unit=\"%s\">%s</span>" $altQtyStr $altUnitStr $altDisplayStr -}}
+      {{- $altText = printf "(%s)" (trim $altQtyHTML " ") -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if $altText -}}
+    {{- $text = printf "%s %s" (trim $text " ") $altText -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $text | safeHTML -}}

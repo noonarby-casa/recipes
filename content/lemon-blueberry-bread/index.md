@@ -1,32 +1,14 @@
 +++
-title = 'Lemon Blueberry Bread'
+title = "Lemon Blueberry Bread"
 date = 2026-06-20T21:10:50-04:00
-slug = 'lemon-blueberry-bread'
-shortId = 'lbb'
+slug = "lemon-blueberry-bread"
+shortId = "lbb"
+servings = 8
 times = [
-  { step = 'prep', time = '15 min' },
-  { step = 'cook', time = '60 min' }
+  { time = "15 min", step = "prep" },
+  { time = "60 min", step = "cook" }
 ]
-recipeSource = 'Rickarbys'
-ingredients = [
-    { category = "Bread", items = [
-      { text = "1/3 cup butter, melted", item = "butter" },
-      { text = "1 cup sugar", item = "sugar" },
-      { text = "3 tablespoons fresh lemon juice", item = "lemon juice" },
-      { text = "2 eggs, room temperature", item = "egg" },
-      { text = "1 1/2 cups all-purpose flour", item = "flour" },
-      { text = "1 teaspoon baking powder", item = "baking powder" },
-      { text = "1/4 teaspoon baking soda", item = "baking soda" },
-      { text = "1/2 teaspoon kosher salt", item = "kosher salt" },
-      { text = "1/2 cup sour cream (or plain Greek yogurt)", item = "sour cream" },
-      { text = "2 tablespoons lemon zest", item = "lemon zest" },
-      { text = "1 cup blueberries (fresh or frozen)", item = "blueberrie" }
-    ] },
-    { category = "Glaze", items = [
-      { text = "3/4 cup powdered sugar (for glaze)", item = "sugar" },
-      { text = "2 tablespoons fresh lemon juice (for glaze)", item = "lemon juice" }
-    ] }
-  ]
+recipeSource = "Rickarbys"
 tags = [
   "baking",
   "blueberry",
@@ -37,7 +19,25 @@ tags = [
   "sweet-bread",
   "vegetarian"
 ]
-servings = 8
+ingredients = [
+  { category = "Bread", items = [
+    { qty = 0.333, unit = "cup", item = "butter", prep = "melted" },
+    { qty = 1, unit = "cup", item = "sugar" },
+    { qty = 3, unit = "tablespoon", item = "lemon juice", desc = "fresh" },
+    { qty = 2, item = "egg", prep = "room temperature" },
+    { qty = 1.5, unit = "cup", item = "all-purpose flour" },
+    { qty = 1, unit = "teaspoon", item = "baking powder" },
+    { qty = 0.25, unit = "teaspoon", item = "baking soda" },
+    { qty = 0.5, unit = "teaspoon", item = "kosher salt" },
+    { qty = 0.5, unit = "cup", item = "sour cream", alt = { item = "plain Greek yogurt" } },
+    { qty = 2, unit = "tablespoon", item = "lemon zest" },
+    { qty = 1, unit = "cup", item = "blueberry", prep = "fresh or frozen" }
+  ] },
+  { category = "Glaze", items = [
+    { qty = 0.75, unit = "cup", item = "powdered sugar", prep = "for glaze" },
+    { qty = 2, unit = "tablespoon", item = "lemon juice", desc = "fresh", prep = "for glaze" }
+  ] }
+]
 +++
 
 ## Instructions

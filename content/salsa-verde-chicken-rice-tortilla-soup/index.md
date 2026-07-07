@@ -1,30 +1,13 @@
 +++
-title = 'Salsa Verde Chicken and Rice Tortilla Soup'
+title = "Salsa Verde Chicken and Rice Tortilla Soup"
 date = 2026-06-22T05:48:25-04:00
-slug = 'salsa-verde-chicken-rice-tortilla-soup'
-shortId = 'cts'
+slug = "salsa-verde-chicken-rice-tortilla-soup"
+shortId = "cts"
+servings = 6
 times = [
-  { step = 'cook', time = '30 min' }
+  { time = "30 min", step = "cook" }
 ]
-recipeSource = 'Carly Rickarby'
-ingredients = [
-    { text = "2 tablespoons extra virgin olive oil", item = "olive oil" },
-    { text = "1 yellow onion, chopped", item = "yellow onion" },
-    { text = "1 pound boneless skinless chicken thighs or breasts", item = "boneless skinless chicken thighs or breast" },
-    { text = "2 teaspoons chili powder", item = "chili powder" },
-    { text = "2 teaspoons smoked paprika", item = "smoked paprika" },
-    { text = "1 teaspoon dried oregano", item = "oregano" },
-    { text = "kosher salt and black pepper", item = "kosher salt and black pepper" },
-    { text = "1 poblano pepper, chopped (or up to 2)", item = "poblano pepper" },
-    { text = "2 cups salsa verde", item = "salsa verde" },
-    { text = "6 cups low sodium chicken broth", item = "chicken broth" },
-    { text = "1 can (14 ounce) black beans, drained", item = "black bean" },
-    { text = "2 tablespoons lime juice", item = "lime juice" },
-    { text = "1/2 cup cilantro, chopped", item = "cilantro" },
-    { text = "3 cups cooked rice", item = "rice" },
-    { text = "tortilla chips, for serving", item = "tortilla chip" },
-    { text = "yogurt, avocado, cheese, and green onions, for serving", item = "yogurt, avocado, cheese, and green onion" }
-  ]
+recipeSource = "Carly Rickarby"
 tags = [
   "chicken",
   "dinner",
@@ -37,7 +20,30 @@ tags = [
   "soup",
   "weeknight"
 ]
-servings = 6
+ingredients = [
+  { items = [
+    { qty = 2, unit = "tablespoon", item = "olive oil", desc = "extra virgin" },
+    { qty = 1, item = "yellow onion", prep = "chopped" },
+    { qty = 1, unit = "pound", item = "chicken thigh", desc = "boneless skinless", alt = { item = "chicken breast" } },
+    { qty = 2, unit = "teaspoon", item = "chili powder" },
+    { qty = 2, unit = "teaspoon", item = "smoked paprika" },
+    { qty = 1, unit = "teaspoon", item = "oregano", desc = "dried" },
+    { item = "kosher salt" },
+    { item = "black pepper" },
+    { qty = 1, item = "poblano pepper", prep = "chopped (or up to 2)" },
+    { qty = 2, unit = "cup", item = "salsa verde" },
+    { qty = 6, unit = "cup", item = "chicken broth", desc = "low sodium" },
+    { qty = 1, unit = "can (14 ounce)", item = "black bean", prep = "drained" },
+    { qty = 2, unit = "tablespoon", item = "lime juice" },
+    { qty = 0.5, unit = "cup", item = "cilantro", prep = "chopped" },
+    { qty = 3, unit = "cup", item = "rice", desc = "cooked" },
+    { item = "tortilla chip", prep = "for serving" },
+    { item = "yogurt", prep = "for serving" },
+    { item = "avocado", prep = "for serving" },
+    { item = "cheese", prep = "for serving" },
+    { item = "green onion", prep = "for serving" }
+  ] }
+]
 +++
 
 ## Instructions

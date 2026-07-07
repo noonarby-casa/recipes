@@ -1,35 +1,13 @@
 +++
-title = 'Healthy Thai Turkey Meatballs in Coconut Curry'
+title = "Healthy Thai Turkey Meatballs in Coconut Curry"
 date = 2026-06-22T05:53:17-04:00
-slug = 'healthy-thai-turkey-meatballs-in-coconut-curry'
-shortId = 'tmb'
+slug = "healthy-thai-turkey-meatballs-in-coconut-curry"
+shortId = "tmb"
+servings = 4
 times = [
-  { step = 'cook', time = '30 min' }
+  { time = "30 min", step = "cook" }
 ]
-recipeSource = 'Carly Rickarby'
-ingredients = [
-    { category = "Meatballs", items = [
-      { text = "1 pound organic ground turkey (or ground chicken)", item = "turkey" },
-      { text = "1 egg", item = "egg" },
-      { text = "1 cup gluten-free or grain-free cracker crumbs", item = "gluten-free or grain-free cracker crumb" },
-      { text = "2 cloves garlic, minced", item = "garlic" },
-      { text = "1 teaspoon ground ginger", item = "ginger" },
-      { text = "1.5 tablespoons coconut aminos", item = "coconut amino" },
-      { text = "1 tablespoon red curry paste", item = "red curry paste" },
-      { text = "sea salt and black pepper, to taste", item = "sea salt and black pepper" }
-    ] },
-    { category = "Coconut Curry Sauce", items = [
-      { text = "2 tablespoons avocado or olive oil", item = "avocado or olive oil" },
-      { text = "1 red bell pepper, sliced", item = "red bell pepper" },
-      { text = "1 small onion, diced", item = "onion" },
-      { text = "2 tablespoons red curry paste", item = "red curry paste" },
-      { text = "1 can (13.5 ounce) full-fat coconut milk", item = "full-fat coconut milk" },
-      { text = "1 tablespoon coconut aminos", item = "coconut amino" }
-    ] },
-    { category = "Garnish", items = [
-      { text = "cilantro, for garnish", item = "cilantro" }
-    ] }
-  ]
+recipeSource = "Carly Rickarby"
 tags = [
   "asian",
   "coconut-milk",
@@ -43,7 +21,30 @@ tags = [
   "turkey",
   "weeknight"
 ]
-servings = 4
+ingredients = [
+  { category = "Meatballs", items = [
+    { qty = 1, unit = "pound", item = "ground turkey", desc = "organic", alt = { item = "ground chicken" } },
+    { qty = 1, item = "egg" },
+    { qty = 1, unit = "cup", item = "cracker crumb", desc = "gluten-free", alt = { item = "grain-free cracker crumb" } },
+    { qty = 2, unit = "clove", item = "garlic", prep = "minced" },
+    { qty = 1, unit = "teaspoon", item = "ginger", desc = "ground" },
+    { qty = 1.5, unit = "tablespoon", item = "coconut amino" },
+    { qty = 1, unit = "tablespoon", item = "red curry paste" },
+    { item = "sea salt", prep = "to taste" },
+    { item = "black pepper", prep = "to taste" }
+  ] },
+  { category = "Coconut Curry Sauce", items = [
+    { qty = 2, unit = "tablespoon", item = "avocado oil", alt = { item = "olive oil" } },
+    { qty = 1, item = "red bell pepper", prep = "sliced" },
+    { qty = 1, unit = "small", item = "onion", prep = "diced" },
+    { qty = 2, unit = "tablespoon", item = "red curry paste" },
+    { qty = 1, unit = "can (13.5 ounce)", item = "coconut milk", desc = "full-fat" },
+    { qty = 1, unit = "tablespoon", item = "coconut amino" }
+  ] },
+  { category = "Garnish", items = [
+    { item = "cilantro", prep = "for garnish" }
+  ] }
+]
 +++
 
 ## Instructions
