@@ -3,39 +3,39 @@ html {
 }
 
 body {
-  color: var(--text-color);
   background-color: var(--bg-color);
+  color: var(--text-color);
   font-family: sans-serif;
   line-height: 1.5;
   margin: 0 auto;
-  padding: 0.5rem 1rem;
   max-width: 100%;
+  padding: 0.5rem 1rem;
 }
 
 header {
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
 }
 
 header h1 {
-  display: inline-flex;
   align-items: center;
+  display: inline-flex;
   gap: 1.75rem;
   margin: 0;
 }
 
 header h1 a {
-  color: inherit;
-  text-decoration: none;
-  display: inline-flex;
   align-items: center;
+  color: inherit;
+  display: inline-flex;
   gap: 0.5rem;
+  text-decoration: none;
 }
 
 .header-logo {
@@ -66,8 +66,8 @@ a:hover {
 
 .footer-separator {
   color: var(--text-muted);
-  opacity: 0.5;
   margin: 0 8px;
+  opacity: 0.5;
   vertical-align: middle;
 }
 
@@ -82,10 +82,10 @@ a:hover {
 }
 
 .footer-github-link {
-  display: inline-flex;
   align-items: center;
-  vertical-align: middle;
   color: var(--text-muted);
+  display: inline-flex;
+  vertical-align: middle;
 }
 
 .footer-github-link:hover {
@@ -94,37 +94,37 @@ a:hover {
 }
 
 .footer-github-icon {
-  width: 1.25rem;
   height: 1.25rem;
+  width: 1.25rem;
 }
 
 /* Header Search Toggle & Right Section */
 .header-right {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: 1rem;
 }
 
 .header-search-toggle,
 .header-random-recipe,
 .header-theme-toggle {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  padding: 0.5rem;
-  border-radius: 50%;
   background: transparent;
   border: none;
-  transition: all 0.2s ease;
+  border-radius: 50%;
+  color: var(--text-muted);
   cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .header-search-toggle:hover,
 .header-random-recipe:hover,
 .header-theme-toggle:hover {
-  color: var(--noonblue);
   background-color: var(--noonblue-bg-light);
+  color: var(--noonblue);
 }
 
 .header-search-toggle svg,
@@ -137,12 +137,15 @@ a:hover {
 .header-theme-toggle .theme-icon-light {
   display: none;
 }
+
 .header-theme-toggle .theme-icon-dark {
   display: block;
 }
+
 html.dark-mode .header-theme-toggle .theme-icon-light {
   display: block;
 }
+
 html.dark-mode .header-theme-toggle .theme-icon-dark {
   display: none;
 }
@@ -150,15 +153,15 @@ html.dark-mode .header-theme-toggle .theme-icon-dark {
 /* Custom Scrollbars */
 @supports (scrollbar-color: auto) {
   html {
-    scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) transparent;
+    scrollbar-width: thin;
   }
 }
 
 @supports selector(::-webkit-scrollbar) {
   ::-webkit-scrollbar {
-    width: 6px;
     height: 6px;
+    width: 6px;
   }
 
   ::-webkit-scrollbar-button {

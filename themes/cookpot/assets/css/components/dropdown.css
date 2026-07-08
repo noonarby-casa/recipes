@@ -5,36 +5,36 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   background-color: var(--card-bg);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  padding: 0.45rem 2.2rem 0.45rem 0.9rem; /* space on the right for arrow */
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--btn-shadow);
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230080d8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
+  background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='002424' fill='none' stroke='%230080d8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='691215189'%3E%3C/polyline%3E%3C/svg%3E');
   background-position: right 0.75rem center;
+  background-repeat: no-repeat;
   background-size: 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--btn-shadow);
+  color: var(--text-color);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 2.2rem 0.45rem 0.9rem; /* space on the right for arrow */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dropdown-select:hover,
 .store-layout-select:hover {
   background-color: var(--noonblue-bg-light);
+  background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='002424' fill='none' stroke='%23006cb7' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='691215189'%3E%3C/polyline%3E%3C/svg%3E');
   border-color: var(--noonblue-hover);
-  color: var(--noonblue-hover);
   box-shadow: 0 4px 12px var(--noonblue-shadow-subtle);
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23006cb7' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  color: var(--noonblue-hover);
 }
 
 .dropdown-select:focus,
 .store-layout-select:focus {
-  outline: none;
   border-color: var(--noonblue);
   box-shadow: 0 0 0 3px var(--noonblue-shadow);
+  outline: none;
 }
 
 .dropdown-select option,
@@ -45,21 +45,21 @@
 
 /* Global Store Selector Header Component */
 .header-store-btn {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  padding: 0.5rem;
-  border-radius: 50%;
   background: transparent;
   border: none;
-  transition: all 0.2s ease;
+  border-radius: 50%;
+  color: var(--text-muted);
   cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .header-store-btn:hover {
-  color: var(--noonblue);
   background-color: var(--noonblue-bg-light);
+  color: var(--noonblue);
 }
 
 .header-store-btn svg {
@@ -67,9 +67,9 @@
 }
 
 .store-selector-label {
+  color: var(--text-muted);
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-muted);
   margin-bottom: 0.25rem;
 }
 
@@ -84,16 +84,16 @@
 .store-layout-option-btn {
   background-color: var(--font-controls-bg);
   border: 1px solid var(--border-ultra-subtle);
-  color: var(--text-color);
-  padding: 0.65rem 1rem;
   border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  font-family: inherit;
-  text-align: left;
+  color: var(--text-color);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
   outline: none;
+  padding: 0.65rem 1rem;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .store-layout-option-btn:hover {
@@ -104,9 +104,9 @@
 
 .store-layout-option-btn.active {
   background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  color: #ffffff;
   border-color: transparent;
   box-shadow: 0 4px 12px var(--noonblue-shadow-subtle);
+  color: #fff;
 }
 
 .store-layout-option-btn:active {
@@ -116,16 +116,16 @@
 /* Success state for copying */
 .dropdown-select.success {
   background-color: #2e7d32;
+  background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='002424' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='691215189'%3E%3C/polyline%3E%3C/svg%3E');
   border-color: #2e7d32;
-  color: #ffffff;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+  color: #fff;
 }
 
 .dropdown-select.success:hover {
   background-color: #1b5e20;
+  background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='002424' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='691215189'%3E%3C/polyline%3E%3C/svg%3E');
   border-color: #1b5e20;
-  color: #ffffff;
   box-shadow: 0 4px 12px rgba(27, 94, 32, 0.4);
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  color: #fff;
 }

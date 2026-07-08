@@ -1,25 +1,25 @@
 /* Unified Segmented Control / Toggle Group */
 .toggle-group {
-  display: flex;
   background-color: var(--font-controls-bg);
-  border-radius: 10px; /* Rectangular outer wrapper */
-  padding: 3px;
   border: 1px solid var(--border-ultra-subtle);
+  border-radius: 10px; /* Rectangular outer wrapper */
+  display: flex;
+  padding: 3px;
   width: fit-content;
 }
 
 .toggle-btn {
   background: transparent;
   border: none;
-  color: var(--font-btn-text);
-  font-weight: 600;
-  padding: 0.45rem 1rem;
   border-radius: 8px; /* Rectangular inner buttons */
+  color: var(--font-btn-text);
   cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  padding: 0.45rem 1rem;
   text-align: center;
   transition: all 0.2s ease;
-  font-size: 0.85rem;
-  outline: none;
 }
 
 .toggle-btn:hover {
@@ -32,6 +32,6 @@
 
 .toggle-btn.active {
   background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  color: #ffffff;
   box-shadow: 0 3px 8px var(--noonblue-shadow-subtle);
+  color: #fff;
 }

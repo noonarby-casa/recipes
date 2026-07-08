@@ -1,26 +1,25 @@
 /* Sitemap Styling */
-
 .sitemap-container {
-  max-width: 1200px;
   margin: 0 auto;
+  max-width: 1200px;
   padding: 1.5rem 1rem;
 }
 
 .sitemap-header {
-  text-align: center;
   margin-bottom: 2.5rem;
+  text-align: center;
 }
 
 .sitemap-header h1 {
-  font-size: 2.25rem;
-  font-weight: 800;
-  margin: 0 0 0.5rem;
   background: linear-gradient(
     135deg,
     var(--noonblue, #0080d8),
     var(--noonblue-light, #3fb0ff)
   );
   -webkit-background-clip: text;
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
   -webkit-text-fill-color: transparent;
 }
 
@@ -34,36 +33,36 @@
 /* Sections layout */
 .sitemap-layout {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 2.5rem;
+  grid-template-columns: 1fr;
 }
 
 @media (min-width: 992px) {
   .sitemap-layout {
-    grid-template-columns: 1fr 2fr;
     gap: 3.5rem;
+    grid-template-columns: 1fr 2fr;
   }
 }
 
 .sitemap-section-title {
+  border-bottom: 2px solid var(--border-subtle);
+  color: var(--text-title);
   font-size: 1.35rem;
   font-weight: 700;
-  color: var(--text-title);
-  margin-top: 0;
   margin-bottom: 1.25rem;
-  border-bottom: 2px solid var(--border-subtle);
+  margin-top: 0;
   padding-bottom: 0.5rem;
   position: relative;
 }
 
 .sitemap-section-title::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 50px;
-  height: 2px;
   background-color: var(--noonblue);
+  bottom: -2px;
+  content: '';
+  height: 2px;
+  left: 0;
+  position: absolute;
+  width: 50px;
 }
 
 /* Core pages grid */
@@ -77,47 +76,47 @@
   background: var(--card-bg);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  padding: 1.25rem;
   box-shadow: var(--card-shadow);
-  transition: all 0.2s ease;
-  display: block;
-  text-decoration: none;
   color: inherit;
+  display: block;
+  padding: 1.25rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .sitemap-core-card:hover {
-  transform: translateY(-2px);
   border-color: var(--noonblue-border-hover);
   box-shadow: 0 6px 20px rgba(0, 128, 216, 0.08);
+  transform: translateY(-2px);
 }
 
 .sitemap-core-card h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 700;
+  align-items: center;
   color: var(--noonblue);
   display: flex;
-  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 700;
   gap: 0.5rem;
+  margin: 0 0 0.5rem;
 }
 
 .sitemap-core-card h3 svg {
-  flex-shrink: 0;
   color: var(--noonblue);
+  flex-shrink: 0;
 }
 
 .sitemap-core-card p {
-  margin: 0;
-  font-size: 0.875rem;
   color: var(--text-muted);
+  font-size: 0.875rem;
   line-height: 1.45;
+  margin: 0;
 }
 
 /* Recipes section */
 .sitemap-recipe-groups {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 1.5rem;
+  grid-template-columns: 1fr;
 }
 
 @media (min-width: 600px) {
@@ -130,16 +129,16 @@
   background: var(--card-bg);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  padding: 1.25rem;
   box-shadow: var(--card-shadow);
+  padding: 1.25rem;
 }
 
 .sitemap-group-letter {
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--noonblue);
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--noonblue);
   margin: 0 0 1rem;
-  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 0.25rem;
 }
 
@@ -156,9 +155,9 @@
 }
 
 .sitemap-recipe-link {
-  font-weight: 600;
-  font-size: 1rem;
   color: var(--text-title);
+  font-size: 1rem;
+  font-weight: 600;
   line-height: 1.3;
   transition: color 0.2s ease;
 }
@@ -169,12 +168,12 @@
 }
 
 .sitemap-recipe-meta {
+  align-items: center;
+  color: var(--text-muted);
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
   font-size: 0.775rem;
-  color: var(--text-muted);
+  gap: 0.4rem;
 }
 
 .sitemap-meta-dot {
@@ -191,12 +190,12 @@
 
 .sitemap-tag-pill {
   background: var(--tag-bg);
-  color: var(--tag-text);
-  padding: 0.15rem 0.45rem;
   border-radius: 4px;
+  color: var(--tag-text);
   font-size: 0.675rem;
-  text-decoration: none;
   font-weight: 500;
+  padding: 0.15rem 0.45rem;
+  text-decoration: none;
   transition: all 0.2s ease;
 }
 
