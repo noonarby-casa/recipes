@@ -153,6 +153,7 @@ export const STANDARD_SECTIONS: StoreSection[] = [
       'broth',
       'stock',
       'chickpeas',
+      'soup',
     ],
   },
   {
