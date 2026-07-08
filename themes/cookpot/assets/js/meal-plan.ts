@@ -2485,9 +2485,7 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
     if (section.id !== currentSectionId) {
       currentSectionId = section.id;
       html += `
-        <li class="shopping-section-header">
-          <strong>${section.name}</strong>
-        </li>
+        <li class="shopping-section-header compound-list-header">${section.name}</li>
       `;
     }
 

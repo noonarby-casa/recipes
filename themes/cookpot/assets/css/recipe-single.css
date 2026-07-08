@@ -232,33 +232,7 @@
   color: #fff;
 }
 
-/* Ingredients layout enhancements */
-.recipe-ingredients-list {
-  margin-top: 0.75rem;
-}
-
-.recipe-ingredients-sublist {
-  list-style-type: disc;
-  margin-bottom: 1rem;
-  margin-top: 0.5rem;
-  padding-left: 1.25rem;
-}
-
-.ingredient-category {
-  border-bottom: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-  margin-top: 1.5rem;
-  padding-bottom: 0.25rem;
-  text-transform: uppercase;
-}
-
-.ingredient-category:first-of-type {
-  margin-top: 0.5rem;
-}
+/* Ingredients layout styling has been refactored to compound-list component style */
 
 .recipe-ingredient {
   margin-bottom: 0.6rem;

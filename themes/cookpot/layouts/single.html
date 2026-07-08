@@ -138,12 +138,14 @@
         </div>
       </div>
 
-      <div class="recipe-ingredients-list">
+      <div class="recipe-ingredients-list compound-list">
         {{ range .Params.ingredients }}
           {{ if .category }}
-            <h3 class="ingredient-category">{{ .category }}</h3>
+            <h3 class="ingredient-category compound-list-header">
+              {{ .category }}
+            </h3>
           {{ end }}
-          <ul class="recipe-ingredients-sublist">
+          <ul class="recipe-ingredients-sublist compound-list-items">
             {{ range .items }}
               {{ $ing := . }}
               {{ if not (reflect.IsMap $ing) }}
@@ -212,7 +214,7 @@
           </button>
         </div>
         <div class="shopping-section buy-section">
-          <ul class="shopping-buy-list"></ul>
+          <ul class="shopping-buy-list compound-list"></ul>
         </div>
         <div class="shopping-section optional-section" style="display: none;">
           <h4 class="shopping-section-title">🔸 Optional</h4>

@@ -202,7 +202,7 @@ export function initShoppingList(): void {
         currentSectionId = section.id;
         buyList.insertAdjacentHTML(
           'beforeend',
-          `<li class="shopping-section-header">${section.name}</li>`,
+          `<li class="shopping-section-header compound-list-header">${section.name}</li>`,
         );
       }
       renderItem(converted, buyList);

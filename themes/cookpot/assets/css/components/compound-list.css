@@ -1,0 +1,38 @@
+/* Reusable Compound List Component Style */
+
+.compound-list {
+  margin-top: 0.75rem;
+}
+
+.compound-list-header {
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+  padding-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+/* Override list-item properties if header is used as an <li> inside a <ul> */
+li.compound-list-header {
+  list-style-type: none;
+  margin-left: -1.25rem; /* Pull back to align with parent left border */
+  padding-left: 0;
+}
+
+/* Margin-top override for the first header */
+.compound-list-header:first-of-type,
+.compound-list-header:first-child,
+li.compound-list-header:first-child {
+  margin-top: 0.5rem;
+}
+
+.compound-list-items {
+  list-style-type: disc;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  padding-left: 1.25rem;
+}
