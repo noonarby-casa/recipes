@@ -8,7 +8,7 @@
     "lint:fix": "eslint \"themes/cookpot/assets/js/**/*.ts\" --fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "ci": "pnpm run typecheck && pnpm run lint && pnpm run format",
+    "ci": "pnpm run typecheck & p1=$! ; pnpm run lint & p2=$! ; pnpm run format & p3=$! ; wait $p1 && wait $p2 && wait $p3",
     "fix": "pnpm run lint:fix && pnpm run format:fix"
   },
   "devDependencies": {
