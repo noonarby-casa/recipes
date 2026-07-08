@@ -91,7 +91,7 @@
 }
 
 .recipe-list-title a::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;

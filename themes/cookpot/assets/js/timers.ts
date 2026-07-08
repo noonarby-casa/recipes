@@ -1,4 +1,4 @@
-import { initAudio, playLowerBoundChime, playUpperBoundChime } from "./audio";
+import { initAudio, playLowerBoundChime, playUpperBoundChime } from './audio';
 
 interface ParsedDuration {
   minSeconds: number;
@@ -36,11 +36,11 @@ function parseDuration(durationStr: string): ParsedDuration | null {
   }
 
   let multiplier = 1;
-  if (unit.startsWith("h")) {
+  if (unit.startsWith('h')) {
     multiplier = 3600;
-  } else if (unit.startsWith("m")) {
+  } else if (unit.startsWith('m')) {
     multiplier = 60;
-  } else if (unit.startsWith("s")) {
+  } else if (unit.startsWith('s')) {
     multiplier = 1;
   }
 
@@ -57,11 +57,11 @@ function formatTime(seconds: number): string {
   const mins = Math.floor((absSeconds % 3600) / 60);
   const secs = absSeconds % 60;
 
-  let display = "";
+  let display = '';
   if (hrs > 0) {
-    display += `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    display += `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   } else {
-    display += `${mins}:${secs.toString().padStart(2, "0")}`;
+    display += `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 
   return isNegative ? `-${display}` : display;
@@ -71,15 +71,19 @@ let activeTimersCount = 0;
 let wakeLock: WakeLockSentinel | null = null;
 
 async function requestWakeLock(): Promise<void> {
-  if (!navigator.wakeLock) return;
-  if (wakeLock !== null) return;
+  if (!navigator.wakeLock) {
+    return;
+  }
+  if (wakeLock !== null) {
+    return;
+  }
   try {
-    wakeLock = await navigator.wakeLock.request("screen");
-    wakeLock.addEventListener("release", () => {
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => {
       wakeLock = null;
     });
   } catch (err) {
-    console.error("Failed to acquire screen wake lock:", err);
+    console.error('Failed to acquire screen wake lock:', err);
   }
 }
 
@@ -90,20 +94,22 @@ function releaseWakeLock(): void {
   }
 }
 
-if (typeof document !== "undefined") {
-  document.addEventListener("visibilitychange", async () => {
-    if (document.visibilityState === "visible" && activeTimersCount > 0) {
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && activeTimersCount > 0) {
       await requestWakeLock();
     }
   });
 }
 
 export function initTimers(): void {
-  const timers = document.querySelectorAll<HTMLElement>(".recipe-timer");
+  const timers = document.querySelectorAll<HTMLElement>('.recipe-timer');
 
   timers.forEach((timerContainer) => {
     const rawDuration = timerContainer.dataset.duration;
-    if (!rawDuration) return;
+    if (!rawDuration) {
+      return;
+    }
 
     const parsed = parseDuration(rawDuration);
     if (!parsed) {
@@ -119,26 +125,32 @@ export function initTimers(): void {
     let lowerChimePlayed = false;
     let upperChimePlayed = false;
 
-    const btn = timerContainer.querySelector<HTMLElement>(".recipe-timer-btn");
+    const btn = timerContainer.querySelector<HTMLElement>('.recipe-timer-btn');
     const resetBtn = timerContainer.querySelector<HTMLElement>(
-      ".recipe-timer-reset",
+      '.recipe-timer-reset',
     );
-    if (!btn || !resetBtn) return;
+    if (!btn || !resetBtn) {
+      return;
+    }
 
-    const labelSpan = btn.querySelector<HTMLElement>(".timer-label");
-    if (!labelSpan) return;
+    const labelSpan = btn.querySelector<HTMLElement>('.timer-label');
+    if (!labelSpan) {
+      return;
+    }
 
     function updateDisplay(): void {
-      if (!labelSpan || !rawDuration) return;
+      if (!labelSpan || !rawDuration) {
+        return;
+      }
       const remaining = maxSeconds - elapsed;
 
       if (elapsed === 0) {
         labelSpan.textContent = rawDuration;
         timerContainer.classList.remove(
-          "has-started",
-          "is-running",
-          "is-in-range",
-          "is-beyond-range",
+          'has-started',
+          'is-running',
+          'is-in-range',
+          'is-beyond-range',
         );
         return;
       }
@@ -146,20 +158,20 @@ export function initTimers(): void {
       labelSpan.textContent = formatTime(remaining);
 
       if (elapsed > maxSeconds) {
-        timerContainer.classList.add("is-beyond-range");
-        timerContainer.classList.remove("is-in-range");
+        timerContainer.classList.add('is-beyond-range');
+        timerContainer.classList.remove('is-in-range');
       } else if (elapsed >= minSeconds) {
-        timerContainer.classList.add("is-in-range");
-        timerContainer.classList.remove("is-beyond-range");
+        timerContainer.classList.add('is-in-range');
+        timerContainer.classList.remove('is-beyond-range');
       } else {
-        timerContainer.classList.remove("is-in-range", "is-beyond-range");
+        timerContainer.classList.remove('is-in-range', 'is-beyond-range');
       }
 
-      timerContainer.classList.add("has-started");
+      timerContainer.classList.add('has-started');
       if (intervalId) {
-        timerContainer.classList.add("is-running");
+        timerContainer.classList.add('is-running');
       } else {
-        timerContainer.classList.remove("is-running");
+        timerContainer.classList.remove('is-running');
       }
     }
 
@@ -189,7 +201,9 @@ export function initTimers(): void {
     }
 
     function startTimer(): void {
-      if (intervalId) return;
+      if (intervalId) {
+        return;
+      }
       activeTimersCount++;
       if (activeTimersCount === 1) {
         requestWakeLock();
@@ -202,7 +216,9 @@ export function initTimers(): void {
     }
 
     function pauseTimer(): void {
-      if (!intervalId) return;
+      if (!intervalId) {
+        return;
+      }
       clearInterval(intervalId);
       intervalId = null;
       if (startTime !== null) {
@@ -225,15 +241,15 @@ export function initTimers(): void {
       updateDisplay();
     }
 
-    if (typeof document !== "undefined") {
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible" && intervalId !== null) {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && intervalId !== null) {
           tick();
         }
       });
     }
 
-    btn.addEventListener("click", (e: MouseEvent) => {
+    btn.addEventListener('click', (e: MouseEvent) => {
       e.preventDefault();
       initAudio(); // Initialize audio context on user interaction
       if (intervalId) {
@@ -243,7 +259,7 @@ export function initTimers(): void {
       }
     });
 
-    resetBtn.addEventListener("click", (e: MouseEvent) => {
+    resetBtn.addEventListener('click', (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
       resetTimer();

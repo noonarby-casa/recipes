@@ -2,14 +2,17 @@ import {
   formatCookingNumber,
   SINGULAR_TO_PLURAL,
   PLURAL_TO_SINGULAR,
-} from "../units";
-import { QtyValue, IngredientInput } from "./types";
+} from '../units';
+import { QtyValue, IngredientInput, ItemRule } from './types';
+import { UNIT_CONVERSIONS } from './config';
 
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.
  */
 export function getSingularUnit(unit: string): string {
-  if (!unit) return "";
+  if (!unit) {
+    return '';
+  }
   const lower = unit.toLowerCase().trim();
   return PLURAL_TO_SINGULAR[lower] || lower;
 }
@@ -21,13 +24,15 @@ export function formatQty(qty: QtyValue): string {
   return formatCookingNumber(qty);
 }
 
-const SIZE_PREFIXES = ["large", "medium", "small"];
+const SIZE_PREFIXES = ['large', 'medium', 'small'];
 
 export function getBaseUnit(unit: string): string {
-  if (!unit) return "";
+  if (!unit) {
+    return '';
+  }
   let base = unit.toLowerCase().trim();
   for (const prefix of SIZE_PREFIXES) {
-    if (base.startsWith(prefix + " ")) {
+    if (base.startsWith(prefix + ' ')) {
       base = base.substring(prefix.length + 1).trim();
       break;
     }
@@ -36,17 +41,19 @@ export function getBaseUnit(unit: string): string {
 }
 
 export function pluralizeUnit(unit: string, qty: QtyValue): string {
-  if (!unit) return "";
+  if (!unit) {
+    return '';
+  }
 
   const isPlural = Array.isArray(qty) ? qty[1] > 1 : qty > 1;
   if (!isPlural) {
     return unit;
   }
 
-  let prefix = "";
+  let prefix = '';
   let base = unit.toLowerCase().trim();
   for (const p of SIZE_PREFIXES) {
-    if (base.startsWith(p + " ")) {
+    if (base.startsWith(p + ' ')) {
       // Preserve original case of the prefix
       prefix = unit.substring(0, p.length + 1);
       base = base.substring(p.length + 1).trim();
@@ -60,81 +67,93 @@ export function pluralizeUnit(unit: string, qty: QtyValue): string {
   }
 
   // Fallback naive pluralization if not found in dictionary
-  if (base.endsWith("s")) {
+  if (base.endsWith('s')) {
     return prefix + base;
   }
-  return prefix + base + "s";
+  return prefix + base + 's';
 }
 
 /**
  * Assembles a structured ingredient into a human-readable display string.
  */
 export function assembleIngredientText(ing: IngredientInput): string {
-  let text = "";
+  let text = '';
 
   // 1. Primary Amount
   if (ing.qty !== undefined) {
     text += formatQty(ing.qty);
     if (ing.unit) {
-      text += " " + pluralizeUnit(ing.unit, ing.qty);
+      text += ' ' + pluralizeUnit(ing.unit, ing.qty);
     }
   }
 
   // 2. Alt Structure
-  let secondaryMeasurement = "";
-  let alternateItem = "";
+  let secondaryMeasurement = '';
+  let alternateItem = '';
 
   if (ing.alt) {
     const hasAltItemOrDesc = !!(ing.alt.desc || ing.alt.item || ing.alt.prep);
 
-    let q = "";
+    let q = '';
     if (ing.alt.qty !== undefined) {
       q += formatQty(ing.alt.qty);
     }
     if (ing.alt.unit) {
-      q += (q ? " " : "") + pluralizeUnit(ing.alt.unit, ing.alt.qty ?? 1);
+      q += (q ? ' ' : '') + pluralizeUnit(ing.alt.unit, ing.alt.qty ?? 1);
     }
     if (ing.alt.each) {
-      q += " each";
+      q += ' each';
     }
 
     if (!hasAltItemOrDesc) {
-      if (q) secondaryMeasurement = "(" + q + ")";
+      if (q) {
+        secondaryMeasurement = '(' + q + ')';
+      }
     } else {
       const altParts = [];
-      if (q) altParts.push(q);
+      if (q) {
+        altParts.push(q);
+      }
 
       const altDescItem = [];
-      if (ing.alt.desc) altDescItem.push(ing.alt.desc);
+      if (ing.alt.desc) {
+        altDescItem.push(ing.alt.desc);
+      }
 
-      let altItemName = ing.alt.item || "";
+      let altItemName = ing.alt.item || '';
       if (ing.alt.qty !== undefined && !ing.alt.unit && altItemName) {
         altItemName = pluralizeUnit(altItemName, ing.alt.qty);
       }
-      if (altItemName) altDescItem.push(altItemName);
+      if (altItemName) {
+        altDescItem.push(altItemName);
+      }
 
-      let altMain = altDescItem.join(" ");
+      let altMain = altDescItem.join(' ');
       if (ing.alt.prep) {
         if (altMain) {
-          altMain += ", " + ing.alt.prep;
+          altMain += ', ' + ing.alt.prep;
         } else {
           altMain = ing.alt.prep;
         }
       }
-      if (altMain) altParts.push(altMain);
+      if (altMain) {
+        altParts.push(altMain);
+      }
 
-      alternateItem = "(or " + altParts.join(" ") + ")";
+      alternateItem = '(or ' + altParts.join(' ') + ')';
     }
   }
 
   // Insert secondary measurement if it exists
   if (secondaryMeasurement) {
-    text += text ? " " + secondaryMeasurement : secondaryMeasurement;
+    text += text ? ' ' + secondaryMeasurement : secondaryMeasurement;
   }
 
   // 3. Desc and Item
   const itemParts = [];
-  if (ing.desc) itemParts.push(ing.desc);
+  if (ing.desc) {
+    itemParts.push(ing.desc);
+  }
 
   let itemName = ing.item;
   if (ing.qty !== undefined && !ing.unit) {
@@ -142,36 +161,37 @@ export function assembleIngredientText(ing: IngredientInput): string {
   }
   itemParts.push(itemName);
 
-  const mainItemText = itemParts.join(" ");
+  const mainItemText = itemParts.join(' ');
   if (mainItemText) {
-    text += text ? " " + mainItemText : mainItemText;
+    text += text ? ' ' + mainItemText : mainItemText;
   }
 
   // 4. Prep
   if (ing.prep) {
-    text += ", " + ing.prep;
+    text += ', ' + ing.prep;
   }
 
   // Insert alternate item at the very end
   if (alternateItem) {
-    text += " " + alternateItem;
+    text += ' ' + alternateItem;
   }
 
   return text.trim();
 }
-
-import { UNIT_CONVERSIONS } from "./config";
-import { ItemRule } from "./types";
 
 export function getConversionFactor(
   fromUnit: string,
   toUnit: string,
   rule?: ItemRule,
 ): number {
-  if (fromUnit === toUnit) return 1;
+  if (fromUnit === toUnit) {
+    return 1;
+  }
   const fromSing = getSingularUnit(fromUnit);
   const toSing = getSingularUnit(toUnit);
-  if (fromSing === toSing) return 1;
+  if (fromSing === toSing) {
+    return 1;
+  }
 
   // Check item-specific equivalences first
   if (rule?.unitEquivalences) {
@@ -224,6 +244,8 @@ export function convertQty(
   rule?: ItemRule,
 ): number {
   const factor = getConversionFactor(fromUnit, toUnit, rule);
-  if (factor > 0) return qty * factor;
+  if (factor > 0) {
+    return qty * factor;
+  }
   return qty;
 }

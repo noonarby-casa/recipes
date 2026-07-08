@@ -1,13 +1,13 @@
-import { STAPLE_ITEMS, ITEM_RULES } from "./config";
-import { convertQty } from "./utils";
-import { getStoreSection } from "./store-sections";
+import { STAPLE_ITEMS, ITEM_RULES } from './config';
+import { convertQty } from './utils';
+import { getStoreSection } from './store-sections';
 import {
   IngredientInput,
   ShoppingItem,
   ProcessedShoppingList,
   ItemRule,
   ShoppingItemNote,
-} from "./types";
+} from './types';
 
 function getRuleForItem(itemName: string): ItemRule | undefined {
   const lower = itemName.toLowerCase().trim();
@@ -19,8 +19,12 @@ function isStaple(itemName: string): boolean {
 }
 
 function getAverageQty(qty?: number | [number, number]): number | null {
-  if (qty === undefined) return null;
-  if (Array.isArray(qty)) return (qty[0] + qty[1]) / 2;
+  if (qty === undefined) {
+    return null;
+  }
+  if (Array.isArray(qty)) {
+    return (qty[0] + qty[1]) / 2;
+  }
   return qty;
 }
 
@@ -48,7 +52,7 @@ export function processShoppingList(
     const itemName = ing.item.toLowerCase().trim();
     const rule = getRuleForItem(itemName);
     const qty = getAverageQty(ing.qty);
-    const unit = ing.unit || "";
+    const unit = ing.unit || '';
 
     let targetUnit = unit;
     if (rule?.unitEquivalences) {
@@ -57,8 +61,11 @@ export function processShoppingList(
         targetUnit = firstEq.base;
       }
     } else if (unit) {
-      if (convertQty(1, unit, "teaspoon") > 0) targetUnit = "teaspoon";
-      else if (convertQty(1, unit, "ounce") > 0) targetUnit = "ounce";
+      if (convertQty(1, unit, 'teaspoon') > 0) {
+        targetUnit = 'teaspoon';
+      } else if (convertQty(1, unit, 'ounce') > 0) {
+        targetUnit = 'ounce';
+      }
     }
 
     let convertedQty = qty;
@@ -92,7 +99,7 @@ export function processShoppingList(
 
     if (ing.category || ing.alt?.item) {
       existing.notes.push({
-        recipe: ing.category || "",
+        recipe: ing.category || '',
         altItem: ing.alt?.item,
       });
     }
@@ -127,18 +134,18 @@ export function processShoppingList(
         }
       }
     } else if (finalQty !== null) {
-      if (finalUnit === "teaspoon") {
+      if (finalUnit === 'teaspoon') {
         if (finalQty >= 48) {
           finalQty = finalQty / 48;
-          finalUnit = "cup";
+          finalUnit = 'cup';
         } else if (finalQty >= 3) {
           finalQty = finalQty / 3;
-          finalUnit = "tablespoon";
+          finalUnit = 'tablespoon';
         }
-      } else if (finalUnit === "ounce") {
+      } else if (finalUnit === 'ounce') {
         if (finalQty >= 16) {
           finalQty = finalQty / 16;
-          finalUnit = "pound";
+          finalUnit = 'pound';
         }
       }
     }
@@ -156,15 +163,21 @@ export function processShoppingList(
       section: section.id,
     };
 
-    if (group.isStaple) stapleItems.push(shopItem);
-    else if (group.optional) optionalItems.push(shopItem);
-    else buyItems.push(shopItem);
+    if (group.isStaple) {
+      stapleItems.push(shopItem);
+    } else if (group.optional) {
+      optionalItems.push(shopItem);
+    } else {
+      buyItems.push(shopItem);
+    }
   }
 
   const sorter = (a: ShoppingItem, b: ShoppingItem) => {
     const secA = getStoreSection(a.rest, a.item);
     const secB = getStoreSection(b.rest, b.item);
-    if (secA.order !== secB.order) return secA.order - secB.order;
+    if (secA.order !== secB.order) {
+      return secA.order - secB.order;
+    }
     return a.item.localeCompare(b.item);
   };
 
@@ -185,7 +198,7 @@ export function extractIngredientsFromDOM(
     const rawQty = el.dataset.qty;
     let qty: number | [number, number] | undefined = undefined;
     if (rawQty) {
-      if (rawQty.includes("-") || rawQty.includes(",")) {
+      if (rawQty.includes('-') || rawQty.includes(',')) {
         const parts = rawQty.split(/[-,]/).map((p) => parseFloat(p.trim()));
         if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
           qty = [parts[0] * scale, parts[1] * scale];
@@ -197,12 +210,12 @@ export function extractIngredientsFromDOM(
       }
     }
 
-    let alt: IngredientInput["alt"] = undefined;
+    let alt: IngredientInput['alt'] = undefined;
     if (el.dataset.altItem) {
       let altQty: number | [number, number] | undefined = undefined;
       const rawAltQty = el.dataset.altQty;
       if (rawAltQty) {
-        if (rawAltQty.includes("-") || rawAltQty.includes(",")) {
+        if (rawAltQty.includes('-') || rawAltQty.includes(',')) {
           const parts = rawAltQty
             .split(/[-,]/)
             .map((p) => parseFloat(p.trim()));
@@ -225,15 +238,15 @@ export function extractIngredientsFromDOM(
     }
 
     ingredients.push({
-      item: el.dataset.item || el.textContent?.trim() || "",
+      item: el.dataset.item || el.textContent?.trim() || '',
       qty,
       unit: el.dataset.unit,
       desc: el.dataset.desc,
       prep: el.dataset.prep,
-      optional: el.dataset.optional === "true",
+      optional: el.dataset.optional === 'true',
       alt,
       category:
-        document.querySelector(".recipe-title-bar h1")?.textContent ||
+        document.querySelector('.recipe-title-bar h1')?.textContent ||
         undefined,
     });
   });

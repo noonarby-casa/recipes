@@ -3,61 +3,61 @@
  */
 
 export const SINGULAR_TO_PLURAL: Record<string, string> = {
-  ounce: "ounces",
-  pound: "pounds",
-  cup: "cups",
-  teaspoon: "teaspoons",
-  tablespoon: "tablespoons",
-  clove: "cloves",
-  can: "cans",
-  gram: "grams",
-  small: "small",
-  large: "large",
-  medium: "medium",
-  lemon: "lemons",
-  lime: "limes",
-  head: "heads",
-  root: "roots",
-  bundle: "bundles",
-  bottle: "bottles",
-  jar: "jars",
-  box: "boxes",
-  package: "packages",
-  container: "containers",
-  onion: "onions",
-  stick: "sticks",
-  "quart (32 fl oz)": "quarts (32 fl oz)",
-  "quart (32 oz)": "quarts (32 oz)",
-  "pint (16 fl oz)": "pints (16 fl oz)",
-  "pint (16 oz)": "pints (16 oz)",
-  "half-pint (8 oz)": "half-pints (8 oz)",
-  egg: "eggs",
-  "egg yolk": "egg yolks",
-  scallion: "scallions",
-  lb: "lbs",
-  bulb: "bulbs",
-  leaf: "leaves",
-  half: "halves",
-  carrot: "carrots",
-  potato: "potatoes",
-  tomato: "tomatoes",
-  pepper: "peppers",
-  "bell pepper": "bell peppers",
-  shallot: "shallots",
-  mushroom: "mushrooms",
-  "chicken thigh": "chicken thighs",
-  "chicken breast": "chicken breasts",
-  sprig: "sprigs",
-  stalk: "stalks",
-  rib: "ribs",
-  tortilla: "tortillas",
-  avocado: "avocados",
-  cucumber: "cucumbers",
-  chili: "chilis",
-  chilli: "chillis",
-  "green onion": "green onions",
-  "spring onion": "spring onions",
-  "garlic clove": "garlic cloves",
+  ounce: 'ounces',
+  pound: 'pounds',
+  cup: 'cups',
+  teaspoon: 'teaspoons',
+  tablespoon: 'tablespoons',
+  clove: 'cloves',
+  can: 'cans',
+  gram: 'grams',
+  small: 'small',
+  large: 'large',
+  medium: 'medium',
+  lemon: 'lemons',
+  lime: 'limes',
+  head: 'heads',
+  root: 'roots',
+  bundle: 'bundles',
+  bottle: 'bottles',
+  jar: 'jars',
+  box: 'boxes',
+  package: 'packages',
+  container: 'containers',
+  onion: 'onions',
+  stick: 'sticks',
+  'quart (32 fl oz)': 'quarts (32 fl oz)',
+  'quart (32 oz)': 'quarts (32 oz)',
+  'pint (16 fl oz)': 'pints (16 fl oz)',
+  'pint (16 oz)': 'pints (16 oz)',
+  'half-pint (8 oz)': 'half-pints (8 oz)',
+  egg: 'eggs',
+  'egg yolk': 'egg yolks',
+  scallion: 'scallions',
+  lb: 'lbs',
+  bulb: 'bulbs',
+  leaf: 'leaves',
+  half: 'halves',
+  carrot: 'carrots',
+  potato: 'potatoes',
+  tomato: 'tomatoes',
+  pepper: 'peppers',
+  'bell pepper': 'bell peppers',
+  shallot: 'shallots',
+  mushroom: 'mushrooms',
+  'chicken thigh': 'chicken thighs',
+  'chicken breast': 'chicken breasts',
+  sprig: 'sprigs',
+  stalk: 'stalks',
+  rib: 'ribs',
+  tortilla: 'tortillas',
+  avocado: 'avocados',
+  cucumber: 'cucumbers',
+  chili: 'chilis',
+  chilli: 'chillis',
+  'green onion': 'green onions',
+  'spring onion': 'spring onions',
+  'garlic clove': 'garlic cloves',
 };
 
 export const PLURAL_TO_SINGULAR: Record<string, string> = Object.fromEntries(
@@ -68,8 +68,12 @@ export const PLURAL_TO_SINGULAR: Record<string, string> = Object.fromEntries(
  * Returns the plural or singular form of a unit based on the quantity.
  */
 export function getAdaptiveUnit(qty: number | null, unit: string): string {
-  if (!unit) return "";
-  if (qty === null) return unit;
+  if (!unit) {
+    return '';
+  }
+  if (qty === null) {
+    return unit;
+  }
   const lowerUnit = unit.toLowerCase();
 
   // If quantity is less than or equal to 1, return singular form
@@ -90,26 +94,28 @@ interface FractionMapItem {
  * or a clean decimal.
  */
 export function formatCookingNumber(val: number): string {
-  if (val <= 0) return "0";
+  if (val <= 0) {
+    return '0';
+  }
 
   const rounded = Math.round(val * 1000) / 1000;
   const whole = Math.floor(rounded);
   const dec = Math.round((rounded - whole) * 1000) / 1000;
 
   const fractionMap: FractionMapItem[] = [
-    { dec: 0.125, str: "1/8" },
-    { dec: 0.25, str: "1/4" },
-    { dec: 0.333, str: "1/3" },
-    { dec: 0.375, str: "3/8" },
-    { dec: 0.5, str: "1/2" },
-    { dec: 0.625, str: "5/8" },
-    { dec: 0.667, str: "2/3" },
-    { dec: 0.75, str: "3/4" },
-    { dec: 0.875, str: "7/8" },
+    { dec: 0.125, str: '1/8' },
+    { dec: 0.25, str: '1/4' },
+    { dec: 0.333, str: '1/3' },
+    { dec: 0.375, str: '3/8' },
+    { dec: 0.5, str: '1/2' },
+    { dec: 0.625, str: '5/8' },
+    { dec: 0.667, str: '2/3' },
+    { dec: 0.75, str: '3/4' },
+    { dec: 0.875, str: '7/8' },
   ];
 
   if (dec < 0.05) {
-    return whole > 0 ? whole.toString() : "0";
+    return whole > 0 ? whole.toString() : '0';
   }
   if (dec > 0.95) {
     return (whole + 1).toString();
@@ -132,5 +138,5 @@ export function formatCookingNumber(val: number): string {
   }
 
   // Otherwise, display as a clean, concise decimal (e.g. 1.2 or 0.7)
-  return rounded.toFixed(2).replace(/\.?0+$/, "");
+  return rounded.toFixed(2).replace(/\.?0+$/, '');
 }

@@ -414,12 +414,12 @@ a.planned-recipe-item {
   background-color: var(--image-bg);
 }
 
-.recipe-card-media-wrapper[draggable="true"] {
+.recipe-card-media-wrapper[draggable='true'] {
   cursor: grab;
   touch-action: none;
 }
 
-.recipe-card-media-wrapper[draggable="true"]:active {
+.recipe-card-media-wrapper[draggable='true']:active {
   cursor: grabbing;
 }
 
@@ -565,7 +565,7 @@ a.planned-recipe-item {
 }
 
 .planned-recipe-item.drag-over::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -863,10 +863,10 @@ a.planned-recipe-item {
     flex: 1;
     display: grid;
     grid-template-areas:
-      "banner"
-      "header"
-      "toolbar"
-      "container";
+      'banner'
+      'header'
+      'toolbar'
+      'container';
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto 1fr;
     gap: 0.75rem;
@@ -951,8 +951,8 @@ a.planned-recipe-item {
     display: grid;
     grid-template-columns: 90px 1fr;
     grid-template-areas:
-      "media body"
-      "media footer";
+      'media body'
+      'media footer';
     align-items: stretch;
     min-height: 90px;
   }
@@ -1293,7 +1293,7 @@ a.planned-recipe-item {
   }
 
   .shopping-item::before {
-    content: "☐ ";
+    content: '☐ ';
     font-family: monospace;
     font-size: 1.1rem;
     margin-right: 0.5rem;

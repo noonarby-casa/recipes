@@ -12,11 +12,11 @@ export function initAudio(): void {
         audioCtx = new AudioCtxClass();
       }
     }
-    if (audioCtx && audioCtx.state === "suspended") {
+    if (audioCtx && audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
   } catch (err) {
-    console.warn("Web Audio API not supported or blocked:", err);
+    console.warn('Web Audio API not supported or blocked:', err);
   }
 }
 
@@ -25,10 +25,12 @@ function playTone(
   freq: number,
   startTime: number,
   duration: number,
-  type: OscillatorType = "sine",
+  type: OscillatorType = 'sine',
   maxVolume: number = 0.15,
 ): void {
-  if (!audioCtx) return;
+  if (!audioCtx) {
+    return;
+  }
 
   const oscNode = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
@@ -49,7 +51,9 @@ function playTone(
 
 export function playLowerBoundChime(): void {
   initAudio();
-  if (!audioCtx) return;
+  if (!audioCtx) {
+    return;
+  }
 
   const now = audioCtx.currentTime;
   const notes = [6271.93, 7902.13, 9397.27]; // G8, B8, D9 (bright ascending major triad in Octave 8/9)
@@ -78,7 +82,9 @@ function playBellTone(
   maxVolume: number = 0.5,
 ): void {
   const ctx = audioCtx;
-  if (!ctx) return;
+  if (!ctx) {
+    return;
+  }
 
   // Jean-Claude Risset's 11-partial bell model
   const partials = [
@@ -101,7 +107,7 @@ function playBellTone(
     const oscNode = ctx.createOscillator();
     const gainNode = ctx.createGain();
 
-    oscNode.type = "sine";
+    oscNode.type = 'sine';
     oscNode.frequency.setValueAtTime(freq * p.ratio, startTime);
 
     const partialVolume = maxVolume * (p.amp / normFactor);
@@ -124,7 +130,9 @@ function playBellTone(
 
 export function playUpperBoundChime(): void {
   initAudio();
-  if (!audioCtx) return;
+  if (!audioCtx) {
+    return;
+  }
 
   const now = audioCtx.currentTime;
 

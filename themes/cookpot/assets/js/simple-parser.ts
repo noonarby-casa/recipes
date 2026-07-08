@@ -1,7 +1,9 @@
-export function parseSimpleQty(text: string): {
+export interface ParsedQty {
   qty: number | null;
   unit: string;
-} {
+}
+
+export function parseSimpleQty(text: string): ParsedQty {
   text = text.trim();
   // extremely simple regex: optional fraction, space, unit
   const numPat = `(?:\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+(?:\\.\\d+)?)`;
@@ -13,7 +15,7 @@ export function parseSimpleQty(text: string): {
       unit: match[2].trim(),
     };
   }
-  return { qty: null, unit: "" };
+  return { qty: null, unit: '' };
 }
 
 function parseNumeric(str: string): number {
@@ -27,14 +29,14 @@ function parseNumeric(str: string): number {
 
 function parseSingleNumeric(str: string): number {
   str = str.trim();
-  if (str.includes("/")) {
+  if (str.includes('/')) {
     const parts = str.split(/\s+/);
     if (parts.length === 2) {
       const whole = parseFloat(parts[0]);
-      const fracParts = parts[1].split("/");
+      const fracParts = parts[1].split('/');
       return whole + parseFloat(fracParts[0]) / parseFloat(fracParts[1]);
     } else {
-      const fracParts = parts[0].split("/");
+      const fracParts = parts[0].split('/');
       return parseFloat(fracParts[0]) / parseFloat(fracParts[1]);
     }
   }

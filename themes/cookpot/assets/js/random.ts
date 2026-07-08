@@ -1,11 +1,15 @@
 export function initRandomRecipe(): void {
-  const randomBtn = document.getElementById("header-random-recipe");
-  if (!randomBtn) return;
+  const randomBtn = document.getElementById('header-random-recipe');
+  if (!randomBtn) {
+    return;
+  }
 
-  randomBtn.addEventListener("click", (e: MouseEvent) => {
+  randomBtn.addEventListener('click', (e: MouseEvent) => {
     e.preventDefault();
-    const recipesJson = randomBtn.getAttribute("data-recipes");
-    if (!recipesJson) return;
+    const recipesJson = randomBtn.getAttribute('data-recipes');
+    if (!recipesJson) {
+      return;
+    }
 
     try {
       const recipes: string[] = JSON.parse(recipesJson);
@@ -17,7 +21,7 @@ export function initRandomRecipe(): void {
           const currentPath = window.location.pathname;
           // Normalize paths by ensuring they end/start similarly
           const cleanPath = (path: string) =>
-            path.replace(/\/+$/, "").toLowerCase();
+            path.replace(/\/+$/, '').toLowerCase();
           const currentClean = cleanPath(currentPath);
 
           targetRecipes = recipes.filter(
@@ -33,7 +37,7 @@ export function initRandomRecipe(): void {
         window.location.href = randomUrl;
       }
     } catch (err) {
-      console.error("Error parsing recipes for random redirect:", err);
+      console.error('Error parsing recipes for random redirect:', err);
     }
   });
 }

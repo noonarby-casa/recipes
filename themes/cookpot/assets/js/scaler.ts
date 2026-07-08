@@ -1,14 +1,16 @@
-import { getAdaptiveUnit, formatCookingNumber } from "./units";
-import { parseSimpleQty } from "./simple-parser";
+import { getAdaptiveUnit, formatCookingNumber } from './units';
+import { parseSimpleQty } from './simple-parser';
 
 export function initScaler(): void {
-  const quantities = document.querySelectorAll<HTMLElement>(".recipe-quantity");
-  const decBtn = document.getElementById("recipe-dec-btn");
-  const incBtn = document.getElementById("recipe-inc-btn");
-  const servingCountEl = document.getElementById("recipe-serving-count");
-  const scalePanel = document.querySelector<HTMLElement>(".recipe-scale-panel");
+  const quantities = document.querySelectorAll<HTMLElement>('.recipe-quantity');
+  const decBtn = document.getElementById('recipe-dec-btn');
+  const incBtn = document.getElementById('recipe-inc-btn');
+  const servingCountEl = document.getElementById('recipe-serving-count');
+  const scalePanel = document.querySelector<HTMLElement>('.recipe-scale-panel');
 
-  if (!quantities.length && (!decBtn || !incBtn || !servingCountEl)) return;
+  if (!quantities.length && (!decBtn || !incBtn || !servingCountEl)) {
+    return;
+  }
 
   const baseServings =
     scalePanel && scalePanel.dataset.baseServings
@@ -18,7 +20,7 @@ export function initScaler(): void {
   let currentServings = baseServings;
 
   const urlParams = new URLSearchParams(window.location.search);
-  const servingsParam = urlParams.get("servings");
+  const servingsParam = urlParams.get('servings');
   if (servingsParam) {
     const parsedServings = parseInt(servingsParam, 10);
     if (!isNaN(parsedServings) && parsedServings > 0) {
@@ -33,7 +35,7 @@ export function initScaler(): void {
 
     quantities.forEach((el) => {
       if (!el.dataset.baseQty) {
-        const baseText = el.dataset.baseText || el.textContent || "";
+        const baseText = el.dataset.baseText || el.textContent || '';
         const parsed = parseSimpleQty(baseText);
         if (parsed.qty !== null) {
           el.dataset.baseQty = parsed.qty.toString();
@@ -43,12 +45,12 @@ export function initScaler(): void {
 
       if (el.dataset.baseQty) {
         const rawQty = el.dataset.baseQty;
-        const unit = el.dataset.unit || "";
+        const unit = el.dataset.unit || '';
 
-        let newQtyStr = "";
+        let newQtyStr = '';
         let qtyForPlural = 1;
 
-        if (rawQty.includes("-") || rawQty.includes(",")) {
+        if (rawQty.includes('-') || rawQty.includes(',')) {
           const parts = rawQty.split(/[-,]/).map((p) => parseFloat(p.trim()));
           if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
             const q1 = parts[0] * factor;
@@ -65,23 +67,23 @@ export function initScaler(): void {
 
         // We use getAdaptiveUnit which handles pluralization and returns the whole string
         const finalUnit = getAdaptiveUnit(qtyForPlural, unit);
-        el.textContent = `${newQtyStr}${finalUnit ? " " + finalUnit : ""}`;
+        el.textContent = `${newQtyStr}${finalUnit ? ' ' + finalUnit : ''}`;
       }
     });
 
     document.dispatchEvent(
-      new CustomEvent("recipe:scale", { detail: { factor } }),
+      new CustomEvent('recipe:scale', { detail: { factor } }),
     );
   }
 
   if (decBtn && incBtn && servingCountEl) {
-    decBtn.addEventListener("click", () => {
+    decBtn.addEventListener('click', () => {
       if (currentServings > 1) {
         currentServings--;
         updateRecipeScale(currentServings / baseServings);
       }
     });
-    incBtn.addEventListener("click", () => {
+    incBtn.addEventListener('click', () => {
       currentServings++;
       updateRecipeScale(currentServings / baseServings);
     });

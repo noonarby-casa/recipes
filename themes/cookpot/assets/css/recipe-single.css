@@ -540,9 +540,9 @@
     flex: 1;
     display: grid;
     grid-template-areas:
-      "header"
-      "container"
-      "meta";
+      'header'
+      'container'
+      'meta';
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr auto;
     gap: 1rem;

@@ -139,18 +139,18 @@ Disparate units (e.g., cans and cups) can merge **if and only if** the item's ru
 ```typescript
 // Universal table defines strict within-system conversions
 const UNIT_CONVERSIONS = {
-  cup: { system: "volume", base: "teaspoon", factor: 48 },
-  ounce: { system: "weight", base: "ounce", factor: 1 },
+  cup: { system: 'volume', base: 'teaspoon', factor: 48 },
+  ounce: { system: 'weight', base: 'ounce', factor: 1 },
 };
 
 // Item rules bridge systems and handle non-standard units (e.g., "can")
 const ITEM_RULES: ItemRule[] = [
   {
-    items: ["chickpea"],
-    itemSizes: [[1, "can (15 oz)"]],
+    items: ['chickpea'],
+    itemSizes: [[1, 'can (15 oz)']],
     unitEquivalences: {
-      can: { base: "ounce", factor: 15 }, // 1 can = 15 oz
-      cup: { base: "ounce", factor: 8.5 }, // 1 cup of chickpeas ≈ 8.5 oz
+      can: { base: 'ounce', factor: 15 }, // 1 can = 15 oz
+      cup: { base: 'ounce', factor: 8.5 }, // 1 cup of chickpeas ≈ 8.5 oz
     },
   },
 ];

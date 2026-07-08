@@ -1,9 +1,9 @@
 // removed scaleTextQuantities
-import { processShoppingList } from "./shopping-list/pipeline";
-import { formatCookingNumber } from "./units";
-import { ShoppingItem, IngredientInput } from "./shopping-list/types";
-import { initToggleGroup } from "./components/toggle";
-import { getStoreSection } from "./shopping-list/store-sections";
+import { processShoppingList } from './shopping-list/pipeline';
+import { formatCookingNumber } from './units';
+import { ShoppingItem, IngredientInput } from './shopping-list/types';
+import { initToggleGroup } from './components/toggle';
+import { getStoreSection } from './shopping-list/store-sections';
 
 interface Recipe {
   title: string;
@@ -29,7 +29,7 @@ interface PlannedRecipe {
 let planState: PlannedRecipe[] = [];
 let recipesIndex: Recipe[] = [];
 const selectedTags: Set<string> = new Set();
-let searchQuery = "";
+let searchQuery = '';
 const checkedIngredients: Set<string> = new Set();
 let staplesExpanded = false;
 let keyboardFocusedIndex = -1;
@@ -47,43 +47,43 @@ let undoToastTimeout: number | null = null;
 // Swipe Navigation State
 let swipeStartX = 0;
 let swipeStartY = 0;
-let activeMobileTab = "view-plan"; // 'edit-plan' | 'view-plan' | 'shopping-list'
+let activeMobileTab = 'view-plan'; // 'edit-plan' | 'view-plan' | 'shopping-list'
 
-const STORAGE_KEY = "noonarby-meal-plan";
-const SETTINGS_KEY = "noonarby-meal-plan-settings";
+const STORAGE_KEY = 'noonarby-meal-plan';
+const SETTINGS_KEY = 'noonarby-meal-plan-settings';
 
 // Constants
-const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const DAY_NAMES: Record<string, string> = {
-  sun: "Sunday",
-  mon: "Monday",
-  tue: "Tuesday",
-  wed: "Wednesday",
-  thu: "Thursday",
-  fri: "Friday",
-  sat: "Saturday",
+  sun: 'Sunday',
+  mon: 'Monday',
+  tue: 'Tuesday',
+  wed: 'Wednesday',
+  thu: 'Thursday',
+  fri: 'Friday',
+  sat: 'Saturday',
 };
 
 const DAY_CODES: Record<string, string> = {
-  sun: "0",
-  mon: "1",
-  tue: "2",
-  wed: "3",
-  thu: "4",
-  fri: "5",
-  sat: "6",
-  supplemental: "7",
+  sun: '0',
+  mon: '1',
+  tue: '2',
+  wed: '3',
+  thu: '4',
+  fri: '5',
+  sat: '6',
+  supplemental: '7',
 };
 
 const CODE_TO_DAYS: Record<string, string> = {
-  "0": "sun",
-  "1": "mon",
-  "2": "tue",
-  "3": "wed",
-  "4": "thu",
-  "5": "fri",
-  "6": "sat",
-  "7": "supplemental",
+  '0': 'sun',
+  '1': 'mon',
+  '2': 'tue',
+  '3': 'wed',
+  '4': 'thu',
+  '5': 'fri',
+  '6': 'sat',
+  '7': 'supplemental',
 };
 
 /**
@@ -94,9 +94,9 @@ function getIngredientKey(
   unit: string,
   rest: string,
 ): string {
-  const stapleStr = isStaple ? "staple" : "buy";
-  const normalizedUnit = (unit || "").trim().toLowerCase();
-  const normalizedRest = (rest || "").trim().toLowerCase().replace(/\s+/g, " ");
+  const stapleStr = isStaple ? 'staple' : 'buy';
+  const normalizedUnit = (unit || '').trim().toLowerCase();
+  const normalizedRest = (rest || '').trim().toLowerCase().replace(/\s+/g, ' ');
   return `${stapleStr}_${normalizedUnit}_${normalizedRest}`;
 }
 
@@ -105,18 +105,20 @@ function getIngredientKey(
  */
 function getSiteBasePath(): string {
   const currentPath = window.location.pathname;
-  if (currentPath.startsWith("/recipes/")) {
-    return "/recipes/";
+  if (currentPath.startsWith('/recipes/')) {
+    return '/recipes/';
   }
-  return "/";
+  return '/';
 }
 
 /**
  * Main Initializer for the Meal Planner Page
  */
 export function initMealPlanner(): void {
-  const container = document.getElementById("meal-planner");
-  if (!container) return; // Only run on planner page
+  const container = document.getElementById('meal-planner');
+  if (!container) {
+    return;
+  } // Only run on planner page
 
   loadSettings();
   setupUIThemeClass();
@@ -141,7 +143,7 @@ export function initMealPlanner(): void {
       let urlWorkWeekOnly = localWorkWeekOnly;
       if (hasUrlParams) {
         const urlParams = new URLSearchParams(window.location.search);
-        urlWorkWeekOnly = (urlParams.get("w") || urlParams.get("week")) === "5";
+        urlWorkWeekOnly = (urlParams.get('w') || urlParams.get('week')) === '5';
       }
 
       const localRaw = localStorage.getItem(STORAGE_KEY);
@@ -149,21 +151,21 @@ export function initMealPlanner(): void {
       let localPlan: PlannedRecipe[] = [];
       if (localPlanExists) {
         try {
-          localPlan = JSON.parse(localRaw || "[]");
+          localPlan = JSON.parse(localRaw || '[]');
         } catch {
           localPlan = [];
         }
       }
 
       const urlParams = new URLSearchParams(window.location.search);
-      const rawMode = urlParams.get("m") || urlParams.get("mode");
+      const rawMode = urlParams.get('m') || urlParams.get('mode');
       const urlMode =
-        rawMode === "e"
-          ? "edit"
-          : rawMode === "s"
-            ? "shop"
-            : rawMode === "v"
-              ? "view"
+        rawMode === 'e'
+          ? 'edit'
+          : rawMode === 's'
+            ? 'shop'
+            : rawMode === 'v'
+              ? 'view'
               : rawMode;
 
       const hasConflict =
@@ -174,18 +176,22 @@ export function initMealPlanner(): void {
 
       if (hasConflict) {
         // Option C Conflict Resolution Banner
-        const banner = document.getElementById("plan-conflict-banner");
-        if (banner) banner.style.display = "flex";
+        const banner = document.getElementById('plan-conflict-banner');
+        if (banner) {
+          banner.style.display = 'flex';
+        }
 
         // View shared plan with URL week layout preview
         workWeekOnly = urlWorkWeekOnly;
 
         // Default to View UX and hide edit triggers
-        switchTab("view-plan");
+        switchTab('view-plan');
         const modeHeader = document.querySelector(
-          ".planner-mode-header",
+          '.planner-mode-header',
         ) as HTMLElement;
-        if (modeHeader) modeHeader.style.display = "none";
+        if (modeHeader) {
+          modeHeader.style.display = 'none';
+        }
       } else if (hasUrlParams) {
         // Commit URL plan immediately if local is empty or identical
         planState = urlPlan;
@@ -194,12 +200,12 @@ export function initMealPlanner(): void {
         saveSettings();
 
         // Navigate to the target mode
-        if (urlMode === "edit") {
-          switchTab("edit-plan");
-        } else if (urlMode === "shop") {
-          switchTab("shopping-list");
+        if (urlMode === 'edit') {
+          switchTab('edit-plan');
+        } else if (urlMode === 'shop') {
+          switchTab('shopping-list');
         } else {
-          switchTab("view-plan");
+          switchTab('view-plan');
         }
       } else {
         // Fallback to local storage and sync URL params to match
@@ -208,26 +214,26 @@ export function initMealPlanner(): void {
         saveStateToStorageAndUrl(true);
 
         // Navigate to the target mode
-        if (urlMode === "edit") {
-          switchTab("edit-plan");
-        } else if (urlMode === "shop") {
-          switchTab("shopping-list");
+        if (urlMode === 'edit') {
+          switchTab('edit-plan');
+        } else if (urlMode === 'shop') {
+          switchTab('shopping-list');
         } else {
-          switchTab("view-plan"); // Default to view-plan
+          switchTab('view-plan'); // Default to view-plan
         }
       }
 
       buildTagCloud();
       renderUI();
     })
-    .catch((err) => console.error("Error loading recipes search index:", err));
+    .catch((err) => console.error('Error loading recipes search index:', err));
 }
 
 /**
  * Setup layout class on body
  */
 function setupUIThemeClass(): void {
-  document.body.classList.add("meal-planner-layout");
+  document.body.classList.add('meal-planner-layout');
 }
 
 /**
@@ -243,13 +249,15 @@ function loadSettings(): void {
       }
       if (parsed.chkOmitCompleted !== undefined) {
         const chk = document.getElementById(
-          "chk-omit-completed",
+          'chk-omit-completed',
         ) as HTMLInputElement;
-        if (chk) chk.checked = !!parsed.chkOmitCompleted;
+        if (chk) {
+          chk.checked = !!parsed.chkOmitCompleted;
+        }
       }
     }
   } catch (e) {
-    console.error("Error loading settings:", e);
+    console.error('Error loading settings:', e);
   }
 }
 
@@ -257,7 +265,7 @@ function loadSettings(): void {
  * Saves user settings
  */
 function saveSettings(): void {
-  const chk = document.getElementById("chk-omit-completed") as HTMLInputElement;
+  const chk = document.getElementById('chk-omit-completed') as HTMLInputElement;
   const settings = {
     workWeekOnly,
     chkOmitCompleted: chk ? chk.checked : false,
@@ -270,62 +278,74 @@ function saveSettings(): void {
  */
 function setupEventListeners(): void {
   // Mode Toggles
-  const btnEdit = document.getElementById("mode-edit-btn");
-  const btnView = document.getElementById("mode-view-btn");
-  const btnShop = document.getElementById("mode-shop-btn");
+  const btnEdit = document.getElementById('mode-edit-btn');
+  const btnView = document.getElementById('mode-view-btn');
+  const btnShop = document.getElementById('mode-shop-btn');
   if (btnEdit && btnView && btnShop) {
-    btnEdit.classList.toggle("active", activeMobileTab === "edit-plan");
-    btnView.classList.toggle("active", activeMobileTab === "view-plan");
-    btnShop.classList.toggle("active", activeMobileTab === "shopping-list");
+    btnEdit.classList.toggle('active', activeMobileTab === 'edit-plan');
+    btnView.classList.toggle('active', activeMobileTab === 'view-plan');
+    btnShop.classList.toggle('active', activeMobileTab === 'shopping-list');
   }
-  initToggleGroup(".mode-toggle-group", (value) => {
-    if (value === "mode-edit-btn") switchTab("edit-plan");
-    else if (value === "mode-view-btn") switchTab("view-plan");
-    else if (value === "mode-shop-btn") switchTab("shopping-list");
+  initToggleGroup('.mode-toggle-group', (value) => {
+    if (value === 'mode-edit-btn') {
+      switchTab('edit-plan');
+    } else if (value === 'mode-view-btn') {
+      switchTab('view-plan');
+    } else if (value === 'mode-shop-btn') {
+      switchTab('shopping-list');
+    }
   });
 
   // 5-Day vs 7-Day Toggles
-  initToggleGroup(".week-toggle-group", (value) => {
-    workWeekOnly = value === "week-5day-btn";
+  initToggleGroup('.week-toggle-group', (value) => {
+    workWeekOnly = value === 'week-5day-btn';
     saveSettings();
     saveStateToStorageAndUrl(true);
     renderUI();
   });
 
   // Global Portions Scaler (+/-)
-  const btnGlobalDec = document.getElementById("global-dec-btn");
-  const btnGlobalInc = document.getElementById("global-inc-btn");
+  const btnGlobalDec = document.getElementById('global-dec-btn');
+  const btnGlobalInc = document.getElementById('global-inc-btn');
   if (btnGlobalDec && btnGlobalInc) {
-    btnGlobalDec.addEventListener("click", () => adjustGlobalPortions(-1));
-    btnGlobalInc.addEventListener("click", () => adjustGlobalPortions(1));
+    btnGlobalDec.addEventListener('click', () => adjustGlobalPortions(-1));
+    btnGlobalInc.addEventListener('click', () => adjustGlobalPortions(1));
   }
 
   // Action Buttons
-  const btnShare = document.getElementById("btn-share-plan");
-  const btnClear = document.getElementById("btn-clear-plan");
-  const btnGenerate = document.getElementById("btn-generate-plan");
-  const btnToggleFilters = document.getElementById("btn-toggle-filters");
-  if (btnShare) btnShare.addEventListener("click", sharePlanUrl);
-  if (btnClear) btnClear.addEventListener("click", clearPlannerState);
-  if (btnGenerate) btnGenerate.addEventListener("click", generateDinnerPlan);
+  const btnShare = document.getElementById('btn-share-plan');
+  const btnClear = document.getElementById('btn-clear-plan');
+  const btnGenerate = document.getElementById('btn-generate-plan');
+  const btnToggleFilters = document.getElementById('btn-toggle-filters');
+  if (btnShare) {
+    btnShare.addEventListener('click', sharePlanUrl);
+  }
+  if (btnClear) {
+    btnClear.addEventListener('click', clearPlannerState);
+  }
+  if (btnGenerate) {
+    btnGenerate.addEventListener('click', generateDinnerPlan);
+  }
   // Filters Modal
-  const filtersModal = document.getElementById("planner-filters-modal");
-  const btnCloseFilters = document.getElementById("btn-close-filters-modal");
-  const btnClearFilters = document.getElementById("btn-modal-clear-filters");
+  const filtersModal = document.getElementById('planner-filters-modal');
+  const btnCloseFilters = document.getElementById('btn-close-filters-modal');
+  const btnClearFilters = document.getElementById('btn-modal-clear-filters');
 
   if (btnToggleFilters) {
-    btnToggleFilters.addEventListener("click", openFiltersModal);
+    btnToggleFilters.addEventListener('click', openFiltersModal);
   }
   if (btnCloseFilters) {
-    btnCloseFilters.addEventListener("click", closeFiltersModal);
+    btnCloseFilters.addEventListener('click', closeFiltersModal);
   }
   if (filtersModal) {
-    filtersModal.addEventListener("click", (e) => {
-      if (e.target === filtersModal) closeFiltersModal();
+    filtersModal.addEventListener('click', (e) => {
+      if (e.target === filtersModal) {
+        closeFiltersModal();
+      }
     });
   }
   if (btnClearFilters) {
-    btnClearFilters.addEventListener("click", () => {
+    btnClearFilters.addEventListener('click', () => {
       selectedTags.clear();
       saveCheckedState();
       buildTagCloud();
@@ -335,58 +355,60 @@ function setupEventListeners(): void {
   }
 
   // Selector Modal
-  const modal = document.getElementById("planner-select-modal");
-  const btnCloseModal = document.getElementById("btn-close-modal");
+  const modal = document.getElementById('planner-select-modal');
+  const btnCloseModal = document.getElementById('btn-close-modal');
   const searchInput = document.getElementById(
-    "planner-search-input",
+    'planner-search-input',
   ) as HTMLInputElement;
 
   if (btnCloseModal) {
-    btnCloseModal.addEventListener("click", closeModal);
+    btnCloseModal.addEventListener('click', closeModal);
   }
   if (modal) {
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) closeModal();
-    });
-  }
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      if (modal && modal.style.display === "flex") {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
         closeModal();
       }
-      if (filtersModal && filtersModal.style.display === "flex") {
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (modal && modal.style.display === 'flex') {
+        closeModal();
+      }
+      if (filtersModal && filtersModal.style.display === 'flex') {
         closeFiltersModal();
       }
     }
   });
 
   if (searchInput) {
-    searchInput.addEventListener("input", () => {
+    searchInput.addEventListener('input', () => {
       searchQuery = searchInput.value;
       keyboardFocusedIndex = -1;
       renderModalBrowseShelf();
     });
-    searchInput.addEventListener("keydown", handleModalSearchKeydowns);
+    searchInput.addEventListener('keydown', handleModalSearchKeydowns);
   }
 
   // Drag-to-Trash Zone Bindings
-  const trashZone = document.getElementById("planner-trash-zone");
+  const trashZone = document.getElementById('planner-trash-zone');
   if (trashZone) {
-    trashZone.addEventListener("dragover", (e) => {
+    trashZone.addEventListener('dragover', (e) => {
       e.preventDefault();
-      trashZone.classList.add("drag-over");
+      trashZone.classList.add('drag-over');
     });
-    trashZone.addEventListener("dragenter", (e) => {
+    trashZone.addEventListener('dragenter', (e) => {
       e.preventDefault();
-      trashZone.classList.add("drag-over");
+      trashZone.classList.add('drag-over');
     });
-    trashZone.addEventListener("dragleave", () => {
-      trashZone.classList.remove("drag-over");
+    trashZone.addEventListener('dragleave', () => {
+      trashZone.classList.remove('drag-over');
     });
-    trashZone.addEventListener("drop", (e) => {
+    trashZone.addEventListener('drop', (e) => {
       e.preventDefault();
-      trashZone.classList.remove("drag-over");
-      const draggedId = e.dataTransfer?.getData("text/plain");
+      trashZone.classList.remove('drag-over');
+      const draggedId = e.dataTransfer?.getData('text/plain');
       if (draggedId) {
         removeRecipeWithRecovery(draggedId);
       }
@@ -394,25 +416,25 @@ function setupEventListeners(): void {
   }
 
   // Conflict Resolution Banner (Option C compare & actions)
-  const bannerCompareShared = document.getElementById("btn-compare-shared");
-  const bannerCompareLocal = document.getElementById("btn-compare-local");
-  const bannerBtnKeep = document.getElementById("btn-banner-keep");
-  const bannerBtnLoad = document.getElementById("btn-banner-load");
-  const bannerBtnMerge = document.getElementById("btn-banner-merge");
+  const bannerCompareShared = document.getElementById('btn-compare-shared');
+  const bannerCompareLocal = document.getElementById('btn-compare-local');
+  const bannerBtnKeep = document.getElementById('btn-banner-keep');
+  const bannerBtnLoad = document.getElementById('btn-banner-load');
+  const bannerBtnMerge = document.getElementById('btn-banner-merge');
 
   if (bannerCompareShared && bannerCompareLocal) {
-    bannerCompareShared.addEventListener("click", () => {
-      bannerCompareShared.classList.add("active");
-      bannerCompareLocal.classList.remove("active");
+    bannerCompareShared.addEventListener('click', () => {
+      bannerCompareShared.classList.add('active');
+      bannerCompareLocal.classList.remove('active');
       const urlParams = new URLSearchParams(window.location.search);
-      const urlWeek = (urlParams.get("w") || urlParams.get("week")) === "5";
+      const urlWeek = (urlParams.get('w') || urlParams.get('week')) === '5';
       workWeekOnly = urlWeek;
       parseUrlParams();
       renderUI();
     });
-    bannerCompareLocal.addEventListener("click", () => {
-      bannerCompareLocal.classList.add("active");
-      bannerCompareShared.classList.remove("active");
+    bannerCompareLocal.addEventListener('click', () => {
+      bannerCompareLocal.classList.add('active');
+      bannerCompareShared.classList.remove('active');
       try {
         const rawSettings = localStorage.getItem(SETTINGS_KEY);
         if (rawSettings) {
@@ -430,14 +452,14 @@ function setupEventListeners(): void {
   }
 
   if (bannerBtnKeep) {
-    bannerBtnKeep.addEventListener("click", () => {
+    bannerBtnKeep.addEventListener('click', () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const rawMode = urlParams.get("m") || urlParams.get("mode");
+      const rawMode = urlParams.get('m') || urlParams.get('mode');
       const targetMode =
-        rawMode === "e"
-          ? "edit"
-          : (rawMode === "s" ? "shop" : rawMode === "v" ? "view" : rawMode) ||
-            "view";
+        rawMode === 'e'
+          ? 'edit'
+          : (rawMode === 's' ? 'shop' : rawMode === 'v' ? 'view' : rawMode) ||
+            'view';
       try {
         const rawSettings = localStorage.getItem(SETTINGS_KEY);
         if (rawSettings) {
@@ -454,25 +476,25 @@ function setupEventListeners(): void {
       saveStateToStorageAndUrl(true);
       saveSettings();
 
-      if (targetMode === "edit") {
-        switchTab("edit-plan");
-      } else if (targetMode === "shop") {
-        switchTab("shopping-list");
+      if (targetMode === 'edit') {
+        switchTab('edit-plan');
+      } else if (targetMode === 'shop') {
+        switchTab('shopping-list');
       } else {
-        switchTab("view-plan");
+        switchTab('view-plan');
       }
     });
   }
   if (bannerBtnLoad) {
-    bannerBtnLoad.addEventListener("click", () => {
+    bannerBtnLoad.addEventListener('click', () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const rawMode = urlParams.get("m") || urlParams.get("mode");
+      const rawMode = urlParams.get('m') || urlParams.get('mode');
       const targetMode =
-        rawMode === "e"
-          ? "edit"
-          : (rawMode === "s" ? "shop" : rawMode === "v" ? "view" : rawMode) ||
-            "view";
-      const urlWeek = (urlParams.get("w") || urlParams.get("week")) === "5";
+        rawMode === 'e'
+          ? 'edit'
+          : (rawMode === 's' ? 'shop' : rawMode === 'v' ? 'view' : rawMode) ||
+            'view';
+      const urlWeek = (urlParams.get('w') || urlParams.get('week')) === '5';
       workWeekOnly = urlWeek;
       parseUrlParams();
       hideConflictBanner();
@@ -480,24 +502,24 @@ function setupEventListeners(): void {
       saveStateToStorageAndUrl(true);
       saveSettings();
 
-      if (targetMode === "edit") {
-        switchTab("edit-plan");
-      } else if (targetMode === "shop") {
-        switchTab("shopping-list");
+      if (targetMode === 'edit') {
+        switchTab('edit-plan');
+      } else if (targetMode === 'shop') {
+        switchTab('shopping-list');
       } else {
-        switchTab("view-plan");
+        switchTab('view-plan');
       }
     });
   }
   if (bannerBtnMerge) {
-    bannerBtnMerge.addEventListener("click", () => {
+    bannerBtnMerge.addEventListener('click', () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const rawMode = urlParams.get("m") || urlParams.get("mode");
+      const rawMode = urlParams.get('m') || urlParams.get('mode');
       const targetMode =
-        rawMode === "e"
-          ? "edit"
-          : (rawMode === "s" ? "shop" : rawMode === "v" ? "view" : rawMode) ||
-            "view";
+        rawMode === 'e'
+          ? 'edit'
+          : (rawMode === 's' ? 'shop' : rawMode === 'v' ? 'view' : rawMode) ||
+            'view';
       try {
         const rawSettings = localStorage.getItem(SETTINGS_KEY);
         if (rawSettings) {
@@ -510,7 +532,7 @@ function setupEventListeners(): void {
         // Ignore settings parse error and keep current state
       }
       const currentLocal = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]",
+        localStorage.getItem(STORAGE_KEY) || '[]',
       ) as PlannedRecipe[];
 
       parseUrlParams(); // Loads URL planState
@@ -524,64 +546,65 @@ function setupEventListeners(): void {
       saveStateToStorageAndUrl(true);
       saveSettings();
 
-      if (targetMode === "edit") {
-        switchTab("edit-plan");
-      } else if (targetMode === "shop") {
-        switchTab("shopping-list");
+      if (targetMode === 'edit') {
+        switchTab('edit-plan');
+      } else if (targetMode === 'shop') {
+        switchTab('shopping-list');
       } else {
-        switchTab("view-plan");
+        switchTab('view-plan');
       }
     });
   }
 
   // Shopping list triggers
-  const btnResetList = document.getElementById("btn-reset-shopping-list");
+  const btnResetList = document.getElementById('btn-reset-shopping-list');
   if (btnResetList) {
-    btnResetList.addEventListener("click", () => {
+    btnResetList.addEventListener('click', () => {
       checkedIngredients.clear();
       saveCheckedState();
       renderUI();
     });
   }
 
-  const btnCopyList = document.getElementById("btn-copy-combined-list");
+  const btnCopyList = document.getElementById('btn-copy-combined-list');
   if (btnCopyList) {
-    if (btnCopyList.tagName === "SELECT") {
-      btnCopyList.addEventListener("change", (e) => {
+    if (btnCopyList.tagName === 'SELECT') {
+      btnCopyList.addEventListener('change', (e) => {
         const select = e.currentTarget as HTMLSelectElement;
         const format = select.value;
-        if (format === "markdown" || format === "google-keep") {
-          copyShoppingListToClipboard(format as "markdown" | "google-keep");
+        if (format === 'markdown' || format === 'google-keep') {
+          copyShoppingListToClipboard(format as 'markdown' | 'google-keep');
         }
       });
     } else {
-      btnCopyList.addEventListener("click", () =>
-        copyShoppingListToClipboard("markdown"),
+      btnCopyList.addEventListener('click', () =>
+        copyShoppingListToClipboard('markdown'),
       );
     }
   }
 
-  const btnCopyMenu = document.getElementById("btn-copy-menu-text");
-  if (btnCopyMenu)
-    btnCopyMenu.addEventListener("click", copyMenuTextToClipboard);
+  const btnCopyMenu = document.getElementById('btn-copy-menu-text');
+  if (btnCopyMenu) {
+    btnCopyMenu.addEventListener('click', copyMenuTextToClipboard);
+  }
 
   const chkOmit = document.getElementById(
-    "chk-omit-completed",
+    'chk-omit-completed',
   ) as HTMLInputElement;
   if (chkOmit) {
-    chkOmit.addEventListener("change", () => {
+    chkOmit.addEventListener('change', () => {
       saveSettings();
       renderUI();
     });
   }
 
-  document.addEventListener("store-layout:change", () => {
+  document.addEventListener('store-layout:change', () => {
     renderUI();
   });
 
-  const btnToggleStaples = document.getElementById("btn-toggle-staples");
+  const btnToggleStaples = document.getElementById('btn-toggle-staples');
   if (btnToggleStaples) {
-    btnToggleStaples.addEventListener("click", () => {
+    btnToggleStaples.addEventListener('click', () => {
       staplesExpanded = !staplesExpanded;
       renderUI();
     });
@@ -595,9 +618,11 @@ function setupEventListeners(): void {
  */
 function setupMobileSwipeGestures(): void {
   document.addEventListener(
-    "touchstart",
+    'touchstart',
     (e) => {
-      if (window.innerWidth >= 768) return; // Desktop uses side-by-side scrolling
+      if (window.innerWidth >= 768) {
+        return;
+      } // Desktop uses side-by-side scrolling
       swipeStartX = e.touches[0].clientX;
       swipeStartY = e.touches[0].clientY;
     },
@@ -605,18 +630,22 @@ function setupMobileSwipeGestures(): void {
   );
 
   document.addEventListener(
-    "touchend",
+    'touchend',
     (e) => {
-      if (window.innerWidth >= 768) return;
-      const modal = document.getElementById("planner-select-modal");
-      if (modal && modal.style.display === "flex") return; // Block swiping when modal is active
+      if (window.innerWidth >= 768) {
+        return;
+      }
+      const modal = document.getElementById('planner-select-modal');
+      if (modal && modal.style.display === 'flex') {
+        return;
+      } // Block swiping when modal is active
 
       const deltaX = e.changedTouches[0].clientX - swipeStartX;
       const deltaY = e.changedTouches[0].clientY - swipeStartY;
 
       // Detect horizontal swipe with low vertical drift
       if (Math.abs(deltaX) > 80 && Math.abs(deltaY) < 50) {
-        const tabs = ["edit-plan", "view-plan", "shopping-list"];
+        const tabs = ['edit-plan', 'view-plan', 'shopping-list'];
         let idx = tabs.indexOf(activeMobileTab);
         if (deltaX < 0) {
           // Swipe Left: Next Tab
@@ -637,19 +666,25 @@ function setupMobileSwipeGestures(): void {
  */
 function switchTab(tabId: string): void {
   activeMobileTab = tabId;
-  editMode = tabId === "edit-plan";
+  editMode = tabId === 'edit-plan';
 
-  const btnEdit = document.getElementById("mode-edit-btn");
-  const btnView = document.getElementById("mode-view-btn");
-  const btnShop = document.getElementById("mode-shop-btn");
+  const btnEdit = document.getElementById('mode-edit-btn');
+  const btnView = document.getElementById('mode-view-btn');
+  const btnShop = document.getElementById('mode-shop-btn');
 
-  if (btnEdit) btnEdit.classList.toggle("active", tabId === "edit-plan");
-  if (btnView) btnView.classList.toggle("active", tabId === "view-plan");
-  if (btnShop) btnShop.classList.toggle("active", tabId === "shopping-list");
+  if (btnEdit) {
+    btnEdit.classList.toggle('active', tabId === 'edit-plan');
+  }
+  if (btnView) {
+    btnView.classList.toggle('active', tabId === 'view-plan');
+  }
+  if (btnShop) {
+    btnShop.classList.toggle('active', tabId === 'shopping-list');
+  }
 
   // Sync mode parameter to the URL (unless in preview conflict mode)
-  const banner = document.getElementById("plan-conflict-banner");
-  const isConflict = banner && banner.style.display === "flex";
+  const banner = document.getElementById('plan-conflict-banner');
+  const isConflict = banner && banner.style.display === 'flex';
   if (!isConflict) {
     saveStateToStorageAndUrl(true);
   }
@@ -661,13 +696,17 @@ function switchTab(tabId: string): void {
  * Hides conflict resolution overlay and restores mode triggers
  */
 function hideConflictBanner(): void {
-  const banner = document.getElementById("plan-conflict-banner");
-  if (banner) banner.style.display = "none";
+  const banner = document.getElementById('plan-conflict-banner');
+  if (banner) {
+    banner.style.display = 'none';
+  }
 
   const modeHeader = document.querySelector(
-    ".planner-mode-header",
+    '.planner-mode-header',
   ) as HTMLElement;
-  if (modeHeader) modeHeader.style.display = "flex";
+  if (modeHeader) {
+    modeHeader.style.display = 'flex';
+  }
 }
 
 /**
@@ -676,7 +715,9 @@ function hideConflictBanner(): void {
 function adjustGlobalPortions(offset: number): void {
   planState.forEach((planned) => {
     const rec = recipesIndex.find((r) => r.permalink === planned.permalink);
-    if (!rec) return;
+    if (!rec) {
+      return;
+    }
     const currentPortions = Math.round(planned.scale * rec.servings);
     const nextPortions = Math.max(1, currentPortions + offset);
     planned.scale = nextPortions / rec.servings;
@@ -690,11 +731,13 @@ function adjustGlobalPortions(offset: number): void {
  */
 function removeRecipeWithRecovery(instanceId: string): void {
   const idx = planState.findIndex((p) => p.instanceId === instanceId);
-  if (idx === -1) return;
+  if (idx === -1) {
+    return;
+  }
 
   const target = planState[idx];
   const rec = recipesIndex.find((r) => r.permalink === target.permalink);
-  const title = rec ? rec.title : "Recipe";
+  const title = rec ? rec.title : 'Recipe';
 
   // Cache removal
   lastRemovedRecipe = { ...target };
@@ -716,13 +759,17 @@ function removeRecipeWithRecovery(instanceId: string): void {
  */
 function showUndoToast(message: string): void {
   // Clear any existing toasts and timeouts
-  if (undoToastTimeout) clearTimeout(undoToastTimeout);
-  const existing = document.querySelector(".plan-toast-notification");
-  if (existing) existing.remove();
+  if (undoToastTimeout) {
+    clearTimeout(undoToastTimeout);
+  }
+  const existing = document.querySelector('.plan-toast-notification');
+  if (existing) {
+    existing.remove();
+  }
 
   const toastContainer = getOrCreateToastContainer();
-  const toast = document.createElement("div");
-  toast.className = "plan-toast-notification";
+  const toast = document.createElement('div');
+  toast.className = 'plan-toast-notification';
 
   toast.innerHTML = `
     <div class="toast-body">
@@ -749,9 +796,9 @@ function showUndoToast(message: string): void {
     font-size: 0.85rem;
   `;
 
-  const undoBtn = toast.querySelector("#btn-undo-remove");
+  const undoBtn = toast.querySelector('#btn-undo-remove');
   if (undoBtn) {
-    undoBtn.addEventListener("click", () => {
+    undoBtn.addEventListener('click', () => {
       if (lastRemovedRecipe !== null && lastRemovedIndex !== null) {
         planState.splice(lastRemovedIndex, 0, lastRemovedRecipe);
         lastRemovedRecipe = null;
@@ -763,9 +810,9 @@ function showUndoToast(message: string): void {
     });
   }
 
-  const closeBtn = toast.querySelector(".toast-close-btn");
+  const closeBtn = toast.querySelector('.toast-close-btn');
   if (closeBtn) {
-    closeBtn.addEventListener("click", () => toast.remove());
+    closeBtn.addEventListener('click', () => toast.remove());
   }
 
   toastContainer.appendChild(toast);
@@ -780,10 +827,10 @@ function showUndoToast(message: string): void {
  * Retrieves or builds toast notifications wrapper
  */
 function getOrCreateToastContainer(): HTMLElement {
-  let container = document.getElementById("planner-toast-container");
+  let container = document.getElementById('planner-toast-container');
   if (!container) {
-    container = document.createElement("div");
-    container.id = "planner-toast-container";
+    container = document.createElement('div');
+    container.id = 'planner-toast-container';
     container.style.cssText = `
       position: fixed;
       bottom: 20px;
@@ -804,30 +851,30 @@ function getOrCreateToastContainer(): HTMLElement {
  */
 function openModal(day: string): void {
   activeTargetDay = day;
-  const modal = document.getElementById("planner-select-modal");
-  const title = document.getElementById("modal-title-day");
+  const modal = document.getElementById('planner-select-modal');
+  const title = document.getElementById('modal-title-day');
   const searchInput = document.getElementById(
-    "planner-search-input",
+    'planner-search-input',
   ) as HTMLInputElement;
-  const activeTagsNotice = document.getElementById("modal-active-tags-notice");
+  const activeTagsNotice = document.getElementById('modal-active-tags-notice');
 
   if (modal && title && searchInput) {
     title.textContent =
-      day === "supplemental"
-        ? "Add Supplemental Recipe"
+      day === 'supplemental'
+        ? 'Add Supplemental Recipe'
         : `Add Recipe to ${DAY_NAMES[day]}`;
-    searchInput.value = "";
-    searchQuery = "";
+    searchInput.value = '';
+    searchQuery = '';
     keyboardFocusedIndex = -1;
-    modal.style.display = "flex";
+    modal.style.display = 'flex';
 
     // Active filters notice
     if (activeTagsNotice) {
       if (selectedTags.size > 0) {
-        activeTagsNotice.textContent = `Applying active tag filters: ${Array.from(selectedTags).join(", ")}`;
-        activeTagsNotice.style.display = "block";
+        activeTagsNotice.textContent = `Applying active tag filters: ${Array.from(selectedTags).join(', ')}`;
+        activeTagsNotice.style.display = 'block';
       } else {
-        activeTagsNotice.style.display = "none";
+        activeTagsNotice.style.display = 'none';
       }
     }
 
@@ -843,9 +890,9 @@ function openModal(day: string): void {
  * Close Modal Dialog
  */
 function closeModal(): void {
-  const modal = document.getElementById("planner-select-modal");
+  const modal = document.getElementById('planner-select-modal');
   if (modal) {
-    modal.style.display = "none";
+    modal.style.display = 'none';
   }
   activeTargetDay = null;
 }
@@ -854,9 +901,9 @@ function closeModal(): void {
  * Open Filters Modal
  */
 function openFiltersModal(): void {
-  const modal = document.getElementById("planner-filters-modal");
+  const modal = document.getElementById('planner-filters-modal');
   if (modal) {
-    modal.style.display = "flex";
+    modal.style.display = 'flex';
     buildTagCloud();
   }
 }
@@ -865,9 +912,9 @@ function openFiltersModal(): void {
  * Close Filters Modal
  */
 function closeFiltersModal(): void {
-  const modal = document.getElementById("planner-filters-modal");
+  const modal = document.getElementById('planner-filters-modal');
   if (modal) {
-    modal.style.display = "none";
+    modal.style.display = 'none';
   }
 }
 
@@ -898,18 +945,20 @@ function addRecipeToDay(
  */
 function swapRecipe(instanceId: string): void {
   const idx = planState.findIndex((p) => p.instanceId === instanceId);
-  if (idx === -1) return;
+  if (idx === -1) {
+    return;
+  }
   const item = planState[idx];
 
   const dayMeals = planState.filter((p) => p.day === item.day);
   const isDinnerSlot =
-    item.day !== "supplemental" && dayMeals.indexOf(item) === 0;
+    item.day !== 'supplemental' && dayMeals.indexOf(item) === 0;
 
   // Build pool of candidate recipes
   let pool = recipesIndex;
   if (isDinnerSlot) {
     pool = recipesIndex.filter(
-      (r) => r.tags && r.tags.some((t) => t.toLowerCase() === "dinner"),
+      (r) => r.tags && r.tags.some((t) => t.toLowerCase() === 'dinner'),
     );
   }
 
@@ -925,7 +974,9 @@ function swapRecipe(instanceId: string): void {
     candidates = pool;
   }
 
-  if (candidates.length === 0) return;
+  if (candidates.length === 0) {
+    return;
+  }
 
   const randomRec = candidates[Math.floor(Math.random() * candidates.length)];
   item.permalink = randomRec.permalink;
@@ -938,15 +989,19 @@ function swapRecipe(instanceId: string): void {
  * Automatically populates empty dinner slots for active days with random dinner recipes
  */
 function generateDinnerPlan(): void {
-  if (recipesIndex.length === 0) return;
+  if (recipesIndex.length === 0) {
+    return;
+  }
 
   const activeDays = workWeekOnly ? DAYS.slice(1, 6) : DAYS;
 
   // Find all dinner recipes
   const dinnerPool = recipesIndex.filter(
-    (r) => r.tags && r.tags.some((t) => t.toLowerCase() === "dinner"),
+    (r) => r.tags && r.tags.some((t) => t.toLowerCase() === 'dinner'),
   );
-  if (dinnerPool.length === 0) return;
+  if (dinnerPool.length === 0) {
+    return;
+  }
 
   let planChanged = false;
 
@@ -988,20 +1043,22 @@ function generateDinnerPlan(): void {
  */
 function handleModalSearchKeydowns(e: KeyboardEvent): void {
   const cards = document.querySelectorAll(
-    "#planner-browse-shelf .browse-card",
+    '#planner-browse-shelf .browse-card',
   ) as NodeListOf<HTMLElement>;
-  if (cards.length === 0) return;
+  if (cards.length === 0) {
+    return;
+  }
 
-  if (e.key === "ArrowDown") {
+  if (e.key === 'ArrowDown') {
     e.preventDefault();
     keyboardFocusedIndex = (keyboardFocusedIndex + 1) % cards.length;
     updateKeyboardFocusedCard(cards);
-  } else if (e.key === "ArrowUp") {
+  } else if (e.key === 'ArrowUp') {
     e.preventDefault();
     keyboardFocusedIndex =
       (keyboardFocusedIndex - 1 + cards.length) % cards.length;
     updateKeyboardFocusedCard(cards);
-  } else if (e.key === "Enter") {
+  } else if (e.key === 'Enter') {
     e.preventDefault();
     if (keyboardFocusedIndex >= 0 && keyboardFocusedIndex < cards.length) {
       cards[keyboardFocusedIndex].click();
@@ -1018,10 +1075,10 @@ function handleModalSearchKeydowns(e: KeyboardEvent): void {
 function updateKeyboardFocusedCard(cards: NodeListOf<HTMLElement>): void {
   cards.forEach((card, idx) => {
     if (idx === keyboardFocusedIndex) {
-      card.classList.add("keyboard-focused");
-      card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      card.classList.add('keyboard-focused');
+      card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     } else {
-      card.classList.remove("keyboard-focused");
+      card.classList.remove('keyboard-focused');
     }
   });
 }
@@ -1030,8 +1087,10 @@ function updateKeyboardFocusedCard(cards: NodeListOf<HTMLElement>): void {
  * Render items inside the Modal Browse Suggestion Shelf
  */
 function renderModalBrowseShelf(): void {
-  const shelf = document.getElementById("planner-browse-shelf");
-  if (!shelf) return;
+  const shelf = document.getElementById('planner-browse-shelf');
+  if (!shelf) {
+    return;
+  }
 
   // Filter recipes index by persistent tag filters and text input queries
   let matches = recipesIndex.filter((r) =>
@@ -1060,12 +1119,12 @@ function renderModalBrowseShelf(): void {
       const isPlanned = plannedSet.has(r.permalink);
       const plannedBadge = isPlanned
         ? `<span class="browse-badge">Planned</span>`
-        : "";
-      const plannedClass = isPlanned ? "planned" : "";
+        : '';
+      const plannedClass = isPlanned ? 'planned' : '';
 
       // Extract first segment of title for image naming fallback
       const slug =
-        r.permalink.split("/").filter(Boolean).pop() || "placeholder";
+        r.permalink.split('/').filter(Boolean).pop() || 'placeholder';
 
       return `
         <div class="browse-card ${plannedClass}" data-permalink="${r.permalink}">
@@ -1080,12 +1139,12 @@ function renderModalBrowseShelf(): void {
         </div>
       `;
     })
-    .join("");
+    .join('');
 
   // Add click handlers
-  shelf.querySelectorAll(".browse-card").forEach((card) => {
-    card.addEventListener("click", () => {
-      const permalink = card.getAttribute("data-permalink");
+  shelf.querySelectorAll('.browse-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      const permalink = card.getAttribute('data-permalink');
       if (permalink && activeTargetDay) {
         addRecipeToDay(activeTargetDay, permalink);
         closeModal();
@@ -1098,8 +1157,10 @@ function renderModalBrowseShelf(): void {
  * Renders Tag Filter Pill Row
  */
 function buildTagCloud(): void {
-  const bar = document.getElementById("planner-tag-filters");
-  if (!bar) return;
+  const bar = document.getElementById('planner-tag-filters');
+  if (!bar) {
+    return;
+  }
 
   // 1. Get subset of recipes matching currently selected tags
   const tagFilteredSubset = recipesIndex.filter((r) =>
@@ -1109,7 +1170,9 @@ function buildTagCloud(): void {
   // 2. Compute counts on this subset
   const tallies: Record<string, number> = {};
   tagFilteredSubset.forEach((r) => {
-    if (!r.tags) return;
+    if (!r.tags) {
+      return;
+    }
     r.tags.forEach((tag) => {
       tallies[tag] = (tallies[tag] || 0) + 1;
     });
@@ -1120,19 +1183,19 @@ function buildTagCloud(): void {
     new Set(recipesIndex.flatMap((r) => r.tags || [])),
   ).sort();
 
-  bar.innerHTML = "";
+  bar.innerHTML = '';
   uniqueTags.forEach((tag) => {
     const count = tallies[tag] || 0;
     const isActive = selectedTags.has(tag);
 
     // Only render if it matches at least one recipe in the current subset, or is already selected (to allow deselecting)
     if (count > 0 || isActive) {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = `tag-filter-pill${isActive ? " active" : ""}`;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `tag-filter-pill${isActive ? ' active' : ''}`;
       btn.dataset.tag = tag;
       btn.innerHTML = `${tag} <span class="tag-count">${count}</span>`;
-      btn.addEventListener("click", () => {
+      btn.addEventListener('click', () => {
         if (isActive) {
           selectedTags.delete(tag);
         } else {
@@ -1156,7 +1219,9 @@ function handleCardDrop(
   targetInstanceId?: string,
 ): void {
   const draggedIdx = planState.findIndex((p) => p.instanceId === draggedId);
-  if (draggedIdx === -1) return;
+  if (draggedIdx === -1) {
+    return;
+  }
 
   const [item] = planState.splice(draggedIdx, 1);
   item.day = targetDay;
@@ -1204,7 +1269,9 @@ function permalinkToCode(permalink: string): string {
  */
 function codeToPermalink(code: string): string {
   const rec = recipesIndex.find((r) => r.shortId === code);
-  if (rec) return rec.permalink;
+  if (rec) {
+    return rec.permalink;
+  }
   return `/recipes/${code}/`;
 }
 
@@ -1215,7 +1282,9 @@ function arePlansEqual(
   planA: PlannedRecipe[],
   planB: PlannedRecipe[],
 ): boolean {
-  if (planA.length !== planB.length) return false;
+  if (planA.length !== planB.length) {
+    return false;
+  }
 
   return planA.every((itemA, idx) => {
     const itemB = planB[idx];
@@ -1251,11 +1320,13 @@ function mergePlans(
  */
 function showUnknownRecipeWarning(code: string): void {
   const existingWarning = document.querySelector(`.toast-warning-${code}`);
-  if (existingWarning) return;
+  if (existingWarning) {
+    return;
+  }
 
   const message = `Shared recipe with code "<strong>${code}</strong>" could not be found. It may have been renamed or removed.`;
   const toastContainer = getOrCreateToastContainer();
-  const toast = document.createElement("div");
+  const toast = document.createElement('div');
   toast.className = `plan-toast-notification toast-warning-${code}`;
 
   toast.innerHTML = `
@@ -1281,9 +1352,9 @@ function showUnknownRecipeWarning(code: string): void {
     font-size: 0.85rem;
   `;
 
-  const closeBtn = toast.querySelector(".toast-close-btn");
+  const closeBtn = toast.querySelector('.toast-close-btn');
   if (closeBtn) {
-    closeBtn.addEventListener("click", () => toast.remove());
+    closeBtn.addEventListener('click', () => toast.remove());
   }
 
   toastContainer.appendChild(toast);
@@ -1307,10 +1378,14 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
 
   planState.forEach((item) => {
     const rec = recipesIndex.find((r) => r.permalink === item.permalink);
-    if (!rec) return;
+    if (!rec) {
+      return;
+    }
     const code = permalinkToCode(item.permalink);
     const dayCode = DAY_CODES[item.day];
-    if (!dayCode) return; // Ignore invalid day
+    if (!dayCode) {
+      return;
+    } // Ignore invalid day
 
     const portions = Math.round(item.scale * rec.servings);
     const hasCustomPortions = portions !== rec.servings;
@@ -1322,24 +1397,24 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
     entries.push(val);
   });
 
-  const pVal = ["1", ...entries].join(".");
-  params.set("p", pVal);
+  const pVal = ['1', ...entries].join('.');
+  params.set('p', pVal);
 
   if (workWeekOnly) {
-    params.set("w", "5");
+    params.set('w', '5');
   }
 
-  if (activeMobileTab === "edit-plan") {
-    params.set("m", "e");
-  } else if (activeMobileTab === "shopping-list") {
-    params.set("m", "s");
+  if (activeMobileTab === 'edit-plan') {
+    params.set('m', 'e');
+  } else if (activeMobileTab === 'shopping-list') {
+    params.set('m', 's');
   }
 
   const query = params.toString();
   const path = window.location.pathname;
 
   if (writeHistory) {
-    window.history.replaceState({}, "", query ? `${path}?${query}` : path);
+    window.history.replaceState({}, '', query ? `${path}?${query}` : path);
   }
 }
 
@@ -1355,7 +1430,7 @@ function loadStateFromStorage(): void {
       planState = [];
     }
   } catch (e) {
-    console.error("Error reading LocalStorage planner state:", e);
+    console.error('Error reading LocalStorage planner state:', e);
     planState = [];
   }
 }
@@ -1369,16 +1444,18 @@ function parseUrlParams(): boolean {
   const newPlan: PlannedRecipe[] = [];
 
   // Check if new single-param 'p' is present
-  if (params.has("p")) {
-    const pVal = params.get("p") || "";
-    const parts = pVal.split(".");
+  if (params.has('p')) {
+    const pVal = params.get('p') || '';
+    const parts = pVal.split('.');
     const version = parts[0];
 
-    if (version === "1") {
+    if (version === '1') {
       hasValidParams = true;
       const entries = parts.slice(1);
       entries.forEach((entry) => {
-        if (!entry) return;
+        if (!entry) {
+          return;
+        }
 
         // dayCode is 1 char: '0'..'7'
         const dayCode = entry.charAt(0);
@@ -1389,13 +1466,15 @@ function parseUrlParams(): boolean {
         }
 
         const rest = entry.slice(1);
-        if (!rest) return;
+        if (!rest) {
+          return;
+        }
 
         // Parse shortId (lowercase letters) and portions (digits)
         let digitIndex = -1;
         for (let i = 0; i < rest.length; i++) {
           const char = rest.charAt(i);
-          if (char >= "0" && char <= "9") {
+          if (char >= '0' && char <= '9') {
             digitIndex = i;
             break;
           }
@@ -1432,7 +1511,7 @@ function parseUrlParams(): boolean {
     }
   } else {
     // Legacy fallback
-    const allKeys = [...DAYS, "supplemental"];
+    const allKeys = [...DAYS, 'supplemental'];
     allKeys.forEach((day) => {
       const values = params.getAll(day);
       if (values.length > 0) {
@@ -1441,8 +1520,8 @@ function parseUrlParams(): boolean {
           let code = val;
           let scale = 1.0;
 
-          if (val.includes("-")) {
-            const parts = val.split("-");
+          if (val.includes('-')) {
+            const parts = val.split('-');
             code = parts[0];
             scale = parseFloat(parts[1]) || 1.0;
           }
@@ -1465,10 +1544,10 @@ function parseUrlParams(): boolean {
   }
 
   // Parse week / w
-  if (params.has("w") || params.has("week")) {
+  if (params.has('w') || params.has('week')) {
     hasValidParams = true;
-    const wVal = params.get("w") || params.get("week");
-    workWeekOnly = wVal === "5";
+    const wVal = params.get('w') || params.get('week');
+    workWeekOnly = wVal === '5';
   }
 
   if (hasValidParams) {
@@ -1481,7 +1560,7 @@ function parseUrlParams(): boolean {
  * Reset planner state triggers
  */
 function clearPlannerState(): void {
-  if (confirm("Are you sure you want to clear your meal plan?")) {
+  if (confirm('Are you sure you want to clear your meal plan?')) {
     planState = [];
     checkedIngredients.clear();
     saveCheckedState();
@@ -1494,66 +1573,95 @@ function clearPlannerState(): void {
  * Render Core Planner Grid UI Interface
  */
 function renderUI(highlightInstanceId?: string): void {
-  const container = document.getElementById("planned-recipes-list-grid");
-  const colShopping = document.getElementById("col-shopping");
-  const mealPlannerContainer = document.getElementById("meal-planner");
-  const toolbarEdit = document.getElementById("toolbar-edit");
-  const toolbarView = document.getElementById("toolbar-view");
-  const toolbarShop = document.getElementById("toolbar-shop");
-  const suppSection = document.getElementById("supplemental-section");
-  const suppList = document.getElementById("supplemental-recipes-list");
+  const container = document.getElementById('planned-recipes-list-grid');
+  const colShopping = document.getElementById('col-shopping');
+  const mealPlannerContainer = document.getElementById('meal-planner');
+  const toolbarEdit = document.getElementById('toolbar-edit');
+  const toolbarView = document.getElementById('toolbar-view');
+  const toolbarShop = document.getElementById('toolbar-shop');
+  const suppSection = document.getElementById('supplemental-section');
+  const suppList = document.getElementById('supplemental-recipes-list');
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
 
   // Sync Filters button label and active highlights
-  const btnToggleFilters = document.getElementById("btn-toggle-filters");
+  const btnToggleFilters = document.getElementById('btn-toggle-filters');
   if (btnToggleFilters) {
     const filterCount = selectedTags.size;
-    btnToggleFilters.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Filters${filterCount > 0 ? ` (${filterCount})` : ""}`;
-    btnToggleFilters.classList.toggle("active", filterCount > 0);
+    btnToggleFilters.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Filters${filterCount > 0 ? ` (${filterCount})` : ''}`;
+    btnToggleFilters.classList.toggle('active', filterCount > 0);
   }
 
   // Toggle View UX / Edit UX controls
-  const btn7Day = document.getElementById("week-7day-btn");
-  const btn5Day = document.getElementById("week-5day-btn");
+  const btn7Day = document.getElementById('week-7day-btn');
+  const btn5Day = document.getElementById('week-5day-btn');
   if (btn7Day && btn5Day) {
-    btn5Day.classList.toggle("active", workWeekOnly);
-    btn7Day.classList.toggle("active", !workWeekOnly);
+    btn5Day.classList.toggle('active', workWeekOnly);
+    btn7Day.classList.toggle('active', !workWeekOnly);
   }
 
   // Set per-view visibility of second toolbar controls
-  if (activeMobileTab === "edit-plan") {
-    if (toolbarEdit) toolbarEdit.style.display = "flex";
-    if (toolbarView) toolbarView.style.display = "none";
-    if (toolbarShop) toolbarShop.style.display = "none";
+  if (activeMobileTab === 'edit-plan') {
+    if (toolbarEdit) {
+      toolbarEdit.style.display = 'flex';
+    }
+    if (toolbarView) {
+      toolbarView.style.display = 'none';
+    }
+    if (toolbarShop) {
+      toolbarShop.style.display = 'none';
+    }
 
-    if (colShopping) colShopping.style.display = "none";
-    if (mealPlannerContainer)
-      mealPlannerContainer.classList.remove("show-shopping");
-  } else if (activeMobileTab === "view-plan") {
-    if (toolbarEdit) toolbarEdit.style.display = "none";
-    if (toolbarView) toolbarView.style.display = "flex";
-    if (toolbarShop) toolbarShop.style.display = "none";
+    if (colShopping) {
+      colShopping.style.display = 'none';
+    }
+    if (mealPlannerContainer) {
+      mealPlannerContainer.classList.remove('show-shopping');
+    }
+  } else if (activeMobileTab === 'view-plan') {
+    if (toolbarEdit) {
+      toolbarEdit.style.display = 'none';
+    }
+    if (toolbarView) {
+      toolbarView.style.display = 'flex';
+    }
+    if (toolbarShop) {
+      toolbarShop.style.display = 'none';
+    }
 
-    if (colShopping) colShopping.style.display = "block";
-    if (mealPlannerContainer)
-      mealPlannerContainer.classList.add("show-shopping");
-  } else if (activeMobileTab === "shopping-list") {
-    if (toolbarEdit) toolbarEdit.style.display = "none";
-    if (toolbarView) toolbarView.style.display = "none";
+    if (colShopping) {
+      colShopping.style.display = 'block';
+    }
+    if (mealPlannerContainer) {
+      mealPlannerContainer.classList.add('show-shopping');
+    }
+  } else if (activeMobileTab === 'shopping-list') {
+    if (toolbarEdit) {
+      toolbarEdit.style.display = 'none';
+    }
+    if (toolbarView) {
+      toolbarView.style.display = 'none';
+    }
 
     // Only show shopping list toolbar if plan contains scheduled items
     const hasItems = planState.length > 0;
-    if (toolbarShop) toolbarShop.style.display = hasItems ? "flex" : "none";
+    if (toolbarShop) {
+      toolbarShop.style.display = hasItems ? 'flex' : 'none';
+    }
 
-    if (colShopping) colShopping.style.display = "block";
-    if (mealPlannerContainer)
-      mealPlannerContainer.classList.add("show-shopping");
+    if (colShopping) {
+      colShopping.style.display = 'block';
+    }
+    if (mealPlannerContainer) {
+      mealPlannerContainer.classList.add('show-shopping');
+    }
   }
 
   // Active columns configuration
   const activeDays = workWeekOnly ? DAYS.slice(1, 6) : DAYS; // 5-Day (Mon-Fri) vs 7-Day
-  container.classList.toggle("grid-5day", workWeekOnly);
+  container.classList.toggle('grid-5day', workWeekOnly);
 
   const basePath = getSiteBasePath();
 
@@ -1567,32 +1675,38 @@ function renderUI(highlightInstanceId?: string): void {
       let dayCook = 0;
       dayMeals.forEach((dm) => {
         const r = recipesIndex.find((rec) => rec.permalink === dm.permalink);
-        if (!r) return;
+        if (!r) {
+          return;
+        }
         r.times.forEach((t) => {
           const min = parseInt(t.time) || 0;
-          if (t.step.toLowerCase() === "prep") dayPrep += min;
-          if (t.step.toLowerCase() === "cook") dayCook += min;
+          if (t.step.toLowerCase() === 'prep') {
+            dayPrep += min;
+          }
+          if (t.step.toLowerCase() === 'cook') {
+            dayCook += min;
+          }
         });
       });
 
       const dayTotalMin = dayPrep + dayCook;
-      const dayTimeStr = dayTotalMin > 0 ? `${dayTotalMin} min` : "";
+      const dayTimeStr = dayTotalMin > 0 ? `${dayTotalMin} min` : '';
       const timeBadge = dayTimeStr
         ? `<span class="day-time-badge">${dayTimeStr}</span>`
-        : "";
+        : '';
 
       // Cards list HTML
-      let cardsHtml = "";
+      let cardsHtml = '';
       if (editMode) {
         dayMeals.forEach((dm, idx) => {
           const rec = recipesIndex.find((r) => r.permalink === dm.permalink);
-          const title = rec ? rec.title : "Unknown Recipe";
+          const title = rec ? rec.title : 'Unknown Recipe';
           const servings = rec ? rec.servings : 4;
           const portions = Math.round(dm.scale * servings);
           const slug =
-            dm.permalink.split("/").filter(Boolean).pop() || "placeholder";
+            dm.permalink.split('/').filter(Boolean).pop() || 'placeholder';
           const highlightClass =
-            dm.instanceId === highlightInstanceId ? "new-addition" : "";
+            dm.instanceId === highlightInstanceId ? 'new-addition' : '';
 
           const deleteBtn = `<button type="button" class="recipe-remove-btn" data-instance-id="${dm.instanceId}" title="Remove recipe">✕</button>`;
           const swapBtn = `<button type="button" class="recipe-swap-btn" data-instance-id="${dm.instanceId}" title="Swap recipe"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>`;
@@ -1604,7 +1718,7 @@ function renderUI(highlightInstanceId?: string): void {
               <button type="button" class="portion-btn inc-btn" data-instance-id="${dm.instanceId}">+</button>
             </div>
           `;
-          const dinnerClass = idx === 0 ? "dinner-slot-card" : "";
+          const dinnerClass = idx === 0 ? 'dinner-slot-card' : '';
 
           cardsHtml += `
             <div class="planned-recipe-item ${highlightClass} ${dinnerClass}" data-instance-id="${dm.instanceId}" data-day="${day}">
@@ -1625,7 +1739,7 @@ function renderUI(highlightInstanceId?: string): void {
         });
 
         // Exactly one empty slot box at the bottom of the list
-        const dinnerClass = dayMeals.length === 0 ? "dinner-empty-slot" : "";
+        const dinnerClass = dayMeals.length === 0 ? 'dinner-empty-slot' : '';
         cardsHtml += `
           <div class="empty-slot-box ${dinnerClass}" data-day="${day}" title="Add recipe to ${DAY_NAMES[day]}">
             <span class="empty-slot-plus">+</span>
@@ -1636,12 +1750,12 @@ function renderUI(highlightInstanceId?: string): void {
         cardsHtml = dayMeals
           .map((dm) => {
             const rec = recipesIndex.find((r) => r.permalink === dm.permalink);
-            const title = rec ? rec.title : "Unknown Recipe";
+            const title = rec ? rec.title : 'Unknown Recipe';
             const servings = rec ? rec.servings : 4;
             const portions = Math.round(dm.scale * servings);
             const slug =
-              dm.permalink.split("/").filter(Boolean).pop() || "placeholder";
-            const stepper = `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? "s" : ""}</span>`;
+              dm.permalink.split('/').filter(Boolean).pop() || 'placeholder';
+            const stepper = `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? 's' : ''}</span>`;
 
             return `
               <a href="${dm.permalink}?from=plan&servings=${portions}" class="planned-recipe-item" data-instance-id="${dm.instanceId}">
@@ -1657,7 +1771,7 @@ function renderUI(highlightInstanceId?: string): void {
               </a>
             `;
           })
-          .join("");
+          .join('');
       }
 
       return `
@@ -1672,36 +1786,36 @@ function renderUI(highlightInstanceId?: string): void {
         </div>
       `;
     })
-    .join("");
+    .join('');
 
   // Render Supplemental Anytime Tray
   if (suppSection && suppList) {
-    const supplementalMeals = planState.filter((p) => p.day === "supplemental");
+    const supplementalMeals = planState.filter((p) => p.day === 'supplemental');
     if (!editMode && supplementalMeals.length === 0) {
-      suppSection.style.display = "none";
+      suppSection.style.display = 'none';
     } else {
-      suppSection.style.display = "block";
+      suppSection.style.display = 'block';
 
       let suppHtml = supplementalMeals
         .map((dm) => {
           const rec = recipesIndex.find((r) => r.permalink === dm.permalink);
-          const title = rec ? rec.title : "Unknown Recipe";
+          const title = rec ? rec.title : 'Unknown Recipe';
           const servings = rec ? rec.servings : 4;
           const portions = Math.round(dm.scale * servings);
           const slug =
-            dm.permalink.split("/").filter(Boolean).pop() || "placeholder";
+            dm.permalink.split('/').filter(Boolean).pop() || 'placeholder';
           const highlightClass =
-            dm.instanceId === highlightInstanceId ? "new-addition" : "";
+            dm.instanceId === highlightInstanceId ? 'new-addition' : '';
 
           const deleteBtn = editMode
             ? `<button type="button" class="recipe-remove-btn" data-instance-id="${dm.instanceId}" title="Remove recipe">✕</button>`
-            : "";
+            : '';
           const swapBtn = editMode
             ? `<button type="button" class="recipe-swap-btn" data-instance-id="${dm.instanceId}" title="Swap recipe"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>`
-            : "";
+            : '';
           const handle = editMode
             ? `<div class="recipe-drag-handle">⠿</div>`
-            : "";
+            : '';
           const stepper = editMode
             ? `
               <div class="portion-picker">
@@ -1710,12 +1824,12 @@ function renderUI(highlightInstanceId?: string): void {
                 <button type="button" class="portion-btn inc-btn" data-instance-id="${dm.instanceId}">+</button>
               </div>
             `
-            : `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? "s" : ""}</span>`;
+            : `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? 's' : ''}</span>`;
 
-          const draggableAttr = editMode ? 'draggable="true"' : "";
-          const cardTag = editMode ? "div" : "a";
+          const draggableAttr = editMode ? 'draggable="true"' : '';
+          const cardTag = editMode ? 'div' : 'a';
           const hrefAttr = editMode
-            ? ""
+            ? ''
             : ` href="${dm.permalink}?from=plan&servings=${portions}"`;
 
           return `
@@ -1735,7 +1849,7 @@ function renderUI(highlightInstanceId?: string): void {
             </${cardTag}>
           `;
         })
-        .join("");
+        .join('');
 
       if (editMode) {
         suppHtml += `
@@ -1753,66 +1867,76 @@ function renderUI(highlightInstanceId?: string): void {
     setupDragAndDropHandlers();
 
     // Day slot & Supplemental selectors (clicking opens modal)
-    document.querySelectorAll(".empty-slot-box").forEach((box) => {
-      box.addEventListener("click", () => {
-        const day = box.getAttribute("data-day");
-        if (day) openModal(day);
+    document.querySelectorAll('.empty-slot-box').forEach((box) => {
+      box.addEventListener('click', () => {
+        const day = box.getAttribute('data-day');
+        if (day) {
+          openModal(day);
+        }
       });
     });
 
     // Card portion buttons
-    document.querySelectorAll(".dec-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-instance-id");
-        if (id) adjustPortions(id, -1);
+    document.querySelectorAll('.dec-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-instance-id');
+        if (id) {
+          adjustPortions(id, -1);
+        }
       });
     });
-    document.querySelectorAll(".inc-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-instance-id");
-        if (id) adjustPortions(id, 1);
+    document.querySelectorAll('.inc-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-instance-id');
+        if (id) {
+          adjustPortions(id, 1);
+        }
       });
     });
 
     // Swap buttons
-    document.querySelectorAll(".recipe-swap-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-instance-id");
-        if (id) swapRecipe(id);
+    document.querySelectorAll('.recipe-swap-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-instance-id');
+        if (id) {
+          swapRecipe(id);
+        }
       });
     });
 
     // Remove buttons
-    document.querySelectorAll(".recipe-remove-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-instance-id");
-        if (id) removeRecipeWithRecovery(id);
+    document.querySelectorAll('.recipe-remove-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-instance-id');
+        if (id) {
+          removeRecipeWithRecovery(id);
+        }
       });
     });
   }
 
   // Update mode-toggle-group shopping count badge
-  const shopCountBadge = document.getElementById("shopping-count-badge");
+  const shopCountBadge = document.getElementById('shopping-count-badge');
   if (shopCountBadge) {
     const plannedCount = planState.length;
-    shopCountBadge.textContent = plannedCount > 0 ? ` (${plannedCount})` : "";
+    shopCountBadge.textContent = plannedCount > 0 ? ` (${plannedCount})` : '';
   }
 
   // Sync Global Stepper Indicator Label
-  const globalIndicator = document.getElementById("global-scaler-indicator");
+  const globalIndicator = document.getElementById('global-scaler-indicator');
   if (globalIndicator) {
-    globalIndicator.textContent = planState.length > 0 ? "Portions" : "—";
+    globalIndicator.textContent = planState.length > 0 ? 'Portions' : '—';
   }
 
   // Show/Hide calendar vs shopping container
-  const colPlanner = document.getElementById("col-planner");
+  const colPlanner = document.getElementById('col-planner');
   if (colPlanner) {
     colPlanner.style.display =
-      activeMobileTab === "shopping-list" ? "none" : "block";
+      activeMobileTab === 'shopping-list' ? 'none' : 'block';
   }
   if (colShopping) {
     colShopping.style.display =
-      activeMobileTab === "shopping-list" ? "block" : "none";
+      activeMobileTab === 'shopping-list' ? 'block' : 'none';
   }
 
   renderCombinedShoppingList();
@@ -1823,12 +1947,12 @@ function renderUI(highlightInstanceId?: string): void {
  * Setup Event Listeners for HTML5 drag-and-drop actions
  */
 function setupDragAndDropHandlers(): void {
-  const trashZone = document.getElementById("planner-trash-zone");
-  const cards = document.querySelectorAll(".planned-recipe-item");
+  const trashZone = document.getElementById('planner-trash-zone');
+  const cards = document.querySelectorAll('.planned-recipe-item');
   const slots = document.querySelectorAll(
-    ".empty-slot-box, .planned-recipe-item",
+    '.empty-slot-box, .planned-recipe-item',
   );
-  const supplementalList = document.querySelector(".supplemental-recipes-list");
+  const supplementalList = document.querySelector('.supplemental-recipes-list');
 
   // Touch Simulation State variables
   let touchDraggedId: string | null = null;
@@ -1841,10 +1965,10 @@ function setupDragAndDropHandlers(): void {
   function findDropTarget(el: HTMLElement | null): HTMLElement | null {
     while (el) {
       if (
-        el.classList.contains("empty-slot-box") ||
-        el.classList.contains("planned-recipe-item") ||
-        el.classList.contains("planner-trash-zone") ||
-        el.classList.contains("supplemental-recipes-list")
+        el.classList.contains('empty-slot-box') ||
+        el.classList.contains('planned-recipe-item') ||
+        el.classList.contains('planner-trash-zone') ||
+        el.classList.contains('supplemental-recipes-list')
       ) {
         return el;
       }
@@ -1854,7 +1978,9 @@ function setupDragAndDropHandlers(): void {
   }
 
   function handleTouchMove(e: TouchEvent): void {
-    if (!touchDraggedId || !touchDragMirror) return;
+    if (!touchDraggedId || !touchDragMirror) {
+      return;
+    }
     const touch = e.touches[0];
 
     // Position mirror at finger coordinates
@@ -1870,23 +1996,27 @@ function setupDragAndDropHandlers(): void {
 
     if (target !== lastActiveTarget) {
       if (lastActiveTarget) {
-        lastActiveTarget.classList.remove("drag-over");
+        lastActiveTarget.classList.remove('drag-over');
       }
       if (target) {
-        target.classList.add("drag-over");
+        target.classList.add('drag-over');
       }
       lastActiveTarget = target;
     }
 
-    if (e.cancelable) e.preventDefault();
+    if (e.cancelable) {
+      e.preventDefault();
+    }
   }
 
   function handleTouchEnd(): void {
-    if (!touchDraggedId) return;
+    if (!touchDraggedId) {
+      return;
+    }
 
     // Clean up global touchlisteners
-    document.removeEventListener("touchmove", handleTouchMove);
-    document.removeEventListener("touchend", handleTouchEnd);
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
 
     if (touchDragMirror) {
       touchDragMirror.remove();
@@ -1894,44 +2024,46 @@ function setupDragAndDropHandlers(): void {
     }
 
     if (touchDraggedCard) {
-      touchDraggedCard.classList.remove("dragging");
+      touchDraggedCard.classList.remove('dragging');
       touchDraggedCard = null;
     }
 
-    document.body.classList.remove("dragging-active");
-    if (trashZone) trashZone.style.display = "none";
+    document.body.classList.remove('dragging-active');
+    if (trashZone) {
+      trashZone.style.display = 'none';
+    }
 
     if (lastActiveTarget) {
-      lastActiveTarget.classList.remove("drag-over");
+      lastActiveTarget.classList.remove('drag-over');
 
-      const targetDay = lastActiveTarget.getAttribute("data-day");
+      const targetDay = lastActiveTarget.getAttribute('data-day');
       const targetInstanceId =
-        lastActiveTarget.getAttribute("data-instance-id") || undefined;
+        lastActiveTarget.getAttribute('data-instance-id') || undefined;
 
-      if (lastActiveTarget.classList.contains("planner-trash-zone")) {
+      if (lastActiveTarget.classList.contains('planner-trash-zone')) {
         removeRecipeWithRecovery(touchDraggedId);
       } else if (
-        lastActiveTarget.classList.contains("supplemental-recipes-list")
+        lastActiveTarget.classList.contains('supplemental-recipes-list')
       ) {
         const draggedIdx = planState.findIndex(
           (p) => p.instanceId === touchDraggedId,
         );
         if (draggedIdx !== -1) {
           const item = planState[draggedIdx];
-          if (item.day !== "supplemental") {
-            item.day = "supplemental";
+          if (item.day !== 'supplemental') {
+            item.day = 'supplemental';
             saveStateToStorageAndUrl(true);
             renderUI();
           }
         }
       } else if (targetDay) {
-        if (targetDay === "supplemental") {
+        if (targetDay === 'supplemental') {
           const draggedIdx = planState.findIndex(
             (p) => p.instanceId === touchDraggedId,
           );
           if (draggedIdx !== -1) {
             const item = planState[draggedIdx];
-            item.day = "supplemental";
+            item.day = 'supplemental';
             if (targetInstanceId && targetInstanceId !== touchDraggedId) {
               planState.splice(draggedIdx, 1);
               const targetIdx = planState.findIndex(
@@ -1958,63 +2090,71 @@ function setupDragAndDropHandlers(): void {
 
   cards.forEach((card) => {
     const mediaWrapper = card.querySelector(
-      ".recipe-card-media-wrapper",
+      '.recipe-card-media-wrapper',
     ) as HTMLElement;
     if (mediaWrapper) {
       // HTML5 Drag and Drop triggers on the media wrapper (Desktop)
-      mediaWrapper.addEventListener("dragstart", (e) => {
+      mediaWrapper.addEventListener('dragstart', (e) => {
         const target = e.target as HTMLElement;
         if (
-          target.closest(".recipe-remove-btn") ||
-          target.closest(".recipe-swap-btn")
+          target.closest('.recipe-remove-btn') ||
+          target.closest('.recipe-swap-btn')
         ) {
           e.preventDefault();
           return;
         }
 
-        const id = card.getAttribute("data-instance-id");
-        if (!id) return;
+        const id = card.getAttribute('data-instance-id');
+        if (!id) {
+          return;
+        }
 
         const dragEvent = e as DragEvent;
         if (dragEvent.dataTransfer) {
-          dragEvent.dataTransfer.setData("text/plain", id);
-          dragEvent.dataTransfer.effectAllowed = "move";
+          dragEvent.dataTransfer.setData('text/plain', id);
+          dragEvent.dataTransfer.effectAllowed = 'move';
         }
-        card.classList.add("dragging");
-        document.body.classList.add("dragging-active");
+        card.classList.add('dragging');
+        document.body.classList.add('dragging-active');
 
-        if (trashZone) trashZone.style.display = "flex";
+        if (trashZone) {
+          trashZone.style.display = 'flex';
+        }
       });
 
-      mediaWrapper.addEventListener("dragend", () => {
-        card.classList.remove("dragging");
-        document.body.classList.remove("dragging-active");
+      mediaWrapper.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        document.body.classList.remove('dragging-active');
 
-        if (trashZone) trashZone.style.display = "none";
+        if (trashZone) {
+          trashZone.style.display = 'none';
+        }
 
         document
-          .querySelectorAll(".empty-slot-box, .planned-recipe-item")
+          .querySelectorAll('.empty-slot-box, .planned-recipe-item')
           .forEach((c) => {
-            c.classList.remove("drag-over");
+            c.classList.remove('drag-over');
           });
       });
 
       // Touch event listener on drag handle & wrapper (Mobile)
       mediaWrapper.addEventListener(
-        "touchstart",
+        'touchstart',
         (e) => {
           const touchEvent = e as TouchEvent;
           const target = touchEvent.target as HTMLElement;
           if (
-            target.closest(".recipe-remove-btn") ||
-            target.closest(".recipe-swap-btn")
+            target.closest('.recipe-remove-btn') ||
+            target.closest('.recipe-swap-btn')
           ) {
             return; // Allow button clicks/taps
           }
 
           const touch = touchEvent.touches[0];
-          const id = card.getAttribute("data-instance-id");
-          if (!id) return;
+          const id = card.getAttribute('data-instance-id');
+          if (!id) {
+            return;
+          }
 
           touchDraggedId = id;
           touchDraggedCard = card as HTMLElement;
@@ -2025,7 +2165,7 @@ function setupDragAndDropHandlers(): void {
 
           // Create floating card mirror element
           touchDragMirror = card.cloneNode(true) as HTMLElement;
-          touchDragMirror.classList.add("dragging-mirror");
+          touchDragMirror.classList.add('dragging-mirror');
           touchDragMirror.style.cssText = `
             position: fixed;
             left: ${rect.left}px;
@@ -2041,16 +2181,20 @@ function setupDragAndDropHandlers(): void {
           `;
           document.body.appendChild(touchDragMirror);
 
-          card.classList.add("dragging");
-          document.body.classList.add("dragging-active");
-          if (trashZone) trashZone.style.display = "flex";
+          card.classList.add('dragging');
+          document.body.classList.add('dragging-active');
+          if (trashZone) {
+            trashZone.style.display = 'flex';
+          }
 
-          document.addEventListener("touchmove", handleTouchMove, {
+          document.addEventListener('touchmove', handleTouchMove, {
             passive: false,
           });
-          document.addEventListener("touchend", handleTouchEnd);
+          document.addEventListener('touchend', handleTouchEnd);
 
-          if (touchEvent.cancelable) touchEvent.preventDefault();
+          if (touchEvent.cancelable) {
+            touchEvent.preventDefault();
+          }
         },
         { passive: false },
       );
@@ -2058,43 +2202,47 @@ function setupDragAndDropHandlers(): void {
   });
 
   slots.forEach((slot) => {
-    slot.addEventListener("dragover", (e) => {
+    slot.addEventListener('dragover', (e) => {
       e.preventDefault();
       const dragEvent = e as DragEvent;
       if (dragEvent.dataTransfer) {
-        dragEvent.dataTransfer.dropEffect = "move";
+        dragEvent.dataTransfer.dropEffect = 'move';
       }
-      slot.classList.add("drag-over");
+      slot.classList.add('drag-over');
     });
 
-    slot.addEventListener("dragenter", (e) => {
+    slot.addEventListener('dragenter', (e) => {
       e.preventDefault();
     });
 
-    slot.addEventListener("dragleave", () => {
-      slot.classList.remove("drag-over");
+    slot.addEventListener('dragleave', () => {
+      slot.classList.remove('drag-over');
     });
 
-    slot.addEventListener("drop", (e) => {
+    slot.addEventListener('drop', (e) => {
       e.preventDefault();
-      slot.classList.remove("drag-over");
+      slot.classList.remove('drag-over');
 
       const dragEvent = e as DragEvent;
-      const draggedId = dragEvent.dataTransfer?.getData("text/plain");
-      if (!draggedId) return;
+      const draggedId = dragEvent.dataTransfer?.getData('text/plain');
+      if (!draggedId) {
+        return;
+      }
 
-      const targetDay = slot.getAttribute("data-day");
-      if (!targetDay) return;
+      const targetDay = slot.getAttribute('data-day');
+      if (!targetDay) {
+        return;
+      }
 
-      if (targetDay === "supplemental") {
+      if (targetDay === 'supplemental') {
         const draggedIdx = planState.findIndex(
           (p) => p.instanceId === draggedId,
         );
         if (draggedIdx !== -1) {
           const item = planState[draggedIdx];
-          item.day = "supplemental";
+          item.day = 'supplemental';
 
-          const targetInstanceId = slot.getAttribute("data-instance-id");
+          const targetInstanceId = slot.getAttribute('data-instance-id');
           if (targetInstanceId && targetInstanceId !== draggedId) {
             planState.splice(draggedIdx, 1);
             const targetIdx = planState.findIndex(
@@ -2111,27 +2259,29 @@ function setupDragAndDropHandlers(): void {
         }
       } else {
         const targetInstanceId =
-          slot.getAttribute("data-instance-id") || undefined;
+          slot.getAttribute('data-instance-id') || undefined;
         handleCardDrop(draggedId, targetDay, targetInstanceId);
       }
     });
   });
 
   if (supplementalList) {
-    supplementalList.addEventListener("dragover", (e) => {
+    supplementalList.addEventListener('dragover', (e) => {
       e.preventDefault();
     });
-    supplementalList.addEventListener("drop", (e) => {
+    supplementalList.addEventListener('drop', (e) => {
       e.preventDefault();
       const dragEvent = e as DragEvent;
-      const draggedId = dragEvent.dataTransfer?.getData("text/plain");
-      if (!draggedId) return;
+      const draggedId = dragEvent.dataTransfer?.getData('text/plain');
+      if (!draggedId) {
+        return;
+      }
 
       const draggedIdx = planState.findIndex((p) => p.instanceId === draggedId);
       if (draggedIdx !== -1) {
         const item = planState[draggedIdx];
-        if (item.day !== "supplemental") {
-          item.day = "supplemental";
+        if (item.day !== 'supplemental') {
+          item.day = 'supplemental';
           saveStateToStorageAndUrl(true);
           renderUI();
         }
@@ -2145,10 +2295,14 @@ function setupDragAndDropHandlers(): void {
  */
 function adjustPortions(instanceId: string, offset: number): void {
   const planned = planState.find((p) => p.instanceId === instanceId);
-  if (!planned) return;
+  if (!planned) {
+    return;
+  }
 
   const rec = recipesIndex.find((r) => r.permalink === planned.permalink);
-  if (!rec) return;
+  if (!rec) {
+    return;
+  }
 
   const currentPortions = Math.round(planned.scale * rec.servings);
   const nextPortions = Math.max(1, currentPortions + offset);
@@ -2162,11 +2316,13 @@ function adjustPortions(instanceId: string, offset: number): void {
  * Renders diet / category balance tag dashboard stats at calendar bottom
  */
 function renderDietCategoryStats(): void {
-  const panel = document.getElementById("planner-balance-stats");
-  if (!panel) return;
+  const panel = document.getElementById('planner-balance-stats');
+  if (!panel) {
+    return;
+  }
 
   if (planState.length === 0) {
-    panel.style.display = "none";
+    panel.style.display = 'none';
     return;
   }
 
@@ -2174,23 +2330,25 @@ function renderDietCategoryStats(): void {
   const tagCounts: Record<string, number> = {};
   planState.forEach((dm) => {
     const rec = recipesIndex.find((r) => r.permalink === dm.permalink);
-    if (!rec || !rec.tags) return;
+    if (!rec || !rec.tags) {
+      return;
+    }
     rec.tags.forEach((tag) => {
       const lower = tag.trim().toLowerCase();
       // Only capture main dietary categories
       const targetCategories = [
-        "vegetarian",
-        "vegan",
-        "chicken",
-        "meat",
-        "dinner",
-        "breakfast",
-        "lunch",
-        "dessert",
-        "baking",
-        "pasta",
-        "soup",
-        "salad",
+        'vegetarian',
+        'vegan',
+        'chicken',
+        'meat',
+        'dinner',
+        'breakfast',
+        'lunch',
+        'dessert',
+        'baking',
+        'pasta',
+        'soup',
+        'salad',
       ];
       if (targetCategories.includes(lower)) {
         tagCounts[tag] = (tagCounts[tag] || 0) + 1;
@@ -2202,14 +2360,14 @@ function renderDietCategoryStats(): void {
     .sort((a, b) => b[1] - a[1])
     .map(
       ([tag, count]) =>
-        `<strong>${count}</strong> ${tag}${count !== 1 ? "s" : ""}`,
+        `<strong>${count}</strong> ${tag}${count !== 1 ? 's' : ''}`,
     );
 
   if (entries.length === 0) {
-    panel.style.display = "none";
+    panel.style.display = 'none';
   } else {
-    panel.innerHTML = `Plan breakdown: ${entries.join(", ")}`;
-    panel.style.display = "block";
+    panel.innerHTML = `Plan breakdown: ${entries.join(', ')}`;
+    panel.style.display = 'block';
   }
 }
 
@@ -2218,14 +2376,14 @@ function renderDietCategoryStats(): void {
  */
 function loadCheckedState(): void {
   try {
-    const raw = localStorage.getItem("noonarby-shopping-checked-items");
+    const raw = localStorage.getItem('noonarby-shopping-checked-items');
     if (raw) {
       const parsed = JSON.parse(raw) as string[];
       checkedIngredients.clear();
       parsed.forEach((k) => checkedIngredients.add(k));
     }
   } catch (e) {
-    console.error("Error loading checklist checked states:", e);
+    console.error('Error loading checklist checked states:', e);
   }
 }
 
@@ -2234,7 +2392,7 @@ function loadCheckedState(): void {
  */
 function saveCheckedState(): void {
   localStorage.setItem(
-    "noonarby-shopping-checked-items",
+    'noonarby-shopping-checked-items',
     JSON.stringify(Array.from(checkedIngredients)),
   );
 }
@@ -2244,31 +2402,41 @@ function saveCheckedState(): void {
  */
 function renderCombinedShoppingList(): void {
   loadCheckedState();
-  const buyList = document.getElementById("combined-buy-list");
-  const staplesList = document.getElementById("combined-staples-list");
-  const optionalList = document.getElementById("combined-optional-list");
-  const divider = document.querySelector(".shopping-divider");
+  const buyList = document.getElementById('combined-buy-list');
+  const staplesList = document.getElementById('combined-staples-list');
+  const optionalList = document.getElementById('combined-optional-list');
+  const divider = document.querySelector('.shopping-divider');
 
-  if (!buyList || !staplesList) return;
-
-  if (planState.length === 0) {
-    buyList.innerHTML = `<div class="planner-empty-state">Add some recipes to generate your combined shopping list.</div>`;
-    staplesList.innerHTML = "";
-    if (optionalList) optionalList.innerHTML = "";
-    if (divider) (divider as HTMLElement).style.display = "none";
+  if (!buyList || !staplesList) {
     return;
   }
 
-  if (divider) (divider as HTMLElement).style.display = "block";
+  if (planState.length === 0) {
+    buyList.innerHTML = `<div class="planner-empty-state">Add some recipes to generate your combined shopping list.</div>`;
+    staplesList.innerHTML = '';
+    if (optionalList) {
+      optionalList.innerHTML = '';
+    }
+    if (divider) {
+      (divider as HTMLElement).style.display = 'none';
+    }
+    return;
+  }
+
+  if (divider) {
+    (divider as HTMLElement).style.display = 'block';
+  }
 
   const ingredients: IngredientInput[] = [];
   planState.forEach((item) => {
     const rec = recipesIndex.find((r) => r.permalink === item.permalink);
-    if (!rec) return;
+    if (!rec) {
+      return;
+    }
 
     rec.ingredients.forEach((ing) => {
       let parsed: IngredientInput;
-      if (typeof ing === "string") {
+      if (typeof ing === 'string') {
         parsed = { item: ing };
       } else {
         parsed = JSON.parse(JSON.stringify(ing));
@@ -2309,37 +2477,47 @@ function renderCombinedShoppingList(): void {
   // Render Optional Section
   if (optionalList) {
     if (optionalItems.length === 0) {
-      optionalList.innerHTML = "";
-      const optionalSection = document.querySelector(".optional-section");
-      if (optionalSection)
-        (optionalSection as HTMLElement).style.display = "none";
+      optionalList.innerHTML = '';
+      const optionalSection = document.querySelector('.optional-section');
+      if (optionalSection) {
+        (optionalSection as HTMLElement).style.display = 'none';
+      }
     } else {
       optionalList.innerHTML = renderItemsBlock(optionalItems, false);
-      const optionalSection = document.querySelector(".optional-section");
-      if (optionalSection)
-        (optionalSection as HTMLElement).style.display = "block";
+      const optionalSection = document.querySelector('.optional-section');
+      if (optionalSection) {
+        (optionalSection as HTMLElement).style.display = 'block';
+      }
     }
   }
 
   // Render Pantry Staples Column
   if (stapleItems.length === 0) {
     staplesList.innerHTML = `<div class="planner-empty-state">No staples.</div>`;
-    if (divider) (divider as HTMLElement).style.display = "none";
+    if (divider) {
+      (divider as HTMLElement).style.display = 'none';
+    }
   } else {
     staplesList.innerHTML = renderItemsBlock(stapleItems, true);
-    if (divider) (divider as HTMLElement).style.display = "block";
+    if (divider) {
+      (divider as HTMLElement).style.display = 'block';
+    }
   }
 
   // Accordion Expand/Collapse arrow
-  const arrow = document.querySelector(".accordion-arrow");
-  if (arrow) arrow.textContent = staplesExpanded ? "▾" : "▸";
-  staplesList.style.display = staplesExpanded ? "block" : "none";
+  const arrow = document.querySelector('.accordion-arrow');
+  if (arrow) {
+    arrow.textContent = staplesExpanded ? '▾' : '▸';
+  }
+  staplesList.style.display = staplesExpanded ? 'block' : 'none';
 
   // Bind Checklist click triggers
-  document.querySelectorAll(".shopping-item-checkbox").forEach((chk) => {
-    chk.addEventListener("change", () => {
-      const key = chk.getAttribute("data-key");
-      if (!key) return;
+  document.querySelectorAll('.shopping-item-checkbox').forEach((chk) => {
+    chk.addEventListener('change', () => {
+      const key = chk.getAttribute('data-key');
+      if (!key) {
+        return;
+      }
 
       if ((chk as HTMLInputElement).checked) {
         checkedIngredients.add(key);
@@ -2354,8 +2532,8 @@ function renderCombinedShoppingList(): void {
 }
 
 function renderBuyItemsWithSections(items: ShoppingItem[]): string {
-  let html = "";
-  let currentSectionId = "";
+  let html = '';
+  let currentSectionId = '';
 
   items.forEach((item) => {
     const section = getStoreSection(item.rest, item.item);
@@ -2370,8 +2548,8 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
 
     const key = getIngredientKey(false, item.unit, item.rest);
     const isChecked = checkedIngredients.has(key);
-    const checkedAttr = isChecked ? "checked" : "";
-    const checkedClass = isChecked ? "checked" : "";
+    const checkedAttr = isChecked ? 'checked' : '';
+    const checkedClass = isChecked ? 'checked' : '';
 
     const notesArr = item.notes || [];
     const recipes = Array.from(
@@ -2381,17 +2559,21 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
       new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
     );
     const notesStrs = [];
-    if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
-    if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
+    if (recipes.length > 0) {
+      notesStrs.push(`from ${recipes.join(', ')}`);
+    }
+    if (alts.length > 0) {
+      notesStrs.push(`or ${alts.join(' or ')}`);
+    }
     const notesHtml =
       notesStrs.length > 0
-        ? ` <span class="shopping-notes">(${notesStrs.join("; ")})</span>`
-        : "";
+        ? ` <span class="shopping-notes">(${notesStrs.join('; ')})</span>`
+        : '';
     const qtyStr =
       item.qty !== null && item.qty > 0
         ? `${formatCookingNumber(item.qty)} `
-        : "";
-    const unitStr = item.unit ? `${item.unit} ` : "";
+        : '';
+    const unitStr = item.unit ? `${item.unit} ` : '';
 
     const displayRest = item.rest;
 
@@ -2413,8 +2595,8 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
     .map((item) => {
       const key = getIngredientKey(isStaple, item.unit, item.rest);
       const isChecked = checkedIngredients.has(key);
-      const checkedAttr = isChecked ? "checked" : "";
-      const checkedClass = isChecked ? "checked" : "";
+      const checkedAttr = isChecked ? 'checked' : '';
+      const checkedClass = isChecked ? 'checked' : '';
 
       const notesArr = item.notes || [];
       const recipes = Array.from(
@@ -2424,17 +2606,21 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
         new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
       );
       const notesStrs = [];
-      if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
-      if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
+      if (recipes.length > 0) {
+        notesStrs.push(`from ${recipes.join(', ')}`);
+      }
+      if (alts.length > 0) {
+        notesStrs.push(`or ${alts.join(' or ')}`);
+      }
       const notesHtml =
         notesStrs.length > 0
-          ? ` <span class="shopping-notes">(${notesStrs.join("; ")})</span>`
-          : "";
+          ? ` <span class="shopping-notes">(${notesStrs.join('; ')})</span>`
+          : '';
       const qtyStr =
         item.qty !== null && item.qty > 0
           ? `${formatCookingNumber(item.qty)} `
-          : "";
-      const unitStr = item.unit ? `${item.unit} ` : "";
+          : '';
+      const unitStr = item.unit ? `${item.unit} ` : '';
 
       const displayRest = item.rest;
 
@@ -2447,27 +2633,29 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
         </li>
       `;
     })
-    .join("");
+    .join('');
 }
 
 /**
  * Copies the weekly menu text outline to the clipboard (Suggestion 4)
  */
 function copyMenuTextToClipboard(): void {
-  if (planState.length === 0) return;
+  if (planState.length === 0) {
+    return;
+  }
 
   const activeDays = workWeekOnly ? DAYS.slice(1, 6) : DAYS;
-  let text = "My Weekly Meal Plan:\n";
+  let text = 'My Weekly Meal Plan:\n';
 
   activeDays.forEach((day) => {
     const dayRecipes = planState.filter((p) => p.day === day);
     text += `\n${DAY_NAMES[day]}:\n`;
     if (dayRecipes.length === 0) {
-      text += "  - No meals planned\n";
+      text += '  - No meals planned\n';
     } else {
       dayRecipes.forEach((dm) => {
         const rec = recipesIndex.find((r) => r.permalink === dm.permalink);
-        const title = rec ? rec.title : "Unknown Recipe";
+        const title = rec ? rec.title : 'Unknown Recipe';
         const servings = rec ? rec.servings : 4;
         const portions = Math.round(dm.scale * servings);
         text += `  - ${title} (${portions} servings)\n`;
@@ -2476,10 +2664,10 @@ function copyMenuTextToClipboard(): void {
   });
 
   navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById("btn-copy-menu-text");
+    const btn = document.getElementById('btn-copy-menu-text');
     if (btn) {
       const orig = btn.innerHTML;
-      btn.innerHTML = "<span>Copied!</span>";
+      btn.innerHTML = '<span>Copied!</span>';
       setTimeout(() => (btn.innerHTML = orig), 2000);
     }
   });
@@ -2489,21 +2677,23 @@ function copyMenuTextToClipboard(): void {
  * Formats and copies compiled ingredients list to clipboard
  */
 function copyShoppingListToClipboard(
-  format: "markdown" | "google-keep" = "markdown",
+  format: 'markdown' | 'google-keep' = 'markdown',
 ): void {
   const chkOmit = document.getElementById(
-    "chk-omit-completed",
+    'chk-omit-completed',
   ) as HTMLInputElement;
   const omitChecked = chkOmit ? chkOmit.checked : false;
 
   const ingredients: IngredientInput[] = [];
   planState.forEach((item) => {
     const rec = recipesIndex.find((r) => r.permalink === item.permalink);
-    if (!rec) return;
+    if (!rec) {
+      return;
+    }
 
     rec.ingredients.forEach((ing) => {
       let parsed: IngredientInput;
-      if (typeof ing === "string") {
+      if (typeof ing === 'string') {
         parsed = { item: ing };
       } else {
         parsed = JSON.parse(JSON.stringify(ing));
@@ -2534,9 +2724,9 @@ function copyShoppingListToClipboard(
   const { buyItems, optionalItems, stapleItems } =
     processShoppingList(ingredients);
 
-  let clipboardText = "";
+  let clipboardText = '';
 
-  if (format === "google-keep") {
+  if (format === 'google-keep') {
     // Google Keep format: Sorted order, no store section headings or titles, only items, each on a single line
     const filteredBuy = buyItems.filter((item) => {
       const key = getIngredientKey(false, item.unit, item.rest);
@@ -2561,8 +2751,8 @@ function copyShoppingListToClipboard(
       const qtyStr =
         item.qty !== null && item.qty > 0
           ? `${formatCookingNumber(item.qty)} `
-          : "";
-      const unitStr = item.unit ? `${item.unit} ` : "";
+          : '';
+      const unitStr = item.unit ? `${item.unit} ` : '';
       const notesArr = item.notes || [];
       const recipes = Array.from(
         new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
@@ -2571,19 +2761,23 @@ function copyShoppingListToClipboard(
         new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
       );
       const notesStrs = [];
-      if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
-      if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
-      const notesStr = notesStrs.length > 0 ? ` (${notesStrs.join("; ")})` : "";
+      if (recipes.length > 0) {
+        notesStrs.push(`from ${recipes.join(', ')}`);
+      }
+      if (alts.length > 0) {
+        notesStrs.push(`or ${alts.join(' or ')}`);
+      }
+      const notesStr = notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
 
       const displayRest = item.rest;
 
       return `${qtyStr}${unitStr}${displayRest}${notesStr}`;
     });
 
-    clipboardText = lines.join("\n");
+    clipboardText = lines.join('\n');
   } else {
     // Markdown format
-    clipboardText = "## Combined Shopping List\n";
+    clipboardText = '## Combined Shopping List\n';
 
     // Need to Buy Block (grouped by store sections)
     const filteredBuy = buyItems.filter((item) => {
@@ -2593,8 +2787,8 @@ function copyShoppingListToClipboard(
     });
 
     if (filteredBuy.length > 0) {
-      clipboardText += "\n### Need to Buy\n";
-      let currentSectionId = "";
+      clipboardText += '\n### Need to Buy\n';
+      let currentSectionId = '';
       filteredBuy.forEach((item) => {
         const section = getStoreSection(item.rest, item.item);
         if (section.id !== currentSectionId) {
@@ -2604,13 +2798,13 @@ function copyShoppingListToClipboard(
 
         const key = getIngredientKey(false, item.unit, item.rest);
         const isChecked = checkedIngredients.has(key);
-        const mark = isChecked ? "[x]" : "[ ]";
+        const mark = isChecked ? '[x]' : '[ ]';
 
         const qtyStr =
           item.qty !== null && item.qty > 0
             ? `${formatCookingNumber(item.qty)} `
-            : "";
-        const unitStr = item.unit ? `${item.unit} ` : "";
+            : '';
+        const unitStr = item.unit ? `${item.unit} ` : '';
         const notesArr = item.notes || [];
         const recipes = Array.from(
           new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
@@ -2619,10 +2813,14 @@ function copyShoppingListToClipboard(
           new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
         );
         const notesStrs = [];
-        if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
-        if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
+        if (recipes.length > 0) {
+          notesStrs.push(`from ${recipes.join(', ')}`);
+        }
+        if (alts.length > 0) {
+          notesStrs.push(`or ${alts.join(' or ')}`);
+        }
         const notesStr =
-          notesStrs.length > 0 ? ` (${notesStrs.join("; ")})` : "";
+          notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
 
         const displayRest = item.rest;
 
@@ -2638,17 +2836,17 @@ function copyShoppingListToClipboard(
     });
 
     if (filteredOptional.length > 0) {
-      clipboardText += "\n### Optional\n";
+      clipboardText += '\n### Optional\n';
       filteredOptional.forEach((item) => {
         const key = getIngredientKey(false, item.unit, item.rest);
         const isChecked = checkedIngredients.has(key);
-        const mark = isChecked ? "[x]" : "[ ]";
+        const mark = isChecked ? '[x]' : '[ ]';
 
         const qtyStr =
           item.qty !== null && item.qty > 0
             ? `${formatCookingNumber(item.qty)} `
-            : "";
-        const unitStr = item.unit ? `${item.unit} ` : "";
+            : '';
+        const unitStr = item.unit ? `${item.unit} ` : '';
         const notesArr = item.notes || [];
         const recipes = Array.from(
           new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
@@ -2657,10 +2855,14 @@ function copyShoppingListToClipboard(
           new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
         );
         const notesStrs = [];
-        if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
-        if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
+        if (recipes.length > 0) {
+          notesStrs.push(`from ${recipes.join(', ')}`);
+        }
+        if (alts.length > 0) {
+          notesStrs.push(`or ${alts.join(' or ')}`);
+        }
         const notesStr =
-          notesStrs.length > 0 ? ` (${notesStrs.join("; ")})` : "";
+          notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
 
         const displayRest = item.rest;
 
@@ -2676,17 +2878,17 @@ function copyShoppingListToClipboard(
     });
 
     if (filteredStaples.length > 0) {
-      clipboardText += "\n### Pantry Staples\n";
+      clipboardText += '\n### Pantry Staples\n';
       filteredStaples.forEach((item) => {
         const key = getIngredientKey(true, item.unit, item.rest);
         const isChecked = checkedIngredients.has(key);
-        const mark = isChecked ? "[x]" : "[ ]";
+        const mark = isChecked ? '[x]' : '[ ]';
 
         const qtyStr =
           item.qty !== null && item.qty > 0
             ? `${formatCookingNumber(item.qty)} `
-            : "";
-        const unitStr = item.unit ? `${item.unit} ` : "";
+            : '';
+        const unitStr = item.unit ? `${item.unit} ` : '';
         const notesArr = item.notes || [];
         const recipes = Array.from(
           new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
@@ -2695,10 +2897,14 @@ function copyShoppingListToClipboard(
           new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
         );
         const notesStrs = [];
-        if (recipes.length > 0) notesStrs.push(`from ${recipes.join(", ")}`);
-        if (alts.length > 0) notesStrs.push(`or ${alts.join(" or ")}`);
+        if (recipes.length > 0) {
+          notesStrs.push(`from ${recipes.join(', ')}`);
+        }
+        if (alts.length > 0) {
+          notesStrs.push(`or ${alts.join(' or ')}`);
+        }
         const notesStr =
-          notesStrs.length > 0 ? ` (${notesStrs.join("; ")})` : "";
+          notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
 
         const displayRest = item.rest;
 
@@ -2710,24 +2916,24 @@ function copyShoppingListToClipboard(
   navigator.clipboard
     .writeText(clipboardText)
     .then(() => {
-      const copyBtn = document.getElementById("btn-copy-combined-list");
+      const copyBtn = document.getElementById('btn-copy-combined-list');
       if (copyBtn) {
-        if (copyBtn.tagName === "SELECT") {
+        if (copyBtn.tagName === 'SELECT') {
           const copySelect = copyBtn as HTMLSelectElement;
           const placeholderOpt = copySelect.options[0];
-          const originalText = placeholderOpt.textContent || "Copy List";
-          placeholderOpt.textContent = "Copied!";
-          copySelect.value = "";
-          copySelect.classList.add("success");
+          const originalText = placeholderOpt.textContent || 'Copy List';
+          placeholderOpt.textContent = 'Copied!';
+          copySelect.value = '';
+          copySelect.classList.add('success');
           setTimeout(() => {
             placeholderOpt.textContent = originalText;
-            copySelect.classList.remove("success");
+            copySelect.classList.remove('success');
           }, 2000);
         } else {
-          const textSpan = copyBtn.querySelector("span");
+          const textSpan = copyBtn.querySelector('span');
           if (textSpan) {
             const originalText = textSpan.textContent;
-            textSpan.textContent = "Copied!";
+            textSpan.textContent = 'Copied!';
             setTimeout(() => {
               textSpan.textContent = originalText;
             }, 2000);
@@ -2736,7 +2942,7 @@ function copyShoppingListToClipboard(
       }
     })
     .catch((err) =>
-      console.error("Could not copy shopping list to clipboard:", err),
+      console.error('Could not copy shopping list to clipboard:', err),
     );
 }
 
@@ -2747,10 +2953,10 @@ function sharePlanUrl(): void {
   saveStateToStorageAndUrl(true);
   const link = window.location.href;
   navigator.clipboard.writeText(link).then(() => {
-    const btn = document.getElementById("btn-share-plan");
+    const btn = document.getElementById('btn-share-plan');
     if (btn) {
       const orig = btn.textContent;
-      btn.textContent = "Link Copied!";
+      btn.textContent = 'Link Copied!';
       setTimeout(() => (btn.textContent = orig), 2000);
     }
   });
@@ -2762,10 +2968,10 @@ function sharePlanUrl(): void {
 export function initRecipePageAddToPlan(): void {
   // Floating back button handler for ?from=plan (Technical Decision Option A)
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has("from") && urlParams.get("from") === "plan") {
-    const backBtn = document.createElement("a");
-    backBtn.href = getSiteBasePath() + "plan/"; // Defaults to View UX
-    backBtn.className = "plan-back-btn";
+  if (urlParams.has('from') && urlParams.get('from') === 'plan') {
+    const backBtn = document.createElement('a');
+    backBtn.href = getSiteBasePath() + 'plan/'; // Defaults to View UX
+    backBtn.className = 'plan-back-btn';
     backBtn.innerHTML = `
       <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -2793,13 +2999,13 @@ export function initRecipePageAddToPlan(): void {
       transition: all 0.2s ease;
     `;
 
-    backBtn.addEventListener("mouseenter", () => {
-      backBtn.style.backgroundColor = "var(--noonblue-hover)";
-      backBtn.style.transform = "translateY(-1px)";
+    backBtn.addEventListener('mouseenter', () => {
+      backBtn.style.backgroundColor = 'var(--noonblue-hover)';
+      backBtn.style.transform = 'translateY(-1px)';
     });
-    backBtn.addEventListener("mouseleave", () => {
-      backBtn.style.backgroundColor = "var(--noonblue)";
-      backBtn.style.transform = "translateY(0)";
+    backBtn.addEventListener('mouseleave', () => {
+      backBtn.style.backgroundColor = 'var(--noonblue)';
+      backBtn.style.transform = 'translateY(0)';
     });
 
     document.body.appendChild(backBtn);
