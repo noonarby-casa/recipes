@@ -4,6 +4,7 @@ import { formatCookingNumber } from './units';
 import { ShoppingItem, IngredientInput } from './shopping-list/types';
 import { initToggleGroup } from './components/toggle';
 import { getStoreSection } from './shopping-list/store-sections';
+import { OverlayContainer } from './components/overlay-container';
 
 interface Recipe {
   title: string;
@@ -767,7 +768,7 @@ function showUndoToast(message: string): void {
     existing.remove();
   }
 
-  const toastContainer = getOrCreateToastContainer();
+  const overlay = OverlayContainer.getInstance();
   const toast = document.createElement('div');
   toast.className = 'plan-toast-notification';
 
@@ -779,23 +780,6 @@ function showUndoToast(message: string): void {
     <button type="button" class="toast-close-btn" aria-label="Dismiss toast">✕</button>
   `;
 
-  // Inject styles if missing
-  toast.style.cssText = `
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--card-bg);
-    border: 1px solid var(--noonblue-border-light);
-    border-left: 4px solid var(--noonblue);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    margin-top: 0.5rem;
-    animation: slideIn 0.3s ease;
-    gap: 1rem;
-    font-size: 0.85rem;
-  `;
-
   const undoBtn = toast.querySelector('#btn-undo-remove');
   if (undoBtn) {
     undoBtn.addEventListener('click', () => {
@@ -805,45 +789,22 @@ function showUndoToast(message: string): void {
         lastRemovedIndex = null;
         saveStateToStorageAndUrl(true);
         renderUI();
-        toast.remove();
+        overlay.remove(toast);
       }
     });
   }
 
   const closeBtn = toast.querySelector('.toast-close-btn');
   if (closeBtn) {
-    closeBtn.addEventListener('click', () => toast.remove());
+    closeBtn.addEventListener('click', () => overlay.remove(toast));
   }
 
-  toastContainer.appendChild(toast);
+  overlay.add(toast);
 
   // Auto-dismiss after 6 seconds
   undoToastTimeout = window.setTimeout(() => {
-    toast.remove();
+    overlay.remove(toast);
   }, 6000);
-}
-
-/**
- * Retrieves or builds toast notifications wrapper
- */
-function getOrCreateToastContainer(): HTMLElement {
-  let container = document.getElementById('planner-toast-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'planner-toast-container';
-    container.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1000000;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-width: 320px;
-    `;
-    document.body.appendChild(container);
-  }
-  return container;
 }
 
 /**
@@ -1325,9 +1286,9 @@ function showUnknownRecipeWarning(code: string): void {
   }
 
   const message = `Shared recipe with code "<strong>${code}</strong>" could not be found. It may have been renamed or removed.`;
-  const toastContainer = getOrCreateToastContainer();
+  const overlay = OverlayContainer.getInstance();
   const toast = document.createElement('div');
-  toast.className = `plan-toast-notification toast-warning-${code}`;
+  toast.className = `plan-toast-notification warning toast-warning-${code}`;
 
   toast.innerHTML = `
     <div class="toast-body">
@@ -1336,31 +1297,15 @@ function showUnknownRecipeWarning(code: string): void {
     <button type="button" class="toast-close-btn" aria-label="Dismiss toast">✕</button>
   `;
 
-  toast.style.cssText = `
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--card-bg);
-    border: 1px solid #ffcccc;
-    border-left: 4px solid #cc0000;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    margin-top: 0.5rem;
-    animation: slideIn 0.3s ease;
-    gap: 1rem;
-    font-size: 0.85rem;
-  `;
-
   const closeBtn = toast.querySelector('.toast-close-btn');
   if (closeBtn) {
-    closeBtn.addEventListener('click', () => toast.remove());
+    closeBtn.addEventListener('click', () => overlay.remove(toast));
   }
 
-  toastContainer.appendChild(toast);
+  overlay.add(toast);
 
   window.setTimeout(() => {
-    toast.remove();
+    overlay.remove(toast);
   }, 8000);
 }
 
@@ -2980,34 +2925,6 @@ export function initRecipePageAddToPlan(): void {
       <span>Back to Meal Plan</span>
     `;
 
-    backBtn.style.cssText = `
-      position: fixed;
-      bottom: 24px;
-      left: 24px;
-      z-index: 10000;
-      background-color: var(--noonblue);
-      color: #ffffff !important;
-      padding: 0.6rem 1.2rem;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      box-shadow: 0 4px 15px rgba(0, 128, 216, 0.4);
-      transition: all 0.2s ease;
-    `;
-
-    backBtn.addEventListener('mouseenter', () => {
-      backBtn.style.backgroundColor = 'var(--noonblue-hover)';
-      backBtn.style.transform = 'translateY(-1px)';
-    });
-    backBtn.addEventListener('mouseleave', () => {
-      backBtn.style.backgroundColor = 'var(--noonblue)';
-      backBtn.style.transform = 'translateY(0)';
-    });
-
-    document.body.appendChild(backBtn);
+    OverlayContainer.getInstance().add(backBtn);
   }
 }

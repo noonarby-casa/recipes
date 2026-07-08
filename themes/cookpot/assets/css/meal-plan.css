@@ -1158,6 +1158,38 @@ a.planned-recipe-item {
 }
 
 /* Plan Toast Notifications */
+.plan-toast-notification {
+  align-items: center;
+  animation: slideIn 0.3s ease;
+  background-color: var(--card-bg);
+  border: 1px solid var(--noonblue-border-light);
+  border-left: 4px solid var(--noonblue);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.plan-toast-notification.warning {
+  border: 1px solid #ffcccc;
+  border-left: 4px solid #cc0000;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .plan-toast-notification .toast-body {
   align-items: center;
   display: flex;

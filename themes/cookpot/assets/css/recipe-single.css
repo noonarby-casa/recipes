@@ -657,3 +657,32 @@
     padding-top: 0.5rem;
   }
 }
+
+/* Floating Back Button (from meal planner) */
+.plan-back-btn {
+  align-items: center !important;
+  background-color: var(--noonblue, #0080d8) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 15px rgba(0, 128, 216, 0.4) !important;
+  color: #fff !important;
+  display: inline-flex !important;
+  font-size: 0.9rem;
+  font-weight: 600;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  text-decoration: none;
+  transition: all 0.2s ease !important;
+}
+
+.plan-back-btn:hover {
+  background-color: var(--noonblue-hover, #006cb7) !important;
+  transform: translateY(-1px) !important;
+}
+
+.plan-back-btn svg {
+  stroke: #fff !important;
+}
+
+.plan-back-btn span {
+  color: #fff !important;
+}
