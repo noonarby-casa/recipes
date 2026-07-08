@@ -62,15 +62,11 @@ A meal planning feature is implemented in [meal-plan.ts](themes/cookpot/assets/j
 
 ---
 
-## ✍️ Recipe Content Structure & Schema
+## ✍️ Recipe Creation
 
-- **No Featured Image Creation:** Do NOT create featured image files (e.g. `featured-image.jpg`) when creating new recipes.
-- **Recipe Front Matter Schema:** Refer to [archetypes/default.md](archetypes/default.md) for the TOML recipe front matter schema. Note that every recipe must have a unique `shortId` to pass the build-time checks in `index.json`.
+To add or modify recipes, you **MUST** refer to and follow the instructions in the workspace-local skill:
 
-### Quantities & Timers
-
-- **Scaling Quantities:** Wrap ingredient quantities in step descriptions with the `{{< qty "amount unit" >}}` shortcode (e.g., `{{< qty "16 ounces" >}}`). If the unit is unsupported, wrap _only_ the numeric amount (e.g., `{{< qty "1" >}} lemon`). Refer to [config.ts](themes/cookpot/assets/js/shopping-list/config.ts) for the canonical lists of supported units.
-- **Timers:** Wrap time durations in step descriptions with the `{{< timer "duration" >}}` shortcode (e.g., `{{< timer "5-7 minutes" >}}`).
+- **Recipe Creation Skill:** [.agents/skills/create-recipe/SKILL.md](.agents/skills/create-recipe/SKILL.md)
 
 ---
 
