@@ -1037,7 +1037,7 @@ function addCustomCard(day: string, text: string): void {
     scale: 1.0,
     customTitle: parsed.item || text,
   };
-  if (parsed.item) {
+  if (parsed.item && parsed.item.toLowerCase() !== 'custom item') {
     newItem.extraIngredients = [parsed];
   }
   planState.push(newItem);
@@ -1210,28 +1210,29 @@ function renderModalBrowseShelf(): void {
   }
 
   const basePath = getSiteBasePath();
-  let customCardHtml = '';
-  if (searchQuery.trim()) {
-    customCardHtml = `
-      <div class="browse-card custom-card-creator" data-custom-text="${searchQuery.trim()}">
-        <div class="browse-info">
-          <img class="browse-img" src="${basePath}icon-72.png" alt="Custom item" />
-          <div class="browse-title-wrapper">
-            <h4 class="browse-title">Add custom card: "${searchQuery.trim()}"</h4>
-            <span class="browse-badge custom-badge" style="background-color: var(--noonblue); color: #fff;">Custom</span>
-          </div>
+  const displayName = searchQuery.trim() || 'Custom Item';
+  const customCardHtml = `
+    <div class="browse-card custom-card-creator" data-custom-text="${displayName}">
+      <div class="browse-info">
+        <img class="browse-img" src="${basePath}icon-600.png" alt="Custom item" />
+        <div class="browse-title-wrapper">
+          <h4 class="browse-title">Add custom card: "${displayName}"</h4>
+          <span class="browse-badge custom-badge" style="background-color: var(--noonblue); color: #fff;">Custom</span>
         </div>
-        <button type="button" class="browse-add-btn" aria-label="Add custom card">+</button>
       </div>
-    `;
-  }
+      <button type="button" class="browse-add-btn" aria-label="Add custom card">+</button>
+    </div>
+  `;
 
   if (matches.length === 0) {
     if (searchQuery.trim()) {
-      shelf.innerHTML = customCardHtml;
+      shelf.innerHTML =
+        customCardHtml +
+        `<div class="planner-empty-state" style="margin-top: 1rem;">No matching recipes found</div>`;
     } else {
-      shelf.innerHTML = `<div class="planner-empty-state">No matching recipes found</div>`;
-      return;
+      shelf.innerHTML =
+        customCardHtml +
+        `<div class="planner-empty-state" style="margin-top: 1rem;">No recipes found</div>`;
     }
   } else {
     const plannedSet = new Set(planState.map((p) => p.permalink));
@@ -1250,7 +1251,7 @@ function renderModalBrowseShelf(): void {
         return `
           <div class="browse-card ${plannedClass}" data-permalink="${r.permalink}">
             <div class="browse-info">
-              <img class="browse-img" src="${basePath}${slug}/featured-image.webp" alt="${r.title}" onerror="this.src='${basePath}icon-72.png';" />
+              <img class="browse-img" src="${basePath}${slug}/featured-image.webp" alt="${r.title}" onerror="this.src='${basePath}icon-600.png';" />
               <div class="browse-title-wrapper">
                 <h4 class="browse-title">${r.title}</h4>
                 ${plannedBadge}
@@ -1585,6 +1586,25 @@ function showUnknownRecipeWarning(code: string): void {
   }, 8000);
 }
 
+function base64UrlEncode(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join(
+    '',
+  );
+  const b64 = btoa(binString);
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64UrlDecode(str: string): string {
+  let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (b64.length % 4) {
+    b64 += '=';
+  }
+  const binString = atob(b64);
+  const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
 /**
  * Serialization state updates
  */
@@ -1649,7 +1669,7 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
   });
 
   if (Object.keys(customData).length > 0) {
-    params.set('x', JSON.stringify(customData));
+    params.set('x', base64UrlEncode(JSON.stringify(customData)));
   }
 
   if (workWeekOnly) {
@@ -1802,7 +1822,8 @@ function parseUrlParams(): boolean {
   if (params.has('x')) {
     try {
       const xVal = params.get('x') || '';
-      const customData = JSON.parse(xVal);
+      const jsonStr = base64UrlDecode(xVal);
+      const customData = JSON.parse(jsonStr);
       Object.entries(customData).forEach(([idxStr, dataVal]) => {
         const idx = parseInt(idxStr, 10);
         const data = dataVal as { title?: string; extra?: string[] };
@@ -2044,7 +2065,7 @@ function renderUI(highlightInstanceId?: string): void {
           cardsHtml += `
             <div class="planned-recipe-item ${highlightClass} ${dinnerClass} ${!rec ? 'custom-item-card' : ''}" data-instance-id="${dm.instanceId}" data-day="${day}">
               <div class="recipe-card-media-wrapper" draggable="true">
-                <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
+                <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-600.png';" />
               </div>
               <div class="recipe-card-body">
                 ${titleHtml}
@@ -2119,7 +2140,7 @@ function renderUI(highlightInstanceId?: string): void {
               return `
                 <a href="${dm.permalink}?from=plan&servings=${portions}" class="planned-recipe-item" data-instance-id="${dm.instanceId}">
                   <div class="recipe-card-media-wrapper">
-                    <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
+                    <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-600.png';" />
                   </div>
                   <div class="recipe-card-body">
                     <h4 class="recipe-card-title">${title}</h4>
@@ -2134,7 +2155,7 @@ function renderUI(highlightInstanceId?: string): void {
               return `
                 <div class="planned-recipe-item custom-item-card" data-instance-id="${dm.instanceId}">
                   <div class="recipe-card-media-wrapper">
-                    <img class="recipe-card-img" src="${basePath}icon-72.png" alt="${title}" />
+                    <img class="recipe-card-img" src="${basePath}icon-600.png" alt="${title}" />
                   </div>
                   <div class="recipe-card-body">
                     <h4 class="recipe-card-title">${title}</h4>
@@ -2253,7 +2274,7 @@ function renderUI(highlightInstanceId?: string): void {
           return `
             <${cardTag}${hrefAttr} class="planned-recipe-item ${highlightClass} ${!rec ? 'custom-item-card' : ''}" data-instance-id="${dm.instanceId}" data-day="supplemental">
               <div class="recipe-card-media-wrapper" ${draggableAttr}>
-                <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
+                <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-600.png';" />
               </div>
               <div class="recipe-card-body">
                 ${titleHtml}
@@ -3497,6 +3518,15 @@ function openDetailsOverlay(instanceId: string): void {
           <button type="button" class="modal-close-btn" id="btn-close-details">✕</button>
         </div>
         <div class="planner-modal-body" style="padding: 1.25rem 1.5rem; overflow-y: auto;">
+          ${
+            !rec
+              ? `
+          <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Rename Custom Item</h4>
+          <input type="text" id="details-custom-title" value="${title}" style="width: 100%; box-sizing: border-box; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--font-controls-bg); color: var(--text-body); margin-bottom: 1.5rem;" />
+          `
+              : ''
+          }
+
           <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Portions</h4>
           <div class="portion-picker" style="margin-bottom: 1.5rem; display: inline-flex;">
             <button type="button" class="portion-btn" id="details-dec-portions">-</button>
@@ -3518,7 +3548,20 @@ function openDetailsOverlay(instanceId: string): void {
     // Bind event listeners
     modal.querySelector('#btn-close-details')?.addEventListener('click', () => {
       modal.remove();
+      renderUI();
     });
+
+    modal
+      .querySelector('#details-custom-title')
+      ?.addEventListener('input', (e) => {
+        const val = (e.target as HTMLInputElement).value.trim();
+        item!.customTitle = val || 'Custom Item';
+        saveStateToStorageAndUrl(true);
+        const headerTitle = modal.querySelector('.planner-modal-header h3');
+        if (headerTitle) {
+          headerTitle.textContent = `Edit Details: ${item!.customTitle}`;
+        }
+      });
 
     modal
       .querySelector('#details-dec-portions')
@@ -3596,6 +3639,7 @@ function openDetailsOverlay(instanceId: string): void {
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       modal.remove();
+      renderUI();
     }
   });
 }
