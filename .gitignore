@@ -19,3 +19,6 @@ node_modules/
 firebase-debug.log
 *.log
 
+# Playwright
+/playwright-report/
+/test-results/

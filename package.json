@@ -8,16 +8,23 @@
     "lint:fix": "eslint \"themes/cookpot/assets/js/**/*.ts\" --fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "ci": "pnpm run typecheck & p1=$! ; pnpm run lint & p2=$! ; pnpm run format & p3=$! ; wait $p1 && wait $p2 && wait $p3",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "ci": "pnpm run typecheck & p1=$! ; pnpm run lint & p2=$! ; pnpm run format & p3=$! ; pnpm run test & p4=$! ; wait $p1 && wait $p2 && wait $p3 && wait $p4",
     "fix": "pnpm run lint:fix && pnpm run format:fix"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.61.1",
     "eslint": "^10.6.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.0",
     "prettier-plugin-go-template": "^0.0.15",
+    "sirv-cli": "^3.0.1",
     "typescript": "^5.5.2",
-    "typescript-eslint": "^8.62.0"
+    "typescript-eslint": "^8.62.0",
+    "vitest": "^4.1.10"
   }
 }

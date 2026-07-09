@@ -46,28 +46,7 @@ export function initScaler(): void {
       if (el.dataset.baseQty) {
         const rawQty = el.dataset.baseQty;
         const unit = el.dataset.unit || '';
-
-        let newQtyStr = '';
-        let qtyForPlural = 1;
-
-        if (rawQty.includes('-') || rawQty.includes(',')) {
-          const parts = rawQty.split(/[-,]/).map((p) => parseFloat(p.trim()));
-          if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-            const q1 = parts[0] * factor;
-            const q2 = parts[1] * factor;
-            qtyForPlural = q2;
-            newQtyStr = `${formatCookingNumber(q1)}-${formatCookingNumber(q2)}`;
-          }
-        } else {
-          const baseQty = parseFloat(rawQty);
-          const newQty = baseQty * factor;
-          qtyForPlural = newQty;
-          newQtyStr = formatCookingNumber(newQty);
-        }
-
-        // We use getAdaptiveUnit which handles pluralization and returns the whole string
-        const finalUnit = getAdaptiveUnit(qtyForPlural, unit);
-        el.textContent = `${newQtyStr}${finalUnit ? ' ' + finalUnit : ''}`;
+        el.textContent = scaleQuantityText(rawQty, unit, factor);
       }
     });
 
@@ -90,4 +69,37 @@ export function initScaler(): void {
   }
 
   updateRecipeScale(currentServings / baseServings);
+}
+
+export function scaleQuantityText(
+  rawQty: string,
+  unit: string,
+  factor: number,
+): string {
+  let newQtyStr = '';
+  let qtyForPlural = 1;
+
+  if (rawQty.includes('-') || rawQty.includes(',')) {
+    const parts = rawQty.split(/[-,]/).map((p) => parseFloat(p.trim()));
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      const q1 = parts[0] * factor;
+      const q2 = parts[1] * factor;
+      qtyForPlural = q2;
+      newQtyStr = `${formatCookingNumber(q1)}-${formatCookingNumber(q2)}`;
+    }
+  } else {
+    const baseQty = parseFloat(rawQty);
+    if (!isNaN(baseQty)) {
+      const newQty = baseQty * factor;
+      qtyForPlural = newQty;
+      newQtyStr = formatCookingNumber(newQty);
+    }
+  }
+
+  if (!newQtyStr) {
+    return unit;
+  }
+
+  const finalUnit = getAdaptiveUnit(qtyForPlural, unit);
+  return `${newQtyStr}${finalUnit ? ' ' + finalUnit : ''}`;
 }

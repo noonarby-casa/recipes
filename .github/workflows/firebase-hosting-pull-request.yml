@@ -39,6 +39,12 @@ jobs:
           hugo-version: 'latest'
           extended: true
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E Tests
+        run: pnpm test:e2e
+
       - name: Build
         run: hugo --minify
 
