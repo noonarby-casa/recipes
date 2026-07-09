@@ -1,4 +1,9 @@
-import { initAudio, playLowerBoundChime, playUpperBoundChime } from './audio';
+import {
+  initAudio,
+  playLowerBoundChime,
+  playUpperBoundChime,
+  stopAudio,
+} from './audio';
 import { OverlayContainer } from './components/overlay-container';
 
 interface ParsedDuration {
@@ -39,6 +44,7 @@ let recipeUrl = '';
 let tickIntervalId: ReturnType<typeof setInterval> | null = null;
 let dashboardCard: HTMLDivElement | null = null;
 let wakeLock: WakeLockSentinel | null = null;
+let lastRunningTimerKeys = new Set<string>();
 
 function parseDuration(durationStr: string): ParsedDuration | null {
   const str = durationStr.toLowerCase().trim();
@@ -532,6 +538,28 @@ function updateUI(): void {
   const timers = getStoredTimers();
   updateInlineTimersUI(timers);
   updateDashboardUI(timers);
+
+  // Stop audio if a running timer is paused, reset, or dismissed (either locally or on another tab)
+  const currentRunning = new Set(
+    timers
+      .filter((t) => t.status === 'running')
+      .map((t) => `${t.recipeUrl}-${t.timerIndex}`),
+  );
+
+  let stoppedRunning = false;
+  for (const key of lastRunningTimerKeys) {
+    if (!currentRunning.has(key)) {
+      stoppedRunning = true;
+      break;
+    }
+  }
+
+  // Update running timers set
+  lastRunningTimerKeys = currentRunning;
+
+  if (stoppedRunning) {
+    stopAudio();
+  }
 }
 
 function tick(): void {
@@ -669,6 +697,25 @@ export function initTimers(): void {
     const labelSpan = btn.querySelector<HTMLElement>('.timer-label');
     if (!labelSpan) {
       return;
+    }
+
+    // Measure inactive width of the container
+    const inactiveWidth = timerContainer.getBoundingClientRect().width;
+
+    // Temporarily apply active state to measure active width
+    const originalText = labelSpan.textContent || '';
+    labelSpan.textContent = formatTime(parsed.maxSeconds);
+    timerContainer.classList.add('has-started');
+    const activeWidth = timerContainer.getBoundingClientRect().width;
+
+    // Restore original state
+    timerContainer.classList.remove('has-started');
+    labelSpan.textContent = originalText;
+
+    // Lock width to the maximum to prevent dynamic resizing / reflows
+    if (inactiveWidth > 0 && activeWidth > 0) {
+      const lockedWidth = Math.ceil(Math.max(inactiveWidth, activeWidth));
+      timerContainer.style.width = `${lockedWidth}px`;
     }
 
     inlineTimers.push({

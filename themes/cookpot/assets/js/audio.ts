@@ -20,6 +20,15 @@ export function initAudio(): void {
   }
 }
 
+export function stopAudio(): void {
+  if (audioCtx) {
+    audioCtx.close().catch((err) => {
+      console.warn('Failed to close AudioContext:', err);
+    });
+    audioCtx = null;
+  }
+}
+
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 function playTone(
   freq: number,

@@ -35,6 +35,8 @@
   outline: none;
   padding: 0.35rem 0.85rem;
   transition: background-color 0.2s ease;
+  flex-grow: 1;
+  justify-content: center;
 }
 
 .recipe-timer-btn:hover {
