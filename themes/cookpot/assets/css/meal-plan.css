@@ -261,6 +261,92 @@
   color: #fff;
 }
 
+.tag-filter-pill.include {
+  background: rgba(46, 125, 50, 0.06);
+  border-color: rgba(46, 125, 50, 0.35);
+  color: #1e6b24;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.08);
+}
+
+.tag-filter-pill.include:hover {
+  background: rgba(46, 125, 50, 0.12);
+  border-color: rgba(46, 125, 50, 0.6);
+  transform: translateY(-1px);
+}
+
+.tag-filter-pill.include .tag-count {
+  background: rgba(46, 125, 50, 0.12);
+  color: #1e6b24;
+}
+
+.tag-filter-pill.exclude {
+  background: rgba(198, 40, 40, 0.05);
+  border-color: rgba(198, 40, 40, 0.3);
+  color: #b71c1c;
+  box-shadow: 0 2px 6px rgba(198, 40, 40, 0.08);
+}
+
+.tag-filter-pill.exclude:hover {
+  background: rgba(198, 40, 40, 0.1);
+  border-color: rgba(198, 40, 40, 0.5);
+  transform: translateY(-1px);
+}
+
+.tag-filter-pill.exclude .tag-count {
+  background: rgba(198, 40, 40, 0.12);
+  color: #b71c1c;
+}
+
+/* Dimmed / Disabled State when matching count is 0 */
+.tag-filter-pill.dimmed {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: var(--tag-bg);
+  border-color: var(--border-ultra-subtle);
+  color: var(--text-muted);
+}
+
+.tag-filter-pill.dimmed .tag-count {
+  background: var(--tag-count-bg);
+  color: var(--text-muted);
+}
+
+/* Dark Mode styles */
+html.dark-mode .tag-filter-pill.include {
+  background: rgba(129, 199, 132, 0.1);
+  border-color: rgba(129, 199, 132, 0.4);
+  color: #a5d6a7;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+html.dark-mode .tag-filter-pill.include:hover {
+  background: rgba(129, 199, 132, 0.18);
+  border-color: rgba(129, 199, 132, 0.7);
+}
+
+html.dark-mode .tag-filter-pill.include .tag-count {
+  background: rgba(129, 199, 132, 0.2);
+  color: #a5d6a7;
+}
+
+html.dark-mode .tag-filter-pill.exclude {
+  background: rgba(229, 115, 115, 0.08);
+  border-color: rgba(229, 115, 115, 0.4);
+  color: #ef9a9a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+html.dark-mode .tag-filter-pill.exclude:hover {
+  background: rgba(229, 115, 115, 0.15);
+  border-color: rgba(229, 115, 115, 0.7);
+}
+
+html.dark-mode .tag-filter-pill.exclude .tag-count {
+  background: rgba(229, 115, 115, 0.2);
+  color: #ef9a9a;
+}
+
 /* Calendar Grid Columns */
 .planned-recipes-grid {
   display: grid;

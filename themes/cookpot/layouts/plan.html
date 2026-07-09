@@ -305,9 +305,9 @@
     class="planner-modal-backdrop"
     style="display: none;"
   >
-    <div class="planner-modal-content" style="max-height: 50vh; height: auto;">
+    <div class="planner-modal-content" style="max-height: 75vh; height: auto;">
       <div class="planner-modal-header">
-        <h3>Filter Recipes by Tag</h3>
+        <h3>Filter Recipes</h3>
         <button
           type="button"
           id="btn-close-filters-modal"
@@ -322,7 +322,7 @@
         style="padding: 1.25rem 1.5rem;"
         tabindex="0"
         role="region"
-        aria-label="Recipe Tag Filters"
+        aria-label="Recipe Filters"
       >
         <div
           style="margin-bottom: 1.25rem; display: flex; gap: 0.75rem; align-items: center; justify-content: space-between;"
@@ -339,7 +339,26 @@
             ✕ Clear All Filters
           </button>
         </div>
-        <div id="planner-tag-filters" class="planner-tag-filters"></div>
+        <h4
+          style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);"
+        >
+          Filter by Tag
+        </h4>
+        <div
+          id="planner-tag-filters"
+          class="planner-tag-filters"
+          style="margin-bottom: 1.5rem;"
+        ></div>
+        <hr
+          class="shopping-divider"
+          style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--border-subtle);"
+        />
+        <h4
+          style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);"
+        >
+          Filter by Source
+        </h4>
+        <div id="planner-source-filters" class="planner-tag-filters"></div>
       </div>
     </div>
   </div>

@@ -29,7 +29,10 @@ interface PlannedRecipe {
 // Client State
 let planState: PlannedRecipe[] = [];
 let recipesIndex: Recipe[] = [];
-const selectedTags: Set<string> = new Set();
+const includedTags: Set<string> = new Set();
+const excludedTags: Set<string> = new Set();
+const includedSources: Set<string> = new Set();
+const excludedSources: Set<string> = new Set();
 let searchQuery = '';
 const checkedIngredients: Set<string> = new Set();
 let staplesExpanded = false;
@@ -52,6 +55,7 @@ let activeMobileTab = 'view-plan'; // 'edit-plan' | 'view-plan' | 'shopping-list
 
 const STORAGE_KEY = 'noonarby-meal-plan';
 const SETTINGS_KEY = 'noonarby-meal-plan-settings';
+const FILTERS_KEY = 'noonarby-meal-plan-filters';
 
 // Constants
 const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
@@ -122,6 +126,7 @@ export function initMealPlanner(): void {
   } // Only run on planner page
 
   loadSettings();
+  loadFilters();
   setupUIThemeClass();
   setupEventListeners();
   setupMobileSwipeGestures();
@@ -225,6 +230,7 @@ export function initMealPlanner(): void {
       }
 
       buildTagCloud();
+      buildSourceCloud();
       renderUI();
     })
     .catch((err) => console.error('Error loading recipes search index:', err));
@@ -272,6 +278,98 @@ function saveSettings(): void {
     chkOmitCompleted: chk ? chk.checked : false,
   };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+/**
+ * Returns the list of recipes matching active tag and source filters
+ */
+function getFilteredRecipes(): Recipe[] {
+  return recipesIndex.filter((r) => {
+    let matchesIncludedTags = true;
+    for (const tag of includedTags) {
+      if (r.tags === undefined || !r.tags.includes(tag)) {
+        matchesIncludedTags = false;
+        break;
+      }
+    }
+
+    let matchesExcludedTags = true;
+    for (const tag of excludedTags) {
+      if (r.tags !== undefined && r.tags.includes(tag)) {
+        matchesExcludedTags = false;
+        break;
+      }
+    }
+
+    const matchesIncludedSources =
+      includedSources.size === 0 ||
+      (r.recipeSource !== undefined && includedSources.has(r.recipeSource));
+    const matchesExcludedSources =
+      r.recipeSource === undefined || !excludedSources.has(r.recipeSource);
+
+    return (
+      matchesIncludedTags &&
+      matchesExcludedTags &&
+      matchesIncludedSources &&
+      matchesExcludedSources
+    );
+  });
+}
+
+/**
+ * Loads active tag and source filters from LocalStorage
+ */
+function loadFilters(): void {
+  try {
+    const raw = localStorage.getItem(FILTERS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      includedTags.clear();
+      excludedTags.clear();
+      includedSources.clear();
+      excludedSources.clear();
+
+      if (parsed.includedTags) {
+        for (const tag of parsed.includedTags) {
+          includedTags.add(tag);
+        }
+      }
+      if (parsed.excludedTags) {
+        for (const tag of parsed.excludedTags) {
+          excludedTags.add(tag);
+        }
+      }
+      if (parsed.includedSources) {
+        for (const src of parsed.includedSources) {
+          includedSources.add(src);
+        }
+      }
+      if (parsed.excludedSources) {
+        for (const src of parsed.excludedSources) {
+          excludedSources.add(src);
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error loading filters from storage:', e);
+  }
+}
+
+/**
+ * Saves active tag and source filters to LocalStorage
+ */
+function saveFilters(): void {
+  try {
+    const data = {
+      includedTags: Array.from(includedTags),
+      excludedTags: Array.from(excludedTags),
+      includedSources: Array.from(includedSources),
+      excludedSources: Array.from(excludedSources),
+    };
+    localStorage.setItem(FILTERS_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('Error saving filters to storage:', e);
+  }
 }
 
 /**
@@ -347,9 +445,13 @@ function setupEventListeners(): void {
   }
   if (btnClearFilters) {
     btnClearFilters.addEventListener('click', () => {
-      selectedTags.clear();
-      saveCheckedState();
+      includedTags.clear();
+      excludedTags.clear();
+      includedSources.clear();
+      excludedSources.clear();
+      saveFilters();
       buildTagCloud();
+      buildSourceCloud();
       renderUI();
       closeFiltersModal();
     });
@@ -831,8 +933,22 @@ function openModal(day: string): void {
 
     // Active filters notice
     if (activeTagsNotice) {
-      if (selectedTags.size > 0) {
-        activeTagsNotice.textContent = `Applying active tag filters: ${Array.from(selectedTags).join(', ')}`;
+      const activeFilters: string[] = [];
+      for (const tag of includedTags) {
+        activeFilters.push(`+${tag}`);
+      }
+      for (const tag of excludedTags) {
+        activeFilters.push(`-${tag}`);
+      }
+      for (const src of includedSources) {
+        activeFilters.push(`+${src}`);
+      }
+      for (const src of excludedSources) {
+        activeFilters.push(`-${src}`);
+      }
+
+      if (activeFilters.length > 0) {
+        activeTagsNotice.textContent = `Applying active filters: ${activeFilters.join(', ')}`;
         activeTagsNotice.style.display = 'block';
       } else {
         activeTagsNotice.style.display = 'none';
@@ -841,6 +957,7 @@ function openModal(day: string): void {
 
     renderModalBrowseShelf();
     buildTagCloud(); // Sync tag cloud active state
+    buildSourceCloud(); // Sync source cloud active state
 
     // Focus input cursor
     setTimeout(() => searchInput.focus(), 50);
@@ -916,9 +1033,9 @@ function swapRecipe(instanceId: string): void {
     item.day !== 'supplemental' && dayMeals.indexOf(item) === 0;
 
   // Build pool of candidate recipes
-  let pool = recipesIndex;
+  let pool = getFilteredRecipes();
   if (isDinnerSlot) {
-    pool = recipesIndex.filter(
+    pool = pool.filter(
       (r) => r.tags && r.tags.some((t) => t.toLowerCase() === 'dinner'),
     );
   }
@@ -957,7 +1074,7 @@ function generateDinnerPlan(): void {
   const activeDays = workWeekOnly ? DAYS.slice(1, 6) : DAYS;
 
   // Find all dinner recipes
-  const dinnerPool = recipesIndex.filter(
+  const dinnerPool = getFilteredRecipes().filter(
     (r) => r.tags && r.tags.some((t) => t.toLowerCase() === 'dinner'),
   );
   if (dinnerPool.length === 0) {
@@ -1053,10 +1170,8 @@ function renderModalBrowseShelf(): void {
     return;
   }
 
-  // Filter recipes index by persistent tag filters and text input queries
-  let matches = recipesIndex.filter((r) =>
-    Array.from(selectedTags).every((tag) => r.tags && r.tags.includes(tag)),
-  );
+  // Filter recipes index by persistent tag/source filters and text input queries
+  let matches = getFilteredRecipes();
 
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase().trim();
@@ -1123,52 +1238,160 @@ function buildTagCloud(): void {
     return;
   }
 
-  // 1. Get subset of recipes matching currently selected tags
-  const tagFilteredSubset = recipesIndex.filter((r) =>
-    Array.from(selectedTags).every((tag) => r.tags && r.tags.includes(tag)),
-  );
+  const matches = getFilteredRecipes();
 
-  // 2. Compute counts on this subset
+  // Compute counts for all tags on the CURRENTLY matched subset
   const tallies: Record<string, number> = {};
-  tagFilteredSubset.forEach((r) => {
-    if (!r.tags) {
-      return;
+  for (const r of matches) {
+    if (r.tags) {
+      for (const tag of r.tags) {
+        tallies[tag] = (tallies[tag] || 0) + 1;
+      }
     }
-    r.tags.forEach((tag) => {
-      tallies[tag] = (tallies[tag] || 0) + 1;
-    });
-  });
+  }
 
-  // 3. Get all unique tags from the entire index to render
   const uniqueTags = Array.from(
     new Set(recipesIndex.flatMap((r) => r.tags || [])),
   ).sort();
 
   bar.innerHTML = '';
-  uniqueTags.forEach((tag) => {
+  for (const tag of uniqueTags) {
     const count = tallies[tag] || 0;
-    const isActive = selectedTags.has(tag);
 
-    // Only render if it matches at least one recipe in the current subset, or is already selected (to allow deselecting)
-    if (count > 0 || isActive) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = `tag-filter-pill${isActive ? ' active' : ''}`;
-      btn.dataset.tag = tag;
-      btn.innerHTML = `${tag} <span class="tag-count">${count}</span>`;
+    let state: 'include' | 'exclude' | 'neutral' = 'neutral';
+    if (includedTags.has(tag)) {
+      state = 'include';
+    } else if (excludedTags.has(tag)) {
+      state = 'exclude';
+    }
+
+    const isDimmed = count === 0 && state === 'neutral';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+
+    let btnClass = 'tag-filter-pill';
+    if (state === 'include') {
+      btnClass += ' include';
+    } else if (state === 'exclude') {
+      btnClass += ' exclude';
+    }
+    if (isDimmed) {
+      btnClass += ' dimmed';
+    }
+    btn.className = btnClass;
+
+    btn.dataset.tag = tag;
+
+    let displayLabel = tag;
+    if (state === 'include') {
+      displayLabel = `✓ ${tag}`;
+    } else if (state === 'exclude') {
+      displayLabel = `✕ ${tag}`;
+    }
+
+    btn.innerHTML = `${displayLabel} <span class="tag-count">${count}</span>`;
+
+    if (!isDimmed) {
       btn.addEventListener('click', () => {
-        if (isActive) {
-          selectedTags.delete(tag);
+        if (state === 'neutral') {
+          includedTags.add(tag);
+        } else if (state === 'include') {
+          includedTags.delete(tag);
+          excludedTags.add(tag);
         } else {
-          selectedTags.add(tag);
+          excludedTags.delete(tag);
         }
+
+        saveFilters();
         buildTagCloud();
-        saveCheckedState(); // Cache active tag selections
+        buildSourceCloud();
         renderUI();
       });
-      bar.appendChild(btn);
+    } else {
+      btn.setAttribute('disabled', 'true');
     }
-  });
+
+    bar.appendChild(btn);
+  }
+}
+
+/**
+ * Renders Recipe Source Filter Pill Row
+ */
+function buildSourceCloud(): void {
+  const bar = document.getElementById('planner-source-filters');
+  if (!bar) {
+    return;
+  }
+
+  const matches = getFilteredRecipes();
+
+  // Compute counts for all sources on the CURRENTLY matched subset
+  const tallies: Record<string, number> = {};
+  for (const r of matches) {
+    if (r.recipeSource) {
+      tallies[r.recipeSource] = (tallies[r.recipeSource] || 0) + 1;
+    }
+  }
+
+  const uniqueSources = Array.from(
+    new Set(
+      recipesIndex.map((r) => r.recipeSource).filter(Boolean) as string[],
+    ),
+  ).sort();
+
+  bar.innerHTML = '';
+  for (const src of uniqueSources) {
+    const count = tallies[src] || 0;
+
+    let state: 'include' | 'exclude' | 'neutral' = 'neutral';
+    if (includedSources.has(src)) {
+      state = 'include';
+    } else if (excludedSources.has(src)) {
+      state = 'exclude';
+    }
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+
+    let btnClass = 'tag-filter-pill';
+    if (state === 'include') {
+      btnClass += ' include';
+    } else if (state === 'exclude') {
+      btnClass += ' exclude';
+    }
+    btn.className = btnClass;
+
+    btn.dataset.source = src;
+
+    let displayLabel = src;
+    if (state === 'include') {
+      displayLabel = `✓ ${src}`;
+    } else if (state === 'exclude') {
+      displayLabel = `✕ ${src}`;
+    }
+
+    btn.innerHTML = `${displayLabel} <span class="tag-count">${count}</span>`;
+
+    btn.addEventListener('click', () => {
+      if (state === 'neutral') {
+        includedSources.add(src);
+      } else if (state === 'include') {
+        includedSources.delete(src);
+        excludedSources.add(src);
+      } else {
+        excludedSources.delete(src);
+      }
+
+      saveFilters();
+      buildTagCloud();
+      buildSourceCloud();
+      renderUI();
+    });
+
+    bar.appendChild(btn);
+  }
 }
 
 /**
@@ -1534,7 +1757,11 @@ function renderUI(highlightInstanceId?: string): void {
   // Sync Filters button label and active highlights
   const btnToggleFilters = document.getElementById('btn-toggle-filters');
   if (btnToggleFilters) {
-    const filterCount = selectedTags.size;
+    const filterCount =
+      includedTags.size +
+      excludedTags.size +
+      includedSources.size +
+      excludedSources.size;
     btnToggleFilters.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Filters${filterCount > 0 ? ` (${filterCount})` : ''}`;
     btnToggleFilters.classList.toggle('active', filterCount > 0);
   }
