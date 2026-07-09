@@ -433,7 +433,9 @@ function updateDashboardUI(timers: TimerState[]): void {
   const groups: { [url: string]: { title: string; list: TimerState[] } } = {};
   dashboardTimers.forEach((t) => {
     if (!groups[t.recipeUrl]) {
-      groups[t.recipeUrl] = { title: t.recipeTitle || 'Recipe', list: [] };
+      const fallbackTitle =
+        t.recipeUrl.split('/').filter(Boolean).pop() || 'Recipe';
+      groups[t.recipeUrl] = { title: t.recipeTitle || fallbackTitle, list: [] };
     }
     groups[t.recipeUrl].list.push(t);
   });
@@ -669,7 +671,10 @@ if (typeof document !== 'undefined') {
 
 export function initTimers(): void {
   const titleEl = document.querySelector('.recipe-title-bar h1');
-  recipeTitle = titleEl ? titleEl.textContent?.trim() || '' : '';
+  recipeTitle =
+    (titleEl ? titleEl.textContent?.trim() : '') ||
+    window.location.pathname.split('/').filter(Boolean).pop() ||
+    '';
   recipeUrl = window.location.pathname;
 
   const timerEls = document.querySelectorAll<HTMLElement>('.recipe-timer');
