@@ -260,6 +260,9 @@ export function initShoppingList(): void {
       new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
     );
     const notesStrs = [];
+    if (item.sizeNote) {
+      notesStrs.push(item.sizeNote);
+    }
     if (recipes.length > 0) {
       notesStrs.push(`from ${recipes.join(', ')}`);
     }

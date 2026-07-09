@@ -83,4 +83,69 @@ describe('processShoppingList', () => {
     expect(salmon).toBeDefined();
     expect(salmon?.section).toBe('meat');
   });
+
+  test('handles Chorizo Roasted Red Pepper Spinach Gnocchi recipe ingredients correctly', () => {
+    const ingredients: IngredientInput[] = [
+      { qty: 16, unit: 'ounce', item: 'potato gnocchi' },
+      {
+        qty: 0.5,
+        unit: 'pound',
+        item: 'chorizo',
+        desc: 'fresh',
+        prep: 'casing removed',
+      },
+      {
+        qty: 0.75,
+        unit: 'cup',
+        item: 'jarred roasted red pepper',
+        prep: 'chopped',
+      },
+      { qty: 1, unit: 'small', item: 'onion', prep: 'chopped' },
+      { qty: 0.5, unit: 'teaspoon', item: 'kosher salt' },
+      { qty: 3, unit: 'cup', item: 'baby spinach', prep: 'loosely packed' },
+    ];
+
+    const result = processShoppingList(ingredients);
+
+    // 1. Potato gnocchi -> 1 17.5-oz package (with sizeNote "16 oz needed")
+    const gnocchi = result.buyItems.find((i) => i.item === 'potato gnocchi');
+    expect(gnocchi).toBeDefined();
+    expect(gnocchi?.qty).toBe(1);
+    expect(gnocchi?.unit).toBe('17.5-oz package');
+    expect(gnocchi?.sizeNote).toBe('16 oz needed');
+
+    // 2. Chorizo -> 0.5 pound (stays by weight)
+    const chorizo = result.buyItems.find((i) => i.item === 'chorizo');
+    expect(chorizo).toBeDefined();
+    expect(chorizo?.qty).toBe(0.5);
+    expect(chorizo?.unit).toBe('pound');
+    expect(chorizo?.sizeNote).toBeUndefined();
+
+    // 3. Jarred roasted red pepper -> 1 8-oz jar (with sizeNote "6 oz needed")
+    const pepper = result.buyItems.find(
+      (i) => i.item === 'jarred roasted red pepper',
+    );
+    expect(pepper).toBeDefined();
+    expect(pepper?.qty).toBe(1);
+    expect(pepper?.unit).toBe('8-oz jar');
+    expect(pepper?.sizeNote).toBe('6 oz needed');
+
+    // 4. Onion -> 1 onion (not 1 cup onion)
+    const onion = result.buyItems.find((i) => i.item === 'onion');
+    expect(onion).toBeDefined();
+    expect(onion?.qty).toBe(1);
+    expect(onion?.unit).toBe('onion');
+    expect(onion?.sizeNote).toBeUndefined();
+
+    // 5. Kosher salt -> identified as pantry staple
+    const salt = result.stapleItems.find((i) => i.item === 'kosher salt');
+    expect(salt).toBeDefined();
+
+    // 6. Baby spinach -> 1 8 oz bag (with sizeNote "3 oz needed")
+    const spinach = result.buyItems.find((i) => i.item === 'baby spinach');
+    expect(spinach).toBeDefined();
+    expect(spinach?.qty).toBe(1);
+    expect(spinach?.unit).toBe('8 oz bag');
+    expect(spinach?.sizeNote).toBe('3 oz needed');
+  });
 });

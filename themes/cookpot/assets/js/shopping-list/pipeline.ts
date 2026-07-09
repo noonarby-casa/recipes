@@ -1,6 +1,7 @@
 import { STAPLE_ITEMS, ITEM_RULES } from './config';
-import { convertQty } from './utils';
+import { convertQty, getConversionFactor } from './utils';
 import { getStoreSection } from './store-sections';
+import { formatCookingNumber } from '../units';
 import {
   IngredientInput,
   ShoppingItem,
@@ -15,7 +16,32 @@ function getRuleForItem(itemName: string): ItemRule | undefined {
 }
 
 function isStaple(itemName: string): boolean {
-  return STAPLE_ITEMS.has(itemName.toLowerCase().trim());
+  const lower = itemName.toLowerCase().trim();
+  if (STAPLE_ITEMS.has(lower)) {
+    return true;
+  }
+  if (lower.endsWith(' salt') || lower === 'salt') {
+    const nonStapleSalts = ['pork', 'cod'];
+    if (!nonStapleSalts.some((ns) => lower.includes(ns))) {
+      return true;
+    }
+  }
+  if (lower.includes('pepper')) {
+    const staplePeppers = [
+      'black',
+      'white',
+      'cayenne',
+      'lemon',
+      'sichuan',
+      'crushed',
+      'flake',
+      'flakes',
+    ];
+    if (staplePeppers.some((sp) => lower.includes(sp)) || lower === 'pepper') {
+      return true;
+    }
+  }
+  return false;
 }
 
 function getAverageQty(qty?: number | [number, number]): number | null {
@@ -61,9 +87,9 @@ export function processShoppingList(
         targetUnit = firstEq.base;
       }
     } else if (unit) {
-      if (convertQty(1, unit, 'teaspoon') > 0) {
+      if (getConversionFactor(unit, 'teaspoon') > 0) {
         targetUnit = 'teaspoon';
-      } else if (convertQty(1, unit, 'ounce') > 0) {
+      } else if (getConversionFactor(unit, 'ounce') > 0) {
         targetUnit = 'ounce';
       }
     }
@@ -113,9 +139,12 @@ export function processShoppingList(
     const rule = getRuleForItem(itemName);
     let finalQty: number | null = group.unquantified ? null : group.baseQty;
     let finalUnit = group.baseUnit;
+    let sizeNote: string | undefined = undefined;
 
     if (finalQty !== null && rule?.itemSizes && rule.itemSizes.length > 0) {
       let matched = false;
+      const originalQty = finalQty;
+      const originalUnit = finalUnit;
       for (const [limit, sizeUnit] of rule.itemSizes) {
         const sizeInBase = convertQty(limit, sizeUnit, finalUnit, rule);
         if (sizeInBase >= finalQty) {
@@ -132,6 +161,15 @@ export function processShoppingList(
           finalQty = Math.ceil(finalQty / sizeInBase) * largest[0];
           finalUnit = largest[1];
         }
+      }
+
+      // Generate the size note showing recipe quantity needed
+      const ozFactor = getConversionFactor(originalUnit, 'ounce', rule);
+      if (ozFactor > 0) {
+        const neededOz = originalQty * ozFactor;
+        sizeNote = `${formatCookingNumber(neededOz)} oz needed`;
+      } else {
+        sizeNote = `${formatCookingNumber(originalQty)} ${originalUnit} needed`;
       }
     } else if (finalQty !== null) {
       if (finalUnit === 'teaspoon') {
@@ -161,6 +199,7 @@ export function processShoppingList(
       isStaple: group.isStaple,
       optional: group.optional,
       section: section.id,
+      sizeNote,
     };
 
     if (group.isStaple) {

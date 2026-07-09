@@ -2729,6 +2729,9 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
       new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
     );
     const notesStrs = [];
+    if (item.sizeNote) {
+      notesStrs.push(item.sizeNote);
+    }
     if (recipes.length > 0) {
       notesStrs.push(`from ${recipes.join(', ')}`);
     }
@@ -2776,6 +2779,9 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
         new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
       );
       const notesStrs = [];
+      if (item.sizeNote) {
+        notesStrs.push(item.sizeNote);
+      }
       if (recipes.length > 0) {
         notesStrs.push(`from ${recipes.join(', ')}`);
       }
@@ -2931,6 +2937,9 @@ function copyShoppingListToClipboard(
         new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
       );
       const notesStrs = [];
+      if (item.sizeNote) {
+        notesStrs.push(item.sizeNote);
+      }
       if (recipes.length > 0) {
         notesStrs.push(`from ${recipes.join(', ')}`);
       }
@@ -2983,6 +2992,9 @@ function copyShoppingListToClipboard(
           new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
         );
         const notesStrs = [];
+        if (item.sizeNote) {
+          notesStrs.push(item.sizeNote);
+        }
         if (recipes.length > 0) {
           notesStrs.push(`from ${recipes.join(', ')}`);
         }
@@ -3025,6 +3037,9 @@ function copyShoppingListToClipboard(
           new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
         );
         const notesStrs = [];
+        if (item.sizeNote) {
+          notesStrs.push(item.sizeNote);
+        }
         if (recipes.length > 0) {
           notesStrs.push(`from ${recipes.join(', ')}`);
         }
@@ -3067,6 +3082,9 @@ function copyShoppingListToClipboard(
           new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
         );
         const notesStrs = [];
+        if (item.sizeNote) {
+          notesStrs.push(item.sizeNote);
+        }
         if (recipes.length > 0) {
           notesStrs.push(`from ${recipes.join(', ')}`);
         }

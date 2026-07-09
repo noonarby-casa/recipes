@@ -102,7 +102,8 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['lemon', 'lemon juice', 'lemon zest'],
     unitEquivalences: {
-      lemon: { base: 'tablespoon', factor: 3 }, // 1 lemon ≈ 3 tbsp juice
+      tablespoon: { base: 'lemon', factor: 0.3333 }, // 1 tbsp ≈ 1/3 lemon
+      tbsp: { base: 'lemon', factor: 0.3333 },
     },
   },
 
@@ -110,7 +111,8 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['lime', 'lime juice', 'lime zest'],
     unitEquivalences: {
-      lime: { base: 'tablespoon', factor: 2 }, // 1 lime ≈ 2 tbsp juice
+      tablespoon: { base: 'lime', factor: 0.5 }, // 1 tbsp ≈ 1/2 lime
+      tbsp: { base: 'lime', factor: 0.5 },
     },
   },
 
@@ -166,7 +168,7 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['onion', 'yellow onion', 'white onion', 'red onion', 'sweet onion'],
     unitEquivalences: {
-      onion: { base: 'cup', factor: 1 },
+      cup: { base: 'onion', factor: 1 },
     },
   },
 
@@ -184,7 +186,7 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['cabbage', 'red cabbage', 'green cabbage'],
     unitEquivalences: {
-      head: { base: 'cup', factor: 8 },
+      cup: { base: 'head', factor: 0.125 }, // 1 cup ≈ 1/8 head
     },
   },
 
@@ -252,6 +254,38 @@ export const ITEM_RULES: ItemRule[] = [
       'can (15 oz)': { base: 'ounce', factor: 15 },
       'can (28 oz)': { base: 'ounce', factor: 28 },
       can: { base: 'ounce', factor: 15 },
+    },
+  },
+
+  // 16. Roasted Red Peppers
+  {
+    items: ['jarred roasted red pepper', 'roasted red pepper'],
+    itemSizes: [[1, '8-oz jar']],
+    unitEquivalences: {
+      '8-oz jar': { base: 'ounce', factor: 8 },
+      jar: { base: 'ounce', factor: 8 },
+      cup: { base: 'ounce', factor: 8 },
+    },
+  },
+
+  // 17. Potato Gnocchi
+  {
+    items: ['potato gnocchi', 'gnocchi'],
+    itemSizes: [[1, '17.5-oz package']],
+    unitEquivalences: {
+      '17.5-oz package': { base: 'ounce', factor: 17.5 },
+      package: { base: 'ounce', factor: 17.5 },
+    },
+  },
+
+  // 18. Baby Spinach
+  {
+    items: ['baby spinach', 'spinach'],
+    itemSizes: [[1, '8 oz bag']],
+    unitEquivalences: {
+      '8 oz bag': { base: 'ounce', factor: 8 },
+      bag: { base: 'ounce', factor: 8 },
+      cup: { base: 'ounce', factor: 1 },
     },
   },
 ];

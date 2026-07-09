@@ -37,6 +37,7 @@ export interface ShoppingItem {
   isStaple: boolean;
   optional?: boolean;
   section?: string;
+  sizeNote?: string;
 }
 
 export interface ItemRule {
