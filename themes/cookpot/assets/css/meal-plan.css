@@ -1318,6 +1318,92 @@ a.planned-recipe-item {
   color: var(--text-color);
 }
 
+/* Card buttons controls section */
+.recipe-card-controls {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.recipe-card-controls .recipe-remove-btn,
+.recipe-card-controls .recipe-swap-btn,
+.recipe-card-controls .recipe-edit-details-btn {
+  position: static !important;
+  align-items: center;
+  background: var(--font-controls-bg);
+  border: 1px solid var(--border-ultra-subtle);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.8rem;
+  height: 26px;
+  width: 26px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
+  z-index: auto;
+}
+
+.recipe-card-controls .recipe-remove-btn:hover {
+  background-color: #fff0f0 !important;
+  color: #ff3b30 !important;
+  border-color: #ffcdd2 !important;
+}
+
+.recipe-card-controls .recipe-swap-btn:hover,
+.recipe-card-controls .recipe-edit-details-btn:hover {
+  background-color: var(--noonblue-bg-light) !important;
+  color: var(--noonblue) !important;
+  border-color: var(--noonblue-border-light) !important;
+}
+
+@media (max-width: 767px) {
+  .day-recipes-list .recipe-card-body,
+  .planned-recipe-item.dragging-mirror .recipe-card-body {
+    padding-right: 0.75rem !important;
+  }
+}
+
+/* Extra Ingredients on Cards styling */
+.recipe-card-extra-ingredients {
+  margin-top: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.extra-ingredients-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.extra-ingredients-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.extra-ingredients-list li {
+  font-size: 0.72rem;
+  color: var(--text-body);
+  line-height: 1.35;
+  position: relative;
+  padding-left: 0.55rem;
+}
+
+.extra-ingredients-list li::before {
+  content: '•';
+  color: var(--noonblue);
+  position: absolute;
+  left: 0;
+}
+
 /* Printing styles override */
 @media print {
   body {

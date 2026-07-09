@@ -2,7 +2,7 @@ export interface StoreSection {
   id: string;
   name: string;
   order: number;
-  keywords: string[];
+  categories: string[];
 }
 
 export interface StoreLayout {
@@ -11,11 +11,29 @@ export interface StoreLayout {
   sections: StoreSection[];
 }
 
-export const STANDARD_SECTIONS: StoreSection[] = [
+export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
   {
-    id: 'produce',
-    name: '🥬 Produce',
-    order: 1,
+    category: 'fresh-herbs',
+    keywords: [
+      'herb',
+      'basil',
+      'cilantro',
+      'parsley',
+      'rosemary',
+      'thyme',
+      'dill',
+      'chives',
+      'mint',
+      'oregano fresh',
+      'fresh oregano',
+    ],
+  },
+  {
+    category: 'tofu-tempeh',
+    keywords: ['tofu', 'tempeh'],
+  },
+  {
+    category: 'fresh-produce',
     keywords: [
       'lettuce',
       'tomato',
@@ -33,13 +51,7 @@ export const STANDARD_SECTIONS: StoreSection[] = [
       'carrot',
       'celery',
       'mushroom',
-      'pepper',
-      'herb',
-      'basil',
-      'cilantro',
-      'parsley',
-      'rosemary',
-      'thyme',
+      'bell pepper',
       'avocado',
       'banana',
       'apple',
@@ -47,15 +59,22 @@ export const STANDARD_SECTIONS: StoreSection[] = [
       'raspberry',
       'blueberry',
       'strawberry',
-      'parsley',
-      'dill',
-      'chives',
+      'spinach',
+      'kale',
+      'shallot',
+      'squash',
+      'cucumber',
+      'cauliflower',
+      'asparagus',
+      'brussels sprout',
+      'sweet potato',
+      'corn',
+      'aubergine',
+      'eggplant',
     ],
   },
   {
-    id: 'bakery',
-    name: '🍞 Bakery',
-    order: 2,
+    category: 'bakery',
     keywords: [
       'bread',
       'roll',
@@ -68,59 +87,66 @@ export const STANDARD_SECTIONS: StoreSection[] = [
     ],
   },
   {
-    id: 'meat',
-    name: '🥩 Meat & Seafood',
-    order: 3,
+    category: 'poultry',
+    keywords: ['chicken', 'turkey'],
+  },
+  {
+    category: 'meat',
     keywords: [
-      'chicken',
       'beef',
       'pork',
       'sausage',
       'bacon',
-      'turkey',
       'ground',
       'steak',
-      'salmon',
-      'shrimp',
-      'fish',
       'meatball',
+      'lamb',
     ],
   },
   {
-    id: 'dairy',
-    name: '🧀 Dairy & Eggs',
-    order: 4,
+    category: 'seafood',
+    keywords: ['salmon', 'shrimp', 'fish', 'cod', 'halibut', 'trout', 'tuna'],
+  },
+  {
+    category: 'milk-cream',
     keywords: [
       'milk',
       'cream',
+      'heavy cream',
+      'whipping cream',
+      'half and half',
+      'sour cream',
+      'yogurt',
+    ],
+  },
+  {
+    category: 'butter-cheese',
+    keywords: [
       'butter',
       'cheese',
-      'yogurt',
-      'egg',
-      'sour cream',
-      'cream cheese',
       'ricotta',
       'mozzarella',
       'parmesan',
       'cheddar',
+      'cream cheese',
+      'feta',
+      'goat cheese',
     ],
   },
   {
-    id: 'deli',
-    name: '🥪 Deli',
-    order: 5,
+    category: 'eggs',
+    keywords: ['egg', 'eggs'],
+  },
+  {
+    category: 'deli',
     keywords: ['deli', 'hummus', 'pesto'],
   },
   {
-    id: 'frozen',
-    name: '❄️ Frozen',
-    order: 6,
+    category: 'frozen',
     keywords: ['frozen', 'ice cream'],
   },
   {
-    id: 'pasta-grains',
-    name: '🍝 Pasta & Grains',
-    order: 7,
+    category: 'pasta-grains',
     keywords: [
       'pasta',
       'spaghetti',
@@ -136,30 +162,49 @@ export const STANDARD_SECTIONS: StoreSection[] = [
       'lasagna',
       'macaroni',
       'panko',
+      'barley',
+      'farro',
+      'oats',
+      'oatmeal',
     ],
   },
   {
-    id: 'canned',
-    name: '🥫 Canned & Jarred',
-    order: 8,
+    category: 'canned-tomatoes',
+    keywords: [
+      'tomato paste',
+      'tomato sauce',
+      'crushed tomato',
+      'diced tomato',
+      'canned tomato',
+      'fire roasted tomato',
+    ],
+  },
+  {
+    category: 'canned-beans',
+    keywords: [
+      'beans',
+      'chickpea',
+      'chickpeas',
+      'black bean',
+      'kidney bean',
+      'cannellini bean',
+      'pinto bean',
+    ],
+  },
+  {
+    category: 'canned-other',
     keywords: [
       'can',
       'canned',
-      'tomato paste',
-      'tomato sauce',
-      'beans',
-      'chickpea',
       'coconut milk',
       'broth',
       'stock',
-      'chickpeas',
       'soup',
+      'lentils canned',
     ],
   },
   {
-    id: 'condiments',
-    name: '🫙 Condiments & Sauces',
-    order: 9,
+    category: 'condiments',
     keywords: [
       'sauce',
       'soy sauce',
@@ -174,12 +219,14 @@ export const STANDARD_SECTIONS: StoreSection[] = [
       'maple syrup',
       'jam',
       'jelly',
+      'peanut butter',
+      'almond butter',
+      'salad dressing',
+      'marinade',
     ],
   },
   {
-    id: 'baking',
-    name: '🧁 Baking',
-    order: 10,
+    category: 'baking',
     keywords: [
       'flour',
       'sugar',
@@ -193,12 +240,11 @@ export const STANDARD_SECTIONS: StoreSection[] = [
       'confectioners',
       'granulated sugar',
       'brown sugar',
+      'baking',
     ],
   },
   {
-    id: 'oils',
-    name: '🫒 Oils & Vinegars',
-    order: 11,
+    category: 'oils-vinegars',
     keywords: [
       'oil',
       'olive oil',
@@ -206,12 +252,11 @@ export const STANDARD_SECTIONS: StoreSection[] = [
       'canola oil',
       'sesame oil',
       'coconut oil',
+      'avocado oil',
     ],
   },
   {
-    id: 'spices',
-    name: '🌶️ Spices & Seasonings',
-    order: 12,
+    category: 'spices-seasonings',
     keywords: [
       'salt',
       'pepper',
@@ -233,12 +278,11 @@ export const STANDARD_SECTIONS: StoreSection[] = [
       'red pepper flakes',
       'italian seasoning',
       'kosher salt',
+      'seasoning',
     ],
   },
   {
-    id: 'snacks',
-    name: '🍿 Snacks',
-    order: 13,
+    category: 'snacks',
     keywords: [
       'chip',
       'cracker',
@@ -252,16 +296,111 @@ export const STANDARD_SECTIONS: StoreSection[] = [
     ],
   },
   {
+    category: 'beverages',
+    keywords: ['water', 'juice', 'soda', 'wine', 'beer', 'coffee', 'tea'],
+  },
+];
+
+export function classifyItemToCategory(itemName: string): string {
+  const lower = itemName.toLowerCase().trim();
+  for (const group of CATEGORY_KEYWORDS) {
+    if (group.keywords.some((kw) => lower.includes(kw))) {
+      return group.category;
+    }
+  }
+  return 'other';
+}
+
+export const STANDARD_SECTIONS: StoreSection[] = [
+  {
+    id: 'produce',
+    name: '🥬 Produce',
+    order: 1,
+    categories: ['fresh-produce', 'fresh-herbs', 'tofu-tempeh'],
+  },
+  {
+    id: 'bakery',
+    name: '🍞 Bakery',
+    order: 2,
+    categories: ['bakery'],
+  },
+  {
+    id: 'meat',
+    name: '🥩 Meat & Seafood',
+    order: 3,
+    categories: ['poultry', 'meat', 'seafood'],
+  },
+  {
+    id: 'dairy',
+    name: '🧀 Dairy & Eggs',
+    order: 4,
+    categories: ['milk-cream', 'butter-cheese', 'eggs'],
+  },
+  {
+    id: 'deli',
+    name: '🥪 Deli',
+    order: 5,
+    categories: ['deli'],
+  },
+  {
+    id: 'frozen',
+    name: '❄️ Frozen',
+    order: 6,
+    categories: ['frozen'],
+  },
+  {
+    id: 'pasta-grains',
+    name: '🍝 Pasta & Grains',
+    order: 7,
+    categories: ['pasta-grains'],
+  },
+  {
+    id: 'canned',
+    name: '🥫 Canned & Jarred',
+    order: 8,
+    categories: ['canned-tomatoes', 'canned-beans', 'canned-other'],
+  },
+  {
+    id: 'condiments',
+    name: '🫙 Condiments & Sauces',
+    order: 9,
+    categories: ['condiments'],
+  },
+  {
+    id: 'baking',
+    name: '🧁 Baking',
+    order: 10,
+    categories: ['baking'],
+  },
+  {
+    id: 'oils',
+    name: '🫒 Oils & Vinegars',
+    order: 11,
+    categories: ['oils-vinegars'],
+  },
+  {
+    id: 'spices',
+    name: '🌶️ Spices & Seasonings',
+    order: 12,
+    categories: ['spices-seasonings'],
+  },
+  {
+    id: 'snacks',
+    name: '🍿 Snacks',
+    order: 13,
+    categories: ['snacks'],
+  },
+  {
     id: 'beverages',
     name: '🥤 Beverages',
     order: 14,
-    keywords: ['water', 'juice', 'soda', 'wine', 'beer'],
+    categories: ['beverages'],
   },
   {
     id: 'other',
     name: '📦 Other',
     order: 99,
-    keywords: [],
+    categories: ['other'],
   },
 ];
 
@@ -329,22 +468,22 @@ export function getActiveStoreLayout(): StoreLayout {
   return STORE_LAYOUTS.find((l) => l.id === activeId) || STORE_LAYOUTS[0];
 }
 
-export function getStoreSection(
-  itemRestOrName: string,
-  itemItem?: string,
-): StoreSection {
+export function getSectionForCategory(category: string): StoreSection {
   const layout = getActiveStoreLayout();
-  const searchText = (itemItem || itemRestOrName).toLowerCase().trim();
-
-  for (const section of layout.sections) {
-    if (section.keywords.some((kw) => searchText.includes(kw))) {
-      return section;
-    }
+  const section = layout.sections.find((s) => s.categories.includes(category));
+  if (section) {
+    return section;
   }
-
-  // Fallback to "Other"
   return (
     layout.sections.find((s) => s.id === 'other') ||
     layout.sections[layout.sections.length - 1]
   );
+}
+
+export function getStoreSection(
+  itemRestOrName: string,
+  itemItem?: string,
+): StoreSection {
+  const category = classifyItemToCategory(itemItem || itemRestOrName);
+  return getSectionForCategory(category);
 }

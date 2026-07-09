@@ -1,12 +1,14 @@
-import { formatCookingNumber } from './units';
+import { formatItemQuantity } from './units';
 import {
   processShoppingList,
   extractIngredientsFromDOM,
+  getDepletedStaples,
+  saveDepletedStaples,
 } from './shopping-list/pipeline';
 import { ShoppingItem } from './shopping-list/types';
 // removed formatNotesArray
 import { initToggleGroup } from './components/toggle';
-import { getStoreSection } from './shopping-list/store-sections';
+import { getSectionForCategory } from './shopping-list/store-sections';
 
 /**
  * Initializes the shopping list feature: selects DOM elements, sets up initial
@@ -197,7 +199,7 @@ export function initShoppingList(): void {
     // Render Need to Buy items with store section headers
     let currentSectionId = '';
     buyItems.forEach((converted) => {
-      const section = getStoreSection(converted.rest, converted.item);
+      const section = getSectionForCategory(converted.category);
       if (section.id !== currentSectionId) {
         currentSectionId = section.id;
         buyList.insertAdjacentHTML(
@@ -220,6 +222,19 @@ export function initShoppingList(): void {
 
     // Render Pantry Staples items
     stapleItems.forEach((converted) => renderItem(converted, staplesList));
+
+    // Bind click handlers to '+' buttons on staples
+    staplesList.querySelectorAll('.btn-deplete-staple').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const itemName = (e.currentTarget as HTMLElement).dataset.item;
+        if (itemName) {
+          const depleted = getDepletedStaples();
+          depleted.add(itemName);
+          saveDepletedStaples(depleted);
+          renderShoppingList(scale);
+        }
+      });
+    });
 
     // Toggle staple section visibility depending on items
     const staplesSection =
@@ -244,27 +259,28 @@ export function initShoppingList(): void {
    * Generates DOM elements for a single converted item and appends it to targetList.
    */
   function renderItem(item: ShoppingItem, targetList: HTMLElement): void {
-    const qtyStr =
-      item.qty !== null
-        ? `${formatCookingNumber(item.qty)}${item.unit ? ' ' + item.unit : ''}`
-        : '';
-
-    // Show sizeNote if available (Edge Case 1)
-    const displayRest = item.rest;
-
-    const notesArr = item.notes || [];
-    const recipes = Array.from(
-      new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+    const { qtyStr, itemStr } = formatItemQuantity(
+      item.qty,
+      item.unit,
+      item.item,
     );
+
+    const notesArr = item.note?.ingredientNotes || [];
     const alts = Array.from(
       new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
     );
+    const descriptors = Array.from(
+      new Set(notesArr.map((n) => n.descriptor).filter(Boolean)),
+    );
     const notesStrs = [];
-    if (item.sizeNote) {
-      notesStrs.push(item.sizeNote);
+    if (item.note?.sizeNote) {
+      notesStrs.push(item.note.sizeNote);
     }
-    if (recipes.length > 0) {
-      notesStrs.push(`from ${recipes.join(', ')}`);
+    if (item.note?.optionalNote) {
+      notesStrs.push(item.note.optionalNote);
+    }
+    if (descriptors.length > 0) {
+      notesStrs.push(descriptors.join(', '));
     }
     if (alts.length > 0) {
       notesStrs.push(`or ${alts.join(' or ')}`);
@@ -273,14 +289,19 @@ export function initShoppingList(): void {
 
     const noteHtml = notesStr
       ? `<div class="shopping-item-details">
-             <span class="shopping-item-note">${notesStr}</span>
+             <span class="shopping-item-note">(${notesStr})</span>
            </div>`
       : '';
+
+    const plusBtn =
+      targetList === staplesList
+        ? `<button type="button" class="btn-deplete-staple" data-item="${item.item}">+</button>`
+        : '';
 
     targetList.insertAdjacentHTML(
       'beforeend',
       `<li class="shopping-item">
-         <div class="shopping-item-main-row">${qtyStr ? qtyStr + ' ' : ''}${displayRest}</div>
+         <div class="shopping-item-main-row">${qtyStr ? qtyStr + ' ' : ''}${itemStr}${plusBtn}</div>
          ${noteHtml}
        </li>`,
     );

@@ -23,21 +23,26 @@ export interface IngredientInput {
   category?: string; // added dynamically by meal planner to track recipe attribution
 }
 
-export interface ShoppingItemNote {
-  recipe: string;
+export interface IngredientNote {
+  recipe?: string;
   altItem?: string;
+  descriptor?: string;
+}
+
+export interface ShoppingItemNote {
+  ingredientNotes: IngredientNote[];
+  sizeNote?: string;
+  optionalNote?: string;
 }
 
 export interface ShoppingItem {
   qty: number | null;
   unit: string;
-  item: string; // Made required since we always merge by item
-  rest: string; // The display name
-  notes: ShoppingItemNote[];
-  isStaple: boolean;
+  item: string; // E.g. "roasted red pepper"
+  category: string; // E.g. "fresh-produce"
+  staple?: 'in-pantry' | 'depleted'; // Combined staple state
   optional?: boolean;
-  section?: string;
-  sizeNote?: string;
+  note?: ShoppingItemNote; // Unified structured notes
 }
 
 export interface ItemRule {

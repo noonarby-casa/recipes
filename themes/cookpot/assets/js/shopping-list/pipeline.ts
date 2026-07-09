@@ -1,6 +1,9 @@
 import { STAPLE_ITEMS, ITEM_RULES } from './config';
 import { convertQty, getConversionFactor } from './utils';
-import { getStoreSection } from './store-sections';
+import {
+  getSectionForCategory,
+  classifyItemToCategory,
+} from './store-sections';
 import { formatCookingNumber } from '../units';
 import {
   IngredientInput,
@@ -8,7 +11,36 @@ import {
   ProcessedShoppingList,
   ItemRule,
   ShoppingItemNote,
+  IngredientNote,
 } from './types';
+
+export const STORAGE_KEY_DEPLETED_STAPLES = 'noonarby-depleted-staples';
+
+export function getDepletedStaples(): Set<string> {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return new Set();
+  }
+  const stored = localStorage.getItem(STORAGE_KEY_DEPLETED_STAPLES);
+  if (!stored) {
+    return new Set();
+  }
+  try {
+    const arr = JSON.parse(stored);
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+
+export function saveDepletedStaples(depleted: Set<string>): void {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return;
+  }
+  localStorage.setItem(
+    STORAGE_KEY_DEPLETED_STAPLES,
+    JSON.stringify(Array.from(depleted)),
+  );
+}
 
 function getRuleForItem(itemName: string): ItemRule | undefined {
   const lower = itemName.toLowerCase().trim();
@@ -61,15 +93,15 @@ function getAverageQty(qty?: number | [number, number]): number | null {
 export function processShoppingList(
   ingredients: IngredientInput[],
 ): ProcessedShoppingList {
+  const depleted = getDepletedStaples();
   const map = new Map<
     string,
     {
       baseQty: number;
       baseUnit: string;
       unquantified: boolean;
-      notes: ShoppingItemNote[];
+      ingredientNotes: IngredientNote[];
       item: string;
-      isStaple: boolean;
       optional: boolean;
     }
   >();
@@ -105,9 +137,8 @@ export function processShoppingList(
         baseQty: 0,
         baseUnit: targetUnit,
         unquantified: false,
-        notes: [],
+        ingredientNotes: [],
         item: ing.item,
-        isStaple: isStaple(itemName),
         optional: !!ing.optional,
       };
       map.set(itemName, existing);
@@ -123,10 +154,12 @@ export function processShoppingList(
       existing.optional = false;
     }
 
-    if (ing.category || ing.alt?.item) {
-      existing.notes.push({
-        recipe: ing.category || '',
-        altItem: ing.alt?.item,
+    // Add note entry if it has recipe source, alt option, or description
+    if (ing.category || ing.alt?.item || ing.desc) {
+      existing.ingredientNotes.push({
+        recipe: ing.category || undefined,
+        altItem: ing.alt?.item || undefined,
+        descriptor: ing.desc || undefined,
       });
     }
   }
@@ -188,21 +221,32 @@ export function processShoppingList(
       }
     }
 
-    const section = getStoreSection(group.item, group.item);
+    const category = classifyItemToCategory(group.item);
+    const itemIsStaple = isStaple(itemName);
+    const stapleState: 'in-pantry' | 'depleted' | undefined = itemIsStaple
+      ? depleted.has(itemName)
+        ? 'depleted'
+        : 'in-pantry'
+      : undefined;
+
+    const note: ShoppingItemNote = {
+      ingredientNotes: group.ingredientNotes,
+    };
+    if (sizeNote) {
+      note.sizeNote = sizeNote;
+    }
 
     const shopItem: ShoppingItem = {
       qty: finalQty !== null ? Math.ceil(finalQty * 100) / 100 : null,
       unit: finalUnit,
       item: group.item,
-      rest: group.item,
-      notes: group.notes,
-      isStaple: group.isStaple,
+      category,
+      staple: stapleState,
       optional: group.optional,
-      section: section.id,
-      sizeNote,
+      note,
     };
 
-    if (group.isStaple) {
+    if (shopItem.staple === 'in-pantry') {
       stapleItems.push(shopItem);
     } else if (group.optional) {
       optionalItems.push(shopItem);
@@ -212,8 +256,8 @@ export function processShoppingList(
   }
 
   const sorter = (a: ShoppingItem, b: ShoppingItem) => {
-    const secA = getStoreSection(a.rest, a.item);
-    const secB = getStoreSection(b.rest, b.item);
+    const secA = getSectionForCategory(a.category);
+    const secB = getSectionForCategory(b.category);
     if (secA.order !== secB.order) {
       return secA.order - secB.order;
     }

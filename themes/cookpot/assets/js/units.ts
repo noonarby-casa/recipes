@@ -140,3 +140,78 @@ export function formatCookingNumber(val: number): string {
   // Otherwise, display as a clean, concise decimal (e.g. 1.2 or 0.7)
   return rounded.toFixed(2).replace(/\.?0+$/, '');
 }
+
+/**
+ * Pluralizes a word (either a unit or an item) leveraging SINGULAR_TO_PLURAL and fallback rules.
+ */
+export function pluralizeWord(word: string): string {
+  const lower = word.toLowerCase().trim();
+  if (SINGULAR_TO_PLURAL[lower]) {
+    return SINGULAR_TO_PLURAL[lower];
+  }
+  if (word.includes('(')) {
+    const parts = word.split('(');
+    const firstWord = parts[0].trim();
+    const rest = parts.slice(1).join('(');
+    return `${pluralizeWord(firstWord)} (${rest}`;
+  }
+  if (
+    lower.endsWith('y') &&
+    !lower.endsWith('ay') &&
+    !lower.endsWith('ey') &&
+    !lower.endsWith('oy') &&
+    !lower.endsWith('uy')
+  ) {
+    return word.slice(0, -1) + 'ies';
+  }
+  if (
+    lower.endsWith('ch') ||
+    lower.endsWith('sh') ||
+    lower.endsWith('s') ||
+    lower.endsWith('x') ||
+    lower.endsWith('z')
+  ) {
+    return word + 'es';
+  }
+  return word + 's';
+}
+
+/**
+ * Formats a shopping item's quantity and name, applying unit-substring deduplication and pluralization.
+ */
+export function formatItemQuantity(
+  qty: number | null,
+  unit: string,
+  item: string,
+): { qtyStr: string; itemStr: string } {
+  let displayUnit = unit.trim();
+  let displayItem = item.trim();
+  const shouldPluralize = qty === null || qty > 1;
+
+  if (displayUnit) {
+    const isSubstring = displayItem
+      .toLowerCase()
+      .includes(displayUnit.toLowerCase());
+    if (isSubstring) {
+      if (shouldPluralize) {
+        displayItem = pluralizeWord(displayItem);
+      }
+      displayUnit = '';
+    } else {
+      if (shouldPluralize) {
+        displayUnit = pluralizeWord(displayUnit);
+      }
+    }
+  } else {
+    if (shouldPluralize) {
+      displayItem = pluralizeWord(displayItem);
+    }
+  }
+
+  const formattedQty = qty !== null ? formatCookingNumber(qty) : '';
+  const qtyStr = formattedQty
+    ? `${formattedQty}${displayUnit ? ' ' + displayUnit : ''}`
+    : '';
+
+  return { qtyStr, itemStr: displayItem };
+}

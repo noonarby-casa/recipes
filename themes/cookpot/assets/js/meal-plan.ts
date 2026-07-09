@@ -1,10 +1,15 @@
 // removed scaleTextQuantities
-import { processShoppingList } from './shopping-list/pipeline';
-import { formatCookingNumber } from './units';
+import {
+  processShoppingList,
+  getDepletedStaples,
+  saveDepletedStaples,
+} from './shopping-list/pipeline';
+import { formatCookingNumber, formatItemQuantity } from './units';
 import { ShoppingItem, IngredientInput } from './shopping-list/types';
 import { initToggleGroup } from './components/toggle';
-import { getStoreSection } from './shopping-list/store-sections';
+import { getSectionForCategory } from './shopping-list/store-sections';
 import { OverlayContainer } from './components/overlay-container';
+import { parseRawUserInput } from './simple-parser';
 
 interface Recipe {
   title: string;
@@ -19,15 +24,17 @@ interface Recipe {
   summary: string;
 }
 
-interface PlannedRecipe {
+interface PlannedItem {
   instanceId: string;
-  permalink: string;
+  permalink?: string;
+  customTitle?: string;
   scale: number;
   day: string; // 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', or 'supplemental'
+  extraIngredients?: IngredientInput[];
 }
 
 // Client State
-let planState: PlannedRecipe[] = [];
+let planState: PlannedItem[] = [];
 let recipesIndex: Recipe[] = [];
 const includedTags: Set<string> = new Set();
 const excludedTags: Set<string> = new Set();
@@ -44,7 +51,7 @@ let workWeekOnly = false; // 5-Day Week vs 7-Day Week
 let activeTargetDay: string | null = null; // Target day when opening search modal
 
 // Undo Recovery State
-let lastRemovedRecipe: PlannedRecipe | null = null;
+let lastRemovedRecipe: PlannedItem | null = null;
 let lastRemovedIndex: number | null = null;
 let undoToastTimeout: number | null = null;
 
@@ -154,7 +161,7 @@ export function initMealPlanner(): void {
 
       const localRaw = localStorage.getItem(STORAGE_KEY);
       const localPlanExists = !!localRaw;
-      let localPlan: PlannedRecipe[] = [];
+      let localPlan: PlannedItem[] = [];
       if (localPlanExists) {
         try {
           localPlan = JSON.parse(localRaw || '[]');
@@ -636,7 +643,7 @@ function setupEventListeners(): void {
       }
       const currentLocal = JSON.parse(
         localStorage.getItem(STORAGE_KEY) || '[]',
-      ) as PlannedRecipe[];
+      ) as PlannedItem[];
 
       parseUrlParams(); // Loads URL planState
       const urlItems = [...planState];
@@ -1019,6 +1026,26 @@ function addRecipeToDay(
 }
 
 /**
+ * Adds custom card to slot
+ */
+function addCustomCard(day: string, text: string): void {
+  const parsed = parseRawUserInput(text);
+  const instanceId = `rec_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+  const newItem: PlannedItem = {
+    instanceId,
+    day,
+    scale: 1.0,
+    customTitle: parsed.item || text,
+  };
+  if (parsed.item) {
+    newItem.extraIngredients = [parsed];
+  }
+  planState.push(newItem);
+  saveStateToStorageAndUrl(true);
+  renderUI(instanceId);
+}
+
+/**
  * Swaps a planned recipe card with a random candidate recipe
  */
 function swapRecipe(instanceId: string): void {
@@ -1182,48 +1209,76 @@ function renderModalBrowseShelf(): void {
     );
   }
 
-  if (matches.length === 0) {
-    shelf.innerHTML = `<div class="planner-empty-state">No matching recipes found</div>`;
-    return;
+  const basePath = getSiteBasePath();
+  let customCardHtml = '';
+  if (searchQuery.trim()) {
+    customCardHtml = `
+      <div class="browse-card custom-card-creator" data-custom-text="${searchQuery.trim()}">
+        <div class="browse-info">
+          <img class="browse-img" src="${basePath}icon-72.png" alt="Custom item" />
+          <div class="browse-title-wrapper">
+            <h4 class="browse-title">Add custom card: "${searchQuery.trim()}"</h4>
+            <span class="browse-badge custom-badge" style="background-color: var(--noonblue); color: #fff;">Custom</span>
+          </div>
+        </div>
+        <button type="button" class="browse-add-btn" aria-label="Add custom card">+</button>
+      </div>
+    `;
   }
 
-  const plannedSet = new Set(planState.map((p) => p.permalink));
-  const basePath = getSiteBasePath();
+  if (matches.length === 0) {
+    if (searchQuery.trim()) {
+      shelf.innerHTML = customCardHtml;
+    } else {
+      shelf.innerHTML = `<div class="planner-empty-state">No matching recipes found</div>`;
+      return;
+    }
+  } else {
+    const plannedSet = new Set(planState.map((p) => p.permalink));
+    const browseCardsHtml = matches
+      .map((r) => {
+        const isPlanned = plannedSet.has(r.permalink);
+        const plannedBadge = isPlanned
+          ? `<span class="browse-badge">Planned</span>`
+          : '';
+        const plannedClass = isPlanned ? 'planned' : '';
 
-  shelf.innerHTML = matches
-    .map((r) => {
-      const isPlanned = plannedSet.has(r.permalink);
-      const plannedBadge = isPlanned
-        ? `<span class="browse-badge">Planned</span>`
-        : '';
-      const plannedClass = isPlanned ? 'planned' : '';
+        // Extract first segment of title for image naming fallback
+        const slug =
+          r.permalink.split('/').filter(Boolean).pop() || 'placeholder';
 
-      // Extract first segment of title for image naming fallback
-      const slug =
-        r.permalink.split('/').filter(Boolean).pop() || 'placeholder';
-
-      return `
-        <div class="browse-card ${plannedClass}" data-permalink="${r.permalink}">
-          <div class="browse-info">
-            <img class="browse-img" src="${basePath}${slug}/featured-image.webp" alt="${r.title}" onerror="this.src='${basePath}icon-72.png';" />
-            <div class="browse-title-wrapper">
-              <h4 class="browse-title">${r.title}</h4>
-              ${plannedBadge}
+        return `
+          <div class="browse-card ${plannedClass}" data-permalink="${r.permalink}">
+            <div class="browse-info">
+              <img class="browse-img" src="${basePath}${slug}/featured-image.webp" alt="${r.title}" onerror="this.src='${basePath}icon-72.png';" />
+              <div class="browse-title-wrapper">
+                <h4 class="browse-title">${r.title}</h4>
+                ${plannedBadge}
+              </div>
             </div>
+            <button type="button" class="browse-add-btn" aria-label="Add to plan">+</button>
           </div>
-          <button type="button" class="browse-add-btn" aria-label="Add to plan">+</button>
-        </div>
-      `;
-    })
-    .join('');
+        `;
+      })
+      .join('');
+    shelf.innerHTML = customCardHtml + browseCardsHtml;
+  }
 
   // Add click handlers
   shelf.querySelectorAll('.browse-card').forEach((card) => {
     card.addEventListener('click', () => {
-      const permalink = card.getAttribute('data-permalink');
-      if (permalink && activeTargetDay) {
-        addRecipeToDay(activeTargetDay, permalink);
-        closeModal();
+      if (card.classList.contains('custom-card-creator')) {
+        const text = card.getAttribute('data-custom-text');
+        if (text && activeTargetDay) {
+          addCustomCard(activeTargetDay, text);
+          closeModal();
+        }
+      } else {
+        const permalink = card.getAttribute('data-permalink');
+        if (permalink && activeTargetDay) {
+          addRecipeToDay(activeTargetDay, permalink);
+          closeModal();
+        }
       }
     });
   });
@@ -1462,10 +1517,7 @@ function codeToPermalink(code: string): string {
 /**
  * Checks if two meal plans are identical in terms of recipes, scales, days, and slots
  */
-function arePlansEqual(
-  planA: PlannedRecipe[],
-  planB: PlannedRecipe[],
-): boolean {
+function arePlansEqual(planA: PlannedItem[], planB: PlannedItem[]): boolean {
   if (planA.length !== planB.length) {
     return false;
   }
@@ -1474,6 +1526,7 @@ function arePlansEqual(
     const itemB = planB[idx];
     return (
       itemA.permalink === itemB.permalink &&
+      itemA.customTitle === itemB.customTitle &&
       itemA.scale === itemB.scale &&
       itemA.day === itemB.day
     );
@@ -1484,9 +1537,9 @@ function arePlansEqual(
  * Merges a shared plan into a local plan
  */
 function mergePlans(
-  local: PlannedRecipe[],
-  shared: PlannedRecipe[],
-): PlannedRecipe[] {
+  local: PlannedItem[],
+  shared: PlannedItem[],
+): PlannedItem[] {
   const merged = [...local];
 
   shared.forEach((item) => {
@@ -1545,18 +1598,23 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
   const entries: string[] = [];
 
   planState.forEach((item) => {
-    const rec = recipesIndex.find((r) => r.permalink === item.permalink);
-    if (!rec) {
-      return;
-    }
-    const code = permalinkToCode(item.permalink);
+    const rec = item.permalink
+      ? recipesIndex.find((r) => r.permalink === item.permalink)
+      : undefined;
     const dayCode = DAY_CODES[item.day];
     if (!dayCode) {
       return;
     } // Ignore invalid day
 
-    const portions = Math.round(item.scale * rec.servings);
-    const hasCustomPortions = portions !== rec.servings;
+    let code = 'custom';
+    let defaultServings = 4;
+    if (rec) {
+      code = permalinkToCode(item.permalink!);
+      defaultServings = rec.servings;
+    }
+
+    const portions = Math.round(item.scale * defaultServings);
+    const hasCustomPortions = portions !== defaultServings;
 
     let val = `${dayCode}${code}`;
     if (hasCustomPortions) {
@@ -1567,6 +1625,32 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
 
   const pVal = ['1', ...entries].join('.');
   params.set('p', pVal);
+
+  const customData: Record<number, { title?: string; extra?: string[] }> = {};
+  planState.forEach((item, idx) => {
+    const hasExtra = item.extraIngredients && item.extraIngredients.length > 0;
+    const isCustom = !item.permalink;
+    if (isCustom || hasExtra) {
+      customData[idx] = {};
+      if (isCustom) {
+        customData[idx].title = item.customTitle || 'Custom Item';
+      }
+      if (hasExtra) {
+        customData[idx].extra = item.extraIngredients!.map((ing) => {
+          const qtyStr =
+            ing.qty !== undefined && ing.qty !== null
+              ? `${formatCookingNumber(Array.isArray(ing.qty) ? ing.qty[0] : ing.qty)} `
+              : '';
+          const unitStr = ing.unit ? `${ing.unit} ` : '';
+          return `${qtyStr}${unitStr}${ing.item}`;
+        });
+      }
+    }
+  });
+
+  if (Object.keys(customData).length > 0) {
+    params.set('x', JSON.stringify(customData));
+  }
 
   if (workWeekOnly) {
     params.set('w', '5');
@@ -1594,8 +1678,6 @@ function loadStateFromStorage(): void {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       planState = JSON.parse(raw);
-    } else {
-      planState = [];
     }
   } catch (e) {
     console.error('Error reading LocalStorage planner state:', e);
@@ -1609,7 +1691,7 @@ function loadStateFromStorage(): void {
 function parseUrlParams(): boolean {
   const params = new URLSearchParams(window.location.search);
   let hasValidParams = false;
-  const newPlan: PlannedRecipe[] = [];
+  const newPlan: PlannedItem[] = [];
 
   // Check if new single-param 'p' is present
   if (params.has('p')) {
@@ -1655,9 +1737,11 @@ function parseUrlParams(): boolean {
           portions = parseInt(rest.slice(digitIndex), 10);
         }
 
-        const permalink = codeToPermalink(code);
-        const rec = recipesIndex.find((r) => r.permalink === permalink);
-        if (!rec) {
+        const permalink = code === 'custom' ? undefined : codeToPermalink(code);
+        const rec = permalink
+          ? recipesIndex.find((r) => r.permalink === permalink)
+          : undefined;
+        if (permalink && !rec) {
           showUnknownRecipeWarning(code);
         }
 
@@ -1669,7 +1753,7 @@ function parseUrlParams(): boolean {
 
         newPlan.push({
           instanceId: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-          permalink,
+          permalink: permalink || undefined,
           scale,
           day,
         });
@@ -1694,21 +1778,49 @@ function parseUrlParams(): boolean {
             scale = parseFloat(parts[1]) || 1.0;
           }
 
-          const permalink = codeToPermalink(code);
-          const rec = recipesIndex.find((r) => r.permalink === permalink);
-          if (!rec) {
+          const permalink =
+            code === 'custom' ? undefined : codeToPermalink(code);
+          const rec = permalink
+            ? recipesIndex.find((r) => r.permalink === permalink)
+            : undefined;
+          if (permalink && !rec) {
             showUnknownRecipeWarning(code);
           }
 
           newPlan.push({
             instanceId: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-            permalink,
+            permalink: permalink || undefined,
             scale: isNaN(scale) ? 1.0 : scale,
             day,
           });
         });
       }
     });
+  }
+
+  // Parse custom parameters x
+  if (params.has('x')) {
+    try {
+      const xVal = params.get('x') || '';
+      const customData = JSON.parse(xVal);
+      Object.entries(customData).forEach(([idxStr, dataVal]) => {
+        const idx = parseInt(idxStr, 10);
+        const data = dataVal as { title?: string; extra?: string[] };
+        if (newPlan[idx]) {
+          if (data.title) {
+            newPlan[idx].customTitle = data.title;
+            newPlan[idx].permalink = undefined;
+          }
+          if (data.extra && Array.isArray(data.extra)) {
+            newPlan[idx].extraIngredients = data.extra.map((textStr: string) =>
+              parseRawUserInput(textStr),
+            );
+          }
+        }
+      });
+    } catch (e) {
+      console.warn('[URL Parser] Error parsing custom data x:', e);
+    }
   }
 
   // Parse week / w
@@ -1871,17 +1983,23 @@ function renderUI(highlightInstanceId?: string): void {
       let cardsHtml = '';
       if (editMode) {
         dayMeals.forEach((dm, idx) => {
-          const rec = recipesIndex.find((r) => r.permalink === dm.permalink);
-          const title = rec ? rec.title : 'Unknown Recipe';
+          const rec = dm.permalink
+            ? recipesIndex.find((r) => r.permalink === dm.permalink)
+            : undefined;
+          const title = rec ? rec.title : dm.customTitle || 'Custom Item';
           const servings = rec ? rec.servings : 4;
           const portions = Math.round(dm.scale * servings);
-          const slug =
-            dm.permalink.split('/').filter(Boolean).pop() || 'placeholder';
+          const slug = dm.permalink
+            ? dm.permalink.split('/').filter(Boolean).pop() || 'placeholder'
+            : 'placeholder';
           const highlightClass =
             dm.instanceId === highlightInstanceId ? 'new-addition' : '';
 
           const deleteBtn = `<button type="button" class="recipe-remove-btn" data-instance-id="${dm.instanceId}" title="Remove recipe">✕</button>`;
-          const swapBtn = `<button type="button" class="recipe-swap-btn" data-instance-id="${dm.instanceId}" title="Swap recipe"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>`;
+          const swapBtn = rec
+            ? `<button type="button" class="recipe-swap-btn" data-instance-id="${dm.instanceId}" title="Swap recipe"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>`
+            : '';
+          const editDetailsBtn = `<button type="button" class="recipe-edit-details-btn" data-instance-id="${dm.instanceId}" title="Edit details"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
           const handle = `<div class="recipe-drag-handle">⠿</div>`;
           const stepper = `
             <div class="portion-picker">
@@ -1891,20 +2009,55 @@ function renderUI(highlightInstanceId?: string): void {
             </div>
           `;
           const dinnerClass = idx === 0 ? 'dinner-slot-card' : '';
+          const titleHtml = rec
+            ? `<h4 class="recipe-card-title">${title}</h4>`
+            : `<input type="text" class="custom-card-title-input" data-instance-id="${dm.instanceId}" value="${title}" style="width: 100%; border: none; background: transparent; font-weight: bold; outline: none; color: var(--text-title); font-size: 0.9rem;" />`;
+
+          const extras = dm.extraIngredients || [];
+          const extraHtml =
+            extras.length > 0
+              ? `
+            <div class="recipe-card-extra-ingredients">
+              <span class="extra-ingredients-label">Sides</span>
+              <ul class="extra-ingredients-list">
+                ${extras
+                  .map((ing) => {
+                    const qtyVal =
+                      ing.qty !== undefined
+                        ? Array.isArray(ing.qty)
+                          ? ing.qty[0]
+                          : ing.qty
+                        : null;
+                    const { qtyStr, itemStr } = formatItemQuantity(
+                      qtyVal,
+                      ing.unit || '',
+                      ing.item,
+                    );
+                    return `<li>${qtyStr ? qtyStr + ' ' : ''}${itemStr}</li>`;
+                  })
+                  .join('')}
+              </ul>
+            </div>
+          `
+              : '';
 
           cardsHtml += `
-            <div class="planned-recipe-item ${highlightClass} ${dinnerClass}" data-instance-id="${dm.instanceId}" data-day="${day}">
+            <div class="planned-recipe-item ${highlightClass} ${dinnerClass} ${!rec ? 'custom-item-card' : ''}" data-instance-id="${dm.instanceId}" data-day="${day}">
               <div class="recipe-card-media-wrapper" draggable="true">
                 <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
-                ${handle}
-                ${swapBtn}
-                ${deleteBtn}
               </div>
               <div class="recipe-card-body">
-                <h4 class="recipe-card-title">${title}</h4>
+                ${titleHtml}
+                ${extraHtml}
               </div>
               <div class="recipe-card-footer">
                 ${stepper}
+                <div class="recipe-card-controls">
+                  ${handle}
+                  ${editDetailsBtn}
+                  ${swapBtn}
+                  ${deleteBtn}
+                </div>
               </div>
             </div>
           `;
@@ -1921,27 +2074,77 @@ function renderUI(highlightInstanceId?: string): void {
         // View Mode: only render filled slots sorted by list order
         cardsHtml = dayMeals
           .map((dm) => {
-            const rec = recipesIndex.find((r) => r.permalink === dm.permalink);
-            const title = rec ? rec.title : 'Unknown Recipe';
+            const rec = dm.permalink
+              ? recipesIndex.find((r) => r.permalink === dm.permalink)
+              : undefined;
+            const title = rec ? rec.title : dm.customTitle || 'Custom Item';
             const servings = rec ? rec.servings : 4;
             const portions = Math.round(dm.scale * servings);
-            const slug =
-              dm.permalink.split('/').filter(Boolean).pop() || 'placeholder';
-            const stepper = `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? 's' : ''}</span>`;
+            const slug = dm.permalink
+              ? dm.permalink.split('/').filter(Boolean).pop() || 'placeholder'
+              : 'placeholder';
+            const stepper = rec
+              ? `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? 's' : ''}</span>`
+              : '';
 
-            return `
-              <a href="${dm.permalink}?from=plan&servings=${portions}" class="planned-recipe-item" data-instance-id="${dm.instanceId}">
-                <div class="recipe-card-media-wrapper">
-                  <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
+            const extras = dm.extraIngredients || [];
+            const extraHtml =
+              extras.length > 0
+                ? `
+              <div class="recipe-card-extra-ingredients">
+                <span class="extra-ingredients-label">Sides</span>
+                <ul class="extra-ingredients-list">
+                  ${extras
+                    .map((ing) => {
+                      const qtyVal =
+                        ing.qty !== undefined
+                          ? Array.isArray(ing.qty)
+                            ? ing.qty[0]
+                            : ing.qty
+                          : null;
+                      const { qtyStr, itemStr } = formatItemQuantity(
+                        qtyVal,
+                        ing.unit || '',
+                        ing.item,
+                      );
+                      return `<li>${qtyStr ? qtyStr + ' ' : ''}${itemStr}</li>`;
+                    })
+                    .join('')}
+                </ul>
+              </div>
+            `
+                : '';
+
+            if (rec) {
+              return `
+                <a href="${dm.permalink}?from=plan&servings=${portions}" class="planned-recipe-item" data-instance-id="${dm.instanceId}">
+                  <div class="recipe-card-media-wrapper">
+                    <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
+                  </div>
+                  <div class="recipe-card-body">
+                    <h4 class="recipe-card-title">${title}</h4>
+                    ${extraHtml}
+                  </div>
+                  <div class="recipe-card-footer">
+                    ${stepper}
+                  </div>
+                </a>
+              `;
+            } else {
+              return `
+                <div class="planned-recipe-item custom-item-card" data-instance-id="${dm.instanceId}">
+                  <div class="recipe-card-media-wrapper">
+                    <img class="recipe-card-img" src="${basePath}icon-72.png" alt="${title}" />
+                  </div>
+                  <div class="recipe-card-body">
+                    <h4 class="recipe-card-title">${title}</h4>
+                    ${extraHtml}
+                  </div>
+                  <div class="recipe-card-footer">
+                  </div>
                 </div>
-                <div class="recipe-card-body">
-                  <h4 class="recipe-card-title">${title}</h4>
-                </div>
-                <div class="recipe-card-footer">
-                  ${stepper}
-                </div>
-              </a>
-            `;
+              `;
+            }
           })
           .join('');
       }
@@ -1970,20 +2173,27 @@ function renderUI(highlightInstanceId?: string): void {
 
       let suppHtml = supplementalMeals
         .map((dm) => {
-          const rec = recipesIndex.find((r) => r.permalink === dm.permalink);
-          const title = rec ? rec.title : 'Unknown Recipe';
+          const rec = dm.permalink
+            ? recipesIndex.find((r) => r.permalink === dm.permalink)
+            : undefined;
+          const title = rec ? rec.title : dm.customTitle || 'Custom Item';
           const servings = rec ? rec.servings : 4;
           const portions = Math.round(dm.scale * servings);
-          const slug =
-            dm.permalink.split('/').filter(Boolean).pop() || 'placeholder';
+          const slug = dm.permalink
+            ? dm.permalink.split('/').filter(Boolean).pop() || 'placeholder'
+            : 'placeholder';
           const highlightClass =
             dm.instanceId === highlightInstanceId ? 'new-addition' : '';
 
           const deleteBtn = editMode
             ? `<button type="button" class="recipe-remove-btn" data-instance-id="${dm.instanceId}" title="Remove recipe">✕</button>`
             : '';
-          const swapBtn = editMode
-            ? `<button type="button" class="recipe-swap-btn" data-instance-id="${dm.instanceId}" title="Swap recipe"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>`
+          const swapBtn =
+            editMode && rec
+              ? `<button type="button" class="recipe-swap-btn" data-instance-id="${dm.instanceId}" title="Swap recipe"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>`
+              : '';
+          const editDetailsBtn = editMode
+            ? `<button type="button" class="recipe-edit-details-btn" data-instance-id="${dm.instanceId}" title="Edit details"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`
             : '';
           const handle = editMode
             ? `<div class="recipe-drag-handle">⠿</div>`
@@ -1996,27 +2206,73 @@ function renderUI(highlightInstanceId?: string): void {
                 <button type="button" class="portion-btn inc-btn" data-instance-id="${dm.instanceId}">+</button>
               </div>
             `
-            : `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? 's' : ''}</span>`;
+            : rec
+              ? `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? 's' : ''}</span>`
+              : '';
 
           const draggableAttr = editMode ? 'draggable="true"' : '';
-          const cardTag = editMode ? 'div' : 'a';
-          const hrefAttr = editMode
-            ? ''
-            : ` href="${dm.permalink}?from=plan&servings=${portions}"`;
+          const cardTag = editMode || !rec ? 'div' : 'a';
+          const hrefAttr =
+            editMode || !rec
+              ? ''
+              : ` href="${dm.permalink}?from=plan&servings=${portions}"`;
+
+          const titleHtml =
+            editMode && !rec
+              ? `<input type="text" class="custom-card-title-input" data-instance-id="${dm.instanceId}" value="${title}" style="width: 100%; border: none; background: transparent; font-weight: bold; outline: none; color: var(--text-title); font-size: 0.9rem;" />`
+              : `<h4 class="recipe-card-title">${title}</h4>`;
+
+          const extras = dm.extraIngredients || [];
+          const extraHtml =
+            extras.length > 0
+              ? `
+            <div class="recipe-card-extra-ingredients">
+              <span class="extra-ingredients-label">Sides</span>
+              <ul class="extra-ingredients-list">
+                ${extras
+                  .map((ing) => {
+                    const qtyVal =
+                      ing.qty !== undefined
+                        ? Array.isArray(ing.qty)
+                          ? ing.qty[0]
+                          : ing.qty
+                        : null;
+                    const { qtyStr, itemStr } = formatItemQuantity(
+                      qtyVal,
+                      ing.unit || '',
+                      ing.item,
+                    );
+                    return `<li>${qtyStr ? qtyStr + ' ' : ''}${itemStr}</li>`;
+                  })
+                  .join('')}
+              </ul>
+            </div>
+          `
+              : '';
 
           return `
-            <${cardTag}${hrefAttr} class="planned-recipe-item ${highlightClass}" data-instance-id="${dm.instanceId}" data-day="supplemental">
+            <${cardTag}${hrefAttr} class="planned-recipe-item ${highlightClass} ${!rec ? 'custom-item-card' : ''}" data-instance-id="${dm.instanceId}" data-day="supplemental">
               <div class="recipe-card-media-wrapper" ${draggableAttr}>
                 <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-72.png';" />
-                ${handle}
-                ${swapBtn}
-                ${deleteBtn}
               </div>
               <div class="recipe-card-body">
-                <h4 class="recipe-card-title">${title}</h4>
+                ${titleHtml}
+                ${extraHtml}
               </div>
               <div class="recipe-card-footer">
                 ${stepper}
+                ${
+                  editMode
+                    ? `
+                <div class="recipe-card-controls">
+                  ${handle}
+                  ${editDetailsBtn}
+                  ${swapBtn}
+                  ${deleteBtn}
+                </div>
+                `
+                    : ''
+                }
               </div>
             </${cardTag}>
           `;
@@ -2082,6 +2338,29 @@ function renderUI(highlightInstanceId?: string): void {
         const id = btn.getAttribute('data-instance-id');
         if (id) {
           removeRecipeWithRecovery(id);
+        }
+      });
+    });
+
+    // Custom card title inline editing
+    document.querySelectorAll('.custom-card-title-input').forEach((input) => {
+      input.addEventListener('input', (e) => {
+        const id = input.getAttribute('data-instance-id');
+        const value = (e.target as HTMLInputElement).value;
+        const item = planState.find((p) => p.instanceId === id);
+        if (item) {
+          item.customTitle = value;
+          saveStateToStorageAndUrl(false);
+        }
+      });
+    });
+
+    // Edit details overlay modal trigger
+    document.querySelectorAll('.recipe-edit-details-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-instance-id');
+        if (id) {
+          openDetailsOverlay(id);
         }
       });
     });
@@ -2264,112 +2543,119 @@ function setupDragAndDropHandlers(): void {
     const mediaWrapper = card.querySelector(
       '.recipe-card-media-wrapper',
     ) as HTMLElement;
+    const dragHandle = card.querySelector('.recipe-drag-handle') as HTMLElement;
+
+    const startDragDesktop = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.closest('.recipe-remove-btn') ||
+        target.closest('.recipe-swap-btn') ||
+        target.closest('.recipe-edit-details-btn')
+      ) {
+        e.preventDefault();
+        return;
+      }
+
+      const id = card.getAttribute('data-instance-id');
+      if (!id) {
+        return;
+      }
+
+      const dragEvent = e as DragEvent;
+      if (dragEvent.dataTransfer) {
+        dragEvent.dataTransfer.setData('text/plain', id);
+        dragEvent.dataTransfer.effectAllowed = 'move';
+      }
+      card.classList.add('dragging');
+      document.body.classList.add('dragging-active');
+
+      if (trashZone) {
+        trashZone.style.display = 'flex';
+      }
+    };
+
+    const stopDragDesktop = () => {
+      card.classList.remove('dragging');
+      document.body.classList.remove('dragging-active');
+
+      if (trashZone) {
+        trashZone.style.display = 'none';
+      }
+
+      document
+        .querySelectorAll('.empty-slot-box, .planned-recipe-item')
+        .forEach((c) => {
+          c.classList.remove('drag-over');
+        });
+    };
+
+    const startDragTouch = (e: Event) => {
+      const touchEvent = e as TouchEvent;
+      const target = touchEvent.target as HTMLElement;
+      if (
+        target.closest('.recipe-remove-btn') ||
+        target.closest('.recipe-swap-btn') ||
+        target.closest('.recipe-edit-details-btn')
+      ) {
+        return; // Allow button clicks/taps
+      }
+
+      const touch = touchEvent.touches[0];
+      const id = card.getAttribute('data-instance-id');
+      if (!id) {
+        return;
+      }
+
+      touchDraggedId = id;
+      touchDraggedCard = card as HTMLElement;
+
+      const rect = card.getBoundingClientRect();
+      touchOffsetLeft = touch.clientX - rect.left;
+      touchOffsetTop = touch.clientY - rect.top;
+
+      // Create floating card mirror element
+      touchDragMirror = card.cloneNode(true) as HTMLElement;
+      touchDragMirror.classList.add('dragging-mirror');
+      touchDragMirror.style.cssText = `
+        position: fixed;
+        left: ${rect.left}px;
+        top: ${rect.top}px;
+        width: ${rect.width}px;
+        height: ${rect.height}px;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.8;
+      `;
+      document.body.appendChild(touchDragMirror);
+      card.classList.add('dragging');
+      document.body.classList.add('dragging-active');
+
+      if (trashZone) {
+        trashZone.style.display = 'flex';
+      }
+
+      document.addEventListener('touchmove', handleTouchMove, {
+        passive: false,
+      });
+      document.addEventListener('touchend', handleTouchEnd);
+    };
+
     if (mediaWrapper) {
-      // HTML5 Drag and Drop triggers on the media wrapper (Desktop)
-      mediaWrapper.addEventListener('dragstart', (e) => {
-        const target = e.target as HTMLElement;
-        if (
-          target.closest('.recipe-remove-btn') ||
-          target.closest('.recipe-swap-btn')
-        ) {
-          e.preventDefault();
-          return;
-        }
-
-        const id = card.getAttribute('data-instance-id');
-        if (!id) {
-          return;
-        }
-
-        const dragEvent = e as DragEvent;
-        if (dragEvent.dataTransfer) {
-          dragEvent.dataTransfer.setData('text/plain', id);
-          dragEvent.dataTransfer.effectAllowed = 'move';
-        }
-        card.classList.add('dragging');
-        document.body.classList.add('dragging-active');
-
-        if (trashZone) {
-          trashZone.style.display = 'flex';
-        }
+      mediaWrapper.setAttribute('draggable', 'true');
+      mediaWrapper.addEventListener('dragstart', startDragDesktop);
+      mediaWrapper.addEventListener('dragend', stopDragDesktop);
+      mediaWrapper.addEventListener('touchstart', startDragTouch, {
+        passive: true,
       });
+    }
 
-      mediaWrapper.addEventListener('dragend', () => {
-        card.classList.remove('dragging');
-        document.body.classList.remove('dragging-active');
-
-        if (trashZone) {
-          trashZone.style.display = 'none';
-        }
-
-        document
-          .querySelectorAll('.empty-slot-box, .planned-recipe-item')
-          .forEach((c) => {
-            c.classList.remove('drag-over');
-          });
+    if (dragHandle) {
+      dragHandle.setAttribute('draggable', 'true');
+      dragHandle.addEventListener('dragstart', startDragDesktop);
+      dragHandle.addEventListener('dragend', stopDragDesktop);
+      dragHandle.addEventListener('touchstart', startDragTouch, {
+        passive: true,
       });
-
-      // Touch event listener on drag handle & wrapper (Mobile)
-      mediaWrapper.addEventListener(
-        'touchstart',
-        (e) => {
-          const touchEvent = e as TouchEvent;
-          const target = touchEvent.target as HTMLElement;
-          if (
-            target.closest('.recipe-remove-btn') ||
-            target.closest('.recipe-swap-btn')
-          ) {
-            return; // Allow button clicks/taps
-          }
-
-          const touch = touchEvent.touches[0];
-          const id = card.getAttribute('data-instance-id');
-          if (!id) {
-            return;
-          }
-
-          touchDraggedId = id;
-          touchDraggedCard = card as HTMLElement;
-
-          const rect = card.getBoundingClientRect();
-          touchOffsetLeft = touch.clientX - rect.left;
-          touchOffsetTop = touch.clientY - rect.top;
-
-          // Create floating card mirror element
-          touchDragMirror = card.cloneNode(true) as HTMLElement;
-          touchDragMirror.classList.add('dragging-mirror');
-          touchDragMirror.style.cssText = `
-            position: fixed;
-            left: ${rect.left}px;
-            top: ${rect.top}px;
-            width: ${rect.width}px;
-            height: ${rect.height}px;
-            opacity: 0.85;
-            pointer-events: none;
-            z-index: 10000000;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
-            transform: scale(1.04);
-            transition: transform 0.1s ease;
-          `;
-          document.body.appendChild(touchDragMirror);
-
-          card.classList.add('dragging');
-          document.body.classList.add('dragging-active');
-          if (trashZone) {
-            trashZone.style.display = 'flex';
-          }
-
-          document.addEventListener('touchmove', handleTouchMove, {
-            passive: false,
-          });
-          document.addEventListener('touchend', handleTouchEnd);
-
-          if (touchEvent.cancelable) {
-            touchEvent.preventDefault();
-          }
-        },
-        { passive: false },
-      );
     }
   });
 
@@ -2601,39 +2887,70 @@ function renderCombinedShoppingList(): void {
 
   const ingredients: IngredientInput[] = [];
   planState.forEach((item) => {
-    const rec = recipesIndex.find((r) => r.permalink === item.permalink);
-    if (!rec) {
-      return;
+    const rec = item.permalink
+      ? recipesIndex.find((r) => r.permalink === item.permalink)
+      : undefined;
+    if (rec) {
+      rec.ingredients.forEach((ing) => {
+        let parsed: IngredientInput;
+        if (typeof ing === 'string') {
+          parsed = { item: ing };
+        } else {
+          parsed = JSON.parse(JSON.stringify(ing));
+        }
+
+        if (parsed.qty !== undefined) {
+          if (Array.isArray(parsed.qty)) {
+            parsed.qty = [
+              parsed.qty[0] * item.scale,
+              parsed.qty[1] * item.scale,
+            ];
+          } else {
+            parsed.qty = parsed.qty * item.scale;
+          }
+        }
+        if (parsed.alt?.qty !== undefined) {
+          if (Array.isArray(parsed.alt.qty)) {
+            parsed.alt.qty = [
+              parsed.alt.qty[0] * item.scale,
+              parsed.alt.qty[1] * item.scale,
+            ];
+          } else {
+            parsed.alt.qty = parsed.alt.qty * item.scale;
+          }
+        }
+        parsed.category = rec.title;
+        ingredients.push(parsed);
+      });
     }
 
-    rec.ingredients.forEach((ing) => {
-      let parsed: IngredientInput;
-      if (typeof ing === 'string') {
-        parsed = { item: ing };
-      } else {
-        parsed = JSON.parse(JSON.stringify(ing));
-      }
-
-      if (parsed.qty !== undefined) {
-        if (Array.isArray(parsed.qty)) {
-          parsed.qty = [parsed.qty[0] * item.scale, parsed.qty[1] * item.scale];
-        } else {
-          parsed.qty = parsed.qty * item.scale;
+    if (item.extraIngredients) {
+      item.extraIngredients.forEach((ing) => {
+        const parsed: IngredientInput = JSON.parse(JSON.stringify(ing));
+        if (parsed.qty !== undefined) {
+          if (Array.isArray(parsed.qty)) {
+            parsed.qty = [
+              parsed.qty[0] * item.scale,
+              parsed.qty[1] * item.scale,
+            ];
+          } else {
+            parsed.qty = parsed.qty * item.scale;
+          }
         }
-      }
-      if (parsed.alt?.qty !== undefined) {
-        if (Array.isArray(parsed.alt.qty)) {
-          parsed.alt.qty = [
-            parsed.alt.qty[0] * item.scale,
-            parsed.alt.qty[1] * item.scale,
-          ];
-        } else {
-          parsed.alt.qty = parsed.alt.qty * item.scale;
+        if (parsed.alt?.qty !== undefined) {
+          if (Array.isArray(parsed.alt.qty)) {
+            parsed.alt.qty = [
+              parsed.alt.qty[0] * item.scale,
+              parsed.alt.qty[1] * item.scale,
+            ];
+          } else {
+            parsed.alt.qty = parsed.alt.qty * item.scale;
+          }
         }
-      }
-      parsed.category = rec.title;
-      ingredients.push(parsed);
-    });
+        parsed.category = item.customTitle || (rec ? rec.title : 'Custom Item');
+        ingredients.push(parsed);
+      });
+    }
   });
 
   const { buyItems, optionalItems, stapleItems } =
@@ -2687,12 +3004,20 @@ function renderCombinedShoppingList(): void {
   document.querySelectorAll('.shopping-item-checkbox').forEach((chk) => {
     chk.addEventListener('change', () => {
       const key = chk.getAttribute('data-key');
+      const itemName = chk.getAttribute('data-item');
       if (!key) {
         return;
       }
 
       if ((chk as HTMLInputElement).checked) {
         checkedIngredients.add(key);
+        if (itemName) {
+          const depleted = getDepletedStaples();
+          if (depleted.has(itemName)) {
+            depleted.delete(itemName);
+            saveDepletedStaples(depleted);
+          }
+        }
       } else {
         checkedIngredients.delete(key);
       }
@@ -2701,36 +3026,44 @@ function renderCombinedShoppingList(): void {
       renderUI(); // Sync cross-offs
     });
   });
+
+  // Bind click handlers to '+' buttons on staples
+  staplesList.querySelectorAll('.btn-deplete-staple').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const itemName = (e.currentTarget as HTMLElement).dataset.item;
+      if (itemName) {
+        const depleted = getDepletedStaples();
+        depleted.add(itemName);
+        saveDepletedStaples(depleted);
+        renderCombinedShoppingList();
+      }
+    });
+  });
 }
 
-function renderBuyItemsWithSections(items: ShoppingItem[]): string {
-  let html = '';
-  let currentSectionId = '';
-
-  items.forEach((item) => {
-    const section = getStoreSection(item.rest, item.item);
-    if (section.id !== currentSectionId) {
-      currentSectionId = section.id;
-      html += `
-        <li class="shopping-section-header compound-list-header">${section.name}</li>
-      `;
+function formatItemNotes(item: ShoppingItem): string {
+  const notesStrs: string[] = [];
+  if (item.note) {
+    if (item.note.sizeNote) {
+      notesStrs.push(item.note.sizeNote);
     }
-
-    const key = getIngredientKey(false, item.unit, item.rest);
-    const isChecked = checkedIngredients.has(key);
-    const checkedAttr = isChecked ? 'checked' : '';
-    const checkedClass = isChecked ? 'checked' : '';
-
-    const notesArr = item.notes || [];
+    if (item.note.optionalNote) {
+      notesStrs.push(item.note.optionalNote);
+    }
     const recipes = Array.from(
-      new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+      new Set(item.note.ingredientNotes.map((n) => n.recipe).filter(Boolean)),
     );
     const alts = Array.from(
-      new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
+      new Set(item.note.ingredientNotes.map((n) => n.altItem).filter(Boolean)),
     );
-    const notesStrs = [];
-    if (item.sizeNote) {
-      notesStrs.push(item.sizeNote);
+    const descriptors = Array.from(
+      new Set(
+        item.note.ingredientNotes.map((n) => n.descriptor).filter(Boolean),
+      ),
+    );
+
+    if (descriptors.length > 0) {
+      notesStrs.push(descriptors.join(', '));
     }
     if (recipes.length > 0) {
       notesStrs.push(`from ${recipes.join(', ')}`);
@@ -2738,23 +3071,40 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
     if (alts.length > 0) {
       notesStrs.push(`or ${alts.join(' or ')}`);
     }
-    const notesHtml =
-      notesStrs.length > 0
-        ? ` <span class="shopping-notes">(${notesStrs.join('; ')})</span>`
-        : '';
-    const qtyStr =
-      item.qty !== null && item.qty > 0
-        ? `${formatCookingNumber(item.qty)} `
-        : '';
-    const unitStr = item.unit ? `${item.unit} ` : '';
+  }
+  return notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
+}
 
-    const displayRest = item.rest;
+function renderBuyItemsWithSections(items: ShoppingItem[]): string {
+  let html = '';
+  let currentSectionId = '';
+
+  items.forEach((item) => {
+    const section = getSectionForCategory(item.category);
+    if (section.id !== currentSectionId) {
+      currentSectionId = section.id;
+      html += `
+        <li class="shopping-section-header compound-list-header">${section.name}</li>
+      `;
+    }
+
+    const key = getIngredientKey(false, item.unit, item.item);
+    const isChecked = checkedIngredients.has(key);
+    const checkedAttr = isChecked ? 'checked' : '';
+    const checkedClass = isChecked ? 'checked' : '';
+
+    const notesStr = formatItemNotes(item);
+    const { qtyStr, itemStr } = formatItemQuantity(
+      item.qty,
+      item.unit,
+      item.item,
+    );
 
     html += `
       <li class="shopping-item ${checkedClass}">
         <label class="shopping-item-label">
-          <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" ${checkedAttr} />
-          <span>${qtyStr}${unitStr}${displayRest}${notesHtml}</span>
+          <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" data-item="${item.item}" ${checkedAttr} />
+          <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}</span>
         </label>
       </li>
     `;
@@ -2766,45 +3116,30 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
 function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
   return items
     .map((item) => {
-      const key = getIngredientKey(isStaple, item.unit, item.rest);
+      const key = getIngredientKey(isStaple, item.unit, item.item);
       const isChecked = checkedIngredients.has(key);
       const checkedAttr = isChecked ? 'checked' : '';
       const checkedClass = isChecked ? 'checked' : '';
 
-      const notesArr = item.notes || [];
-      const recipes = Array.from(
-        new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+      const notesStr = formatItemNotes(item);
+      const { qtyStr, itemStr } = formatItemQuantity(
+        item.qty,
+        item.unit,
+        item.item,
       );
-      const alts = Array.from(
-        new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
-      );
-      const notesStrs = [];
-      if (item.sizeNote) {
-        notesStrs.push(item.sizeNote);
-      }
-      if (recipes.length > 0) {
-        notesStrs.push(`from ${recipes.join(', ')}`);
-      }
-      if (alts.length > 0) {
-        notesStrs.push(`or ${alts.join(' or ')}`);
-      }
-      const notesHtml =
-        notesStrs.length > 0
-          ? ` <span class="shopping-notes">(${notesStrs.join('; ')})</span>`
-          : '';
-      const qtyStr =
-        item.qty !== null && item.qty > 0
-          ? `${formatCookingNumber(item.qty)} `
-          : '';
-      const unitStr = item.unit ? `${item.unit} ` : '';
 
-      const displayRest = item.rest;
+      const plusBtn = isStaple
+        ? ` <button type="button" class="btn-deplete-staple" data-item="${item.item}">+</button>`
+        : '';
 
       return `
         <li class="shopping-item ${checkedClass}">
-          <label class="shopping-item-label">
-            <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" ${checkedAttr} />
-            <span>${qtyStr}${unitStr}${displayRest}${notesHtml}</span>
+          <label class="shopping-item-label" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <span style="display: flex; align-items: center;">
+              <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" data-item="${item.item}" ${checkedAttr} style="margin-right: 0.5rem;" />
+              <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}</span>
+            </span>
+            ${plusBtn}
           </label>
         </li>
       `;
@@ -2862,39 +3197,70 @@ function copyShoppingListToClipboard(
 
   const ingredients: IngredientInput[] = [];
   planState.forEach((item) => {
-    const rec = recipesIndex.find((r) => r.permalink === item.permalink);
-    if (!rec) {
-      return;
+    const rec = item.permalink
+      ? recipesIndex.find((r) => r.permalink === item.permalink)
+      : undefined;
+    if (rec) {
+      rec.ingredients.forEach((ing) => {
+        let parsed: IngredientInput;
+        if (typeof ing === 'string') {
+          parsed = { item: ing };
+        } else {
+          parsed = JSON.parse(JSON.stringify(ing));
+        }
+
+        if (parsed.qty !== undefined) {
+          if (Array.isArray(parsed.qty)) {
+            parsed.qty = [
+              parsed.qty[0] * item.scale,
+              parsed.qty[1] * item.scale,
+            ];
+          } else {
+            parsed.qty = parsed.qty * item.scale;
+          }
+        }
+        if (parsed.alt?.qty !== undefined) {
+          if (Array.isArray(parsed.alt.qty)) {
+            parsed.alt.qty = [
+              parsed.alt.qty[0] * item.scale,
+              parsed.alt.qty[1] * item.scale,
+            ];
+          } else {
+            parsed.alt.qty = parsed.alt.qty * item.scale;
+          }
+        }
+        parsed.category = rec.title;
+        ingredients.push(parsed);
+      });
     }
 
-    rec.ingredients.forEach((ing) => {
-      let parsed: IngredientInput;
-      if (typeof ing === 'string') {
-        parsed = { item: ing };
-      } else {
-        parsed = JSON.parse(JSON.stringify(ing));
-      }
-
-      if (parsed.qty !== undefined) {
-        if (Array.isArray(parsed.qty)) {
-          parsed.qty = [parsed.qty[0] * item.scale, parsed.qty[1] * item.scale];
-        } else {
-          parsed.qty = parsed.qty * item.scale;
+    if (item.extraIngredients) {
+      item.extraIngredients.forEach((ing) => {
+        const parsed: IngredientInput = JSON.parse(JSON.stringify(ing));
+        if (parsed.qty !== undefined) {
+          if (Array.isArray(parsed.qty)) {
+            parsed.qty = [
+              parsed.qty[0] * item.scale,
+              parsed.qty[1] * item.scale,
+            ];
+          } else {
+            parsed.qty = parsed.qty * item.scale;
+          }
         }
-      }
-      if (parsed.alt?.qty !== undefined) {
-        if (Array.isArray(parsed.alt.qty)) {
-          parsed.alt.qty = [
-            parsed.alt.qty[0] * item.scale,
-            parsed.alt.qty[1] * item.scale,
-          ];
-        } else {
-          parsed.alt.qty = parsed.alt.qty * item.scale;
+        if (parsed.alt?.qty !== undefined) {
+          if (Array.isArray(parsed.alt.qty)) {
+            parsed.alt.qty = [
+              parsed.alt.qty[0] * item.scale,
+              parsed.alt.qty[1] * item.scale,
+            ];
+          } else {
+            parsed.alt.qty = parsed.alt.qty * item.scale;
+          }
         }
-      }
-      parsed.category = rec.title;
-      ingredients.push(parsed);
-    });
+        parsed.category = item.customTitle || (rec ? rec.title : 'Custom Item');
+        ingredients.push(parsed);
+      });
+    }
   });
 
   const { buyItems, optionalItems, stapleItems } =
@@ -2905,52 +3271,32 @@ function copyShoppingListToClipboard(
   if (format === 'google-keep') {
     // Google Keep format: Sorted order, no store section headings or titles, only items, each on a single line
     const filteredBuy = buyItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.rest);
+      const key = getIngredientKey(false, item.unit, item.item);
       const isChecked = checkedIngredients.has(key);
       return !(omitChecked && isChecked);
     });
 
     const filteredOptional = optionalItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.rest);
+      const key = getIngredientKey(false, item.unit, item.item);
       const isChecked = checkedIngredients.has(key);
       return !(omitChecked && isChecked);
     });
 
     const filteredStaples = stapleItems.filter((item) => {
-      const key = getIngredientKey(true, item.unit, item.rest);
+      const key = getIngredientKey(true, item.unit, item.item);
       const isChecked = checkedIngredients.has(key);
       return !(omitChecked && isChecked);
     });
 
     const allItems = [...filteredBuy, ...filteredOptional, ...filteredStaples];
     const lines = allItems.map((item) => {
-      const qtyStr =
-        item.qty !== null && item.qty > 0
-          ? `${formatCookingNumber(item.qty)} `
-          : '';
-      const unitStr = item.unit ? `${item.unit} ` : '';
-      const notesArr = item.notes || [];
-      const recipes = Array.from(
-        new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+      const { qtyStr, itemStr } = formatItemQuantity(
+        item.qty,
+        item.unit,
+        item.item,
       );
-      const alts = Array.from(
-        new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
-      );
-      const notesStrs = [];
-      if (item.sizeNote) {
-        notesStrs.push(item.sizeNote);
-      }
-      if (recipes.length > 0) {
-        notesStrs.push(`from ${recipes.join(', ')}`);
-      }
-      if (alts.length > 0) {
-        notesStrs.push(`or ${alts.join(' or ')}`);
-      }
-      const notesStr = notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
-
-      const displayRest = item.rest;
-
-      return `${qtyStr}${unitStr}${displayRest}${notesStr}`;
+      const notesStr = formatItemNotes(item);
+      return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}`;
     });
 
     clipboardText = lines.join('\n');
@@ -2960,7 +3306,7 @@ function copyShoppingListToClipboard(
 
     // Need to Buy Block (grouped by store sections)
     const filteredBuy = buyItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.rest);
+      const key = getIngredientKey(false, item.unit, item.item);
       const isChecked = checkedIngredients.has(key);
       return !(omitChecked && isChecked);
     });
@@ -2969,50 +3315,30 @@ function copyShoppingListToClipboard(
       clipboardText += '\n### Need to Buy\n';
       let currentSectionId = '';
       filteredBuy.forEach((item) => {
-        const section = getStoreSection(item.rest, item.item);
+        const section = getSectionForCategory(item.category);
         if (section.id !== currentSectionId) {
           currentSectionId = section.id;
           clipboardText += `\n[ ${section.name} ]\n`;
         }
 
-        const key = getIngredientKey(false, item.unit, item.rest);
+        const key = getIngredientKey(false, item.unit, item.item);
         const isChecked = checkedIngredients.has(key);
         const mark = isChecked ? '[x]' : '[ ]';
 
-        const qtyStr =
-          item.qty !== null && item.qty > 0
-            ? `${formatCookingNumber(item.qty)} `
-            : '';
-        const unitStr = item.unit ? `${item.unit} ` : '';
-        const notesArr = item.notes || [];
-        const recipes = Array.from(
-          new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+        const { qtyStr, itemStr } = formatItemQuantity(
+          item.qty,
+          item.unit,
+          item.item,
         );
-        const alts = Array.from(
-          new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
-        );
-        const notesStrs = [];
-        if (item.sizeNote) {
-          notesStrs.push(item.sizeNote);
-        }
-        if (recipes.length > 0) {
-          notesStrs.push(`from ${recipes.join(', ')}`);
-        }
-        if (alts.length > 0) {
-          notesStrs.push(`or ${alts.join(' or ')}`);
-        }
-        const notesStr =
-          notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
+        const notesStr = formatItemNotes(item);
 
-        const displayRest = item.rest;
-
-        clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+        clipboardText += `- ${mark} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
       });
     }
 
     // Optional Block
     const filteredOptional = optionalItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.rest);
+      const key = getIngredientKey(false, item.unit, item.item);
       const isChecked = checkedIngredients.has(key);
       return !(omitChecked && isChecked);
     });
@@ -3020,44 +3346,24 @@ function copyShoppingListToClipboard(
     if (filteredOptional.length > 0) {
       clipboardText += '\n### Optional\n';
       filteredOptional.forEach((item) => {
-        const key = getIngredientKey(false, item.unit, item.rest);
+        const key = getIngredientKey(false, item.unit, item.item);
         const isChecked = checkedIngredients.has(key);
         const mark = isChecked ? '[x]' : '[ ]';
 
-        const qtyStr =
-          item.qty !== null && item.qty > 0
-            ? `${formatCookingNumber(item.qty)} `
-            : '';
-        const unitStr = item.unit ? `${item.unit} ` : '';
-        const notesArr = item.notes || [];
-        const recipes = Array.from(
-          new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+        const { qtyStr, itemStr } = formatItemQuantity(
+          item.qty,
+          item.unit,
+          item.item,
         );
-        const alts = Array.from(
-          new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
-        );
-        const notesStrs = [];
-        if (item.sizeNote) {
-          notesStrs.push(item.sizeNote);
-        }
-        if (recipes.length > 0) {
-          notesStrs.push(`from ${recipes.join(', ')}`);
-        }
-        if (alts.length > 0) {
-          notesStrs.push(`or ${alts.join(' or ')}`);
-        }
-        const notesStr =
-          notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
+        const notesStr = formatItemNotes(item);
 
-        const displayRest = item.rest;
-
-        clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+        clipboardText += `- ${mark} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
       });
     }
 
     // Staples Block
     const filteredStaples = stapleItems.filter((item) => {
-      const key = getIngredientKey(true, item.unit, item.rest);
+      const key = getIngredientKey(true, item.unit, item.item);
       const isChecked = checkedIngredients.has(key);
       return !(omitChecked && isChecked);
     });
@@ -3065,38 +3371,18 @@ function copyShoppingListToClipboard(
     if (filteredStaples.length > 0) {
       clipboardText += '\n### Pantry Staples\n';
       filteredStaples.forEach((item) => {
-        const key = getIngredientKey(true, item.unit, item.rest);
+        const key = getIngredientKey(true, item.unit, item.item);
         const isChecked = checkedIngredients.has(key);
         const mark = isChecked ? '[x]' : '[ ]';
 
-        const qtyStr =
-          item.qty !== null && item.qty > 0
-            ? `${formatCookingNumber(item.qty)} `
-            : '';
-        const unitStr = item.unit ? `${item.unit} ` : '';
-        const notesArr = item.notes || [];
-        const recipes = Array.from(
-          new Set(notesArr.map((n) => n.recipe).filter(Boolean)),
+        const { qtyStr, itemStr } = formatItemQuantity(
+          item.qty,
+          item.unit,
+          item.item,
         );
-        const alts = Array.from(
-          new Set(notesArr.map((n) => n.altItem).filter(Boolean)),
-        );
-        const notesStrs = [];
-        if (item.sizeNote) {
-          notesStrs.push(item.sizeNote);
-        }
-        if (recipes.length > 0) {
-          notesStrs.push(`from ${recipes.join(', ')}`);
-        }
-        if (alts.length > 0) {
-          notesStrs.push(`or ${alts.join(' or ')}`);
-        }
-        const notesStr =
-          notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
+        const notesStr = formatItemNotes(item);
 
-        const displayRest = item.rest;
-
-        clipboardText += `- ${mark} ${qtyStr}${unitStr}${displayRest}${notesStr}\n`;
+        clipboardText += `- ${mark} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
       });
     }
   }
@@ -3146,6 +3432,170 @@ function sharePlanUrl(): void {
       const orig = btn.textContent;
       btn.textContent = 'Link Copied!';
       setTimeout(() => (btn.textContent = orig), 2000);
+    }
+  });
+}
+
+/**
+ * Opens details overlay modal for a planned item.
+ */
+function openDetailsOverlay(instanceId: string): void {
+  const item = planState.find((p) => p.instanceId === instanceId);
+  if (!item) {
+    return;
+  }
+
+  const rec = item.permalink
+    ? recipesIndex.find((r) => r.permalink === item.permalink)
+    : undefined;
+  const title = rec ? rec.title : item.customTitle || 'Custom Item';
+  const defaultServings = rec ? rec.servings : 4;
+
+  // Create modal backdrop element
+  const modal = document.createElement('div');
+  modal.id = 'planner-details-modal';
+  modal.className = 'planner-modal-backdrop';
+  modal.style.display = 'flex';
+
+  function renderModalBody() {
+    const portions = Math.round(item!.scale * defaultServings);
+    const extras = item!.extraIngredients || [];
+
+    const extrasHtml =
+      extras.length === 0
+        ? `<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">No Sides or extra ingredients added yet.</div>`
+        : `
+        <ul style="list-style: none; padding: 0; margin: 0 0 1rem 0;">
+          ${extras
+            .map((ing, idx) => {
+              const qtyVal =
+                ing.qty !== undefined
+                  ? Array.isArray(ing.qty)
+                    ? ing.qty[0]
+                    : ing.qty
+                  : null;
+              const { qtyStr, itemStr } = formatItemQuantity(
+                qtyVal,
+                ing.unit || '',
+                ing.item,
+              );
+              return `
+              <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border-subtle);">
+                <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}</span>
+                <button type="button" class="btn-remove-extra" data-index="${idx}" style="background: none; border: none; color: var(--noonblue); font-weight: bold; cursor: pointer; padding: 0.25rem 0.5rem;">✕</button>
+              </li>
+            `;
+            })
+            .join('')}
+        </ul>
+      `;
+
+    modal.innerHTML = `
+      <div class="planner-modal-content" style="max-height: 85vh; height: auto;">
+        <div class="planner-modal-header">
+          <h3>Edit Details: ${title}</h3>
+          <button type="button" class="modal-close-btn" id="btn-close-details">✕</button>
+        </div>
+        <div class="planner-modal-body" style="padding: 1.25rem 1.5rem; overflow-y: auto;">
+          <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Portions</h4>
+          <div class="portion-picker" style="margin-bottom: 1.5rem; display: inline-flex;">
+            <button type="button" class="portion-btn" id="details-dec-portions">-</button>
+            <span class="portion-val" style="min-width: 3rem; text-align: center; font-weight: bold; line-height: 32px;">${portions}</span>
+            <button type="button" class="portion-btn" id="details-inc-portions">+</button>
+          </div>
+
+          <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Sides & Extra Ingredients</h4>
+          ${extrasHtml}
+
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="input-add-extra" placeholder="e.g. 1 can chickpeas" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-body);" />
+            <button type="button" id="btn-add-extra" class="planner-btn-primary" style="padding: 0.5rem 1rem; margin: 0;">Add</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Bind event listeners
+    modal.querySelector('#btn-close-details')?.addEventListener('click', () => {
+      modal.remove();
+    });
+
+    modal
+      .querySelector('#details-dec-portions')
+      ?.addEventListener('click', () => {
+        const currentPortions = Math.max(1, portions - 1);
+        item!.scale = currentPortions / defaultServings;
+        saveStateToStorageAndUrl(true);
+        renderUI();
+        renderModalBody();
+      });
+
+    modal
+      .querySelector('#details-inc-portions')
+      ?.addEventListener('click', () => {
+        const currentPortions = portions + 1;
+        item!.scale = currentPortions / defaultServings;
+        saveStateToStorageAndUrl(true);
+        renderUI();
+        renderModalBody();
+      });
+
+    const addInput = modal.querySelector(
+      '#input-add-extra',
+    ) as HTMLInputElement;
+    const addBtn = modal.querySelector('#btn-add-extra');
+
+    const handleAdd = () => {
+      const text = addInput.value.trim();
+      if (!text) {
+        return;
+      }
+      const parsed = parseRawUserInput(text);
+      if (parsed.item) {
+        if (!item!.extraIngredients) {
+          item!.extraIngredients = [];
+        }
+        item!.extraIngredients.push(parsed);
+        saveStateToStorageAndUrl(true);
+        renderUI();
+        renderModalBody();
+      }
+    };
+
+    addBtn?.addEventListener('click', handleAdd);
+    addInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleAdd();
+      }
+    });
+
+    modal.querySelectorAll('.btn-remove-extra').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idxStr = btn.getAttribute('data-index');
+        if (idxStr) {
+          const idx = parseInt(idxStr, 10);
+          if (item!.extraIngredients) {
+            item!.extraIngredients.splice(idx, 1);
+            if (item!.extraIngredients.length === 0) {
+              delete item!.extraIngredients;
+            }
+            saveStateToStorageAndUrl(true);
+            renderUI();
+            renderModalBody();
+          }
+        }
+      });
+    });
+  }
+
+  renderModalBody();
+  document.body.appendChild(modal);
+
+  // Close when clicking backdrop
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
     }
   });
 }
