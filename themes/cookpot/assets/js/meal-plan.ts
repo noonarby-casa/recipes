@@ -1646,30 +1646,47 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
   const pVal = ['1', ...entries].join('.');
   params.set('p', pVal);
 
-  const customData: Record<number, { title?: string; extra?: string[] }> = {};
+  const customEntries: string[] = [];
+  const entrySeparator = '~';
+  const fieldSeparator = '|';
+
+  const sanitize = (val: string): string => {
+    return val.replace(/~/g, '-').replace(/\|/g, ' ');
+  };
+
   planState.forEach((item, idx) => {
-    const hasExtra = item.extraIngredients && item.extraIngredients.length > 0;
+    const extraIngredients = item.extraIngredients;
+    const hasExtra = extraIngredients && extraIngredients.length > 0;
     const isCustom = !item.permalink;
+
     if (isCustom || hasExtra) {
-      customData[idx] = {};
-      if (isCustom) {
-        customData[idx].title = item.customTitle || 'Custom Item';
-      }
-      if (hasExtra) {
-        customData[idx].extra = item.extraIngredients!.map((ing) => {
+      const parts: string[] = [idx.toString()];
+      const title = isCustom ? (item.customTitle || 'Custom Item') : '';
+      parts.push(sanitize(title));
+
+      if (extraIngredients && hasExtra) {
+        extraIngredients.forEach((ing) => {
           const qtyStr =
             ing.qty !== undefined && ing.qty !== null
               ? `${formatCookingNumber(Array.isArray(ing.qty) ? ing.qty[0] : ing.qty)} `
               : '';
           const unitStr = ing.unit ? `${ing.unit} ` : '';
-          return `${qtyStr}${unitStr}${ing.item}`;
+          const ingredientStr = `${qtyStr}${unitStr}${ing.item}`;
+          parts.push(sanitize(ingredientStr));
         });
       }
+
+      // Omit trailing empty fields (like title if empty and no ingredients)
+      while (parts.length > 1 && parts[parts.length - 1] === '') {
+        parts.pop();
+      }
+
+      customEntries.push(parts.join(fieldSeparator));
     }
   });
 
-  if (Object.keys(customData).length > 0) {
-    params.set('x', base64UrlEncode(JSON.stringify(customData)));
+  if (customEntries.length > 0) {
+    params.set('x', base64UrlEncode(customEntries.join(entrySeparator)));
   }
 
   if (workWeekOnly) {
@@ -1822,23 +1839,44 @@ function parseUrlParams(): boolean {
   if (params.has('x')) {
     try {
       const xVal = params.get('x') || '';
-      const jsonStr = base64UrlDecode(xVal);
-      const customData = JSON.parse(jsonStr);
-      Object.entries(customData).forEach(([idxStr, dataVal]) => {
-        const idx = parseInt(idxStr, 10);
-        const data = dataVal as { title?: string; extra?: string[] };
-        if (newPlan[idx]) {
-          if (data.title) {
-            newPlan[idx].customTitle = data.title;
-            newPlan[idx].permalink = undefined;
+      const decodedStr = base64UrlDecode(xVal);
+      if (decodedStr) {
+        const entrySeparator = '~';
+        const fieldSeparator = '|';
+
+        const entries = decodedStr.split(entrySeparator);
+        entries.forEach((entry) => {
+          if (!entry) {
+            return;
           }
-          if (data.extra && Array.isArray(data.extra)) {
-            newPlan[idx].extraIngredients = data.extra.map((textStr: string) =>
-              parseRawUserInput(textStr),
-            );
+          const parts = entry.split(fieldSeparator);
+          if (parts.length === 0) {
+            return;
           }
-        }
-      });
+
+          const idxStr = parts[0];
+          const idx = parseInt(idxStr, 10);
+          if (isNaN(idx)) {
+            return;
+          }
+
+          const title = parts[1] || undefined;
+          const extra = parts.slice(2);
+
+          const planItem = newPlan[idx];
+          if (planItem) {
+            if (title) {
+              planItem.customTitle = title;
+              planItem.permalink = undefined;
+            }
+            if (extra.length > 0) {
+              planItem.extraIngredients = extra.map((textStr: string) =>
+                parseRawUserInput(textStr),
+              );
+            }
+          }
+        });
+      }
     } catch (e) {
       console.warn('[URL Parser] Error parsing custom data x:', e);
     }
