@@ -1661,7 +1661,7 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
 
     if (isCustom || hasExtra) {
       const parts: string[] = [idx.toString()];
-      const title = isCustom ? (item.customTitle || 'Custom Item') : '';
+      const title = isCustom ? item.customTitle || 'Custom Item' : '';
       parts.push(sanitize(title));
 
       if (extraIngredients && hasExtra) {
@@ -1671,7 +1671,9 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
               ? `${formatCookingNumber(Array.isArray(ing.qty) ? ing.qty[0] : ing.qty)} `
               : '';
           const unitStr = ing.unit ? `${ing.unit} ` : '';
-          const ingredientStr = `${qtyStr}${unitStr}${ing.item}`;
+          const descStr = ing.desc ? `, ${ing.desc}` : '';
+          const prepStr = ing.prep ? `, ${ing.prep}` : '';
+          const ingredientStr = `${qtyStr}${unitStr}${ing.item}${descStr}${prepStr}`;
           parts.push(sanitize(ingredientStr));
         });
       }
@@ -2068,9 +2070,7 @@ function renderUI(highlightInstanceId?: string): void {
             </div>
           `;
           const dinnerClass = idx === 0 ? 'dinner-slot-card' : '';
-          const titleHtml = rec
-            ? `<h4 class="recipe-card-title">${title}</h4>`
-            : `<input type="text" class="custom-card-title-input" data-instance-id="${dm.instanceId}" value="${title}" style="width: 100%; border: none; background: transparent; font-weight: bold; outline: none; color: var(--text-title); font-size: 0.9rem;" />`;
+          const titleHtml = `<h4 class="recipe-card-title">${title}</h4>`;
 
           const extras = dm.extraIngredients || [];
           const extraHtml =
@@ -2092,7 +2092,12 @@ function renderUI(highlightInstanceId?: string): void {
                       ing.unit || '',
                       ing.item,
                     );
-                    return `<li>${qtyStr ? qtyStr + ' ' : ''}${itemStr}</li>`;
+                    const descStr = ing.desc ? ing.desc + ' ' : '';
+                    let fullItemStr = `${descStr}${itemStr}`;
+                    if (ing.prep) {
+                      fullItemStr += `, ${ing.prep}`;
+                    }
+                    return `<li>${qtyStr ? qtyStr + ' ' : ''}${fullItemStr}</li>`;
                   })
                   .join('')}
               </ul>
@@ -2166,7 +2171,12 @@ function renderUI(highlightInstanceId?: string): void {
                         ing.unit || '',
                         ing.item,
                       );
-                      return `<li>${qtyStr ? qtyStr + ' ' : ''}${itemStr}</li>`;
+                      const descStr = ing.desc ? ing.desc + ' ' : '';
+                      let fullItemStr = `${descStr}${itemStr}`;
+                      if (ing.prep) {
+                        fullItemStr += `, ${ing.prep}`;
+                      }
+                      return `<li>${qtyStr ? qtyStr + ' ' : ''}${fullItemStr}</li>`;
                     })
                     .join('')}
                 </ul>
@@ -2276,10 +2286,7 @@ function renderUI(highlightInstanceId?: string): void {
               ? ''
               : ` href="${dm.permalink}?from=plan&servings=${portions}"`;
 
-          const titleHtml =
-            editMode && !rec
-              ? `<input type="text" class="custom-card-title-input" data-instance-id="${dm.instanceId}" value="${title}" style="width: 100%; border: none; background: transparent; font-weight: bold; outline: none; color: var(--text-title); font-size: 0.9rem;" />`
-              : `<h4 class="recipe-card-title">${title}</h4>`;
+          const titleHtml = `<h4 class="recipe-card-title">${title}</h4>`;
 
           const extras = dm.extraIngredients || [];
           const extraHtml =
@@ -2301,7 +2308,12 @@ function renderUI(highlightInstanceId?: string): void {
                       ing.unit || '',
                       ing.item,
                     );
-                    return `<li>${qtyStr ? qtyStr + ' ' : ''}${itemStr}</li>`;
+                    const descStr = ing.desc ? ing.desc + ' ' : '';
+                    let fullItemStr = `${descStr}${itemStr}`;
+                    if (ing.prep) {
+                      fullItemStr += `, ${ing.prep}`;
+                    }
+                    return `<li>${qtyStr ? qtyStr + ' ' : ''}${fullItemStr}</li>`;
                   })
                   .join('')}
               </ul>
@@ -2401,18 +2413,7 @@ function renderUI(highlightInstanceId?: string): void {
       });
     });
 
-    // Custom card title inline editing
-    document.querySelectorAll('.custom-card-title-input').forEach((input) => {
-      input.addEventListener('input', (e) => {
-        const id = input.getAttribute('data-instance-id');
-        const value = (e.target as HTMLInputElement).value;
-        const item = planState.find((p) => p.instanceId === id);
-        if (item) {
-          item.customTitle = value;
-          saveStateToStorageAndUrl(false);
-        }
-      });
-    });
+    // No custom title editing on the card itself
 
     // Edit details overlay modal trigger
     document.querySelectorAll('.recipe-edit-details-btn').forEach((btn) => {
@@ -3538,9 +3539,14 @@ function openDetailsOverlay(instanceId: string): void {
                 ing.unit || '',
                 ing.item,
               );
+              const descStr = ing.desc ? ing.desc + ' ' : '';
+              let fullItemStr = `${descStr}${itemStr}`;
+              if (ing.prep) {
+                fullItemStr += `, ${ing.prep}`;
+              }
               return `
               <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border-subtle);">
-                <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}</span>
+                <span>${qtyStr ? qtyStr + ' ' : ''}${fullItemStr}</span>
                 <button type="button" class="btn-remove-extra" data-index="${idx}" style="background: none; border: none; color: var(--noonblue); font-weight: bold; cursor: pointer; padding: 0.25rem 0.5rem;">✕</button>
               </li>
             `;
@@ -3551,20 +3557,24 @@ function openDetailsOverlay(instanceId: string): void {
 
     modal.innerHTML = `
       <div class="planner-modal-content" style="max-height: 85vh; height: auto;">
-        <div class="planner-modal-header">
-          <h3>Edit Details: ${title}</h3>
-          <button type="button" class="modal-close-btn" id="btn-close-details">✕</button>
-        </div>
-        <div class="planner-modal-body" style="padding: 1.25rem 1.5rem; overflow-y: auto;">
+        <div class="planner-modal-header" style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
           ${
             !rec
               ? `
-          <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Rename Custom Item</h4>
-          <input type="text" id="details-custom-title" value="${title}" style="width: 100%; box-sizing: border-box; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--font-controls-bg); color: var(--text-body); margin-bottom: 1.5rem;" />
-          `
-              : ''
+              <div class="modal-title-edit-wrapper" style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+                <h3 class="modal-title-display" style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; margin: 0;">
+                  <span>Edit Details: ${title}</span>
+                  <span class="modal-edit-title-icon" style="color: var(--noonblue); opacity: 0.6; display: inline-flex; align-items: center; height: 1em;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </span>
+                </h3>
+              </div>
+              `
+              : `<h3 style="margin: 0;">Edit Details: ${title}</h3>`
           }
-
+          <button type="button" class="modal-close-btn" id="btn-close-details" style="margin: 0; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">✕</button>
+        </div>
+        <div class="planner-modal-body" style="padding: 1.25rem 1.5rem; overflow-y: auto;">
           <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Portions</h4>
           <div class="portion-picker" style="margin-bottom: 1.5rem; display: inline-flex;">
             <button type="button" class="portion-btn" id="details-dec-portions">-</button>
@@ -3575,9 +3585,16 @@ function openDetailsOverlay(instanceId: string): void {
           <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Sides & Extra Ingredients</h4>
           ${extrasHtml}
 
-          <div style="display: flex; gap: 0.5rem;">
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
             <input type="text" id="input-add-extra" placeholder="e.g. 1 can chickpeas" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-body);" />
             <button type="button" id="btn-add-extra" class="planner-btn-primary" style="padding: 0.5rem 1rem; margin: 0;">Add</button>
+          </div>
+          <div id="extra-preview-container" style="display: none; font-size: 0.8rem; background: var(--font-controls-bg); border: 1px dashed var(--border-subtle); padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; gap: 0.75rem; flex-wrap: wrap;">
+            <div><strong>Qty:</strong> <span id="preview-qty" style="color: var(--noonblue); font-family: monospace;"></span></div>
+            <div><strong>Unit:</strong> <span id="preview-unit" style="color: var(--noonblue); font-family: monospace;"></span></div>
+            <div><strong>Desc:</strong> <span id="preview-desc" style="color: var(--noonblue); font-family: monospace;"></span></div>
+            <div><strong>Item:</strong> <span id="preview-item" style="color: var(--noonblue); font-family: monospace;"></span></div>
+            <div><strong>Prep:</strong> <span id="preview-prep" style="color: var(--noonblue); font-family: monospace;"></span></div>
           </div>
         </div>
       </div>
@@ -3589,17 +3606,55 @@ function openDetailsOverlay(instanceId: string): void {
       renderUI();
     });
 
-    modal
-      .querySelector('#details-custom-title')
-      ?.addEventListener('input', (e) => {
-        const val = (e.target as HTMLInputElement).value.trim();
-        item!.customTitle = val || 'Custom Item';
-        saveStateToStorageAndUrl(true);
-        const headerTitle = modal.querySelector('.planner-modal-header h3');
-        if (headerTitle) {
-          headerTitle.textContent = `Edit Details: ${item!.customTitle}`;
-        }
-      });
+    const titleWrapper = modal.querySelector('.modal-title-edit-wrapper');
+    if (titleWrapper) {
+      const titleDisplay = titleWrapper.querySelector('.modal-title-display');
+      if (titleDisplay) {
+        titleDisplay.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const currentTitle = item!.customTitle || 'Custom Item';
+          titleWrapper.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+              <span style="font-size: 1.17em; font-weight: bold; color: var(--text-title); white-space: nowrap;">Edit Details: </span>
+              <input type="text" id="modal-title-input" value="${currentTitle}" style="flex: 1; box-sizing: border-box; padding: 0.25rem 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-title); font-size: 1rem; font-weight: bold; outline: none; margin: 0;" />
+            </div>
+          `;
+          const input = titleWrapper.querySelector(
+            '#modal-title-input',
+          ) as HTMLInputElement;
+          if (input) {
+            input.focus();
+            input.select();
+
+            let saved = false;
+            const saveTitle = () => {
+              if (saved) {
+                return;
+              }
+              saved = true;
+              const val = input.value.trim() || 'Custom Item';
+              item!.customTitle = val;
+              saveStateToStorageAndUrl(true);
+              renderUI();
+              renderModalBody();
+            };
+
+            input.addEventListener('blur', saveTitle);
+            input.addEventListener('keydown', (evt) => {
+              if (evt.key === 'Enter') {
+                evt.preventDefault();
+                saveTitle();
+              } else if (evt.key === 'Escape') {
+                evt.preventDefault();
+                saved = true;
+                renderUI();
+                renderModalBody();
+              }
+            });
+          }
+        });
+      }
+    }
 
     modal
       .querySelector('#details-dec-portions')
@@ -3625,6 +3680,46 @@ function openDetailsOverlay(instanceId: string): void {
       '#input-add-extra',
     ) as HTMLInputElement;
     const addBtn = modal.querySelector('#btn-add-extra');
+    const previewContainer = modal.querySelector(
+      '#extra-preview-container',
+    ) as HTMLDivElement;
+    const previewQty = modal.querySelector('#preview-qty') as HTMLSpanElement;
+    const previewUnit = modal.querySelector('#preview-unit') as HTMLSpanElement;
+    const previewDesc = modal.querySelector('#preview-desc') as HTMLSpanElement;
+    const previewItem = modal.querySelector('#preview-item') as HTMLSpanElement;
+    const previewPrep = modal.querySelector('#preview-prep') as HTMLSpanElement;
+
+    const updatePreview = () => {
+      const text = addInput.value.trim();
+      if (!text) {
+        if (previewContainer) {
+          previewContainer.style.display = 'none';
+        }
+        return;
+      }
+      const parsed = parseRawUserInput(text);
+      if (previewContainer) {
+        previewContainer.style.display = 'flex';
+      }
+      if (previewQty) {
+        previewQty.textContent =
+          parsed.qty !== undefined ? parsed.qty.toString() : '—';
+      }
+      if (previewUnit) {
+        previewUnit.textContent = parsed.unit || '—';
+      }
+      if (previewDesc) {
+        previewDesc.textContent = parsed.desc || '—';
+      }
+      if (previewItem) {
+        previewItem.textContent = parsed.item || '—';
+      }
+      if (previewPrep) {
+        previewPrep.textContent = parsed.prep || '—';
+      }
+    };
+
+    addInput?.addEventListener('input', updatePreview);
 
     const handleAdd = () => {
       const text = addInput.value.trim();

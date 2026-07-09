@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { parseSimpleQty } from './simple-parser';
+import { parseSimpleQty, parseRawUserInput } from './simple-parser';
 
 describe('parseSimpleQty', () => {
   test('parses simple integers', () => {
@@ -41,5 +41,51 @@ describe('parseSimpleQty', () => {
   test('handles invalid inputs gracefully', () => {
     expect(parseSimpleQty('about a handful')).toEqual({ qty: null, unit: '' });
     expect(parseSimpleQty('')).toEqual({ qty: null, unit: '' });
+  });
+});
+
+describe('parseRawUserInput', () => {
+  test('parses quantity, unit, and item correctly', () => {
+    expect(parseRawUserInput('2 cups flour')).toEqual({
+      qty: 2,
+      unit: 'cups',
+      item: 'flour',
+    });
+    expect(parseRawUserInput('1/2 lb butter')).toEqual({
+      qty: 0.5,
+      unit: 'lb',
+      item: 'butter',
+    });
+  });
+
+  test('parses descriptors and preps from comma-separated input', () => {
+    expect(
+      parseRawUserInput('2.25 pound chicken thighs, skin-on, deboned'),
+    ).toEqual({
+      qty: 2.25,
+      unit: 'pound',
+      item: 'chicken thighs',
+      desc: 'skin-on',
+      prep: 'deboned',
+    });
+
+    expect(parseRawUserInput('1 cup baby spinach, fresh, chopped')).toEqual({
+      qty: 1,
+      unit: 'cup',
+      item: 'baby spinach',
+      desc: 'fresh',
+      prep: 'chopped',
+    });
+
+    expect(parseRawUserInput('salt, freshly ground')).toEqual({
+      item: 'salt',
+      prep: 'freshly ground',
+    });
+
+    expect(parseRawUserInput('heavy cream, cold, whipped')).toEqual({
+      item: 'heavy cream',
+      desc: 'cold',
+      prep: 'whipped',
+    });
   });
 });
