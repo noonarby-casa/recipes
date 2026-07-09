@@ -1,9 +1,44 @@
 import { initAudio, playLowerBoundChime, playUpperBoundChime } from './audio';
+import { OverlayContainer } from './components/overlay-container';
 
 interface ParsedDuration {
   minSeconds: number;
   maxSeconds: number;
 }
+
+interface TimerState {
+  recipeTitle: string;
+  recipeUrl: string;
+  timerIndex: number;
+  durationLabel: string;
+  minSeconds: number;
+  maxSeconds: number;
+  startedAt: number | null;
+  elapsedBeforeStart: number;
+  status: 'running' | 'paused';
+  lowerChimePlayed: boolean;
+  upperChimePlayed: boolean;
+  updatedAt?: number;
+}
+
+interface InlineTimerRef {
+  element: HTMLElement;
+  btn: HTMLElement;
+  resetBtn: HTMLElement;
+  labelSpan: HTMLElement;
+  minSeconds: number;
+  maxSeconds: number;
+  rawDuration: string;
+}
+
+const STORAGE_KEY = 'noonarby-casa-timers';
+
+let inlineTimers: InlineTimerRef[] = [];
+let recipeTitle = '';
+let recipeUrl = '';
+let tickIntervalId: ReturnType<typeof setInterval> | null = null;
+let dashboardCard: HTMLDivElement | null = null;
+let wakeLock: WakeLockSentinel | null = null;
 
 function parseDuration(durationStr: string): ParsedDuration | null {
   const str = durationStr.toLowerCase().trim();
@@ -67,11 +102,8 @@ function formatTime(seconds: number): string {
   return isNegative ? `-${display}` : display;
 }
 
-let activeTimersCount = 0;
-let wakeLock: WakeLockSentinel | null = null;
-
 async function requestWakeLock(): Promise<void> {
-  if (!navigator.wakeLock) {
+  if (typeof navigator === 'undefined' || !navigator.wakeLock) {
     return;
   }
   if (wakeLock !== null) {
@@ -94,18 +126,528 @@ function releaseWakeLock(): void {
   }
 }
 
-if (typeof document !== 'undefined') {
-  document.addEventListener('visibilitychange', async () => {
-    if (document.visibilityState === 'visible' && activeTimersCount > 0) {
-      await requestWakeLock();
+function updateWakeLockState(timers: TimerState[]): void {
+  const hasRunning = timers.some((t) => t.status === 'running');
+  if (hasRunning) {
+    requestWakeLock().catch((err) => {
+      console.error('Failed to request wake lock:', err);
+    });
+  } else {
+    releaseWakeLock();
+  }
+}
+
+function getStoredTimers(): TimerState[] {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (!data) {
+      return [];
+    }
+    const parsed = JSON.parse(data);
+    if (Array.isArray(parsed)) {
+      return parsed as TimerState[];
+    }
+  } catch (e) {
+    console.error('Failed to parse stored timers:', e);
+  }
+  return [];
+}
+
+function saveStoredTimers(timers: TimerState[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(timers));
+    updateWakeLockState(timers);
+  } catch (e) {
+    console.error('Failed to save timers:', e);
+  }
+}
+
+function cleanupStoredTimers(timers: TimerState[]): TimerState[] {
+  const now = Date.now();
+  return timers.filter((t) => {
+    const elapsed =
+      t.elapsedBeforeStart +
+      (t.status === 'running' && t.startedAt !== null
+        ? Math.floor((now - t.startedAt) / 1000)
+        : 0);
+    const isCompleted = elapsed >= t.maxSeconds;
+
+    // 1. Completed (beyond range) for more than 2 hours
+    if (isCompleted) {
+      if (t.status === 'running' && t.startedAt !== null) {
+        const completedTime =
+          t.startedAt + (t.maxSeconds - t.elapsedBeforeStart) * 1000;
+        if (now - completedTime > 2 * 60 * 60 * 1000) {
+          return false;
+        }
+      } else {
+        const updatedAt = t.updatedAt || now;
+        if (now - updatedAt > 2 * 60 * 60 * 1000) {
+          return false;
+        }
+      }
+    }
+
+    // 2. Not updated/active for more than 12 hours
+    const updatedAt = t.updatedAt || t.startedAt || now;
+    if (now - updatedAt > 12 * 60 * 60 * 1000) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function startGlobalTickIfNeeded(): void {
+  if (tickIntervalId !== null) {
+    return;
+  }
+  tickIntervalId = setInterval(() => {
+    tick();
+  }, 1000);
+}
+
+function stopGlobalTick(): void {
+  if (tickIntervalId !== null) {
+    clearInterval(tickIntervalId);
+    tickIntervalId = null;
+  }
+}
+
+function handleInlinePlayPause(index: number) {
+  const timers = getStoredTimers();
+  let target = timers.find(
+    (t) => t.recipeUrl === recipeUrl && t.timerIndex === index,
+  );
+  const now = Date.now();
+
+  if (!target) {
+    const ref = inlineTimers[index];
+    target = {
+      recipeTitle,
+      recipeUrl,
+      timerIndex: index,
+      durationLabel: ref.rawDuration,
+      minSeconds: ref.minSeconds,
+      maxSeconds: ref.maxSeconds,
+      startedAt: now,
+      elapsedBeforeStart: 0,
+      status: 'running',
+      lowerChimePlayed: false,
+      upperChimePlayed: false,
+      updatedAt: now,
+    };
+    timers.push(target);
+  } else {
+    if (target.status === 'running') {
+      const elapsed =
+        target.elapsedBeforeStart +
+        (target.startedAt !== null
+          ? Math.floor((now - target.startedAt) / 1000)
+          : 0);
+      target.status = 'paused';
+      target.elapsedBeforeStart = elapsed;
+      target.startedAt = null;
+    } else {
+      target.status = 'running';
+      target.startedAt = now;
+    }
+    target.updatedAt = now;
+  }
+
+  saveStoredTimers(timers);
+  updateUI();
+  startGlobalTickIfNeeded();
+}
+
+function handleInlineReset(index: number) {
+  const timers = getStoredTimers();
+  const target = timers.find(
+    (t) => t.recipeUrl === recipeUrl && t.timerIndex === index,
+  );
+  if (target) {
+    target.status = 'paused';
+    target.elapsedBeforeStart = 0;
+    target.startedAt = null;
+    target.lowerChimePlayed = false;
+    target.upperChimePlayed = false;
+    target.updatedAt = Date.now();
+    saveStoredTimers(timers);
+  }
+  updateUI();
+}
+
+function handleDashboardPlayPause(url: string, index: number) {
+  const timers = getStoredTimers();
+  const target = timers.find(
+    (t) => t.recipeUrl === url && t.timerIndex === index,
+  );
+  if (target) {
+    const now = Date.now();
+    if (target.status === 'running') {
+      const elapsed =
+        target.elapsedBeforeStart +
+        (target.startedAt !== null
+          ? Math.floor((now - target.startedAt) / 1000)
+          : 0);
+      target.status = 'paused';
+      target.elapsedBeforeStart = elapsed;
+      target.startedAt = null;
+    } else {
+      target.status = 'running';
+      target.startedAt = now;
+    }
+    target.updatedAt = now;
+    saveStoredTimers(timers);
+    updateUI();
+    startGlobalTickIfNeeded();
+  }
+}
+
+function handleDashboardReset(url: string, index: number) {
+  const timers = getStoredTimers();
+  const target = timers.find(
+    (t) => t.recipeUrl === url && t.timerIndex === index,
+  );
+  if (target) {
+    target.status = 'paused';
+    target.elapsedBeforeStart = 0;
+    target.startedAt = null;
+    target.lowerChimePlayed = false;
+    target.upperChimePlayed = false;
+    target.updatedAt = Date.now();
+    saveStoredTimers(timers);
+    updateUI();
+  }
+}
+
+function handleDashboardDismiss(url: string, index: number) {
+  let timers = getStoredTimers();
+  timers = timers.filter(
+    (t) => !(t.recipeUrl === url && t.timerIndex === index),
+  );
+  saveStoredTimers(timers);
+  updateUI();
+}
+
+function updateInlineTimersUI(timers: TimerState[]): void {
+  inlineTimers.forEach((ref, index) => {
+    const state = timers.find(
+      (t) => t.recipeUrl === recipeUrl && t.timerIndex === index,
+    );
+
+    if (!state) {
+      ref.labelSpan.textContent = ref.rawDuration;
+      ref.element.classList.remove(
+        'has-started',
+        'is-running',
+        'is-in-range',
+        'is-beyond-range',
+      );
+      return;
+    }
+
+    const now = Date.now();
+    const elapsed =
+      state.elapsedBeforeStart +
+      (state.status === 'running' && state.startedAt !== null
+        ? Math.floor((now - state.startedAt) / 1000)
+        : 0);
+    const remaining = state.maxSeconds - elapsed;
+
+    ref.labelSpan.textContent = formatTime(remaining);
+
+    if (elapsed > state.maxSeconds) {
+      ref.element.classList.add('is-beyond-range');
+      ref.element.classList.remove('is-in-range');
+    } else if (elapsed >= state.minSeconds) {
+      ref.element.classList.add('is-in-range');
+      ref.element.classList.remove('is-beyond-range');
+    } else {
+      ref.element.classList.remove('is-in-range', 'is-beyond-range');
+    }
+
+    ref.element.classList.add('has-started');
+    if (state.status === 'running') {
+      ref.element.classList.add('is-running');
+    } else {
+      ref.element.classList.remove('is-running');
     }
   });
 }
 
-export function initTimers(): void {
-  const timers = document.querySelectorAll<HTMLElement>('.recipe-timer');
+function updateDashboardUI(timers: TimerState[]): void {
+  const overlay = OverlayContainer.getInstance();
 
-  timers.forEach((timerContainer) => {
+  const dashboardTimers = timers.filter((t) => t.recipeUrl !== recipeUrl);
+
+  if (dashboardTimers.length === 0) {
+    if (dashboardCard) {
+      overlay.remove(dashboardCard);
+      dashboardCard = null;
+    }
+    return;
+  }
+
+  if (!dashboardCard) {
+    dashboardCard = document.createElement('div');
+    dashboardCard.id = 'cooking-dashboard';
+    dashboardCard.className = 'cooking-dashboard';
+    overlay.add(dashboardCard);
+  }
+
+  dashboardCard.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.className = 'dashboard-header';
+
+  const title = document.createElement('span');
+  title.className = 'dashboard-title';
+  title.textContent = 'Cooking Dashboard';
+  header.appendChild(title);
+
+  const closeAllBtn = document.createElement('button');
+  closeAllBtn.type = 'button';
+  closeAllBtn.className = 'dashboard-close-btn';
+  closeAllBtn.id = 'dashboard-close-all-btn';
+  closeAllBtn.setAttribute('aria-label', 'Dismiss all timers');
+  closeAllBtn.textContent = '✕';
+  closeAllBtn.addEventListener('click', () => {
+    let currentTimers = getStoredTimers();
+    currentTimers = currentTimers.filter((t) => t.recipeUrl === recipeUrl);
+    saveStoredTimers(currentTimers);
+    updateUI();
+  });
+  header.appendChild(closeAllBtn);
+  dashboardCard.appendChild(header);
+
+  const listContainer = document.createElement('div');
+  listContainer.className = 'dashboard-recipes-list';
+
+  const groups: { [url: string]: { title: string; list: TimerState[] } } = {};
+  dashboardTimers.forEach((t) => {
+    if (!groups[t.recipeUrl]) {
+      groups[t.recipeUrl] = { title: t.recipeTitle || 'Recipe', list: [] };
+    }
+    groups[t.recipeUrl].list.push(t);
+  });
+
+  const now = Date.now();
+
+  Object.keys(groups).forEach((url) => {
+    const group = groups[url];
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'dashboard-recipe-group';
+
+    const recipeLink = document.createElement('a');
+    recipeLink.href = url;
+    recipeLink.className = 'dashboard-recipe-link';
+    recipeLink.textContent = group.title;
+    groupDiv.appendChild(recipeLink);
+
+    const rowsDiv = document.createElement('div');
+    rowsDiv.className = 'dashboard-timer-rows';
+
+    group.list.forEach((t) => {
+      const elapsed =
+        t.elapsedBeforeStart +
+        (t.status === 'running' && t.startedAt !== null
+          ? Math.floor((now - t.startedAt) / 1000)
+          : 0);
+      const remaining = t.maxSeconds - elapsed;
+
+      const row = document.createElement('div');
+      row.className = 'dashboard-timer-row';
+      row.dataset.recipeUrl = t.recipeUrl;
+      row.dataset.timerIndex = t.timerIndex.toString();
+
+      if (elapsed > t.maxSeconds) {
+        row.classList.add('is-beyond-range');
+      } else if (elapsed >= t.minSeconds) {
+        row.classList.add('is-in-range');
+      }
+
+      const label = document.createElement('span');
+      label.className = 'dashboard-timer-label';
+      label.textContent = t.durationLabel;
+      row.appendChild(label);
+
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'dashboard-timer-time';
+      timeSpan.textContent = formatTime(remaining);
+      row.appendChild(timeSpan);
+
+      const controls = document.createElement('div');
+      controls.className = 'dashboard-timer-controls';
+
+      const playBtn = document.createElement('button');
+      playBtn.type = 'button';
+      playBtn.className = 'dashboard-timer-btn';
+      playBtn.setAttribute(
+        'aria-label',
+        t.status === 'running' ? 'Pause' : 'Play',
+      );
+      playBtn.innerHTML =
+        t.status === 'running'
+          ? `<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`
+          : `<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+      playBtn.addEventListener('click', () => {
+        initAudio();
+        handleDashboardPlayPause(t.recipeUrl, t.timerIndex);
+      });
+      controls.appendChild(playBtn);
+
+      const resetBtn = document.createElement('button');
+      resetBtn.type = 'button';
+      resetBtn.className = 'dashboard-timer-btn';
+      resetBtn.setAttribute('aria-label', 'Reset');
+      resetBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`;
+      resetBtn.addEventListener('click', () => {
+        handleDashboardReset(t.recipeUrl, t.timerIndex);
+      });
+      controls.appendChild(resetBtn);
+
+      const dismissBtn = document.createElement('button');
+      dismissBtn.type = 'button';
+      dismissBtn.className = 'dashboard-timer-btn';
+      dismissBtn.setAttribute('aria-label', 'Dismiss');
+      dismissBtn.textContent = '✕';
+      dismissBtn.addEventListener('click', () => {
+        handleDashboardDismiss(t.recipeUrl, t.timerIndex);
+      });
+      controls.appendChild(dismissBtn);
+
+      row.appendChild(controls);
+      rowsDiv.appendChild(row);
+    });
+
+    groupDiv.appendChild(rowsDiv);
+    listContainer.appendChild(groupDiv);
+  });
+
+  dashboardCard.appendChild(listContainer);
+}
+
+function updateUI(): void {
+  const timers = getStoredTimers();
+  updateInlineTimersUI(timers);
+  updateDashboardUI(timers);
+}
+
+function tick(): void {
+  const timers = getStoredTimers();
+  const now = Date.now();
+
+  timers.forEach((t) => {
+    if (t.status !== 'running' || t.startedAt === null) {
+      return;
+    }
+
+    const elapsed =
+      t.elapsedBeforeStart + Math.floor((now - t.startedAt) / 1000);
+
+    if (t.minSeconds === t.maxSeconds) {
+      if (elapsed >= t.maxSeconds && !t.upperChimePlayed) {
+        const latestTimers = getStoredTimers();
+        const fresh = latestTimers.find(
+          (x) => x.recipeUrl === t.recipeUrl && x.timerIndex === t.timerIndex,
+        );
+        if (fresh && !fresh.upperChimePlayed) {
+          fresh.upperChimePlayed = true;
+          fresh.updatedAt = now;
+          saveStoredTimers(latestTimers);
+          playUpperBoundChime();
+          t.upperChimePlayed = true;
+        }
+      }
+    } else {
+      if (elapsed >= t.minSeconds && !t.lowerChimePlayed) {
+        const latestTimers = getStoredTimers();
+        const fresh = latestTimers.find(
+          (x) => x.recipeUrl === t.recipeUrl && x.timerIndex === t.timerIndex,
+        );
+        if (fresh && !fresh.lowerChimePlayed) {
+          fresh.lowerChimePlayed = true;
+          fresh.updatedAt = now;
+          saveStoredTimers(latestTimers);
+          playLowerBoundChime();
+          t.lowerChimePlayed = true;
+        }
+      }
+      if (elapsed >= t.maxSeconds && !t.upperChimePlayed) {
+        const latestTimers = getStoredTimers();
+        const fresh = latestTimers.find(
+          (x) => x.recipeUrl === t.recipeUrl && x.timerIndex === t.timerIndex,
+        );
+        if (fresh && !fresh.upperChimePlayed) {
+          fresh.upperChimePlayed = true;
+          fresh.updatedAt = now;
+          saveStoredTimers(latestTimers);
+          playUpperBoundChime();
+          t.upperChimePlayed = true;
+        }
+      }
+    }
+  });
+
+  updateUI();
+
+  const hasRunning = timers.some((t) => t.status === 'running');
+  if (!hasRunning) {
+    stopGlobalTick();
+  }
+}
+
+function syncFromStorage(): void {
+  const timers = getStoredTimers();
+
+  const cleaned = cleanupStoredTimers(timers);
+  if (cleaned.length !== timers.length) {
+    saveStoredTimers(cleaned);
+  }
+
+  updateWakeLockState(cleaned);
+  updateUI();
+
+  const hasRunning = cleaned.some((t) => t.status === 'running');
+  if (hasRunning) {
+    startGlobalTickIfNeeded();
+  } else {
+    stopGlobalTick();
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      syncFromStorage();
+    }
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === STORAGE_KEY) {
+      syncFromStorage();
+    }
+  });
+
+  const unblock = () => {
+    initAudio();
+    document.removeEventListener('click', unblock);
+    document.removeEventListener('touchstart', unblock);
+  };
+  document.addEventListener('click', unblock, { passive: true });
+  document.addEventListener('touchstart', unblock, { passive: true });
+}
+
+export function initTimers(): void {
+  const titleEl = document.querySelector('.recipe-title-bar h1');
+  recipeTitle = titleEl ? titleEl.textContent?.trim() || '' : '';
+  recipeUrl = window.location.pathname;
+
+  const timerEls = document.querySelectorAll<HTMLElement>('.recipe-timer');
+  inlineTimers = [];
+
+  timerEls.forEach((timerContainer, index) => {
     const rawDuration = timerContainer.dataset.duration;
     if (!rawDuration) {
       return;
@@ -113,17 +655,8 @@ export function initTimers(): void {
 
     const parsed = parseDuration(rawDuration);
     if (!parsed) {
-      console.warn(`Could not parse duration: "${rawDuration}"`);
       return;
     }
-
-    const { minSeconds, maxSeconds } = parsed;
-    let elapsed = 0;
-    let elapsedBeforeStart = 0;
-    let startTime: number | null = null;
-    let intervalId: ReturnType<typeof setInterval> | null = null;
-    let lowerChimePlayed = false;
-    let upperChimePlayed = false;
 
     const btn = timerContainer.querySelector<HTMLElement>('.recipe-timer-btn');
     const resetBtn = timerContainer.querySelector<HTMLElement>(
@@ -138,131 +671,28 @@ export function initTimers(): void {
       return;
     }
 
-    function updateDisplay(): void {
-      if (!labelSpan || !rawDuration) {
-        return;
-      }
-      const remaining = maxSeconds - elapsed;
-
-      if (elapsed === 0) {
-        labelSpan.textContent = rawDuration;
-        timerContainer.classList.remove(
-          'has-started',
-          'is-running',
-          'is-in-range',
-          'is-beyond-range',
-        );
-        return;
-      }
-
-      labelSpan.textContent = formatTime(remaining);
-
-      if (elapsed > maxSeconds) {
-        timerContainer.classList.add('is-beyond-range');
-        timerContainer.classList.remove('is-in-range');
-      } else if (elapsed >= minSeconds) {
-        timerContainer.classList.add('is-in-range');
-        timerContainer.classList.remove('is-beyond-range');
-      } else {
-        timerContainer.classList.remove('is-in-range', 'is-beyond-range');
-      }
-
-      timerContainer.classList.add('has-started');
-      if (intervalId) {
-        timerContainer.classList.add('is-running');
-      } else {
-        timerContainer.classList.remove('is-running');
-      }
-    }
-
-    function tick(): void {
-      if (startTime !== null) {
-        elapsed =
-          elapsedBeforeStart + Math.floor((Date.now() - startTime) / 1000);
-      }
-      updateDisplay();
-
-      // Sound alert triggers when crossing bounds
-      if (minSeconds === maxSeconds) {
-        if (elapsed >= maxSeconds && !upperChimePlayed) {
-          playUpperBoundChime();
-          upperChimePlayed = true;
-        }
-      } else {
-        if (elapsed >= minSeconds && !lowerChimePlayed) {
-          playLowerBoundChime();
-          lowerChimePlayed = true;
-        }
-        if (elapsed >= maxSeconds && !upperChimePlayed) {
-          playUpperBoundChime();
-          upperChimePlayed = true;
-        }
-      }
-    }
-
-    function startTimer(): void {
-      if (intervalId) {
-        return;
-      }
-      activeTimersCount++;
-      if (activeTimersCount === 1) {
-        requestWakeLock();
-      }
-      startTime = Date.now();
-      intervalId = setInterval(() => {
-        tick();
-      }, 1000);
-      tick();
-    }
-
-    function pauseTimer(): void {
-      if (!intervalId) {
-        return;
-      }
-      clearInterval(intervalId);
-      intervalId = null;
-      if (startTime !== null) {
-        elapsedBeforeStart += Math.floor((Date.now() - startTime) / 1000);
-      }
-      startTime = null;
-      activeTimersCount = Math.max(0, activeTimersCount - 1);
-      if (activeTimersCount === 0) {
-        releaseWakeLock();
-      }
-      updateDisplay();
-    }
-
-    function resetTimer(): void {
-      pauseTimer();
-      elapsed = 0;
-      elapsedBeforeStart = 0;
-      lowerChimePlayed = false;
-      upperChimePlayed = false;
-      updateDisplay();
-    }
-
-    if (typeof document !== 'undefined') {
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && intervalId !== null) {
-          tick();
-        }
-      });
-    }
-
-    btn.addEventListener('click', (e: MouseEvent) => {
-      e.preventDefault();
-      initAudio(); // Initialize audio context on user interaction
-      if (intervalId) {
-        pauseTimer();
-      } else {
-        startTimer();
-      }
+    inlineTimers.push({
+      element: timerContainer,
+      btn,
+      resetBtn,
+      labelSpan,
+      minSeconds: parsed.minSeconds,
+      maxSeconds: parsed.maxSeconds,
+      rawDuration,
     });
 
-    resetBtn.addEventListener('click', (e: MouseEvent) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      initAudio();
+      handleInlinePlayPause(index);
+    });
+
+    resetBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      resetTimer();
+      handleInlineReset(index);
     });
   });
+
+  syncFromStorage();
 }

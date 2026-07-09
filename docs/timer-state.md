@@ -20,7 +20,9 @@ This document details the architectural decisions and design specifications for 
 
 - **Formula for Current Elapsed Time:**
   ```js
-  const elapsed = elapsedBeforeStart + (status === 'running' ? Math.floor((Date.now() - startedAt) / 1000) : 0);
+  const elapsed =
+    elapsedBeforeStart +
+    (status === 'running' ? Math.floor((Date.now() - startedAt) / 1000) : 0);
   ```
 
 ---
@@ -54,15 +56,15 @@ This document details the architectural decisions and design specifications for 
 
 - **Context-Aware Display:**
   - If all active timers belong to the recipe page the user is currently viewing, hide the Cooking Dashboard.
-  - If there are active timers from other recipes, display the dashboard containing *only* those other recipes' timers.
+  - If there are active timers from other recipes, display the dashboard containing _only_ those other recipes' timers.
 - **Restore State:** When loading a recipe page, the inline timers check `localStorage` (matching the current `window.location.pathname`) to restore state, ensuring they sync with any actions taken elsewhere on the site.
 
 ---
 
 ## 6. Time-Based Calculation Ticking
 
-- **Option B (Time-Based Calculation):** Save to `localStorage` **only** during state changes (Play, Pause, Reset, and Dismiss). 
-- Do *not* write to disk on every second's tick. Each page runs its own local tick loop (`setInterval`) updating the DOM by computing dynamic duration relative to `startedAt`.
+- **Option B (Time-Based Calculation):** Save to `localStorage` **only** during state changes (Play, Pause, Reset, and Dismiss).
+- Do _not_ write to disk on every second's tick. Each page runs its own local tick loop (`setInterval`) updating the DOM by computing dynamic duration relative to `startedAt`.
 
 ---
 
@@ -78,4 +80,4 @@ This document details the architectural decisions and design specifications for 
 - On page load, scan the saved timers. Any timer that:
   1. Has been completed (beyond range) for more than **2 hours**, or
   2. Has not updated for more than **12 hours** (e.g. from a past cooking session),
-  is automatically cleared to prevent clutter.
+     is automatically cleared to prevent clutter.
