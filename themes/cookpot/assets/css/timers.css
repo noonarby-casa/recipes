@@ -1,7 +1,9 @@
 /* Client-side Recipe Timers - Split Capsule Button */
 .recipe-timer {
   align-items: stretch;
+  border: 1px solid transparent;
   border-radius: 20px;
+  box-sizing: border-box;
   display: inline-flex;
   margin: 0 0.35rem;
   overflow: hidden;
@@ -84,10 +86,27 @@
   }
 }
 
+/* Hide brand background gradient pseudo-element once timer starts */
+.recipe-timer.has-started::before {
+  display: none !important;
+}
+
+/* Base started style (blue/running) */
+.recipe-timer.has-started {
+  background: var(--btn-brand-bg) !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0 3px 8px var(--noonblue-shadow-subtle) !important;
+}
+
 /* Green State: In Range / Complete */
 .recipe-timer.is-in-range {
-  background: linear-gradient(135deg, #10b981, #34d399);
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+  background-color: var(--timer-in-range-bg-start) !important;
+  background-image: linear-gradient(
+    135deg,
+    var(--timer-in-range-bg-start),
+    var(--timer-in-range-bg-end)
+  ) !important;
+  box-shadow: 0 4px 10px var(--timer-in-range-shadow) !important;
 }
 
 .recipe-timer.is-in-range.is-running {
@@ -97,18 +116,23 @@
 @keyframes timer-pulse-green {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 0 0 var(--timer-in-range-pulse-0);
   }
 
   50% {
-    box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.15);
+    box-shadow: 0 0 0 5px var(--timer-in-range-pulse-50);
   }
 }
 
 /* Orange State: Beyond Range (Overtime) */
 .recipe-timer.is-beyond-range {
-  background: linear-gradient(135deg, #f97316, #fb923c);
-  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
+  background-color: var(--timer-beyond-range-bg-start) !important;
+  background-image: linear-gradient(
+    135deg,
+    var(--timer-beyond-range-bg-start),
+    var(--timer-beyond-range-bg-end)
+  ) !important;
+  box-shadow: 0 4px 10px var(--timer-beyond-range-shadow) !important;
 }
 
 .recipe-timer.is-beyond-range.is-running {
@@ -118,12 +142,33 @@
 @keyframes timer-pulse-orange {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+    box-shadow: 0 0 0 0 var(--timer-beyond-range-pulse-0);
   }
 
   50% {
-    box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.2);
+    box-shadow: 0 0 0 5px var(--timer-beyond-range-pulse-50);
   }
+}
+
+/* Unified Paused State - wins over other active states via class specificity */
+.recipe-timer.has-started:not(.is-running) {
+  background: var(--timer-paused-bg) !important;
+  border: 1px solid var(--timer-paused-border) !important;
+  box-shadow: none !important;
+}
+
+.recipe-timer.has-started:not(.is-running) .recipe-timer-btn,
+.recipe-timer.has-started:not(.is-running) .recipe-timer-reset {
+  color: var(--timer-paused-text) !important;
+}
+
+.recipe-timer.has-started:not(.is-running) .recipe-timer-reset {
+  border-left-color: var(--timer-paused-border) !important;
+}
+
+.recipe-timer.has-started:not(.is-running) .recipe-timer-btn:hover,
+.recipe-timer.has-started:not(.is-running) .recipe-timer-reset:hover {
+  background-color: var(--border-subtle);
 }
 
 /* SVG Icon support */

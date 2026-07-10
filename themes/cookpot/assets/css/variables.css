@@ -44,6 +44,19 @@
   --btn-brand-bg-hover: #004da6;
   --btn-brand-light: #2a8df2;
   --btn-brand-hover-text: #fff;
+  --timer-beyond-range-bg-end: #fb923c;
+  --timer-beyond-range-bg-start: #f97316;
+  --timer-beyond-range-pulse-0: rgba(249, 115, 22, 0.4);
+  --timer-beyond-range-pulse-50: rgba(249, 115, 22, 0.2);
+  --timer-beyond-range-shadow: rgba(249, 115, 22, 0.3);
+  --timer-in-range-bg-end: #34d399;
+  --timer-in-range-bg-start: #10b981;
+  --timer-in-range-pulse-0: rgba(16, 185, 129, 0.4);
+  --timer-in-range-pulse-50: rgba(16, 185, 129, 0.15);
+  --timer-in-range-shadow: rgba(16, 185, 129, 0.3);
+  --timer-paused-bg: #e2e8f0;
+  --timer-paused-border: rgba(0, 0, 0, 0.12);
+  --timer-paused-text: #373737;
 }
 
 /* Dark Theme Variables */
@@ -92,4 +105,17 @@ html.dark-mode {
   --btn-brand-bg-hover: #1f6b9f;
   --btn-brand-light: #2a7fb9;
   --btn-brand-hover-text: #00223e;
+  --timer-beyond-range-bg-end: #f97316;
+  --timer-beyond-range-bg-start: #ea580c;
+  --timer-beyond-range-pulse-0: rgba(234, 88, 12, 0.5);
+  --timer-beyond-range-pulse-50: rgba(234, 88, 12, 0.25);
+  --timer-beyond-range-shadow: rgba(234, 88, 12, 0.4);
+  --timer-in-range-bg-end: #10b981;
+  --timer-in-range-bg-start: #059669;
+  --timer-in-range-pulse-0: rgba(5, 150, 105, 0.5);
+  --timer-in-range-pulse-50: rgba(5, 150, 105, 0.2);
+  --timer-in-range-shadow: rgba(5, 150, 105, 0.4);
+  --timer-paused-bg: #3a3a3a;
+  --timer-paused-border: rgba(255, 255, 255, 0.15);
+  --timer-paused-text: #b8b8b8;
 }

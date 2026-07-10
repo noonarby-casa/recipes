@@ -267,19 +267,11 @@ function handleInlinePlayPause(index: number) {
 }
 
 function handleInlineReset(index: number) {
-  const timers = getStoredTimers();
-  const target = timers.find(
-    (t) => t.recipeUrl === recipeUrl && t.timerIndex === index,
+  let timers = getStoredTimers();
+  timers = timers.filter(
+    (t) => !(t.recipeUrl === recipeUrl && t.timerIndex === index),
   );
-  if (target) {
-    target.status = 'paused';
-    target.elapsedBeforeStart = 0;
-    target.startedAt = null;
-    target.lowerChimePlayed = false;
-    target.upperChimePlayed = false;
-    target.updatedAt = Date.now();
-    saveStoredTimers(timers);
-  }
+  saveStoredTimers(timers);
   updateUI();
 }
 
@@ -311,20 +303,12 @@ function handleDashboardPlayPause(url: string, index: number) {
 }
 
 function handleDashboardReset(url: string, index: number) {
-  const timers = getStoredTimers();
-  const target = timers.find(
-    (t) => t.recipeUrl === url && t.timerIndex === index,
+  let timers = getStoredTimers();
+  timers = timers.filter(
+    (t) => !(t.recipeUrl === url && t.timerIndex === index),
   );
-  if (target) {
-    target.status = 'paused';
-    target.elapsedBeforeStart = 0;
-    target.startedAt = null;
-    target.lowerChimePlayed = false;
-    target.upperChimePlayed = false;
-    target.updatedAt = Date.now();
-    saveStoredTimers(timers);
-    updateUI();
-  }
+  saveStoredTimers(timers);
+  updateUI();
 }
 
 function handleDashboardDismiss(url: string, index: number) {
