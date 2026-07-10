@@ -3310,8 +3310,7 @@ function copyShoppingListToClipboard(
         item.unit,
         item.item,
       );
-      const notesStr = formatItemNotes(item);
-      return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}`;
+      return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}`;
     });
 
     clipboardText = lines.join('\n');

@@ -84,92 +84,163 @@ export function initShoppingList(): void {
     }
   });
 
-  // Copy List Button Click Handler
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      const recipeTitle =
-        document.querySelector('.recipe-title-bar h1')?.textContent || 'Recipe';
-      let text = `SHOPPING LIST: ${recipeTitle}\n\n`;
+  function formatItemNotes(item: ShoppingItem): string {
+    const notesStrs: string[] = [];
+    if (item.note) {
+      if (item.note.sizeNote) {
+        notesStrs.push(item.note.sizeNote);
+      }
+      if (item.note.optionalNote) {
+        notesStrs.push(item.note.optionalNote);
+      }
+      const alts = Array.from(
+        new Set(
+          item.note.ingredientNotes.map((n) => n.altItem).filter(Boolean),
+        ),
+      );
+      const descriptors = Array.from(
+        new Set(
+          item.note.ingredientNotes.map((n) => n.descriptor).filter(Boolean),
+        ),
+      );
 
-      const buyItems = buyList.querySelectorAll<HTMLElement>('.shopping-item');
+      if (descriptors.length > 0) {
+        notesStrs.push(descriptors.join(', '));
+      }
+      if (alts.length > 0) {
+        notesStrs.push(`or ${alts.join(' or ')}`);
+      }
+    }
+    return notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
+  }
+
+  function copyShoppingListToClipboard(
+    format: 'markdown' | 'google-keep',
+  ): void {
+    const elements =
+      document.querySelectorAll<HTMLElement>('.recipe-ingredient');
+    const ingredients = extractIngredientsFromDOM(currentScale, elements);
+    const { buyItems, optionalItems, stapleItems } =
+      processShoppingList(ingredients);
+
+    const recipeTitle =
+      document.querySelector('.recipe-title-bar h1')?.textContent || 'Recipe';
+
+    let clipboardText = '';
+
+    if (format === 'google-keep') {
+      const allItems = [...buyItems, ...optionalItems, ...stapleItems];
+      const lines = allItems.map((item) => {
+        const { qtyStr, itemStr } = formatItemQuantity(
+          item.qty,
+          item.unit,
+          item.item,
+        );
+        return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}`;
+      });
+      clipboardText = lines.join('\n');
+    } else {
+      // Markdown format
+      clipboardText = `## SHOPPING LIST: ${recipeTitle}\n`;
+
       if (buyItems.length > 0) {
-        // Exclude headers when copying items
-        buyList
-          .querySelectorAll<HTMLElement>(
-            '.shopping-item, .shopping-section-header',
-          )
-          .forEach((el) => {
-            if (el.classList.contains('shopping-section-header')) {
-              text += `\n[ ${el.textContent?.trim()} ]\n`;
-            } else {
-              const mainRow =
-                el
-                  .querySelector('.shopping-item-main-row')
-                  ?.textContent?.trim() || '';
-              const noteText =
-                el.querySelector('.shopping-item-note')?.textContent?.trim() ||
-                '';
-              text += `- ${mainRow}${noteText ? ` ${noteText}` : ''}\n`;
-            }
-          });
-        text += '\n';
-      }
-
-      if (optionalList) {
-        const optionalItems =
-          optionalList.querySelectorAll<HTMLElement>('.shopping-item');
-        if (optionalItems.length > 0) {
-          text += `OPTIONAL:\n`;
-          optionalItems.forEach((item) => {
-            const mainRow =
-              item
-                .querySelector('.shopping-item-main-row')
-                ?.textContent?.trim() || '';
-            const noteText =
-              item.querySelector('.shopping-item-note')?.textContent?.trim() ||
-              '';
-            text += `- ${mainRow}${noteText ? ` ${noteText}` : ''}\n`;
-          });
-          text += '\n';
-        }
-      }
-
-      const stapleItems =
-        staplesList.querySelectorAll<HTMLElement>('.shopping-item');
-      if (stapleItems.length > 0) {
-        text += `PANTRY STAPLES:\n`;
-        stapleItems.forEach((item) => {
-          const mainRow =
-            item
-              .querySelector('.shopping-item-main-row')
-              ?.textContent?.trim() || '';
-          const noteText =
-            item.querySelector('.shopping-item-note')?.textContent?.trim() ||
-            '';
-          text += `- ${mainRow}${noteText ? ` ${noteText}` : ''}\n`;
-        });
-      }
-
-      navigator.clipboard
-        .writeText(text)
-        .then(() => {
-          // Visual feedback
-          const originalHtml = copyBtn.innerHTML;
-          copyBtn.classList.add('success');
-          const span = copyBtn.querySelector('span');
-          if (span) {
-            span.textContent = 'Copied!';
+        clipboardText += '\n### Need to Buy\n';
+        let currentSectionId = '';
+        buyItems.forEach((item) => {
+          const section = getSectionForCategory(item.category);
+          if (section.id !== currentSectionId) {
+            currentSectionId = section.id;
+            clipboardText += `\n[ ${section.name} ]\n`;
           }
 
-          setTimeout(() => {
-            copyBtn.classList.remove('success');
-            copyBtn.innerHTML = originalHtml;
-          }, 2000);
-        })
-        .catch((err) => {
-          console.error('Failed to copy text: ', err);
+          const { qtyStr, itemStr } = formatItemQuantity(
+            item.qty,
+            item.unit,
+            item.item,
+          );
+          const notesStr = formatItemNotes(item);
+          clipboardText += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
         });
-    });
+      }
+
+      if (optionalItems.length > 0) {
+        clipboardText += '\n### Optional\n';
+        optionalItems.forEach((item) => {
+          const { qtyStr, itemStr } = formatItemQuantity(
+            item.qty,
+            item.unit,
+            item.item,
+          );
+          const notesStr = formatItemNotes(item);
+          clipboardText += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
+        });
+      }
+
+      if (stapleItems.length > 0) {
+        clipboardText += '\n### Pantry Staples\n';
+        stapleItems.forEach((item) => {
+          const { qtyStr, itemStr } = formatItemQuantity(
+            item.qty,
+            item.unit,
+            item.item,
+          );
+          const notesStr = formatItemNotes(item);
+          clipboardText += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
+        });
+      }
+    }
+
+    navigator.clipboard
+      .writeText(clipboardText)
+      .then(() => {
+        if (copyBtn) {
+          if (copyBtn instanceof HTMLSelectElement) {
+            const copySelect = copyBtn;
+            const placeholderOpt = copySelect.options[0];
+            const originalText = placeholderOpt.textContent || 'Copy List';
+            placeholderOpt.textContent = 'Copied!';
+            copySelect.value = '';
+            copySelect.classList.add('success');
+            setTimeout(() => {
+              placeholderOpt.textContent = originalText;
+              copySelect.classList.remove('success');
+            }, 2000);
+          } else {
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.classList.add('success');
+            const span = copyBtn.querySelector('span');
+            if (span) {
+              span.textContent = 'Copied!';
+            }
+            setTimeout(() => {
+              copyBtn.classList.remove('success');
+              copyBtn.innerHTML = originalHtml;
+            }, 2000);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to copy text: ', err);
+      });
+  }
+
+  // Copy List Button Click Handler
+  if (copyBtn) {
+    if (copyBtn instanceof HTMLSelectElement) {
+      copyBtn.addEventListener('change', (e) => {
+        const select = e.target;
+        if (select instanceof HTMLSelectElement) {
+          const format = select.value;
+          if (format === 'markdown' || format === 'google-keep') {
+            copyShoppingListToClipboard(format);
+          }
+        }
+      });
+    } else {
+      copyBtn.addEventListener('click', () => {
+        copyShoppingListToClipboard('markdown');
+      });
+    }
   }
 
   /**
