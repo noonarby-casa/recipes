@@ -241,7 +241,7 @@ html.dark-mode .cooking-dashboard {
 }
 
 .dashboard-recipe-link:hover {
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
   text-decoration: underline;
 }
 

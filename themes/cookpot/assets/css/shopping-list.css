@@ -28,11 +28,11 @@
 
 .shopping-copy-btn {
   align-items: center;
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
+  background: var(--noonblue) !important;
   border: none;
   border-radius: 8px;
   box-shadow: 0 4px 12px var(--noonblue-shadow-button);
-  color: #fff;
+  color: #fff !important;
   cursor: pointer;
   display: inline-flex;
   font-size: 0.85rem;
@@ -41,11 +41,31 @@
   justify-content: center;
   padding: 0.55rem 1.25rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  isolation: isolate;
+  position: relative;
+}
+
+.shopping-copy-btn::before {
+  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
+  border-radius: inherit;
+  content: '';
+  height: 100%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transition: opacity 0.2s ease;
+  width: 100%;
+  z-index: -1;
+}
+
+.shopping-copy-btn:hover::before {
+  opacity: 0;
 }
 
 .shopping-copy-btn:hover {
   box-shadow: 0 6px 16px var(--noonblue-shadow);
-  filter: brightness(1.05);
+  color: var(--btn-brand-hover-text) !important;
   transform: translateY(-1px);
 }
 
@@ -114,7 +134,7 @@
   background-color: var(--noonblue-bg-light);
   border: 1px solid var(--noonblue-border-light);
   border-radius: 4px;
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 600;

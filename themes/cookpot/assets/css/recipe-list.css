@@ -235,7 +235,7 @@
   background: var(--noonblue-btn-hover-bg);
   border-color: var(--noonblue-border-hover);
   box-shadow: 0 4px 10px rgba(0, 128, 216, 0.06);
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
   text-decoration: none;
 }
 
@@ -388,7 +388,7 @@
 }
 
 .search-results-clear-link:hover {
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
   text-decoration: underline;
 }
 

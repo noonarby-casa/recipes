@@ -169,7 +169,7 @@
 }
 
 #recipe-scale-slider::-webkit-slider-thumb:hover {
-  background: var(--noonblue-hover);
+  background: var(--noonblue);
   transform: scale(1.15);
 }
 
@@ -187,7 +187,7 @@
 }
 
 #recipe-scale-slider::-moz-range-thumb:hover {
-  background: var(--noonblue-hover);
+  background: var(--noonblue);
   transform: scale(1.15);
 }
 
@@ -242,7 +242,7 @@
   background: var(--noonblue-bg-light);
   border-bottom: 1.5px dashed var(--noonblue-border-light);
   border-radius: 6px;
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
   cursor: default;
   display: inline-block;
   font-size: 0.95em;

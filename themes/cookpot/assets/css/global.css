@@ -60,7 +60,7 @@ a {
 }
 
 a:hover {
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
   text-decoration: underline;
 }
 
@@ -78,7 +78,7 @@ a:hover {
 }
 
 .footer-sitemap-link:hover {
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
 }
 
 .footer-github-link {
@@ -90,7 +90,7 @@ a:hover {
 }
 
 .footer-github-link:hover {
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
 }
 
 .footer-github-icon {

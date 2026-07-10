@@ -43,6 +43,7 @@
   --btn-brand-bg: #005ec4;
   --btn-brand-bg-hover: #004da6;
   --btn-brand-light: #2a8df2;
+  --btn-brand-hover-text: #fff;
 }
 
 /* Dark Theme Variables */
@@ -90,4 +91,5 @@ html.dark-mode {
   --btn-brand-bg: #1a5c8c;
   --btn-brand-bg-hover: #1f6b9f;
   --btn-brand-light: #2a7fb9;
+  --btn-brand-hover-text: #00223e;
 }

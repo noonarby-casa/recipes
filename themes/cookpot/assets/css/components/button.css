@@ -1,6 +1,6 @@
 /* Unified Brand Button Component Class */
 .btn-brand {
-  background: var(--btn-brand-bg-hover) !important;
+  background: var(--noonblue) !important;
   border-color: transparent !important;
   box-shadow: 0 3px 8px var(--noonblue-shadow-subtle) !important;
   color: #fff !important;
@@ -36,5 +36,5 @@
 }
 
 .btn-brand:hover {
-  color: #fff !important;
+  color: var(--btn-brand-hover-text) !important;
 }

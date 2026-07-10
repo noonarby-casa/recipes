@@ -83,9 +83,9 @@
 }
 
 .planner-btn-secondary:hover {
-  background-color: var(--noonblue-bg-light);
-  border-color: var(--noonblue-hover);
-  color: var(--noonblue-hover);
+  background-color: var(--noonblue-bg-hover);
+  border-color: var(--noonblue);
+  color: var(--noonblue);
 }
 
 .planner-clear-btn {
@@ -160,6 +160,10 @@ html.dark-mode .planner-clear-btn:hover {
   font-weight: 600;
   padding: 0.3rem 0.75rem;
   transition: all 0.2s ease;
+}
+
+.banner-tab:hover {
+  color: var(--noonblue);
 }
 
 .banner-tab.active {
@@ -1316,7 +1320,7 @@ a.planned-recipe-item {
 
 .plan-toast-notification .toast-undo-btn:hover {
   background-color: var(--border-ultra-subtle);
-  color: var(--noonblue-hover);
+  color: var(--noonblue);
 }
 
 .plan-toast-notification .toast-close-btn {

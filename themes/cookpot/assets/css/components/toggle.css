@@ -23,7 +23,7 @@
 }
 
 .toggle-btn:hover {
-  color: var(--font-btn-hover);
+  color: var(--noonblue);
 }
 
 .toggle-btn:active {
