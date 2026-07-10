@@ -1,16 +1,40 @@
 /* Unified Brand Button Component Class */
 .btn-brand {
+  background: var(--btn-brand-bg-hover) !important;
+  border-color: transparent !important;
+  box-shadow: 0 3px 8px var(--noonblue-shadow-subtle) !important;
+  color: #fff !important;
+  isolation: isolate;
+  position: relative;
+  transition:
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.btn-brand::before {
   background: linear-gradient(
     135deg,
     var(--btn-brand-bg),
     var(--btn-brand-light)
-  ) !important;
-  color: #fff !important;
-  border-color: transparent !important;
-  box-shadow: 0 3px 8px var(--noonblue-shadow-subtle) !important;
+  );
+  border-radius: inherit;
+  content: '';
+  height: 100%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transition: opacity 0.2s ease;
+  width: 100%;
+  z-index: -1;
+}
+
+.btn-brand:hover::before {
+  opacity: 0;
 }
 
 .btn-brand:hover {
-  background: var(--btn-brand-bg-hover) !important;
   color: #fff !important;
 }
