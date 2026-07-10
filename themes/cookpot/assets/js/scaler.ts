@@ -33,7 +33,9 @@ export function initScaler(): void {
       servingCountEl.textContent = currentServings.toString();
     }
 
-    quantities.forEach((el) => {
+    const currentQuantities =
+      document.querySelectorAll<HTMLElement>('.recipe-quantity');
+    currentQuantities.forEach((el) => {
       if (!el.dataset.baseQty) {
         const baseText = el.dataset.baseText || el.textContent || '';
         const parsed = parseSimpleQty(baseText);
