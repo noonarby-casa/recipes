@@ -1026,26 +1026,6 @@ function addRecipeToDay(
 }
 
 /**
- * Adds custom card to slot
- */
-function addCustomCard(day: string, text: string): void {
-  const parsed = parseRawUserInput(text);
-  const instanceId = `rec_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
-  const newItem: PlannedItem = {
-    instanceId,
-    day,
-    scale: 1.0,
-    customTitle: parsed.item || text,
-  };
-  if (parsed.item && parsed.item.toLowerCase() !== 'custom item') {
-    newItem.extraIngredients = [parsed];
-  }
-  planState.push(newItem);
-  saveStateToStorageAndUrl(true);
-  renderUI(instanceId);
-}
-
-/**
  * Swaps a planned recipe card with a random candidate recipe
  */
 function swapRecipe(instanceId: string): void {
@@ -1210,29 +1190,12 @@ function renderModalBrowseShelf(): void {
   }
 
   const basePath = getSiteBasePath();
-  const displayName = searchQuery.trim() || 'Custom Item';
-  const customCardHtml = `
-    <div class="browse-card custom-card-creator" data-custom-text="${displayName}">
-      <div class="browse-info">
-        <img class="browse-img" src="${basePath}icon-600.png" alt="Custom item" />
-        <div class="browse-title-wrapper">
-          <h4 class="browse-title">Add custom card: "${displayName}"</h4>
-          <span class="browse-badge custom-badge" style="background-color: var(--noonblue); color: #fff;">Custom</span>
-        </div>
-      </div>
-      <button type="button" class="browse-add-btn" aria-label="Add custom card">+</button>
-    </div>
-  `;
 
   if (matches.length === 0) {
     if (searchQuery.trim()) {
-      shelf.innerHTML =
-        customCardHtml +
-        `<div class="planner-empty-state" style="margin-top: 1rem;">No matching recipes found</div>`;
+      shelf.innerHTML = `<div class="planner-empty-state" style="margin-top: 1rem;">No matching recipes found</div>`;
     } else {
-      shelf.innerHTML =
-        customCardHtml +
-        `<div class="planner-empty-state" style="margin-top: 1rem;">No recipes found</div>`;
+      shelf.innerHTML = `<div class="planner-empty-state" style="margin-top: 1rem;">No recipes found</div>`;
     }
   } else {
     const plannedSet = new Set(planState.map((p) => p.permalink));
@@ -1262,24 +1225,16 @@ function renderModalBrowseShelf(): void {
         `;
       })
       .join('');
-    shelf.innerHTML = customCardHtml + browseCardsHtml;
+    shelf.innerHTML = browseCardsHtml;
   }
 
   // Add click handlers
   shelf.querySelectorAll('.browse-card').forEach((card) => {
     card.addEventListener('click', () => {
-      if (card.classList.contains('custom-card-creator')) {
-        const text = card.getAttribute('data-custom-text');
-        if (text && activeTargetDay) {
-          addCustomCard(activeTargetDay, text);
-          closeModal();
-        }
-      } else {
-        const permalink = card.getAttribute('data-permalink');
-        if (permalink && activeTargetDay) {
-          addRecipeToDay(activeTargetDay, permalink);
-          closeModal();
-        }
+      const permalink = card.getAttribute('data-permalink');
+      if (permalink && activeTargetDay) {
+        addRecipeToDay(activeTargetDay, permalink);
+        closeModal();
       }
     });
   });
@@ -3558,20 +3513,7 @@ function openDetailsOverlay(instanceId: string): void {
     modal.innerHTML = `
       <div class="planner-modal-content" style="max-height: 85vh; height: auto;">
         <div class="planner-modal-header" style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
-          ${
-            !rec
-              ? `
-              <div class="modal-title-edit-wrapper" style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
-                <h3 class="modal-title-display" style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; margin: 0;">
-                  <span>Edit Details: ${title}</span>
-                  <span class="modal-edit-title-icon" style="color: var(--noonblue); opacity: 0.6; display: inline-flex; align-items: center; height: 1em;">
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  </span>
-                </h3>
-              </div>
-              `
-              : `<h3 style="margin: 0;">Edit Details: ${title}</h3>`
-          }
+          <h3 style="margin: 0;">Edit Details: ${title}</h3>
           <button type="button" class="modal-close-btn" id="btn-close-details" style="margin: 0; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">✕</button>
         </div>
         <div class="planner-modal-body" style="padding: 1.25rem 1.5rem; overflow-y: auto;">
@@ -3605,56 +3547,6 @@ function openDetailsOverlay(instanceId: string): void {
       modal.remove();
       renderUI();
     });
-
-    const titleWrapper = modal.querySelector('.modal-title-edit-wrapper');
-    if (titleWrapper) {
-      const titleDisplay = titleWrapper.querySelector('.modal-title-display');
-      if (titleDisplay) {
-        titleDisplay.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const currentTitle = item!.customTitle || 'Custom Item';
-          titleWrapper.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
-              <span style="font-size: 1.17em; font-weight: bold; color: var(--text-title); white-space: nowrap;">Edit Details: </span>
-              <input type="text" id="modal-title-input" value="${currentTitle}" style="flex: 1; box-sizing: border-box; padding: 0.25rem 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-title); font-size: 1rem; font-weight: bold; outline: none; margin: 0;" />
-            </div>
-          `;
-          const input = titleWrapper.querySelector(
-            '#modal-title-input',
-          ) as HTMLInputElement;
-          if (input) {
-            input.focus();
-            input.select();
-
-            let saved = false;
-            const saveTitle = () => {
-              if (saved) {
-                return;
-              }
-              saved = true;
-              const val = input.value.trim() || 'Custom Item';
-              item!.customTitle = val;
-              saveStateToStorageAndUrl(true);
-              renderUI();
-              renderModalBody();
-            };
-
-            input.addEventListener('blur', saveTitle);
-            input.addEventListener('keydown', (evt) => {
-              if (evt.key === 'Enter') {
-                evt.preventDefault();
-                saveTitle();
-              } else if (evt.key === 'Escape') {
-                evt.preventDefault();
-                saved = true;
-                renderUI();
-                renderModalBody();
-              }
-            });
-          }
-        });
-      }
-    }
 
     modal
       .querySelector('#details-dec-portions')
