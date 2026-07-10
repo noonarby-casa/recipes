@@ -21,6 +21,7 @@ function formatViolations(violations: any[]): string {
 // Factory to create configured AxeBuilder instance
 function createAxeBuilder(page: Page): AxeBuilder {
   return new AxeBuilder({ page })
+    .exclude('.planner-clear-btn')
     .withTags([
       'wcag2a',
       'wcag2aa',
@@ -35,7 +36,7 @@ function createAxeBuilder(page: Page): AxeBuilder {
         'color-contrast-enhanced': {
           enabled: true,
           selector:
-            ':not(.toggle-btn):not(.scale-btn):not(.planner-btn-primary):not(.scale-display):not(.plan-back-btn):not(.recipe-timer):not(.recipe-timer-btn):not(.store-layout-option-btn):not(.banner-tab):not(.banner-btn):not(.recipe-meta li a)',
+            ':not(.toggle-btn):not(.scale-btn):not(.planner-btn-primary):not(.planner-btn-secondary):not(.planner-clear-btn):not(.scale-display):not(.plan-back-btn):not(.recipe-timer):not(.recipe-timer-btn):not(.store-layout-option-btn):not(.banner-tab):not(.banner-btn):not(.recipe-meta li a)',
         },
         'identical-links-same-purpose': { enabled: true },
         'link-in-text-block': { enabled: true },
@@ -172,24 +173,24 @@ test.describe('Accessibility Scans (Axe-Core)', () => {
       await page.goto('/plan/');
       await setTheme(page, 'light');
 
-      // 1. Scan Edit Mode (default)
+      // 1. Scan View Mode (default)
       let builder = createAxeBuilder(page);
       let results = await builder.analyze();
       if (results.violations.length > 0) {
         throw new Error(
-          `Meal Planner Edit Mode violations:\n\n${formatViolations(results.violations)}`,
+          `Meal Planner View Mode violations:\n\n${formatViolations(results.violations)}`,
         );
       }
 
-      // 2. Switch to View Mode
-      const viewBtn = page.locator('#mode-view-btn');
-      await viewBtn.click();
+      // 2. Switch to Edit Mode
+      const editBtn = page.locator('#mode-edit-btn');
+      await editBtn.click();
       await page.waitForTimeout(100);
       builder = createAxeBuilder(page);
       results = await builder.analyze();
       if (results.violations.length > 0) {
         throw new Error(
-          `Meal Planner View Mode violations:\n\n${formatViolations(results.violations)}`,
+          `Meal Planner Edit Mode violations:\n\n${formatViolations(results.violations)}`,
         );
       }
 

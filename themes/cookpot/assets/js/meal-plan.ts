@@ -389,8 +389,11 @@ function setupEventListeners(): void {
   const btnShop = document.getElementById('mode-shop-btn');
   if (btnEdit && btnView && btnShop) {
     btnEdit.classList.toggle('active', activeMobileTab === 'edit-plan');
+    btnEdit.classList.toggle('btn-brand', activeMobileTab === 'edit-plan');
     btnView.classList.toggle('active', activeMobileTab === 'view-plan');
+    btnView.classList.toggle('btn-brand', activeMobileTab === 'view-plan');
     btnShop.classList.toggle('active', activeMobileTab === 'shopping-list');
+    btnShop.classList.toggle('btn-brand', activeMobileTab === 'shopping-list');
   }
   initToggleGroup('.mode-toggle-group', (value) => {
     if (value === 'mode-edit-btn') {
@@ -784,12 +787,15 @@ function switchTab(tabId: string): void {
 
   if (btnEdit) {
     btnEdit.classList.toggle('active', tabId === 'edit-plan');
+    btnEdit.classList.toggle('btn-brand', tabId === 'edit-plan');
   }
   if (btnView) {
     btnView.classList.toggle('active', tabId === 'view-plan');
+    btnView.classList.toggle('btn-brand', tabId === 'view-plan');
   }
   if (btnShop) {
     btnShop.classList.toggle('active', tabId === 'shopping-list');
+    btnShop.classList.toggle('btn-brand', tabId === 'shopping-list');
   }
 
   // Sync mode parameter to the URL (unless in preview conflict mode)
@@ -1932,10 +1938,10 @@ function renderUI(highlightInstanceId?: string): void {
     }
 
     if (colShopping) {
-      colShopping.style.display = 'block';
+      colShopping.style.display = 'none';
     }
     if (mealPlannerContainer) {
-      mealPlannerContainer.classList.add('show-shopping');
+      mealPlannerContainer.classList.remove('show-shopping');
     }
   } else if (activeMobileTab === 'shopping-list') {
     if (toolbarEdit) {
