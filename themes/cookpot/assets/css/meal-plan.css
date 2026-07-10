@@ -539,6 +539,10 @@ a.planned-recipe-item {
   padding: 0.5rem 0.6rem 0.25rem 0.6rem;
 }
 
+.planned-recipe-item.view-mode-card .recipe-card-body {
+  padding-bottom: 0.6rem;
+}
+
 .recipe-card-title {
   -webkit-box-orient: vertical;
   color: var(--text-title);
@@ -573,6 +577,11 @@ a.planned-recipe-item {
   color: var(--text-muted);
   font-size: 0.7rem;
   font-weight: 600;
+}
+
+.recipe-card-body .recipe-serving-text {
+  display: block;
+  margin-top: 0.2rem;
 }
 
 .portion-picker {
@@ -1046,6 +1055,11 @@ a.planned-recipe-item {
     min-height: 90px;
   }
 
+  .day-recipes-list .planned-recipe-item.view-mode-card {
+    grid-template-areas: 'media body';
+    grid-template-rows: 1fr;
+  }
+
   .day-recipes-list .recipe-card-media-wrapper,
   .planned-recipe-item.dragging-mirror .recipe-card-media-wrapper {
     grid-area: media;
@@ -1058,6 +1072,10 @@ a.planned-recipe-item {
   .planned-recipe-item.dragging-mirror .recipe-card-body {
     grid-area: body;
     padding: 0.6rem 3.5rem 0.25rem 0.75rem; /* Space on right for absolute-positioned buttons */
+  }
+
+  .day-recipes-list .planned-recipe-item.view-mode-card .recipe-card-body {
+    padding-right: 0.75rem;
   }
 
   .day-recipes-list .recipe-card-title,

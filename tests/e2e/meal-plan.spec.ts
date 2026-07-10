@@ -29,9 +29,7 @@ test.describe('Meal Planner default mode', () => {
     await expect(colShopping).toBeHidden();
   });
 
-  test('should default to View Plan mode on mobile', async ({
-    page,
-  }) => {
+  test('should default to View Plan mode on mobile', async ({ page }) => {
     // Set mobile viewport size
     await page.setViewportSize({ width: 375, height: 667 });
 

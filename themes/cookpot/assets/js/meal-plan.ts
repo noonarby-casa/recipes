@@ -2108,7 +2108,7 @@ function renderUI(highlightInstanceId?: string): void {
             const slug = dm.permalink
               ? dm.permalink.split('/').filter(Boolean).pop() || 'placeholder'
               : 'placeholder';
-            const stepper = rec
+            const servingsHtml = rec
               ? `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? 's' : ''}</span>`
               : '';
 
@@ -2147,30 +2147,26 @@ function renderUI(highlightInstanceId?: string): void {
 
             if (rec) {
               return `
-                <a href="${dm.permalink}?from=plan&instanceId=${dm.instanceId}&servings=${portions}" class="planned-recipe-item" data-instance-id="${dm.instanceId}">
+                <a href="${dm.permalink}?from=plan&instanceId=${dm.instanceId}&servings=${portions}" class="planned-recipe-item view-mode-card" data-instance-id="${dm.instanceId}">
                   <div class="recipe-card-media-wrapper">
                     <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-600.png';" />
                   </div>
                   <div class="recipe-card-body">
                     <h4 class="recipe-card-title">${title}</h4>
+                    ${servingsHtml}
                     ${extraHtml}
-                  </div>
-                  <div class="recipe-card-footer">
-                    ${stepper}
                   </div>
                 </a>
               `;
             } else {
               return `
-                <div class="planned-recipe-item custom-item-card" data-instance-id="${dm.instanceId}">
+                <div class="planned-recipe-item custom-item-card view-mode-card" data-instance-id="${dm.instanceId}">
                   <div class="recipe-card-media-wrapper">
                     <img class="recipe-card-img" src="${basePath}icon-600.png" alt="${title}" />
                   </div>
                   <div class="recipe-card-body">
                     <h4 class="recipe-card-title">${title}</h4>
                     ${extraHtml}
-                  </div>
-                  <div class="recipe-card-footer">
                   </div>
                 </div>
               `;
@@ -2236,7 +2232,10 @@ function renderUI(highlightInstanceId?: string): void {
                 <button type="button" class="portion-btn inc-btn" data-instance-id="${dm.instanceId}">+</button>
               </div>
             `
-            : rec
+            : '';
+
+          const servingsHtml =
+            !editMode && rec
               ? `<span class="recipe-serving-text">${portions} serving${portions !== 1 ? 's' : ''}</span>`
               : '';
 
@@ -2282,30 +2281,31 @@ function renderUI(highlightInstanceId?: string): void {
           `
               : '';
 
-          return `
-            <${cardTag}${hrefAttr} class="planned-recipe-item ${highlightClass} ${!rec ? 'custom-item-card' : ''}" data-instance-id="${dm.instanceId}" data-day="supplemental">
-              <div class="recipe-card-media-wrapper" ${draggableAttr}>
-                <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-600.png';" />
-              </div>
-              <div class="recipe-card-body">
-                ${titleHtml}
-                ${extraHtml}
-              </div>
+          const footerHtml = editMode
+            ? `
               <div class="recipe-card-footer">
                 ${stepper}
-                ${
-                  editMode
-                    ? `
                 <div class="recipe-card-controls">
                   ${handle}
                   ${editDetailsBtn}
                   ${swapBtn}
                   ${deleteBtn}
                 </div>
-                `
-                    : ''
-                }
               </div>
+            `
+            : '';
+
+          return `
+            <${cardTag}${hrefAttr} class="planned-recipe-item ${highlightClass} ${!rec ? 'custom-item-card' : ''} ${!editMode ? 'view-mode-card' : ''}" data-instance-id="${dm.instanceId}" data-day="supplemental">
+              <div class="recipe-card-media-wrapper" ${draggableAttr}>
+                <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-600.png';" />
+              </div>
+              <div class="recipe-card-body">
+                ${titleHtml}
+                ${servingsHtml}
+                ${extraHtml}
+              </div>
+              ${footerHtml}
             </${cardTag}>
           `;
         })
