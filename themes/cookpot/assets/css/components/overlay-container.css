@@ -15,3 +15,172 @@
 .overlay-container > * {
   pointer-events: auto;
 }
+
+/* Unified Minimize/Expand Toggle Button */
+.overlay-toggle-btn {
+  background: var(--font-panel-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  width: 36px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100002;
+  order: 1; /* Keep toggle button at the very bottom */
+}
+
+.overlay-toggle-btn:hover {
+  transform: scale(1.05);
+  border-color: var(--noonblue);
+  color: var(--noonblue);
+}
+
+.overlay-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Minimized Floating Action Buttons (FABs) */
+.minimized-fab {
+  background: var(--font-panel-bg);
+  border: 1.5px solid var(--btn-border);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  color: var(--text-color);
+  cursor: pointer;
+  display: none; /* Controlled by JS show/hide */
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.minimized-fab svg {
+  transition: transform 0.2s ease;
+}
+
+.minimized-fab:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+}
+
+.minimized-fab:hover svg {
+  transform: scale(1.1);
+}
+
+.minimized-fab:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* Tooltip on Hover */
+.minimized-fab::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 48px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.9);
+  background: var(--btn-brand-bg, #005ec4);
+  color: #fff;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100001;
+}
+
+.minimized-fab:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+/* Color States for Dashboard FAB */
+.fab-dashboard.is-running {
+  background: var(--noonblue-bg-light);
+  border-color: var(--noonblue);
+  color: var(--noonblue);
+  box-shadow: 0 4px 12px var(--noonblue-shadow-subtle);
+}
+
+.fab-dashboard.is-in-range {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--timer-in-range-bg-start);
+  color: var(--timer-in-range-bg-start);
+  box-shadow: 0 4px 12px var(--timer-in-range-shadow);
+  animation: fab-in-range-pulse 2s infinite;
+}
+
+.fab-dashboard.is-expired {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: var(--timer-beyond-range-bg-start);
+  color: var(--timer-beyond-range-bg-start);
+  box-shadow: 0 4px 12px var(--timer-beyond-range-shadow);
+  animation: fab-expired-pulse 1s infinite;
+}
+
+@keyframes fab-in-range-pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--timer-in-range-pulse-0);
+  }
+  70% {
+    box-shadow: 0 0 0 8px var(--timer-in-range-pulse-50);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes fab-expired-pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--timer-beyond-range-pulse-0);
+  }
+  70% {
+    box-shadow: 0 0 0 10px var(--timer-beyond-range-pulse-50);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
+  }
+}
+
+/* Transitions for Expanded Dashboard / Back Button hiding */
+#cooking-dashboard,
+.plan-back-btn {
+  transition:
+    opacity 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+}
+
+/* Visibility state overrides when minimized */
+.overlay-container.is-minimized #cooking-dashboard,
+.overlay-container.is-minimized .plan-back-btn {
+  display: none !important;
+}
+
+.overlay-container.is-minimized .minimized-fab {
+  display: flex;
+}
+
+/* Explicit Flexbox Stacking Order */
+.fab-dashboard {
+  order: 2;
+}
+.fab-back {
+  order: 3;
+}
+#cooking-dashboard {
+  order: 4;
+}
+.plan-back-btn {
+  order: 5;
+}

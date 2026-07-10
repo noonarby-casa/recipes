@@ -379,6 +379,28 @@ function updateDashboardUI(timers: TimerState[]): void {
     return;
   }
 
+  // Calculate states for minimized FAB color
+  const now = Date.now();
+  let hasExpired = false;
+  let hasInRange = false;
+  let hasRunning = false;
+
+  dashboardTimers.forEach((t) => {
+    if (t.status === 'running' && t.startedAt !== null) {
+      const elapsed =
+        t.elapsedBeforeStart + Math.floor((now - t.startedAt) / 1000);
+      if (elapsed > t.maxSeconds) {
+        hasExpired = true;
+      } else if (elapsed >= t.minSeconds) {
+        hasInRange = true;
+      } else {
+        hasRunning = true;
+      }
+    }
+  });
+
+  overlay.updateDashboardFabState(hasExpired, hasInRange, hasRunning);
+
   if (!dashboardCard) {
     dashboardCard = document.createElement('div');
     dashboardCard.id = 'cooking-dashboard';
@@ -423,8 +445,6 @@ function updateDashboardUI(timers: TimerState[]): void {
     }
     groups[t.recipeUrl].list.push(t);
   });
-
-  const now = Date.now();
 
   Object.keys(groups).forEach((url) => {
     const group = groups[url];
@@ -571,6 +591,7 @@ function tick(): void {
           fresh.updatedAt = now;
           saveStoredTimers(latestTimers);
           playUpperBoundChime();
+          OverlayContainer.getInstance().expand();
           t.upperChimePlayed = true;
         }
       }
@@ -598,6 +619,7 @@ function tick(): void {
           fresh.updatedAt = now;
           saveStoredTimers(latestTimers);
           playUpperBoundChime();
+          OverlayContainer.getInstance().expand();
           t.upperChimePlayed = true;
         }
       }
