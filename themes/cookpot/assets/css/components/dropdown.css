@@ -102,13 +102,6 @@
   color: var(--noonblue-hover);
 }
 
-.store-layout-option-btn.active {
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  border-color: transparent;
-  box-shadow: 0 4px 12px var(--noonblue-shadow-subtle);
-  color: #fff;
-}
-
 .store-layout-option-btn:active {
   transform: scale(0.98);
 }
@@ -124,8 +117,19 @@
 
 .dropdown-select.success:hover {
   background-color: #1b5e20;
-  background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='002424' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='691215189'%3E%3C/polyline%3E%3C/svg%3E');
+  background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"%3E%3C/polyline%3E%3C/svg%3E');
   border-color: #1b5e20;
   box-shadow: 0 4px 12px rgba(27, 94, 32, 0.4);
   color: #fff;
+}
+
+/* Dark Mode Dropdown Arrow Overrides */
+html.dark-mode .dropdown-select,
+html.dark-mode .store-layout-select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2360bbff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+html.dark-mode .dropdown-select:hover,
+html.dark-mode .store-layout-select:hover {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2380caff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }

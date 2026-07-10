@@ -534,8 +534,8 @@ function setupEventListeners(): void {
 
   if (bannerCompareShared && bannerCompareLocal) {
     bannerCompareShared.addEventListener('click', () => {
-      bannerCompareShared.classList.add('active');
-      bannerCompareLocal.classList.remove('active');
+      bannerCompareShared.classList.add('active', 'btn-brand');
+      bannerCompareLocal.classList.remove('active', 'btn-brand');
       const urlParams = new URLSearchParams(window.location.search);
       const urlWeek = (urlParams.get('w') || urlParams.get('week')) === '5';
       workWeekOnly = urlWeek;
@@ -543,8 +543,8 @@ function setupEventListeners(): void {
       renderUI();
     });
     bannerCompareLocal.addEventListener('click', () => {
-      bannerCompareLocal.classList.add('active');
-      bannerCompareShared.classList.remove('active');
+      bannerCompareLocal.classList.add('active', 'btn-brand');
+      bannerCompareShared.classList.remove('active', 'btn-brand');
       try {
         const rawSettings = localStorage.getItem(SETTINGS_KEY);
         if (rawSettings) {
@@ -2885,7 +2885,7 @@ function renderCombinedShoppingList(): void {
   }
 
   if (planState.length === 0) {
-    buyList.innerHTML = `<div class="planner-empty-state">Add some recipes to generate your combined shopping list.</div>`;
+    buyList.innerHTML = `<li class="planner-empty-state">Add some recipes to generate your combined shopping list.</li>`;
     staplesList.innerHTML = '';
     if (optionalList) {
       optionalList.innerHTML = '';
@@ -2973,7 +2973,7 @@ function renderCombinedShoppingList(): void {
 
   // Render Need to Buy Column with sections
   if (buyItems.length === 0) {
-    buyList.innerHTML = `<div class="planner-empty-state">No items needed.</div>`;
+    buyList.innerHTML = `<li class="planner-empty-state">No items needed.</li>`;
   } else {
     buyList.innerHTML = renderBuyItemsWithSections(buyItems);
   }
@@ -2997,7 +2997,7 @@ function renderCombinedShoppingList(): void {
 
   // Render Pantry Staples Column
   if (stapleItems.length === 0) {
-    staplesList.innerHTML = `<div class="planner-empty-state">No staples.</div>`;
+    staplesList.innerHTML = `<li class="planner-empty-state">No staples.</li>`;
     if (divider) {
       (divider as HTMLElement).style.display = 'none';
     }
@@ -3529,7 +3529,7 @@ function openDetailsOverlay(instanceId: string): void {
 
           <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
             <input type="text" id="input-add-extra" placeholder="e.g. 1 can chickpeas" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-body);" />
-            <button type="button" id="btn-add-extra" class="planner-btn-primary" style="padding: 0.5rem 1rem; margin: 0;">Add</button>
+            <button type="button" id="btn-add-extra" class="planner-btn-primary btn-brand" style="padding: 0.5rem 1rem; margin: 0;">Add</button>
           </div>
           <div id="extra-preview-container" style="display: none; font-size: 0.8rem; background: var(--font-controls-bg); border: 1px dashed var(--border-subtle); padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; gap: 0.75rem; flex-wrap: wrap;">
             <div><strong>Qty:</strong> <span id="preview-qty" style="color: var(--noonblue); font-family: monospace;"></span></div>
@@ -3678,7 +3678,7 @@ export function initRecipePageAddToPlan(): void {
   if (urlParams.has('from') && urlParams.get('from') === 'plan') {
     const backBtn = document.createElement('a');
     backBtn.href = getSiteBasePath() + 'plan/'; // Defaults to View UX
-    backBtn.className = 'plan-back-btn';
+    backBtn.className = 'plan-back-btn btn-brand';
     backBtn.innerHTML = `
       <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <line x1="19" y1="12" x2="5" y2="12"></line>

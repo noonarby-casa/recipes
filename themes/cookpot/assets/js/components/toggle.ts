@@ -11,8 +11,12 @@ export function initToggleGroup(
     const buttons = group.querySelectorAll<HTMLElement>('.toggle-btn');
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        buttons.forEach((b) => b.classList.remove('active'));
+        buttons.forEach((b) => {
+          b.classList.remove('active');
+          b.classList.remove('btn-brand');
+        });
         btn.classList.add('active');
+        btn.classList.add('btn-brand');
 
         const val = btn.dataset.val || btn.dataset.size || btn.id;
         if (callback) {

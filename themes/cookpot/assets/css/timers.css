@@ -1,9 +1,7 @@
 /* Client-side Recipe Timers - Split Capsule Button */
 .recipe-timer {
   align-items: stretch;
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
   border-radius: 20px;
-  box-shadow: 0 4px 10px var(--noonblue-shadow-button);
   display: inline-flex;
   margin: 0 0.35rem;
   overflow: hidden;

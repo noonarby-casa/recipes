@@ -10,36 +10,39 @@
   --card-bg: #fff;
   --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
   --font-btn-hover: #000;
-  --font-btn-text: #555;
+  --font-btn-text: #373737;
   --font-controls-bg: rgba(0, 0, 0, 0.05);
   --font-panel-bg: rgba(255, 255, 255, 0.85);
   --image-bg: #f8f9fa;
   --image-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  /* Noonblue Color System Palette */
-  --noonblue: #0080d8;
-  --noonblue-bg-hover: rgba(0, 128, 216, 0.15);
-  --noonblue-bg-light: rgba(0, 128, 216, 0.08);
-  --noonblue-border-hover: rgba(0, 128, 216, 0.6);
-  --noonblue-border-light: rgba(0, 128, 216, 0.3);
-  --noonblue-btn-hover-bg: rgba(0, 128, 216, 0.03);
-  --noonblue-hover: #006cb7;
-  --noonblue-light: #3fb0ff;
-  --noonblue-panel-hover-border: rgba(0, 128, 216, 0.2);
-  --noonblue-shadow: rgba(0, 128, 216, 0.25);
-  --noonblue-shadow-button: rgba(0, 128, 216, 0.2);
-  --noonblue-shadow-subtle: rgba(0, 128, 216, 0.15);
+  /* Noonblue Color System Palette - AAA Compliant (7:1 Contrast against White) */
+  --noonblue: #00518c;
+  --noonblue-bg-hover: rgba(0, 81, 140, 0.15);
+  --noonblue-bg-light: rgba(0, 81, 140, 0.08);
+  --noonblue-border-hover: rgba(0, 81, 140, 0.6);
+  --noonblue-border-light: rgba(0, 81, 140, 0.3);
+  --noonblue-btn-hover-bg: rgba(0, 81, 140, 0.03);
+  --noonblue-hover: #003f6d;
+  --noonblue-light: #358ccb;
+  --noonblue-panel-hover-border: rgba(0, 81, 140, 0.2);
+  --noonblue-shadow: rgba(0, 81, 140, 0.25);
+  --noonblue-shadow-button: rgba(0, 81, 140, 0.2);
+  --noonblue-shadow-subtle: rgba(0, 81, 140, 0.15);
   --recipe-title-bg: #f8f9fa;
   --scrollbar-thumb: rgba(0, 0, 0, 0.45);
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.62);
-  --search-placeholder: #999;
+  --search-placeholder: #555;
   --separator-color: #bbb;
   --slider-bg: #e2e8f0;
   --tag-bg: #f1f3f5;
   --tag-count-bg: rgba(0, 0, 0, 0.06);
-  --tag-text: #495057;
+  --tag-text: #373737;
   --text-color: #222;
-  --text-muted: #666;
+  --text-muted: #373737;
   --text-title: #111;
+  --btn-brand-bg: #005ec4;
+  --btn-brand-bg-hover: #004da6;
+  --btn-brand-light: #2a8df2;
 }
 
 /* Dark Theme Variables */
@@ -54,21 +57,37 @@ html.dark-mode {
   --card-bg: #1e1e1e;
   --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   --font-btn-hover: #fff;
-  --font-btn-text: #a0a0a0;
+  --font-btn-text: #dbdbdb;
   --font-controls-bg: rgba(255, 255, 255, 0.08);
   --font-panel-bg: rgba(30, 30, 30, 0.85);
   --image-bg: #2a2a2a;
   --image-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  /* Noonblue Color System Palette - AAA Compliant (7:1 Contrast against #121212) */
+  --noonblue: #60bbff;
+  --noonblue-bg-hover: rgba(96, 187, 255, 0.2);
+  --noonblue-bg-light: rgba(96, 187, 255, 0.1);
+  --noonblue-border-hover: rgba(96, 187, 255, 0.65);
+  --noonblue-border-light: rgba(96, 187, 255, 0.35);
+  --noonblue-btn-hover-bg: rgba(96, 187, 255, 0.05);
+  --noonblue-hover: #80caff;
+  --noonblue-light: #a8dbff;
+  --noonblue-panel-hover-border: rgba(96, 187, 255, 0.25);
+  --noonblue-shadow: rgba(96, 187, 255, 0.3);
+  --noonblue-shadow-button: rgba(96, 187, 255, 0.25);
+  --noonblue-shadow-subtle: rgba(96, 187, 255, 0.2);
   --recipe-title-bg: #1e1e1e;
   --scrollbar-thumb: rgba(255, 255, 255, 0.38);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.55);
-  --search-placeholder: #666;
+  --search-placeholder: #888;
   --separator-color: #555;
   --slider-bg: #3a3a3a;
   --tag-bg: #2a2a2a;
   --tag-count-bg: rgba(255, 255, 255, 0.1);
   --tag-text: #e0e0e0;
   --text-color: #e0e0e0;
-  --text-muted: #a0a0a0;
+  --text-muted: #b8b8b8;
   --text-title: #fff;
+  --btn-brand-bg: #1a5c8c;
+  --btn-brand-bg-hover: #1f6b9f;
+  --btn-brand-light: #2a7fb9;
 }

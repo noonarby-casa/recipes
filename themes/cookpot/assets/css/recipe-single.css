@@ -124,10 +124,7 @@
 }
 
 .scale-display {
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
   border-radius: 20px;
-  box-shadow: 0 3px 10px var(--noonblue-shadow);
-  color: #fff;
   font-size: 0.95rem;
   font-weight: 500;
   padding: 0.25rem 0.85rem;
@@ -223,13 +220,6 @@
 
 .scale-btn:active {
   transform: scale(0.97);
-}
-
-.scale-btn.active {
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  border-color: transparent;
-  box-shadow: 0 4px 12px var(--noonblue-shadow-button);
-  color: #fff;
 }
 
 /* Ingredients layout styling has been refactored to compound-list component style */
@@ -331,7 +321,7 @@
 }
 
 .recipe-meta li a:hover {
-  background: var(--noonblue);
+  background: var(--btn-brand-bg);
   color: #fff;
 }
 
@@ -635,10 +625,7 @@
 /* Floating Back Button (from meal planner) */
 .plan-back-btn {
   align-items: center !important;
-  background-color: var(--noonblue, #0080d8) !important;
   border-radius: 20px !important;
-  box-shadow: 0 4px 15px rgba(0, 128, 216, 0.4) !important;
-  color: #fff !important;
   display: inline-flex !important;
   font-size: 0.9rem;
   font-weight: 600;
@@ -649,7 +636,6 @@
 }
 
 .plan-back-btn:hover {
-  background-color: var(--noonblue-hover, #006cb7) !important;
   transform: translateY(-1px) !important;
 }
 

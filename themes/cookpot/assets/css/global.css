@@ -73,24 +73,24 @@ a:hover {
 
 .footer-sitemap-link {
   color: var(--text-muted);
+  text-decoration: underline;
   vertical-align: middle;
 }
 
 .footer-sitemap-link:hover {
   color: var(--noonblue-hover);
-  text-decoration: underline;
 }
 
 .footer-github-link {
   align-items: center;
   color: var(--text-muted);
   display: inline-flex;
+  text-decoration: underline;
   vertical-align: middle;
 }
 
 .footer-github-link:hover {
   color: var(--noonblue-hover);
-  text-decoration: none;
 }
 
 .footer-github-icon {

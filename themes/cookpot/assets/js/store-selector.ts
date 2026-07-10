@@ -30,7 +30,7 @@ export function initStoreSelector(): void {
     const activeId = getActiveStoreLayoutId();
     optionsContainer.innerHTML = STORE_LAYOUTS.map(
       (l) =>
-        `<button type="button" class="store-layout-option-btn${l.id === activeId ? ' active' : ''}" data-id="${l.id}">${l.name}</button>`,
+        `<button type="button" class="store-layout-option-btn${l.id === activeId ? ' active btn-brand' : ''}" data-id="${l.id}">${l.name}</button>`,
     ).join('');
 
     // Add click event listeners to the rendered buttons

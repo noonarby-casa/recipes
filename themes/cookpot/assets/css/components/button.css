@@ -1,0 +1,16 @@
+/* Unified Brand Button Component Class */
+.btn-brand {
+  background: linear-gradient(
+    135deg,
+    var(--btn-brand-bg),
+    var(--btn-brand-light)
+  ) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 3px 8px var(--noonblue-shadow-subtle) !important;
+}
+
+.btn-brand:hover {
+  background: var(--btn-brand-bg-hover) !important;
+  color: #fff !important;
+}

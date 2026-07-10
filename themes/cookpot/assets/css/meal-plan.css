@@ -152,22 +152,17 @@
 }
 
 .banner-tab.active {
-  background: var(--noonblue);
-  color: #fff;
 }
 
 .banner-actions {
-  align-items: center;
   display: flex;
   gap: 0.5rem;
 }
 
 .banner-btn {
-  background-color: var(--noonblue);
   border: none;
   border-radius: 6px;
   box-shadow: 0 2px 5px var(--noonblue-shadow-subtle);
-  color: #fff;
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: 600;
@@ -176,7 +171,6 @@
 }
 
 .banner-btn:hover {
-  background-color: var(--noonblue-hover);
   transform: translateY(-1px);
 }
 
@@ -233,10 +227,7 @@
 
 .tag-filter-pill:hover,
 .tag-filter-pill.active {
-  background: var(--noonblue);
-  border-color: var(--noonblue);
   box-shadow: 0 4px 10px var(--noonblue-shadow-subtle);
-  color: #fff;
   transform: translateY(-1px);
 }
 
@@ -1149,11 +1140,9 @@ a.planned-recipe-item {
 /* Primary generate button */
 .planner-btn-primary {
   align-items: center;
-  background-color: var(--noonblue);
   border: none;
   border-radius: 8px;
   box-shadow: 0 2px 5px var(--noonblue-shadow-subtle);
-  color: #fff;
   cursor: pointer;
   display: inline-flex;
   font-size: 0.85rem;
@@ -1165,7 +1154,6 @@ a.planned-recipe-item {
 }
 
 .planner-btn-primary:hover {
-  background-color: var(--noonblue-hover);
   transform: translateY(-1px);
 }
 
@@ -1192,7 +1180,7 @@ a.planned-recipe-item {
 }
 
 .recipe-swap-btn:hover {
-  background-color: var(--noonblue);
+  background-color: var(--btn-brand-bg);
   color: #fff;
 }
 

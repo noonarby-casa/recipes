@@ -29,9 +29,3 @@
 .toggle-btn:active {
   transform: scale(0.97);
 }
-
-.toggle-btn.active {
-  background: linear-gradient(135deg, var(--noonblue), var(--noonblue-light));
-  box-shadow: 0 3px 8px var(--noonblue-shadow-subtle);
-  color: #fff;
-}
