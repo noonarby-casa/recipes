@@ -184,3 +184,8 @@
 .plan-back-btn {
   order: 5;
 }
+
+.plan-toast-notification {
+  order: 10; /* Always position toast notifications at the top of the stack */
+  pointer-events: auto; /* Allow interaction with toasts */
+}

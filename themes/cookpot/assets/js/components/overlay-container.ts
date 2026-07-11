@@ -17,6 +17,8 @@ export class OverlayContainer {
       container.id = 'overlay-container';
       container.className = 'overlay-container';
       document.body.appendChild(container);
+    } else {
+      container.innerHTML = '';
     }
     this.element = container;
 
@@ -229,14 +231,22 @@ export class OverlayContainer {
 
   private updateUI(): void {
     const hasPersistent = this.hasPersistentElements();
+    const hasToasts =
+      this.element.querySelector('.plan-toast-notification') !== null;
 
-    if (!hasPersistent) {
+    if (!hasPersistent && !hasToasts) {
       this.element.classList.remove('is-minimized');
       this.element.style.display = 'none';
       return;
     }
 
     this.element.style.display = 'flex';
+
+    if (hasPersistent) {
+      this.toggleBtn.style.display = 'flex';
+    } else {
+      this.toggleBtn.style.display = 'none';
+    }
 
     if (this.isMinimized) {
       this.element.classList.add('is-minimized');

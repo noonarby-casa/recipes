@@ -304,5 +304,93 @@ for (const targetPage of testPages) {
       await expect(toggleBtn).toBeVisible();
       await toggleBtn.click(); // restored
     });
+
+    test('should persist and display the toggle button after page refresh', async ({
+      page,
+    }) => {
+      const toggleBtn = page.locator('.overlay-toggle-btn');
+
+      // Seed running timer
+      await page.addInitScript(() => {
+        const timer = {
+          recipeUrl: '/recipe-abc/',
+          recipeTitle: 'Recipe ABC',
+          timerIndex: 0,
+          durationLabel: '5 seconds',
+          minSeconds: 5,
+          maxSeconds: 5,
+          status: 'running',
+          startedAt: Date.now(),
+          pausedDuration: 0,
+          elapsedBeforeStart: 0,
+          lowerChimePlayed: false,
+          upperChimePlayed: false,
+          updatedAt: Date.now(),
+        };
+        localStorage.setItem('noonarby-casa-timers', JSON.stringify([timer]));
+      });
+
+      await page.goto(targetPage);
+      await expect(toggleBtn).toBeVisible();
+
+      // Refresh/Reload the page
+      await page.reload();
+
+      // Verify toggle button remains visible
+      await expect(toggleBtn).toBeVisible();
+    });
+
+    test('should position toast notifications vertically above the cooking dashboard', async ({
+      page,
+    }) => {
+      // Seed running timer so the dashboard renders
+      await page.addInitScript(() => {
+        const timer = {
+          recipeUrl: '/recipe-abc/',
+          recipeTitle: 'Recipe ABC',
+          timerIndex: 0,
+          durationLabel: '5 seconds',
+          minSeconds: 5,
+          maxSeconds: 5,
+          status: 'running',
+          startedAt: Date.now(),
+          pausedDuration: 0,
+          elapsedBeforeStart: 0,
+          lowerChimePlayed: false,
+          upperChimePlayed: false,
+          updatedAt: Date.now(),
+        };
+        localStorage.setItem('noonarby-casa-timers', JSON.stringify([timer]));
+      });
+
+      await page.goto(targetPage);
+
+      const dashboard = page.locator('#cooking-dashboard');
+      await expect(dashboard).toBeVisible();
+
+      // Dynamically append a toast to the overlay container in the browser
+      await page.evaluate(() => {
+        const toast = document.createElement('div');
+        toast.className = 'plan-toast-notification test-toast';
+        toast.innerHTML = 'Test Toast Message';
+        const container = document.getElementById('overlay-container');
+        if (container) {
+          container.appendChild(toast);
+        }
+      });
+
+      const toast = page.locator('.plan-toast-notification');
+      await expect(toast).toBeVisible();
+
+      // Check vertical positions
+      const toastBox = await toast.boundingBox();
+      const dashboardBox = await dashboard.boundingBox();
+
+      expect(toastBox).not.toBeNull();
+      expect(dashboardBox).not.toBeNull();
+      // Since it stacks from bottom to top, y decreases as we go up.
+      // So y of toast should be less than y of dashboard.
+      expect(toastBox!.y).toBeLessThan(dashboardBox!.y);
+    });
   });
 }
