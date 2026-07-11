@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 declare const __dirname: string;
-import { ITEM_RULES } from './config';
+import { ITEM_RULES } from './rules';
 import { CATEGORY_KEYWORDS, classifyItemToCategory } from './store-sections';
 
 function getAllIngredientsFromContent(): string[] {

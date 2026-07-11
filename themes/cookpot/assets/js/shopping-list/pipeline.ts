@@ -1,4 +1,4 @@
-import { STAPLE_ITEMS, ITEM_RULES } from './config';
+import { STAPLE_ITEMS, ITEM_RULES } from './rules';
 import { convertQty, getConversionFactor } from './utils';
 import {
   getSectionForCategory,
@@ -155,9 +155,9 @@ export function processShoppingList(
     }
 
     // Add note entry if it has recipe source, alt option, or description
-    if (ing.category || ing.alt?.item || ing.desc) {
+    if (ing.recipe || ing.alt?.item || ing.desc) {
       existing.ingredientNotes.push({
-        recipe: ing.category || undefined,
+        recipe: ing.recipe || undefined,
         altItem: ing.alt?.item || undefined,
         descriptor: ing.desc || undefined,
       });
@@ -328,7 +328,7 @@ export function extractIngredientsFromDOM(
       prep: el.dataset.prep,
       optional: el.dataset.optional === 'true',
       alt,
-      category:
+      recipe:
         document.querySelector('.recipe-title-bar h1')?.textContent ||
         undefined,
     });

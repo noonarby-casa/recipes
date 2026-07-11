@@ -41,30 +41,6 @@ export const STAPLE_ITEMS: Set<string> = new Set([
   'water',
 ]);
 
-export const UNIT_CONVERSIONS: Record<
-  string,
-  { system: string; base: string; factor: number }
-> = {
-  // Volume (base: teaspoon)
-  teaspoon: { system: 'volume', base: 'teaspoon', factor: 1 },
-  tsp: { system: 'volume', base: 'teaspoon', factor: 1 },
-  tablespoon: { system: 'volume', base: 'teaspoon', factor: 3 },
-  tbsp: { system: 'volume', base: 'teaspoon', factor: 3 },
-  ounce: { system: 'volume', base: 'teaspoon', factor: 6 },
-  oz: { system: 'volume', base: 'teaspoon', factor: 6 },
-  cup: { system: 'volume', base: 'teaspoon', factor: 48 },
-  ml: { system: 'volume', base: 'teaspoon', factor: 0.202884 },
-  pint: { system: 'volume', base: 'teaspoon', factor: 96 },
-  quart: { system: 'volume', base: 'teaspoon', factor: 192 },
-  gallon: { system: 'volume', base: 'teaspoon', factor: 768 },
-
-  // Weight (base: ounce)
-  gram: { system: 'weight', base: 'ounce', factor: 0.03527 },
-  g: { system: 'weight', base: 'ounce', factor: 0.03527 },
-  pound: { system: 'weight', base: 'ounce', factor: 16 },
-  lb: { system: 'weight', base: 'ounce', factor: 16 },
-};
-
 export const ITEM_RULES: ItemRule[] = [
   // 1. Garlic: cloves -> heads
   {

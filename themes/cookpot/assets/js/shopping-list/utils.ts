@@ -1,10 +1,10 @@
+import { formatCookingNumber } from '../units';
+import { QtyValue, IngredientInput, ItemRule } from './types';
 import {
-  formatCookingNumber,
+  UNIT_CONVERSIONS,
   SINGULAR_TO_PLURAL,
   PLURAL_TO_SINGULAR,
-} from '../units';
-import { QtyValue, IngredientInput, ItemRule } from './types';
-import { UNIT_CONVERSIONS } from './config';
+} from '../constants';
 
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.

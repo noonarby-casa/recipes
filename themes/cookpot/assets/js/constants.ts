@@ -1,3 +1,27 @@
+export const UNIT_CONVERSIONS: Record<
+  string,
+  { system: string; base: string; factor: number }
+> = {
+  // Volume (base: teaspoon)
+  teaspoon: { system: 'volume', base: 'teaspoon', factor: 1 },
+  tsp: { system: 'volume', base: 'teaspoon', factor: 1 },
+  tablespoon: { system: 'volume', base: 'teaspoon', factor: 3 },
+  tbsp: { system: 'volume', base: 'teaspoon', factor: 3 },
+  ounce: { system: 'volume', base: 'teaspoon', factor: 6 },
+  oz: { system: 'volume', base: 'teaspoon', factor: 6 },
+  cup: { system: 'volume', base: 'teaspoon', factor: 48 },
+  ml: { system: 'volume', base: 'teaspoon', factor: 0.202884 },
+  pint: { system: 'volume', base: 'teaspoon', factor: 96 },
+  quart: { system: 'volume', base: 'teaspoon', factor: 192 },
+  gallon: { system: 'volume', base: 'teaspoon', factor: 768 },
+
+  // Weight (base: ounce)
+  gram: { system: 'weight', base: 'ounce', factor: 0.03527 },
+  g: { system: 'weight', base: 'ounce', factor: 0.03527 },
+  pound: { system: 'weight', base: 'ounce', factor: 16 },
+  lb: { system: 'weight', base: 'ounce', factor: 16 },
+};
+
 export const PRIMARY_TAGS: readonly string[] = [
   'breakfast',
   'lunch',
@@ -16,3 +40,65 @@ export const BREAKDOWN_CATEGORIES: readonly string[] = [
   'soup',
   'salad',
 ];
+
+export const SINGULAR_TO_PLURAL: Record<string, string> = {
+  ounce: 'ounces',
+  pound: 'pounds',
+  cup: 'cups',
+  teaspoon: 'teaspoons',
+  tablespoon: 'tablespoons',
+  clove: 'cloves',
+  can: 'cans',
+  gram: 'grams',
+  small: 'small',
+  large: 'large',
+  medium: 'medium',
+  lemon: 'lemons',
+  lime: 'limes',
+  head: 'heads',
+  root: 'roots',
+  bundle: 'bundles',
+  bottle: 'bottles',
+  jar: 'jars',
+  box: 'boxes',
+  package: 'packages',
+  container: 'containers',
+  onion: 'onions',
+  stick: 'sticks',
+  'quart (32 fl oz)': 'quarts (32 fl oz)',
+  'quart (32 oz)': 'quarts (32 oz)',
+  'pint (16 fl oz)': 'pints (16 fl oz)',
+  'pint (16 oz)': 'pints (16 oz)',
+  'half-pint (8 oz)': 'half-pints (8 oz)',
+  egg: 'eggs',
+  'egg yolk': 'egg yolks',
+  scallion: 'scallions',
+  lb: 'lbs',
+  bulb: 'bulbs',
+  leaf: 'leaves',
+  half: 'halves',
+  carrot: 'carrots',
+  potato: 'potatoes',
+  tomato: 'tomatoes',
+  pepper: 'peppers',
+  'bell pepper': 'bell peppers',
+  shallot: 'shallots',
+  mushroom: 'mushrooms',
+  'chicken thigh': 'chicken thighs',
+  'chicken breast': 'chicken breasts',
+  sprig: 'sprigs',
+  stalk: 'stalks',
+  rib: 'ribs',
+  tortilla: 'tortillas',
+  avocado: 'avocados',
+  cucumber: 'cucumbers',
+  chili: 'chilis',
+  chilli: 'chillis',
+  'green onion': 'green onions',
+  'spring onion': 'spring onions',
+  'garlic clove': 'garlic cloves',
+};
+
+export const PLURAL_TO_SINGULAR: Record<string, string> = Object.fromEntries(
+  Object.entries(SINGULAR_TO_PLURAL).map(([sing, plur]) => [plur, sing]),
+);
