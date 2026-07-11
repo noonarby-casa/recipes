@@ -357,7 +357,7 @@ html.dark-mode .tag-filter-pill.exclude .tag-count {
 .planned-recipes-grid {
   display: grid;
   gap: 0.75rem;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   margin-bottom: 1.5rem;
 }
 
@@ -1041,6 +1041,12 @@ a.planned-recipe-item {
     grid-template-columns: 1fr;
   }
 
+  .planned-recipes-grid .supplemental-section,
+  .planned-recipes-grid.grid-5day .supplemental-section {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+  }
+
   /* Shrink empty day heights to avoid long scroll fatigue */
   .day-column {
     min-height: auto;
@@ -1231,6 +1237,18 @@ a.planned-recipe-item {
   padding: 0.75rem;
   transition: all 0.2s ease;
   width: 100%;
+}
+
+/* In 7-day mode (default) */
+.planned-recipes-grid .supplemental-section {
+  grid-column: 3 / span 3;
+  margin-top: 0;
+}
+
+/* In 5-day mode (.grid-5day) */
+.planned-recipes-grid.grid-5day .supplemental-section {
+  grid-column: 1 / span 5;
+  margin-top: 0;
 }
 
 .supplemental-title {

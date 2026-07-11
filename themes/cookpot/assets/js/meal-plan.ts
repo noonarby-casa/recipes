@@ -47,7 +47,7 @@ let keyboardFocusedIndex = -1;
 
 // Overhauled States
 let editMode = true; // Edit UX vs. View UX
-let workWeekOnly = false; // 5-Day Week vs 7-Day Week
+let workWeekOnly = true; // 5-Day Week vs 7-Day Week
 let activeTargetDay: string | null = null; // Target day when opening search modal
 
 // Undo Recovery State
@@ -65,7 +65,7 @@ const SETTINGS_KEY = 'noonarby-meal-plan-settings';
 const FILTERS_KEY = 'noonarby-meal-plan-filters';
 
 // Constants
-const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const DAY_NAMES: Record<string, string> = {
   sun: 'Sunday',
   mon: 'Monday',
@@ -156,7 +156,12 @@ export function initMealPlanner(): void {
       let urlWorkWeekOnly = localWorkWeekOnly;
       if (hasUrlParams) {
         const urlParams = new URLSearchParams(window.location.search);
-        urlWorkWeekOnly = (urlParams.get('w') || urlParams.get('week')) === '5';
+        const wVal = urlParams.get('w') || urlParams.get('week');
+        if (wVal) {
+          urlWorkWeekOnly = wVal !== '7';
+        } else {
+          urlWorkWeekOnly = true;
+        }
       }
 
       const localRaw = localStorage.getItem(STORAGE_KEY);
@@ -1084,7 +1089,7 @@ function generateDinnerPlan(): void {
     return;
   }
 
-  const activeDays = workWeekOnly ? DAYS.slice(1, 6) : DAYS;
+  const activeDays = workWeekOnly ? DAYS.slice(0, 5) : DAYS;
 
   // Find all dinner recipes
   const dinnerPool = getFilteredRecipes().filter(
@@ -1652,8 +1657,8 @@ function saveStateToStorageAndUrl(writeHistory = false): void {
     params.set('x', base64UrlEncode(customEntries.join(entrySeparator)));
   }
 
-  if (workWeekOnly) {
-    params.set('w', '5');
+  if (!workWeekOnly) {
+    params.set('w', '7');
   }
 
   if (activeMobileTab === 'edit-plan') {
@@ -1849,7 +1854,9 @@ function parseUrlParams(): boolean {
   if (params.has('w') || params.has('week')) {
     hasValidParams = true;
     const wVal = params.get('w') || params.get('week');
-    workWeekOnly = wVal === '5';
+    workWeekOnly = wVal !== '7';
+  } else {
+    workWeekOnly = true;
   }
 
   if (hasValidParams) {
@@ -1881,8 +1888,6 @@ function renderUI(highlightInstanceId?: string): void {
   const toolbarEdit = document.getElementById('toolbar-edit');
   const toolbarView = document.getElementById('toolbar-view');
   const toolbarShop = document.getElementById('toolbar-shop');
-  const suppSection = document.getElementById('supplemental-section');
-  const suppList = document.getElementById('supplemental-recipes-list');
 
   if (!container) {
     return;
@@ -1905,7 +1910,9 @@ function renderUI(highlightInstanceId?: string): void {
   const btn5Day = document.getElementById('week-5day-btn');
   if (btn7Day && btn5Day) {
     btn5Day.classList.toggle('active', workWeekOnly);
+    btn5Day.classList.toggle('btn-brand', workWeekOnly);
     btn7Day.classList.toggle('active', !workWeekOnly);
+    btn7Day.classList.toggle('btn-brand', !workWeekOnly);
   }
 
   // Set per-view visibility of second toolbar controls
@@ -1966,13 +1973,13 @@ function renderUI(highlightInstanceId?: string): void {
   }
 
   // Active columns configuration
-  const activeDays = workWeekOnly ? DAYS.slice(1, 6) : DAYS; // 5-Day (Mon-Fri) vs 7-Day
+  const activeDays = workWeekOnly ? DAYS.slice(0, 5) : DAYS; // 5-Day (Mon-Fri) vs 7-Day
   container.classList.toggle('grid-5day', workWeekOnly);
 
   const basePath = getSiteBasePath();
 
   // Populate Columns HTML
-  container.innerHTML = activeDays
+  const daysHtml = activeDays
     .map((day) => {
       const dayMeals = planState.filter((p) => p.day === day);
 
@@ -2188,6 +2195,23 @@ function renderUI(highlightInstanceId?: string): void {
       `;
     })
     .join('');
+
+  // Supplemental Section Wrapper HTML
+  const supplementalSectionHtml = `
+    <!-- Supplemental Recipes Section -->
+    <div class="supplemental-section" id="supplemental-section">
+      <h2 class="supplemental-title">Anytime / Supplemental</h2>
+      <div class="supplemental-recipes-list" id="supplemental-recipes-list">
+        <!-- Filled dynamically in edit/view modes -->
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = daysHtml + supplementalSectionHtml;
+
+  // Retrieve the dynamically generated supplemental elements
+  const suppSection = document.getElementById('supplemental-section');
+  const suppList = document.getElementById('supplemental-recipes-list');
 
   // Render Supplemental Anytime Tray
   if (suppSection && suppList) {
@@ -3176,7 +3200,7 @@ function copyMenuTextToClipboard(): void {
     return;
   }
 
-  const activeDays = workWeekOnly ? DAYS.slice(1, 6) : DAYS;
+  const activeDays = workWeekOnly ? DAYS.slice(0, 5) : DAYS;
   let text = 'My Weekly Meal Plan:\n';
 
   activeDays.forEach((day) => {
