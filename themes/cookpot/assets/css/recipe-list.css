@@ -510,3 +510,140 @@
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
 }
+
+/* Card Grid layout for search-results and default-list */
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 500px) {
+  .recipe-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+/* Transform list row item to dynamic grid card */
+.recipe-grid .recipe-list-item {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  padding: 0.75rem; /* Override default larger padding */
+}
+
+.recipe-grid .recipe-list-title {
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.recipe-grid .recipe-list-image-container {
+  width: 100%;
+}
+
+.recipe-grid .recipe-list-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.recipe-grid .recipe-list-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Display-only tag label styling */
+.recipe-tag-label {
+  background: var(--tag-bg);
+  border-radius: 4px;
+  color: var(--tag-text);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+/* Primary tags filter row */
+.homepage-tags-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.primary-tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex-grow: 1;
+}
+
+.primary-tags-wrapper .tag-filter-pill {
+  background: var(--tag-bg);
+  border: 1px solid var(--border-ultra-subtle);
+  border-radius: 20px;
+  color: var(--tag-text);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.primary-tags-wrapper .tag-filter-pill:hover {
+  background: var(--noonblue-btn-hover-bg);
+  border-color: var(--noonblue-border-hover);
+  color: var(--noonblue);
+}
+
+.tag-filter-pill.include {
+  background: var(--noonblue);
+  border-color: var(--noonblue);
+  color: #fff;
+}
+
+.tag-filter-pill.include:hover {
+  background: var(--noonblue-hover);
+  border-color: var(--noonblue-hover);
+  color: #fff;
+}
+
+.tag-filter-pill.exclude {
+  background: #e53e3e;
+  border-color: #e53e3e;
+  color: #fff;
+}
+
+.tag-filter-pill.exclude:hover {
+  background: #c53030;
+  border-color: #c53030;
+  color: #fff;
+}
+
+.btn-more-filters {
+  align-items: center;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 20px;
+  color: var(--tag-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-more-filters:hover {
+  background: var(--noonblue-btn-hover-bg);
+  border-color: var(--noonblue-border-hover);
+  color: var(--noonblue);
+}

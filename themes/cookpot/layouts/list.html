@@ -6,7 +6,11 @@
     </div>
   {{ end }}
   {{ partial "search.html" . }}
-  <div id="search-results" class="recipe-list" style="display: none;"></div>
+  <div
+    id="search-results"
+    class="recipe-list recipe-grid"
+    style="display: none;"
+  ></div>
   <div id="recipe-list-default">
     {{ $paginator := .Paginate .Pages.ByDate.Reverse }}
     <div class="recipe-list">

@@ -3,43 +3,18 @@
     {{ .Content }}
   </div>
   {{ partial "search.html" . }}
-  <div id="search-results" class="recipe-list" style="display: none;"></div>
+  <div
+    id="search-results"
+    class="recipe-list recipe-grid"
+    style="display: none;"
+  ></div>
   <div id="recipe-list-default">
-    {{- if site.Taxonomies.tags -}}
-      <details class="homepage-tags-container">
-        <summary class="homepage-tags-label">
-          Explore tags
-          <svg
-            class="homepage-tags-arrow"
-            viewBox="0 0 24 24"
-            width="14"
-            height="14"
-            stroke="currentColor"
-            stroke-width="2.5"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </summary>
-        <div class="homepage-tags-list">
-          {{- range site.Taxonomies.tags.Alphabetical -}}
-            <a href="{{ .Page.RelPermalink }}" class="homepage-tag">
-              {{- .Page.Title -}}
-              <span class="tag-count">{{ .Count }}</span>
-            </a>
-          {{- end -}}
-        </div>
-      </details>
-    {{- end -}}
-
-    {{ $paginator := .Paginate (where site.RegularPages "Type" "recipe").ByDate.Reverse }}
-    <div class="recipe-list">
-      {{ range $paginator.Pages }}
+    {{ $recipes := (where site.RegularPages "Type" "recipe").ByDate.Reverse }}
+    {{ $limitRecipes := first 24 $recipes }}
+    <div class="recipe-list recipe-grid">
+      {{ range $limitRecipes }}
         {{ partial "recipe-list-item.html" . }}
       {{ end }}
     </div>
-    {{ partial "pagination.html" . }}
   </div>
 {{ end }}

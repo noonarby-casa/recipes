@@ -42,11 +42,94 @@
       </svg>
     </button>
   </div>
+  <div class="homepage-tags-bar" id="homepage-tags-bar">
+    <div class="primary-tags-wrapper" id="primary-tags-wrapper"></div>
+    <button type="button" class="btn-more-filters" id="btn-more-filters">
+      <svg
+        viewBox="0 0 24 24"
+        width="14"
+        height="14"
+        stroke="currentColor"
+        stroke-width="2.5"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+      </svg>
+      Filters
+    </button>
+  </div>
   <div
     id="search-results-info"
     class="search-results-info"
     style="display: none;"
   ></div>
+</div>
+
+<!-- Search Tag Filters Modal Overlay -->
+<div
+  id="search-filters-modal"
+  class="planner-modal-backdrop"
+  style="display: none;"
+>
+  <div class="planner-modal-content" style="max-height: 75vh; height: auto;">
+    <div class="planner-modal-header">
+      <h3>Filter Recipes</h3>
+      <button
+        type="button"
+        id="btn-close-search-filters-modal"
+        class="modal-close-btn"
+        title="Close filters modal"
+        aria-label="Close filters modal"
+      >
+        ✕
+      </button>
+    </div>
+    <div
+      class="planner-modal-body scrollable-area"
+      style="padding: 1.25rem 1.5rem;"
+      tabindex="0"
+      role="region"
+      aria-label="Recipe Filters"
+    >
+      <div
+        style="margin-bottom: 1.25rem; display: flex; gap: 0.75rem; align-items: center; justify-content: space-between;"
+      >
+        <span style="font-size: 0.85rem; color: var(--text-muted);">
+          Active filters apply to the recipes list below.
+        </span>
+        <button
+          type="button"
+          id="btn-search-clear-filters"
+          class="planner-clear-btn"
+          style="font-size: 0.8rem; padding: 0.35rem 0.75rem; margin: 0;"
+        >
+          ✕ Clear All Filters
+        </button>
+      </div>
+      <h4
+        style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);"
+      >
+        Filter by Tag
+      </h4>
+      <div
+        id="search-tag-filters"
+        class="planner-tag-filters"
+        style="margin-bottom: 1.5rem;"
+      ></div>
+      <hr
+        class="shopping-divider"
+        style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--border-subtle);"
+      />
+      <h4
+        style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);"
+      >
+        Filter by Source
+      </h4>
+      <div id="search-source-filters" class="planner-tag-filters"></div>
+    </div>
+  </div>
 </div>
 
 <template id="recipe-search-item-template">
@@ -108,7 +191,6 @@
           </div>
         </div>
         <div class="recipe-tags-container" style="display: none;">
-          <div>Tags:</div>
           <ul class="recipe-tags-list"></ul>
         </div>
       </div>

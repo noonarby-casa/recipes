@@ -10,6 +10,7 @@ import { initToggleGroup } from './components/toggle';
 import { getSectionForCategory } from './shopping-list/store-sections';
 import { OverlayContainer } from './components/overlay-container';
 import { parseRawUserInput } from './simple-parser';
+import { BREAKDOWN_CATEGORIES } from './constants';
 
 interface Recipe {
   title: string;
@@ -2839,21 +2840,7 @@ function renderDietCategoryStats(): void {
     rec.tags.forEach((tag) => {
       const lower = tag.trim().toLowerCase();
       // Only capture main dietary categories
-      const targetCategories = [
-        'vegetarian',
-        'vegan',
-        'chicken',
-        'meat',
-        'dinner',
-        'breakfast',
-        'lunch',
-        'dessert',
-        'baking',
-        'pasta',
-        'soup',
-        'salad',
-      ];
-      if (targetCategories.includes(lower)) {
+      if (BREAKDOWN_CATEGORIES.includes(lower)) {
         tagCounts[tag] = (tagCounts[tag] || 0) + 1;
       }
     });

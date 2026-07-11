@@ -80,7 +80,22 @@
           <span>{{ $recipeSource }}</span>
         </div>
       </div>
-      {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+      {{ $primaryTags := slice "breakfast" "lunch" "dinner" "dessert" "vegetarian" "vegan" }}
+      {{ $matchingPrimary := slice }}
+      {{ range .Params.tags }}
+        {{ if in $primaryTags (lower .) }}
+          {{ $matchingPrimary = $matchingPrimary | append . }}
+        {{ end }}
+      {{ end }}
+      {{ if $matchingPrimary }}
+        <div class="recipe-tags-container">
+          <ul class="recipe-tags-list">
+            {{ range $matchingPrimary }}
+              <li><span class="recipe-tag-label">{{ . | title }}</span></li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ end }}
     </div>
   </div>
 </article>
