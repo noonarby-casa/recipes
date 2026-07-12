@@ -87,5 +87,5 @@ To add or modify recipes, you **MUST** refer to and follow the instructions in t
 
 ### 3. Verification & Testing
 
-- Before committing any changes, AI assistants **MUST** execute `pnpm ci` to verify that all code compiles, linting succeeds, and formatting rules are met. Use `pnpm fix` to resolve linting or formatting violations automatically.
+- Before committing any changes, AI assistants **MUST** execute `pnpm run ci` to verify that all code compiles, linting succeeds, and formatting rules are met. Use `pnpm fix` to resolve linting or formatting violations automatically.
 - Refer to `package.json` or `README.md` for standard local development commands (e.g., `hugo server`, `hugo --minify`).

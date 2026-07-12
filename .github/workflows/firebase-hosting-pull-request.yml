@@ -31,7 +31,7 @@ jobs:
         run: pnpm install
 
       - name: Run CI checks
-        run: pnpm ci
+        run: pnpm run ci
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3

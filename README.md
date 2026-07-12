@@ -50,7 +50,7 @@ pnpm install
 | `pnpm lint:fix`                                   | Runs ESLint with the `--fix` flag to resolve linting issues automatically                       |
 | `pnpm format`                                     | Runs Prettier format verification (read-only)                                                   |
 | `pnpm format:fix`                                 | Re-runs Prettier formatter to write corrected styling to files                                  |
-| `pnpm ci`                                         | Runs all checking tools sequentially (`typecheck` + `lint` + `format`)                          |
+| `pnpm run ci`                                     | Runs all checking tools sequentially (`typecheck` + `lint` + `format` + `test`)                 |
 | `pnpm fix`                                        | Runs all fixing tools sequentially (`lint:fix` + `format:fix`)                                  |
 
 ---

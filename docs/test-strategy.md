@@ -48,10 +48,10 @@
 ### Q6. CI/CD Integration Choice
 
 - **Question:** How should we structure our scripts in package.json and configure our GitHub Actions to run these tests?
-- **Decision:** Parallel Unit Tests in `pnpm ci` + E2E (Chromium-only) in GitHub Action before deployment
+- **Decision:** Parallel Unit Tests in `pnpm run ci` + E2E (Chromium-only) in GitHub Action before deployment
 - **Details:**
   - `package.json` scripts: `pnpm test` (vitest run), `pnpm test:watch` (vitest), `pnpm test:e2e` (playwright test).
-  - `pnpm ci` runs unit tests in parallel with lint, format, typecheck.
+  - `pnpm run ci` runs unit tests in parallel with lint, format, typecheck.
   - GitHub Actions workflow installs Chromium browser (`npx playwright install --with-deps chromium`) and runs `pnpm test:e2e` before the Firebase deploy step.
 
 ### Q7. Test Coverage Priorities Choice
