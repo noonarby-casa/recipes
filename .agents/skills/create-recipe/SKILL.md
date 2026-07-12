@@ -59,7 +59,7 @@ ingredients = [
 
 1. **`shortId` Validation:**
    - Must be **2 to 6 lowercase letters only** (no numbers, hyphens, or uppercase letters).
-   - Must be **globally unique** across all recipes.
+   - Must be **globally unique** across all recipes. To quickly see all existing `shortId` values in the [content/](../../../content/) directory and help you pick a new unique one, run: `grep -RE "shortId =" content/`
    - The build pipeline template [index.json](../../../themes/cookpot/layouts/index.json) validates this. If `shortId` is missing, duplicate, or invalid, the Hugo build will throw a build error and fail.
 
 2. **`tags` Categories:**
