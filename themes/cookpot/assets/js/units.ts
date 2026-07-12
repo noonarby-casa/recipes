@@ -1,6 +1,5 @@
 import { SINGULAR_TO_PLURAL, PLURAL_TO_SINGULAR } from './constants';
 
-
 /**
  * Returns the plural or singular form of a unit based on the quantity.
  */
