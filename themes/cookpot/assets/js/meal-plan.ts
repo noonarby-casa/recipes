@@ -1,9 +1,5 @@
 // removed scaleTextQuantities
-import {
-  processShoppingList,
-  getDepletedStaples,
-  saveDepletedStaples,
-} from './shopping-list/pipeline';
+import { processShoppingList } from './shopping-list/pipeline';
 import { formatCookingNumber, formatItemQuantity } from './units';
 import { ShoppingItem, IngredientInput } from './shopping-list/types';
 import { initToggleGroup } from './components/toggle';
@@ -3000,20 +2996,12 @@ function renderCombinedShoppingList(): void {
   document.querySelectorAll('.shopping-item-checkbox').forEach((chk) => {
     chk.addEventListener('change', () => {
       const key = chk.getAttribute('data-key');
-      const itemName = chk.getAttribute('data-item');
       if (!key) {
         return;
       }
 
       if ((chk as HTMLInputElement).checked) {
         shoppingListStates[key] = true;
-        if (itemName) {
-          const depleted = getDepletedStaples();
-          if (depleted.has(itemName)) {
-            depleted.delete(itemName);
-            saveDepletedStaples(depleted);
-          }
-        }
       } else {
         shoppingListStates[key] = false;
       }
@@ -3068,7 +3056,7 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
       `;
     }
 
-    const isStaple = item.staple !== undefined;
+    const isStaple = item.staple === 'in-pantry';
     const key = getIngredientKey(isStaple, item.unit, item.item);
     const isChecked = isItemChecked(key, isStaple);
     const checkedAttr = isChecked ? 'checked' : '';
@@ -3247,7 +3235,7 @@ function copyShoppingListToClipboard(
   });
 
   const filteredBuy = combinedBuy.filter((item) => {
-    const isStaple = item.staple !== undefined;
+    const isStaple = item.staple === 'in-pantry';
     const key = getIngredientKey(isStaple, item.unit, item.item);
     return !isItemChecked(key, isStaple);
   });

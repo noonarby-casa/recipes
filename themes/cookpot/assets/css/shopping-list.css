@@ -142,8 +142,21 @@
   padding: 0.1rem 0.4rem;
 }
 
-/* Muted list items in Staples */
-.staples-section .shopping-item-main-row {
+/* Checklist checkbox and checked state styles */
+.shopping-item.checked span {
+  text-decoration: line-through;
+  opacity: 0.55;
   color: var(--text-muted);
-  font-weight: 400;
+}
+
+.shopping-item-label {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.shopping-item-checkbox {
+  cursor: pointer;
+  margin-top: 0.25rem;
 }

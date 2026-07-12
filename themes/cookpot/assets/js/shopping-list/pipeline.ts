@@ -14,34 +14,6 @@ import {
   IngredientNote,
 } from './types';
 
-export const STORAGE_KEY_DEPLETED_STAPLES = 'noonarby-depleted-staples';
-
-export function getDepletedStaples(): Set<string> {
-  if (typeof window === 'undefined' || !window.localStorage) {
-    return new Set();
-  }
-  const stored = localStorage.getItem(STORAGE_KEY_DEPLETED_STAPLES);
-  if (!stored) {
-    return new Set();
-  }
-  try {
-    const arr = JSON.parse(stored);
-    return new Set(Array.isArray(arr) ? arr : []);
-  } catch {
-    return new Set();
-  }
-}
-
-export function saveDepletedStaples(depleted: Set<string>): void {
-  if (typeof window === 'undefined' || !window.localStorage) {
-    return;
-  }
-  localStorage.setItem(
-    STORAGE_KEY_DEPLETED_STAPLES,
-    JSON.stringify(Array.from(depleted)),
-  );
-}
-
 function getRuleForItem(itemName: string): ItemRule | undefined {
   const lower = itemName.toLowerCase().trim();
   return ITEM_RULES.find((rule) => rule.items.includes(lower));
@@ -93,7 +65,6 @@ function getAverageQty(qty?: number | [number, number]): number | null {
 export function processShoppingList(
   ingredients: IngredientInput[],
 ): ProcessedShoppingList {
-  const depleted = getDepletedStaples();
   const map = new Map<
     string,
     {
@@ -223,10 +194,8 @@ export function processShoppingList(
 
     const category = classifyItemToCategory(group.item);
     const itemIsStaple = isStaple(itemName);
-    const stapleState: 'in-pantry' | 'depleted' | undefined = itemIsStaple
-      ? depleted.has(itemName)
-        ? 'depleted'
-        : 'in-pantry'
+    const stapleState: 'in-pantry' | undefined = itemIsStaple
+      ? 'in-pantry'
       : undefined;
 
     const note: ShoppingItemNote = {

@@ -74,10 +74,8 @@ export interface ShoppingItem {
   // be purchased each time a recipe is cooked; these items are on hand.
   // However, a staple may need to be purchased when running low.
   // - 'in-pantry' = the staple is stocked
-  // - 'depleted' = the staple is not stocked, and is included in the shopping
-  //   list.
   // - undefined = the shopping item is not a pantry staple
-  staple?: 'in-pantry' | 'depleted';
+  staple?: 'in-pantry';
   // Structured notes for the item to provide additional information about it in
   // the shopping list.
   note?: ShoppingItemNote;

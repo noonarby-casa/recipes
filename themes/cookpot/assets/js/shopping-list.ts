@@ -2,8 +2,6 @@ import { formatItemQuantity } from './units';
 import {
   processShoppingList,
   extractIngredientsFromDOM,
-  getDepletedStaples,
-  saveDepletedStaples,
 } from './shopping-list/pipeline';
 import { ShoppingItem } from './shopping-list/types';
 // removed formatNotesArray
@@ -32,9 +30,6 @@ export function initShoppingList(): void {
   const optionalList = document.querySelector<HTMLElement>(
     '.shopping-optional-list',
   );
-  const staplesList = document.querySelector<HTMLElement>(
-    '.shopping-staples-list',
-  );
   const copyBtn = document.getElementById('btn-copy-shopping-list');
 
   if (
@@ -42,14 +37,36 @@ export function initShoppingList(): void {
     !btnShoppingView ||
     !recipeList ||
     !shoppingWrapper ||
-    !buyList ||
-    !staplesList
+    !buyList
   ) {
     return;
   }
 
   let currentScale = 1.0;
   let activeTab = 'recipe'; // 'recipe' or 'shopping'
+
+  const checklistStates: Record<string, boolean> = {};
+
+  function getIngredientKey(
+    isStaple: boolean,
+    unit: string,
+    item: string,
+  ): string {
+    const stapleStr = isStaple ? 'staple' : 'buy';
+    const normalizedUnit = (unit || '').trim().toLowerCase();
+    const normalizedRest = (item || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ');
+    return `${stapleStr}_${normalizedUnit}_${normalizedRest}`;
+  }
+
+  function isItemChecked(key: string, isStaple: boolean): boolean {
+    if (key in checklistStates) {
+      return checklistStates[key];
+    }
+    return isStaple;
+  }
 
   // Listen to the global store layout selector change
   document.addEventListener('store-layout:change', () => {
@@ -123,10 +140,31 @@ export function initShoppingList(): void {
     const recipeTitle =
       document.querySelector('.recipe-title-bar h1')?.textContent || 'Recipe';
 
+    // Merge staples into buyItems and sort combined items by section order & name
+    const combinedBuy = [...buyItems, ...stapleItems].sort((a, b) => {
+      const secA = getSectionForCategory(a.category);
+      const secB = getSectionForCategory(b.category);
+      if (secA.order !== secB.order) {
+        return secA.order - secB.order;
+      }
+      return a.item.localeCompare(b.item);
+    });
+
+    const filteredBuy = combinedBuy.filter((item) => {
+      const isStaple = item.staple === 'in-pantry';
+      const key = getIngredientKey(isStaple, item.unit, item.item);
+      return !isItemChecked(key, isStaple);
+    });
+
+    const filteredOptional = optionalItems.filter((item) => {
+      const key = getIngredientKey(false, item.unit, item.item);
+      return !isItemChecked(key, false);
+    });
+
     let clipboardText = '';
 
     if (format === 'google-keep') {
-      const allItems = [...buyItems, ...optionalItems, ...stapleItems];
+      const allItems = [...filteredBuy, ...filteredOptional];
       const lines = allItems.map((item) => {
         const { qtyStr, itemStr } = formatItemQuantity(
           item.qty,
@@ -140,10 +178,10 @@ export function initShoppingList(): void {
       // Markdown format
       clipboardText = `## SHOPPING LIST: ${recipeTitle}\n`;
 
-      if (buyItems.length > 0) {
+      if (filteredBuy.length > 0) {
         clipboardText += '\n### Need to Buy\n';
         let currentSectionId = '';
-        buyItems.forEach((item) => {
+        filteredBuy.forEach((item) => {
           const section = getSectionForCategory(item.category);
           if (section.id !== currentSectionId) {
             currentSectionId = section.id;
@@ -160,22 +198,9 @@ export function initShoppingList(): void {
         });
       }
 
-      if (optionalItems.length > 0) {
+      if (filteredOptional.length > 0) {
         clipboardText += '\n### Optional\n';
-        optionalItems.forEach((item) => {
-          const { qtyStr, itemStr } = formatItemQuantity(
-            item.qty,
-            item.unit,
-            item.item,
-          );
-          const notesStr = formatItemNotes(item);
-          clipboardText += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
-        });
-      }
-
-      if (stapleItems.length > 0) {
-        clipboardText += '\n### Pantry Staples\n';
-        stapleItems.forEach((item) => {
+        filteredOptional.forEach((item) => {
           const { qtyStr, itemStr } = formatItemQuantity(
             item.qty,
             item.unit,
@@ -194,7 +219,7 @@ export function initShoppingList(): void {
           if (copyBtn instanceof HTMLSelectElement) {
             const copySelect = copyBtn;
             const placeholderOpt = copySelect.options[0];
-            const originalText = placeholderOpt.textContent || 'Copy List';
+            const originalText = placeholderOpt.textContent || 'Copy Unchecked';
             placeholderOpt.textContent = 'Copied!';
             copySelect.value = '';
             copySelect.classList.add('success');
@@ -245,11 +270,10 @@ export function initShoppingList(): void {
    * Updates display layout visibility.
    */
   function renderShoppingList(scale: number): void {
-    if (!buyList || !staplesList) {
+    if (!buyList) {
       return;
     }
     buyList.innerHTML = '';
-    staplesList.innerHTML = '';
     if (optionalList) {
       optionalList.innerHTML = '';
     }
@@ -260,13 +284,22 @@ export function initShoppingList(): void {
     const { buyItems, optionalItems, stapleItems } =
       processShoppingList(ingredients);
 
-    const hasBuyItems = buyItems.length > 0;
+    // Merge staples into buyItems and sort combined items by section order & name
+    const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {
+      const secA = getSectionForCategory(a.category);
+      const secB = getSectionForCategory(b.category);
+      if (secA.order !== secB.order) {
+        return secA.order - secB.order;
+      }
+      return a.item.localeCompare(b.item);
+    });
+
+    const hasBuyItems = combinedBuyItems.length > 0;
     const hasOptional = optionalItems.length > 0;
-    const hasStaples = stapleItems.length > 0;
 
     // Render Need to Buy items with store section headers
     let currentSectionId = '';
-    buyItems.forEach((converted) => {
+    combinedBuyItems.forEach((converted) => {
       const section = getSectionForCategory(converted.category);
       if (section.id !== currentSectionId) {
         currentSectionId = section.id;
@@ -288,38 +321,46 @@ export function initShoppingList(): void {
       }
     }
 
-    // Render Pantry Staples items
-    stapleItems.forEach((converted) => renderItem(converted, staplesList));
-
-    // Bind click handlers to '+' buttons on staples
-    staplesList.querySelectorAll('.btn-deplete-staple').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const itemName = (e.currentTarget as HTMLElement).dataset.item;
-        if (itemName) {
-          const depleted = getDepletedStaples();
-          depleted.add(itemName);
-          saveDepletedStaples(depleted);
-          renderShoppingList(scale);
-        }
+    // Bind checklist click handlers
+    const allLists: HTMLElement[] = [buyList];
+    if (optionalList) {
+      allLists.push(optionalList);
+    }
+    allLists.forEach((list) => {
+      list.querySelectorAll('.shopping-item-checkbox').forEach((chk) => {
+        chk.addEventListener('change', (e) => {
+          const checkbox = e.currentTarget as HTMLInputElement;
+          const key = checkbox.dataset.key;
+          if (key) {
+            checklistStates[key] = checkbox.checked;
+            const li = checkbox.closest('.shopping-item');
+            if (li) {
+              if (checkbox.checked) {
+                li.classList.add('checked');
+              } else {
+                li.classList.remove('checked');
+              }
+            }
+          }
+        });
       });
     });
-
-    // Toggle staple section visibility depending on items
-    const staplesSection =
-      document.querySelector<HTMLElement>('.staples-section');
-    if (staplesSection) {
-      staplesSection.style.display = hasStaples ? 'block' : 'none';
-    }
 
     const buySection = document.querySelector<HTMLElement>('.buy-section');
     if (buySection) {
       buySection.style.display = hasBuyItems ? 'block' : 'none';
     }
 
+    // Hide staples section elements (if any exist in layout from old builds)
+    const staplesSection =
+      document.querySelector<HTMLElement>('.staples-section');
+    if (staplesSection) {
+      staplesSection.style.display = 'none';
+    }
+
     const divider = document.querySelector<HTMLElement>('.shopping-divider');
     if (divider) {
-      divider.style.display =
-        (hasBuyItems || hasOptional) && hasStaples ? 'block' : 'none';
+      divider.style.display = 'none';
     }
   }
 
@@ -327,6 +368,12 @@ export function initShoppingList(): void {
    * Generates DOM elements for a single converted item and appends it to targetList.
    */
   function renderItem(item: ShoppingItem, targetList: HTMLElement): void {
+    const isStaple = item.staple === 'in-pantry';
+    const key = getIngredientKey(isStaple, item.unit, item.item);
+    const isChecked = isItemChecked(key, isStaple);
+    const checkedAttr = isChecked ? 'checked' : '';
+    const checkedClass = isChecked ? 'checked' : '';
+
     const { qtyStr, itemStr } = formatItemQuantity(
       item.qty,
       item.unit,
@@ -358,16 +405,13 @@ export function initShoppingList(): void {
            </div>`
       : '';
 
-    const plusBtn =
-      targetList === staplesList
-        ? `<button type="button" class="btn-deplete-staple" data-item="${item.item}">+</button>`
-        : '';
-
     targetList.insertAdjacentHTML(
       'beforeend',
-      `<li class="shopping-item">
-         <div class="shopping-item-main-row">${qtyStr ? qtyStr + ' ' : ''}${itemStr}${plusBtn}</div>
-         ${noteHtml}
+      `<li class="shopping-item ${checkedClass}">
+         <label class="shopping-item-label">
+           <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" data-item="${item.item}" ${checkedAttr} />
+           <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${noteHtml}</span>
+         </label>
        </li>`,
     );
   }
