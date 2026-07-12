@@ -71,6 +71,9 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
       'corn',
       'aubergine',
       'eggplant',
+      'sugar snap pea',
+      'snow pea',
+      'snap pea',
     ],
   },
   {
