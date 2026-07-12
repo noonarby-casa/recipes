@@ -127,6 +127,8 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
       'ricotta',
       'mozzarella',
       'parmesan',
+      'parmigiano-reggiano',
+      'parmigiano',
       'cheddar',
       'cream cheese',
       'feta',

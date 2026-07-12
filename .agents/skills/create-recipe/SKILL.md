@@ -110,7 +110,8 @@ Before squashing or committing any changes:
 
 1. **Lint and Format:** Execute `pnpm ci` to run typechecking (`tsc`), linting (`eslint`), formatting (`prettier`), and unit tests (`vitest`).
 2. **Auto-Fix:** Use `pnpm fix` to automatically correct linting or formatting issues if any are found.
-3. **Hugo Build:** Run `hugo --minify` in the repository root to verify that the static site builds successfully and index validation succeeds.
+3. **Verify Category Mapping**: Check the linter output of the unit tests. If any new recipe ingredients fall back to `"Other"` (or are misclassified into incorrect categories due to substring collisions), add corresponding keywords to [store-sections.ts](../../../themes/cookpot/assets/js/shopping-list/store-sections.ts) or define equivalence rules in [rules.ts](../../../themes/cookpot/assets/js/shopping-list/rules.ts) to ensure correct grocery list section mapping and to prevent collisions.
+4. **Hugo Build:** Run `hugo --minify` in the repository root to verify that the static site builds successfully and index validation succeeds.
 
 ## 🔱 5. Version Control Protocol (Jujutsu)
 
