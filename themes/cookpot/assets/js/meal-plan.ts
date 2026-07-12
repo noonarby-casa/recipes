@@ -2951,7 +2951,7 @@ function renderCombinedShoppingList(): void {
             parsed.alt.qty = parsed.alt.qty * item.scale;
           }
         }
-        parsed.category = rec.title;
+        parsed.recipe = rec.title;
         ingredients.push(parsed);
       });
     }
@@ -2979,7 +2979,7 @@ function renderCombinedShoppingList(): void {
             parsed.alt.qty = parsed.alt.qty * item.scale;
           }
         }
-        parsed.category = item.customTitle || (rec ? rec.title : 'Custom Item');
+        parsed.recipe = item.customTitle || (rec ? rec.title : 'Custom Item');
         ingredients.push(parsed);
       });
     }
@@ -3261,7 +3261,7 @@ function copyShoppingListToClipboard(
             parsed.alt.qty = parsed.alt.qty * item.scale;
           }
         }
-        parsed.category = rec.title;
+        parsed.recipe = rec.title;
         ingredients.push(parsed);
       });
     }
@@ -3289,7 +3289,7 @@ function copyShoppingListToClipboard(
             parsed.alt.qty = parsed.alt.qty * item.scale;
           }
         }
-        parsed.category = item.customTitle || (rec ? rec.title : 'Custom Item');
+        parsed.recipe = item.customTitle || (rec ? rec.title : 'Custom Item');
         ingredients.push(parsed);
       });
     }

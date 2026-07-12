@@ -17,7 +17,7 @@ Each recipe is created as a Hugo leaf bundle inside `content/`:
 
 ## 📝 2. TOML Front Matter Schema
 
-Every recipe must start with a TOML block. Refer to [archetypes/default.md](file:///home/nicholasnooney/projects/noonarby-casa/recipes/archetypes/default.md) for the base schema.
+Every recipe must start with a TOML block. Refer to [archetypes/default.md](/archetypes/default.md) for the base schema.
 
 Here is the format:
 
@@ -57,10 +57,10 @@ ingredients = [
 
 ### TOML Ingredient Object Properties:
 
-In the TypeScript codebase, a recipe ingredient is represented by the `IngredientInput` type (defined in [types.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list/types.ts)):
+In the TypeScript codebase, a recipe ingredient is represented by the `IngredientInput` type (defined in [types.ts](/themes/cookpot/assets/js/shopping-list/types.ts)):
 
 - `qty`: Numerical value (e.g., `2.25` instead of `"2 1/4"`). Mapped to `QtyValue`.
-- `unit`: Supported unit name from [config.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list/config.ts) (e.g., `"pound"`, `"ounce"`, `"cup"`, `"tablespoon"`, `"teaspoon"`, `"clove"`, `"can"`, etc.).
+- `unit`: Supported unit name from [config.ts](/themes/cookpot/assets/js/shopping-list/config.ts) (e.g., `"pound"`, `"ounce"`, `"cup"`, `"tablespoon"`, `"teaspoon"`, `"clove"`, `"can"`, etc.).
 - `item`: Name of the ingredient.
 - `desc`: (Optional) Descriptors such as `"fresh"`, `"skin-on"`.
 - `prep`: (Optional) Preparation steps like `"finely chopped"`, `"minced"`.
@@ -83,7 +83,7 @@ Wrap ingredient quantities in step descriptions with the `qty` shortcode:
 
 - **Standard Unit:** `{{< qty "amount unit" >}}` (e.g., `{{< qty "1/2 cup" >}}` or `{{< qty "2 1/4 pounds" >}}`).
 - **Unsupported/Non-standard Unit:** Wrap _only_ the numeric amount (e.g., `{{< qty "1" >}} lemon` or `{{< qty "2" >}} jalapeños`).
-- Refer to [config.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/shopping-list/config.ts) for standard units.
+- Refer to [config.ts](/themes/cookpot/assets/js/shopping-list/config.ts) for standard units.
 
 ### ⏱️ Timers
 
