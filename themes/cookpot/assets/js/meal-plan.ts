@@ -43,8 +43,15 @@ const excludedTags: Set<string> = new Set();
 const includedSources: Set<string> = new Set();
 const excludedSources: Set<string> = new Set();
 let searchQuery = '';
-const checkedIngredients: Set<string> = new Set();
-let staplesExpanded = false;
+let shoppingListStates: Record<string, boolean> = {};
+
+function isItemChecked(key: string, isStaple: boolean): boolean {
+  if (key in shoppingListStates) {
+    return shoppingListStates[key];
+  }
+  return isStaple;
+}
+
 let keyboardFocusedIndex = -1;
 
 // Overhauled States
@@ -268,14 +275,6 @@ function loadSettings(): void {
       if (parsed.workWeekOnly !== undefined) {
         workWeekOnly = !!parsed.workWeekOnly;
       }
-      if (parsed.chkOmitCompleted !== undefined) {
-        const chk = document.getElementById(
-          'chk-omit-completed',
-        ) as HTMLInputElement;
-        if (chk) {
-          chk.checked = !!parsed.chkOmitCompleted;
-        }
-      }
     }
   } catch (e) {
     console.error('Error loading settings:', e);
@@ -286,10 +285,8 @@ function loadSettings(): void {
  * Saves user settings
  */
 function saveSettings(): void {
-  const chk = document.getElementById('chk-omit-completed') as HTMLInputElement;
   const settings = {
     workWeekOnly,
-    chkOmitCompleted: chk ? chk.checked : false,
   };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
@@ -680,7 +677,7 @@ function setupEventListeners(): void {
   const btnResetList = document.getElementById('btn-reset-shopping-list');
   if (btnResetList) {
     btnResetList.addEventListener('click', () => {
-      checkedIngredients.clear();
+      shoppingListStates = {};
       saveCheckedState();
       renderUI();
     });
@@ -708,27 +705,9 @@ function setupEventListeners(): void {
     btnCopyMenu.addEventListener('click', copyMenuTextToClipboard);
   }
 
-  const chkOmit = document.getElementById(
-    'chk-omit-completed',
-  ) as HTMLInputElement;
-  if (chkOmit) {
-    chkOmit.addEventListener('change', () => {
-      saveSettings();
-      renderUI();
-    });
-  }
-
   document.addEventListener('store-layout:change', () => {
     renderUI();
   });
-
-  const btnToggleStaples = document.getElementById('btn-toggle-staples');
-  if (btnToggleStaples) {
-    btnToggleStaples.addEventListener('click', () => {
-      staplesExpanded = !staplesExpanded;
-      renderUI();
-    });
-  }
 
   // Mobile column tab triggers
 }
@@ -1873,7 +1852,7 @@ function parseUrlParams(): boolean {
 function clearPlannerState(): void {
   if (confirm('Are you sure you want to clear your meal plan?')) {
     planState = [];
-    checkedIngredients.clear();
+    shoppingListStates = {};
     saveCheckedState();
     saveStateToStorageAndUrl(true);
     renderUI();
@@ -2870,14 +2849,15 @@ function renderDietCategoryStats(): void {
  */
 function loadCheckedState(): void {
   try {
-    const raw = localStorage.getItem('noonarby-shopping-checked-items');
+    const raw = localStorage.getItem('noonarby-shopping-checked-items-v2');
     if (raw) {
-      const parsed = JSON.parse(raw) as string[];
-      checkedIngredients.clear();
-      parsed.forEach((k) => checkedIngredients.add(k));
+      shoppingListStates = JSON.parse(raw) as Record<string, boolean>;
+    } else {
+      shoppingListStates = {};
     }
   } catch (e) {
     console.error('Error loading checklist checked states:', e);
+    shoppingListStates = {};
   }
 }
 
@@ -2886,8 +2866,8 @@ function loadCheckedState(): void {
  */
 function saveCheckedState(): void {
   localStorage.setItem(
-    'noonarby-shopping-checked-items',
-    JSON.stringify(Array.from(checkedIngredients)),
+    'noonarby-shopping-checked-items-v2',
+    JSON.stringify(shoppingListStates),
   );
 }
 
@@ -2897,28 +2877,18 @@ function saveCheckedState(): void {
 function renderCombinedShoppingList(): void {
   loadCheckedState();
   const buyList = document.getElementById('combined-buy-list');
-  const staplesList = document.getElementById('combined-staples-list');
   const optionalList = document.getElementById('combined-optional-list');
-  const divider = document.querySelector('.shopping-divider');
 
-  if (!buyList || !staplesList) {
+  if (!buyList) {
     return;
   }
 
   if (planState.length === 0) {
     buyList.innerHTML = `<li class="planner-empty-state">Add some recipes to generate your combined shopping list.</li>`;
-    staplesList.innerHTML = '';
     if (optionalList) {
       optionalList.innerHTML = '';
     }
-    if (divider) {
-      (divider as HTMLElement).style.display = 'none';
-    }
     return;
-  }
-
-  if (divider) {
-    (divider as HTMLElement).style.display = 'block';
   }
 
   const ingredients: IngredientInput[] = [];
@@ -2992,11 +2962,21 @@ function renderCombinedShoppingList(): void {
   const { buyItems, optionalItems, stapleItems } =
     processShoppingList(ingredients);
 
-  // Render Need to Buy Column with sections
-  if (buyItems.length === 0) {
+  // Merge staples into buyItems and sort combined items by section order & name
+  const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {
+    const secA = getSectionForCategory(a.category);
+    const secB = getSectionForCategory(b.category);
+    if (secA.order !== secB.order) {
+      return secA.order - secB.order;
+    }
+    return a.item.localeCompare(b.item);
+  });
+
+  // Render combined buy and staple items
+  if (combinedBuyItems.length === 0) {
     buyList.innerHTML = `<li class="planner-empty-state">No items needed.</li>`;
   } else {
-    buyList.innerHTML = renderBuyItemsWithSections(buyItems);
+    buyList.innerHTML = renderBuyItemsWithSections(combinedBuyItems);
   }
 
   // Render Optional Section
@@ -3016,26 +2996,6 @@ function renderCombinedShoppingList(): void {
     }
   }
 
-  // Render Pantry Staples Column
-  if (stapleItems.length === 0) {
-    staplesList.innerHTML = `<li class="planner-empty-state">No staples.</li>`;
-    if (divider) {
-      (divider as HTMLElement).style.display = 'none';
-    }
-  } else {
-    staplesList.innerHTML = renderItemsBlock(stapleItems, true);
-    if (divider) {
-      (divider as HTMLElement).style.display = 'block';
-    }
-  }
-
-  // Accordion Expand/Collapse arrow
-  const arrow = document.querySelector('.accordion-arrow');
-  if (arrow) {
-    arrow.textContent = staplesExpanded ? '▾' : '▸';
-  }
-  staplesList.style.display = staplesExpanded ? 'block' : 'none';
-
   // Bind Checklist click triggers
   document.querySelectorAll('.shopping-item-checkbox').forEach((chk) => {
     chk.addEventListener('change', () => {
@@ -3046,7 +3006,7 @@ function renderCombinedShoppingList(): void {
       }
 
       if ((chk as HTMLInputElement).checked) {
-        checkedIngredients.add(key);
+        shoppingListStates[key] = true;
         if (itemName) {
           const depleted = getDepletedStaples();
           if (depleted.has(itemName)) {
@@ -3055,24 +3015,11 @@ function renderCombinedShoppingList(): void {
           }
         }
       } else {
-        checkedIngredients.delete(key);
+        shoppingListStates[key] = false;
       }
 
       saveCheckedState();
       renderUI(); // Sync cross-offs
-    });
-  });
-
-  // Bind click handlers to '+' buttons on staples
-  staplesList.querySelectorAll('.btn-deplete-staple').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      const itemName = (e.currentTarget as HTMLElement).dataset.item;
-      if (itemName) {
-        const depleted = getDepletedStaples();
-        depleted.add(itemName);
-        saveDepletedStaples(depleted);
-        renderCombinedShoppingList();
-      }
     });
   });
 }
@@ -3124,8 +3071,9 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
       `;
     }
 
-    const key = getIngredientKey(false, item.unit, item.item);
-    const isChecked = checkedIngredients.has(key);
+    const isStaple = item.staple !== undefined;
+    const key = getIngredientKey(isStaple, item.unit, item.item);
+    const isChecked = isItemChecked(key, isStaple);
     const checkedAttr = isChecked ? 'checked' : '';
     const checkedClass = isChecked ? 'checked' : '';
 
@@ -3153,7 +3101,7 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
   return items
     .map((item) => {
       const key = getIngredientKey(isStaple, item.unit, item.item);
-      const isChecked = checkedIngredients.has(key);
+      const isChecked = isItemChecked(key, isStaple);
       const checkedAttr = isChecked ? 'checked' : '';
       const checkedClass = isChecked ? 'checked' : '';
 
@@ -3164,18 +3112,11 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
         item.item,
       );
 
-      const plusBtn = isStaple
-        ? ` <button type="button" class="btn-deplete-staple" data-item="${item.item}">+</button>`
-        : '';
-
       return `
         <li class="shopping-item ${checkedClass}">
-          <label class="shopping-item-label" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <span style="display: flex; align-items: center;">
-              <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" data-item="${item.item}" ${checkedAttr} style="margin-right: 0.5rem;" />
-              <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}</span>
-            </span>
-            ${plusBtn}
+          <label class="shopping-item-label" style="display: flex; align-items: center; width: 100%;">
+            <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" data-item="${item.item}" ${checkedAttr} style="margin-right: 0.5rem;" />
+            <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}</span>
           </label>
         </li>
       `;
@@ -3226,11 +3167,6 @@ function copyMenuTextToClipboard(): void {
 function copyShoppingListToClipboard(
   format: 'markdown' | 'google-keep' = 'markdown',
 ): void {
-  const chkOmit = document.getElementById(
-    'chk-omit-completed',
-  ) as HTMLInputElement;
-  const omitChecked = chkOmit ? chkOmit.checked : false;
-
   const ingredients: IngredientInput[] = [];
   planState.forEach((item) => {
     const rec = item.permalink
@@ -3304,27 +3240,28 @@ function copyShoppingListToClipboard(
 
   let clipboardText = '';
 
+  const combinedBuy = [...buyItems, ...stapleItems].sort((a, b) => {
+    const secA = getSectionForCategory(a.category);
+    const secB = getSectionForCategory(b.category);
+    if (secA.order !== secB.order) {
+      return secA.order - secB.order;
+    }
+    return a.item.localeCompare(b.item);
+  });
+
+  const filteredBuy = combinedBuy.filter((item) => {
+    const isStaple = item.staple !== undefined;
+    const key = getIngredientKey(isStaple, item.unit, item.item);
+    return !isItemChecked(key, isStaple);
+  });
+
+  const filteredOptional = optionalItems.filter((item) => {
+    const key = getIngredientKey(false, item.unit, item.item);
+    return !isItemChecked(key, false);
+  });
+
   if (format === 'google-keep') {
-    // Google Keep format: Sorted order, no store section headings or titles, only items, each on a single line
-    const filteredBuy = buyItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.item);
-      const isChecked = checkedIngredients.has(key);
-      return !(omitChecked && isChecked);
-    });
-
-    const filteredOptional = optionalItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.item);
-      const isChecked = checkedIngredients.has(key);
-      return !(omitChecked && isChecked);
-    });
-
-    const filteredStaples = stapleItems.filter((item) => {
-      const key = getIngredientKey(true, item.unit, item.item);
-      const isChecked = checkedIngredients.has(key);
-      return !(omitChecked && isChecked);
-    });
-
-    const allItems = [...filteredBuy, ...filteredOptional, ...filteredStaples];
+    const allItems = [...filteredBuy, ...filteredOptional];
     const lines = allItems.map((item) => {
       const { qtyStr, itemStr } = formatItemQuantity(
         item.qty,
@@ -3333,21 +3270,12 @@ function copyShoppingListToClipboard(
       );
       return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}`;
     });
-
     clipboardText = lines.join('\n');
   } else {
-    // Markdown format
+    // Markdown format: Unchecked markdown checklists (- [ ] Item)
     clipboardText = '## Combined Shopping List\n';
 
-    // Need to Buy Block (grouped by store sections)
-    const filteredBuy = buyItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.item);
-      const isChecked = checkedIngredients.has(key);
-      return !(omitChecked && isChecked);
-    });
-
     if (filteredBuy.length > 0) {
-      clipboardText += '\n### Need to Buy\n';
       let currentSectionId = '';
       filteredBuy.forEach((item) => {
         const section = getSectionForCategory(item.category);
@@ -3356,68 +3284,26 @@ function copyShoppingListToClipboard(
           clipboardText += `\n[ ${section.name} ]\n`;
         }
 
-        const key = getIngredientKey(false, item.unit, item.item);
-        const isChecked = checkedIngredients.has(key);
-        const mark = isChecked ? '[x]' : '[ ]';
-
         const { qtyStr, itemStr } = formatItemQuantity(
           item.qty,
           item.unit,
           item.item,
         );
         const notesStr = formatItemNotes(item);
-
-        clipboardText += `- ${mark} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
+        clipboardText += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
       });
     }
-
-    // Optional Block
-    const filteredOptional = optionalItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.item);
-      const isChecked = checkedIngredients.has(key);
-      return !(omitChecked && isChecked);
-    });
 
     if (filteredOptional.length > 0) {
       clipboardText += '\n### Optional\n';
       filteredOptional.forEach((item) => {
-        const key = getIngredientKey(false, item.unit, item.item);
-        const isChecked = checkedIngredients.has(key);
-        const mark = isChecked ? '[x]' : '[ ]';
-
         const { qtyStr, itemStr } = formatItemQuantity(
           item.qty,
           item.unit,
           item.item,
         );
         const notesStr = formatItemNotes(item);
-
-        clipboardText += `- ${mark} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
-      });
-    }
-
-    // Staples Block
-    const filteredStaples = stapleItems.filter((item) => {
-      const key = getIngredientKey(true, item.unit, item.item);
-      const isChecked = checkedIngredients.has(key);
-      return !(omitChecked && isChecked);
-    });
-
-    if (filteredStaples.length > 0) {
-      clipboardText += '\n### Pantry Staples\n';
-      filteredStaples.forEach((item) => {
-        const key = getIngredientKey(true, item.unit, item.item);
-        const isChecked = checkedIngredients.has(key);
-        const mark = isChecked ? '[x]' : '[ ]';
-
-        const { qtyStr, itemStr } = formatItemQuantity(
-          item.qty,
-          item.unit,
-          item.item,
-        );
-        const notesStr = formatItemNotes(item);
-
-        clipboardText += `- ${mark} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
+        clipboardText += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
       });
     }
   }
@@ -3430,7 +3316,7 @@ function copyShoppingListToClipboard(
         if (copyBtn.tagName === 'SELECT') {
           const copySelect = copyBtn as HTMLSelectElement;
           const placeholderOpt = copySelect.options[0];
-          const originalText = placeholderOpt.textContent || 'Copy List';
+          const originalText = placeholderOpt.textContent || 'Copy Unchecked';
           placeholderOpt.textContent = 'Copied!';
           copySelect.value = '';
           copySelect.classList.add('success');

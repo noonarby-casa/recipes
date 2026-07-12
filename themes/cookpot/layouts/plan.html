@@ -188,16 +188,12 @@
     style="display: none;"
   >
     <div class="planner-top-actions">
-      <label class="omit-completed-label" id="omit-completed-label">
-        <input type="checkbox" id="chk-omit-completed" />
-        Omit checked items
-      </label>
       <select
         id="btn-copy-combined-list"
         class="dropdown-select"
         aria-label="Copy shopping list options"
       >
-        <option value="" disabled selected hidden>Copy List</option>
+        <option value="" disabled selected hidden>Copy Unchecked</option>
         <option value="markdown">Markdown</option>
         <option value="google-keep">Google Keep</option>
       </select>
@@ -276,24 +272,22 @@
       aria-label="Combined Shopping List"
     >
       <div class="column-titlebar">
-        <h2>Combined Shopping List</h2>
+        <div class="column-title-group">
+          <h2>Combined Shopping List</h2>
+          <span class="column-subtitle"
+            >Check off items you already have on hand. Pantry staples are
+            pre-checked.</span
+          >
+        </div>
       </div>
 
       <div class="shopping-list-wrapper">
         <div class="shopping-section buy-section">
-          <h3>Need to Buy</h3>
           <ul id="combined-buy-list" class="compound-list"></ul>
         </div>
         <div class="shopping-section optional-section" style="display: none;">
           <h3>Optional</h3>
           <ul id="combined-optional-list"></ul>
-        </div>
-        <hr class="shopping-divider" style="display: none;" />
-        <div class="shopping-section staples-section">
-          <h3 class="staples-header" id="btn-toggle-staples">
-            Pantry Staples <span class="accordion-arrow">▸</span>
-          </h3>
-          <ul id="combined-staples-list" style="display: none;"></ul>
         </div>
       </div>
     </div>

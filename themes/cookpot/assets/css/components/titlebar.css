@@ -12,3 +12,15 @@
 .column-titlebar h2 {
   margin: 0 !important;
 }
+
+.column-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.column-subtitle {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
