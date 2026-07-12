@@ -120,6 +120,7 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
       'half and half',
       'sour cream',
       'yogurt',
+      'kefir',
     ],
   },
   {
