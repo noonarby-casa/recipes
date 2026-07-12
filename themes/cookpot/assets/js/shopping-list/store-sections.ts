@@ -145,7 +145,7 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
   },
   {
     category: 'frozen',
-    keywords: ['frozen', 'ice cream'],
+    keywords: ['frozen', 'ice cream', 'dumpling'],
   },
   {
     category: 'pasta-grains',
