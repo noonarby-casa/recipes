@@ -55,7 +55,6 @@ export interface IngredientNote {
 export interface ShoppingItemNote {
   ingredientNotes: IngredientNote[];
   sizeNote?: string;
-  optionalNote?: string;
 }
 
 // A ShoppingItem represents a purchasable item in a grocery store.
@@ -79,8 +78,6 @@ export interface ShoppingItem {
   //   list.
   // - undefined = the shopping item is not a pantry staple
   staple?: 'in-pantry' | 'depleted';
-  // Whether the shopping item corresponds to ingredients that are optional
-  optional?: boolean;
   // Structured notes for the item to provide additional information about it in
   // the shopping list.
   note?: ShoppingItemNote;

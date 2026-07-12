@@ -242,7 +242,6 @@ export function processShoppingList(
       item: group.item,
       category,
       staple: stapleState,
-      optional: group.optional,
       note,
     };
 

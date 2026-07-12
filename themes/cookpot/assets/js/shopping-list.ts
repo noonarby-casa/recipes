@@ -90,9 +90,6 @@ export function initShoppingList(): void {
       if (item.note.sizeNote) {
         notesStrs.push(item.note.sizeNote);
       }
-      if (item.note.optionalNote) {
-        notesStrs.push(item.note.optionalNote);
-      }
       const alts = Array.from(
         new Set(
           item.note.ingredientNotes.map((n) => n.altItem).filter(Boolean),
@@ -346,9 +343,6 @@ export function initShoppingList(): void {
     const notesStrs = [];
     if (item.note?.sizeNote) {
       notesStrs.push(item.note.sizeNote);
-    }
-    if (item.note?.optionalNote) {
-      notesStrs.push(item.note.optionalNote);
     }
     if (descriptors.length > 0) {
       notesStrs.push(descriptors.join(', '));

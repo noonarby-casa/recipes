@@ -3030,9 +3030,6 @@ function formatItemNotes(item: ShoppingItem): string {
     if (item.note.sizeNote) {
       notesStrs.push(item.note.sizeNote);
     }
-    if (item.note.optionalNote) {
-      notesStrs.push(item.note.optionalNote);
-    }
     const recipes = Array.from(
       new Set(item.note.ingredientNotes.map((n) => n.recipe).filter(Boolean)),
     );
