@@ -76,14 +76,20 @@ export function pluralizeUnit(unit: string, qty: QtyValue): string {
 /**
  * Assembles a structured ingredient into a human-readable display string.
  */
-export function assembleIngredientText(ing: IngredientInput): string {
+export function assembleIngredientText(
+  ing: IngredientInput,
+  disablePluralization?: boolean,
+): string {
   let text = '';
 
   // 1. Primary Amount
   if (ing.qty !== undefined) {
     text += formatQty(ing.qty);
     if (ing.unit) {
-      text += ' ' + pluralizeUnit(ing.unit, ing.qty);
+      const unitStr = disablePluralization
+        ? ing.unit
+        : pluralizeUnit(ing.unit, ing.qty);
+      text += ' ' + unitStr;
     }
   }
 
@@ -99,7 +105,10 @@ export function assembleIngredientText(ing: IngredientInput): string {
       q += formatQty(ing.alt.qty);
     }
     if (ing.alt.unit) {
-      q += (q ? ' ' : '') + pluralizeUnit(ing.alt.unit, ing.alt.qty ?? 1);
+      const altUnitStr = disablePluralization
+        ? ing.alt.unit
+        : pluralizeUnit(ing.alt.unit, ing.alt.qty ?? 1);
+      q += (q ? ' ' : '') + altUnitStr;
     }
     if (ing.alt.each) {
       q += ' each';
@@ -121,7 +130,12 @@ export function assembleIngredientText(ing: IngredientInput): string {
       }
 
       let altItemName = ing.alt.item || '';
-      if (ing.alt.qty !== undefined && !ing.alt.unit && altItemName) {
+      if (
+        ing.alt.qty !== undefined &&
+        !ing.alt.unit &&
+        altItemName &&
+        !disablePluralization
+      ) {
         altItemName = pluralizeUnit(altItemName, ing.alt.qty);
       }
       if (altItemName) {
@@ -156,7 +170,7 @@ export function assembleIngredientText(ing: IngredientInput): string {
   }
 
   let itemName = ing.item;
-  if (ing.qty !== undefined && !ing.unit) {
+  if (ing.qty !== undefined && !ing.unit && !disablePluralization) {
     itemName = pluralizeUnit(ing.item, ing.qty);
   }
   itemParts.push(itemName);

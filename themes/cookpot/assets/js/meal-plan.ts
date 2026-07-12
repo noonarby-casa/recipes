@@ -11,6 +11,7 @@ import { getSectionForCategory } from './shopping-list/store-sections';
 import { OverlayContainer } from './components/overlay-container';
 import { parseRawUserInput } from './simple-parser';
 import { BREAKDOWN_CATEGORIES } from './constants';
+import { assembleIngredientText } from './shopping-list/utils';
 
 interface Recipe {
   title: string;
@@ -2060,6 +2061,7 @@ function renderUI(highlightInstanceId?: string): void {
                       qtyVal,
                       ing.unit || '',
                       ing.item,
+                      true,
                     );
                     const descStr = ing.desc ? ing.desc + ' ' : '';
                     let fullItemStr = `${descStr}${itemStr}`;
@@ -2139,6 +2141,7 @@ function renderUI(highlightInstanceId?: string): void {
                         qtyVal,
                         ing.unit || '',
                         ing.item,
+                        true,
                       );
                       const descStr = ing.desc ? ing.desc + ' ' : '';
                       let fullItemStr = `${descStr}${itemStr}`;
@@ -2292,6 +2295,7 @@ function renderUI(highlightInstanceId?: string): void {
                       qtyVal,
                       ing.unit || '',
                       ing.item,
+                      true,
                     );
                     const descStr = ing.desc ? ing.desc + ' ' : '';
                     let fullItemStr = `${descStr}${itemStr}`;
@@ -3475,11 +3479,12 @@ function openDetailsOverlay(instanceId: string): void {
   if (!item) {
     return;
   }
+  const activeItem = item;
 
-  const rec = item.permalink
-    ? recipesIndex.find((r) => r.permalink === item.permalink)
+  const rec = activeItem.permalink
+    ? recipesIndex.find((r) => r.permalink === activeItem.permalink)
     : undefined;
-  const title = rec ? rec.title : item.customTitle || 'Custom Item';
+  const title = rec ? rec.title : activeItem.customTitle || 'Custom Item';
   const defaultServings = rec ? rec.servings : 4;
 
   // Create modal backdrop element
@@ -3488,9 +3493,20 @@ function openDetailsOverlay(instanceId: string): void {
   modal.className = 'planner-modal-backdrop';
   modal.style.display = 'flex';
 
+  let editingIndex: number | null = null;
+
+  function escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function renderModalBody() {
-    const portions = Math.round(item!.scale * defaultServings);
-    const extras = item!.extraIngredients || [];
+    const portions = Math.round(activeItem.scale * defaultServings);
+    const extras = activeItem.extraIngredients || [];
 
     const extrasHtml =
       extras.length === 0
@@ -3509,22 +3525,40 @@ function openDetailsOverlay(instanceId: string): void {
                 qtyVal,
                 ing.unit || '',
                 ing.item,
+                true,
               );
               const descStr = ing.desc ? ing.desc + ' ' : '';
               let fullItemStr = `${descStr}${itemStr}`;
               if (ing.prep) {
                 fullItemStr += `, ${ing.prep}`;
               }
+              const isEditing = editingIndex === idx;
+              const rowStyle = isEditing
+                ? 'background: var(--font-controls-bg); border-radius: 4px;'
+                : '';
               return `
-              <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border-subtle);">
+              <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--border-subtle); ${rowStyle}">
                 <span>${qtyStr ? qtyStr + ' ' : ''}${fullItemStr}</span>
-                <button type="button" class="btn-remove-extra" data-index="${idx}" style="background: none; border: none; color: var(--noonblue); font-weight: bold; cursor: pointer; padding: 0.25rem 0.5rem;">✕</button>
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                  <button type="button" class="btn-edit-extra" data-index="${idx}" title="Edit side" style="background: none; border: none; color: var(--noonblue); cursor: pointer; padding: 0.25rem; display: flex; align-items: center;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                  <button type="button" class="btn-remove-extra" data-index="${idx}" style="background: none; border: none; color: var(--noonblue); font-weight: bold; cursor: pointer; padding: 0.25rem 0.5rem; font-size: 1rem; line-height: 1;">✕</button>
+                </div>
               </li>
             `;
             })
             .join('')}
         </ul>
       `;
+
+    const inputValue =
+      editingIndex !== null
+        ? assembleIngredientText(extras[editingIndex], true)
+        : '';
 
     modal.innerHTML = `
       <div class="planner-modal-content" style="max-height: 85vh; height: auto;">
@@ -3544,8 +3578,9 @@ function openDetailsOverlay(instanceId: string): void {
           ${extrasHtml}
 
           <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-            <input type="text" id="input-add-extra" placeholder="e.g. 1 can chickpeas" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-body);" />
-            <button type="button" id="btn-add-extra" class="planner-btn-primary btn-brand" style="padding: 0.5rem 1rem; margin: 0;">Add</button>
+            <input type="text" id="input-add-extra" value="${escapeHtml(inputValue)}" placeholder="${editingIndex !== null ? 'Edit side...' : 'e.g. 1 can chickpeas'}" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-body);" />
+            <button type="button" id="btn-add-extra" class="planner-btn-primary btn-brand" style="padding: 0.5rem 1rem; margin: 0;">${editingIndex !== null ? 'Save' : 'Add'}</button>
+            ${editingIndex !== null ? `<button type="button" id="btn-cancel-edit-extra" class="planner-btn-secondary" style="padding: 0.5rem 1rem; margin: 0; background: var(--font-controls-bg); border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-body); cursor: pointer;">Cancel</button>` : ''}
           </div>
           <div id="extra-preview-container" style="display: none; font-size: 0.8rem; background: var(--font-controls-bg); border: 1px dashed var(--border-subtle); padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; gap: 0.75rem; flex-wrap: wrap;">
             <div><strong>Qty:</strong> <span id="preview-qty" style="color: var(--noonblue); font-family: monospace;"></span></div>
@@ -3568,7 +3603,7 @@ function openDetailsOverlay(instanceId: string): void {
       .querySelector('#details-dec-portions')
       ?.addEventListener('click', () => {
         const currentPortions = Math.max(1, portions - 1);
-        item!.scale = currentPortions / defaultServings;
+        activeItem.scale = currentPortions / defaultServings;
         saveStateToStorageAndUrl(true);
         renderUI();
         renderModalBody();
@@ -3578,7 +3613,7 @@ function openDetailsOverlay(instanceId: string): void {
       .querySelector('#details-inc-portions')
       ?.addEventListener('click', () => {
         const currentPortions = portions + 1;
-        item!.scale = currentPortions / defaultServings;
+        activeItem.scale = currentPortions / defaultServings;
         saveStateToStorageAndUrl(true);
         renderUI();
         renderModalBody();
@@ -3596,6 +3631,13 @@ function openDetailsOverlay(instanceId: string): void {
     const previewDesc = modal.querySelector('#preview-desc') as HTMLSpanElement;
     const previewItem = modal.querySelector('#preview-item') as HTMLSpanElement;
     const previewPrep = modal.querySelector('#preview-prep') as HTMLSpanElement;
+
+    // Focus input and move cursor to end in edit mode
+    if (editingIndex !== null && addInput) {
+      addInput.focus();
+      const len = addInput.value.length;
+      addInput.setSelectionRange(len, len);
+    }
 
     const updatePreview = () => {
       const text = addInput.value.trim();
@@ -3631,18 +3673,40 @@ function openDetailsOverlay(instanceId: string): void {
 
     const handleAdd = () => {
       const text = addInput.value.trim();
-      if (!text) {
-        return;
-      }
-      const parsed = parseRawUserInput(text);
-      if (parsed.item) {
-        if (!item!.extraIngredients) {
-          item!.extraIngredients = [];
+      if (editingIndex !== null) {
+        const parsed = text ? parseRawUserInput(text) : null;
+        if (!parsed || !parsed.item) {
+          // Treat as Deletion
+          if (activeItem.extraIngredients) {
+            activeItem.extraIngredients.splice(editingIndex, 1);
+            if (activeItem.extraIngredients.length === 0) {
+              delete activeItem.extraIngredients;
+            }
+          }
+        } else {
+          // Parse and update
+          if (activeItem.extraIngredients) {
+            activeItem.extraIngredients[editingIndex] = parsed;
+          }
         }
-        item!.extraIngredients.push(parsed);
+        editingIndex = null;
         saveStateToStorageAndUrl(true);
         renderUI();
         renderModalBody();
+      } else {
+        if (!text) {
+          return;
+        }
+        const parsed = parseRawUserInput(text);
+        if (parsed.item) {
+          if (!activeItem.extraIngredients) {
+            activeItem.extraIngredients = [];
+          }
+          activeItem.extraIngredients.push(parsed);
+          saveStateToStorageAndUrl(true);
+          renderUI();
+          renderModalBody();
+        }
       }
     };
 
@@ -3651,7 +3715,28 @@ function openDetailsOverlay(instanceId: string): void {
       if (e.key === 'Enter') {
         e.preventDefault();
         handleAdd();
+      } else if (e.key === 'Escape' && editingIndex !== null) {
+        e.preventDefault();
+        editingIndex = null;
+        renderModalBody();
       }
+    });
+
+    modal
+      .querySelector('#btn-cancel-edit-extra')
+      ?.addEventListener('click', () => {
+        editingIndex = null;
+        renderModalBody();
+      });
+
+    modal.querySelectorAll('.btn-edit-extra').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idxStr = btn.getAttribute('data-index');
+        if (idxStr) {
+          editingIndex = parseInt(idxStr, 10);
+          renderModalBody();
+        }
+      });
     });
 
     modal.querySelectorAll('.btn-remove-extra').forEach((btn) => {
@@ -3659,10 +3744,10 @@ function openDetailsOverlay(instanceId: string): void {
         const idxStr = btn.getAttribute('data-index');
         if (idxStr) {
           const idx = parseInt(idxStr, 10);
-          if (item!.extraIngredients) {
-            item!.extraIngredients.splice(idx, 1);
-            if (item!.extraIngredients.length === 0) {
-              delete item!.extraIngredients;
+          if (activeItem.extraIngredients) {
+            activeItem.extraIngredients.splice(idx, 1);
+            if (activeItem.extraIngredients.length === 0) {
+              delete activeItem.extraIngredients;
             }
             saveStateToStorageAndUrl(true);
             renderUI();
@@ -3785,6 +3870,7 @@ export function initRecipePagePlanIntegration(): void {
       qtyVal,
       ing.unit || '',
       ing.item,
+      true,
     );
 
     const qtyHTML =
