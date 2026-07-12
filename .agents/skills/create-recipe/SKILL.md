@@ -71,7 +71,8 @@ ingredients = [
    - `qty`: Numerical value (e.g., `2.25` or `0.333` instead of `"2 1/4"` or `"1/3"`).
      - **Range Support:** Can be a tuple range `[min, max]` (e.g., `qty = [2, 3]` for 2 to 3 garlic cloves).
    - `unit`: Supported unit name from [rules.ts](../../../themes/cookpot/assets/js/shopping-list/rules.ts). Prefer standard singular forms: `"pound"`, `"ounce"`, `"cup"`, `"tablespoon"`, `"teaspoon"`, `"clove"`, `"can"`, `"package"`, `"bag"`, `"box"`, `"jar"`, `"root"`, `"head"`, `"bundle"`, etc.
-   - `item`: Name of the ingredient. Use standard names where possible to match shopping list rules (e.g., `"garlic"`, `"butter"`, `"egg"`, `"lemon"`, `"lime"`, `"ginger"`, `"onion"`, `"coconut milk"`, `"cabbage"`, `"scallion"`, `"potato gnocchi"`, `"baby spinach"`, or canned/pasta names).
+   - `item`: Name of the ingredient. Use standard/simplified names where possible to match shopping list rules (e.g., `"garlic"`, `"butter"`, `"egg"`, `"lemon"`, `"lime"`, `"ginger"`, `"onion"`, `"coconut milk"`, `"cabbage"`, `"scallion"`, `"potato gnocchi"`, `"baby spinach"`, or canned/pasta names).
+     - **Ingredient Standardizing & Substring Collisions**: Prefer simpler or standardized names (like `"Parmesan"` instead of `"Parmigiano-Reggiano"`) to ensure proper rule matching and avoid category collisions. The store section matching engine uses simple substring checks (e.g., `lower.includes("egg")` matches `"parmigiano-reggiano"`, which incorrectly maps it to the `'eggs'` category instead of cheese).
    - `desc`: (Optional) Descriptors like `"fresh"`, `"skin-on"`.
    - `prep`: (Optional) Preparation steps like `"finely chopped"`, `"minced"`, `"diced"`.
    - `optional`: (Optional) Set to `true` if the ingredient is optional.
