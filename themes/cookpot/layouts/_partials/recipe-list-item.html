@@ -28,15 +28,32 @@
       <a href="{{ .RelPermalink }}">{{ .Title }}</a>
     </h2>
     <div class="recipe-list-meta">
-      <div class="recipe-list-meta-left">
-        {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-        {{ $dateHuman := .Date | time.Format ":date_long" }}
-        <time datetime="{{ $dateMachine }}" class="recipe-list-date"
-          >{{ $dateHuman }}</time
-        >
+      <div class="recipe-metadata-items">
+        <div class="recipe-meta-item recipe-date">
+          <svg
+            class="date-icon"
+            viewBox="0 0 24 24"
+            width="14"
+            height="14"
+            stroke="currentColor"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+          {{ $dateHuman := .Date | time.Format ":date_long" }}
+          <time datetime="{{ $dateMachine }}" class="recipe-list-date"
+            >{{ $dateHuman }}</time
+          >
+        </div>
         {{ if .Params.times }}
-          <span class="recipe-meta-separator">•</span>
-          <div class="recipe-time">
+          <div class="recipe-meta-item recipe-time">
             <svg
               class="time-icon"
               viewBox="0 0 24 24"
@@ -60,9 +77,8 @@
             </span>
           </div>
         {{ end }}
-        <span class="recipe-meta-separator">•</span>
         {{ $recipeSource := .Params.recipeSource | default "Noonarby" }}
-        <div class="recipe-source">
+        <div class="recipe-meta-item recipe-source">
           <svg
             class="source-icon"
             viewBox="0 0 24 24"

@@ -108,18 +108,21 @@
 .recipe-preptime,
 .recipe-cooktime,
 .recipe-time,
-.recipe-source {
+.recipe-source,
+.recipe-meta-item {
   align-items: center;
   color: var(--text-muted);
   display: inline-flex;
   font-size: 0.85rem;
   gap: 0.35rem;
+  position: relative;
 }
 
 .recipe-preptime svg,
 .recipe-cooktime svg,
 .recipe-time svg,
-.recipe-source svg {
+.recipe-source svg,
+.recipe-meta-item svg {
   display: inline-block;
   flex-shrink: 0;
   stroke: var(--text-muted);
@@ -135,21 +138,23 @@
   margin-top: 0.35rem;
 }
 
-.recipe-list-meta .recipe-list-meta-left {
+.recipe-metadata-items {
   align-items: center;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.5rem 1.5rem;
+  width: 100%;
 }
 
-.recipe-list-meta-left .recipe-meta-separator {
-  display: inline;
-}
-
-.recipe-meta-separator {
-  color: var(--separator-color);
-  font-size: 0.85rem;
+@media (min-width: 600px) {
+  .recipe-metadata-items .recipe-meta-item:not(:last-child)::after {
+    content: "•";
+    color: var(--separator-color);
+    position: absolute;
+    right: -1rem;
+    pointer-events: none;
+  }
 }
 
 .recipe-list-meta {
@@ -161,6 +166,7 @@
   font-size: 0.85rem;
   gap: 0.5rem;
   padding-top: 0.75rem;
+  width: 100%;
 }
 
 .recipe-list-date {
@@ -168,10 +174,10 @@
 }
 
 /* Ensure terms inside list meta render nicely */
-.recipe-list-meta div {
+.recipe-list-meta div.recipe-meta-item {
   align-items: center;
   display: flex;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .recipe-list-meta ul {
@@ -553,6 +559,20 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.recipe-grid .recipe-metadata-items {
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: flex-start;
+}
+
+.recipe-grid .recipe-metadata-items .recipe-meta-item::after {
+  display: none !important;
+}
+
+.recipe-grid .recipe-list-meta {
+  gap: 0.5rem;
 }
 
 /* Display-only tag label styling */
