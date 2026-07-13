@@ -6,7 +6,12 @@ import * as path from 'path';
 
 declare const __dirname: string;
 import { ITEM_RULES } from './rules';
-import { CATEGORY_KEYWORDS, classifyItemToCategory } from './store-sections';
+import {
+  CATEGORY_KEYWORDS,
+  classifyItemToCategory,
+  STORE_LAYOUTS,
+} from './store-sections';
+import { getConversionFactor } from './utils';
 
 function getAllIngredientsFromContent(): string[] {
   // Path to content directory relative to this test file location
@@ -97,6 +102,70 @@ describe('Static configuration and recipe database tests', () => {
       unmapped.sort().forEach((ing) => {
         console.warn(`  - ${ing}`);
       });
+    }
+  });
+
+  test('store layouts package sizing integrity linter', () => {
+    const recipeIngredients = new Set(
+      getAllIngredientsFromContent().map((i) => i.toLowerCase().trim()),
+    );
+    const ruleCanonicalKeys = new Set(
+      ITEM_RULES.map((rule) => rule.items[0].toLowerCase().trim()),
+    );
+    const ruleSynonyms = new Set(
+      ITEM_RULES.flatMap((rule) =>
+        rule.items.map((i) => i.toLowerCase().trim()),
+      ),
+    );
+
+    for (const layout of STORE_LAYOUTS) {
+      if (!layout.itemSizes) {
+        continue;
+      }
+
+      for (const [itemName, sizes] of Object.entries(layout.itemSizes)) {
+        const lowerItem = itemName.toLowerCase().trim();
+
+        // 1. Key check: must be a canonical rule name, synonym, or exist in recipe database
+        const isValidKey =
+          ruleCanonicalKeys.has(lowerItem) ||
+          ruleSynonyms.has(lowerItem) ||
+          recipeIngredients.has(lowerItem);
+
+        expect(
+          isValidKey,
+          `Layout "${layout.name}" defines package size for "${itemName}", but this item does not exist in ITEM_RULES or recipe ingredients.`,
+        ).toBe(true);
+
+        // Find associated rule if any
+        const associatedRule = ITEM_RULES.find((rule) =>
+          rule.items.some((i) => i.toLowerCase().trim() === lowerItem),
+        );
+
+        // 2. Unit check: must be universal or defined in unitEquivalences
+        for (const [, unit] of sizes) {
+          const isUniversal =
+            getConversionFactor(unit, 'teaspoon') > 0 ||
+            getConversionFactor(unit, 'pound') > 0;
+
+          let isCustomEquivalent = false;
+          if (associatedRule?.unitEquivalences) {
+            const firstEq = Object.values(associatedRule.unitEquivalences)[0];
+            const baseUnit = firstEq ? firstEq.base : '';
+            isCustomEquivalent =
+              unit === baseUnit ||
+              Object.keys(associatedRule.unitEquivalences).includes(unit);
+          }
+
+          expect(
+            isUniversal ||
+              isCustomEquivalent ||
+              unit === lowerItem ||
+              unit === itemName,
+            `Layout "${layout.name}" item "${itemName}" specifies unit "${unit}", which is not a universal unit and not defined in the item's unitEquivalences in rules.ts.`,
+          ).toBe(true);
+        }
+      }
     }
   });
 });

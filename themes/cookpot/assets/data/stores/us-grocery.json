@@ -1,0 +1,30 @@
+{
+  "garlic": [[1, "head"]],
+  "butter": [[1, "stick"]],
+  "egg": [
+    [6, "egg"],
+    [12, "egg"],
+    [18, "egg"]
+  ],
+  "sour cream": [
+    [1, "half-pint (8 oz)"],
+    [2, "pint (16 oz)"],
+    [4, "quart (32 oz)"]
+  ],
+  "broth": [
+    [1, "pint (16 fl oz)"],
+    [1, "quart (32 fl oz)"]
+  ],
+  "ginger": [[1, "root"]],
+  "coconut milk": [[1, "can (13.5 oz)"]],
+  "scallion": [[1, "bundle"]],
+  "pasta": [[1, "box (16 oz)"]],
+  "chickpea": [[1, "can (15 oz)"]],
+  "fire roasted tomato": [
+    [1, "can (15 oz)"],
+    [1, "can (28 oz)"]
+  ],
+  "jarred roasted red pepper": [[1, "8-oz jar"]],
+  "potato gnocchi": [[1, "17.5-oz package"]],
+  "baby spinach": [[1, "8 oz bag"]]
+}

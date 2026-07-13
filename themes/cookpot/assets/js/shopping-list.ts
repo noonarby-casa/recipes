@@ -6,7 +6,10 @@ import {
 import { ShoppingItem } from './shopping-list/types';
 // removed formatNotesArray
 import { initToggleGroup } from './components/toggle';
-import { getSectionForCategory } from './shopping-list/store-sections';
+import {
+  getSectionForCategory,
+  getActiveStoreLayout,
+} from './shopping-list/store-sections';
 
 /**
  * Initializes the shopping list feature: selects DOM elements, sets up initial
@@ -134,8 +137,11 @@ export function initShoppingList(): void {
     const elements =
       document.querySelectorAll<HTMLElement>('.recipe-ingredient');
     const ingredients = extractIngredientsFromDOM(currentScale, elements);
-    const { buyItems, optionalItems, stapleItems } =
-      processShoppingList(ingredients);
+    const activeLayout = getActiveStoreLayout();
+    const { buyItems, optionalItems, stapleItems } = processShoppingList(
+      ingredients,
+      activeLayout,
+    );
 
     const recipeTitle =
       document.querySelector('.recipe-title-bar h1')?.textContent || 'Recipe';
@@ -281,8 +287,11 @@ export function initShoppingList(): void {
     const elements =
       document.querySelectorAll<HTMLElement>('.recipe-ingredient');
     const ingredients = extractIngredientsFromDOM(scale, elements);
-    const { buyItems, optionalItems, stapleItems } =
-      processShoppingList(ingredients);
+    const activeLayout = getActiveStoreLayout();
+    const { buyItems, optionalItems, stapleItems } = processShoppingList(
+      ingredients,
+      activeLayout,
+    );
 
     // Merge staples into buyItems and sort combined items by section order & name
     const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {

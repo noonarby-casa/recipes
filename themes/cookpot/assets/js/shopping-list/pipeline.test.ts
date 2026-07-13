@@ -1,20 +1,31 @@
 import { describe, expect, test } from 'vitest';
 import { processShoppingList } from './pipeline';
 import { IngredientInput } from './types';
-import { getSectionForCategory } from './store-sections';
+import { getSectionForCategory, StoreLayout } from './store-sections';
+
+const mockGnocchiLayout: StoreLayout = {
+  id: 'test-layout',
+  name: 'Test Layout',
+  sections: [],
+  itemSizes: {
+    'potato gnocchi': [[1, '17.5-oz package']],
+    'jarred roasted red pepper': [[1, '8-oz jar']],
+    'baby spinach': [[1, '8 oz bag']],
+  },
+};
 
 describe('processShoppingList', () => {
   test('combines quantities of the same item', () => {
     const ingredients: IngredientInput[] = [
-      { item: 'garlic', qty: 2, unit: 'clove' },
-      { item: 'garlic', qty: 3, unit: 'clove' },
+      { item: 'chicken thigh', qty: 2, unit: 'pound' },
+      { item: 'chicken thigh', qty: 3, unit: 'pound' },
     ];
 
     const result = processShoppingList(ingredients);
     expect(result.buyItems).toHaveLength(1);
-    expect(result.buyItems[0].item).toBe('garlic');
+    expect(result.buyItems[0].item).toBe('chicken thigh');
     expect(result.buyItems[0].qty).toBe(5);
-    expect(result.buyItems[0].unit).toBe('clove');
+    expect(result.buyItems[0].unit).toBe('pounds');
   });
 
   test('converts smaller volume units to larger ones when scaling up', () => {
@@ -42,7 +53,7 @@ describe('processShoppingList', () => {
     // So 12 teaspoons is >= 3, so finalQty = 4, finalUnit = 'tablespoon'.
     // That means it will output 4 tablespoons! Let's assert that:
     expect(result.buyItems[0].qty).toBe(4);
-    expect(result.buyItems[0].unit).toBe('tablespoon');
+    expect(result.buyItems[0].unit).toBe('tablespoons');
   });
 
   test('separates staples and optional items', () => {
@@ -108,7 +119,7 @@ describe('processShoppingList', () => {
       { qty: 3, unit: 'cup', item: 'baby spinach', prep: 'loosely packed' },
     ];
 
-    const result = processShoppingList(ingredients);
+    const result = processShoppingList(ingredients, mockGnocchiLayout);
 
     // 1. Potato gnocchi -> 1 17.5-oz package (with sizeNote "16 oz needed")
     const gnocchi = result.buyItems.find((i) => i.item === 'potato gnocchi');

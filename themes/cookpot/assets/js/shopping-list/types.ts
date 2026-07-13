@@ -85,8 +85,6 @@ export interface ShoppingItem {
 export interface ItemRule {
   // Exact item name(s) this rule applies to.
   items: string[];
-  // Available package sizes [qty, unit] at the store, ordered small → large.
-  itemSizes?: [number, string][];
   // Item-specific unit conversions. Helps map between the amounts specified in
   // a recipe and the amounts you can purchase in a store.
   unitEquivalences?: Record<string, { base: string; factor: number }>;

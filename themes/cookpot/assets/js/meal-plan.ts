@@ -3,7 +3,10 @@ import { processShoppingList } from './shopping-list/pipeline';
 import { formatCookingNumber, formatItemQuantity } from './units';
 import { ShoppingItem, IngredientInput } from './shopping-list/types';
 import { initToggleGroup } from './components/toggle';
-import { getSectionForCategory } from './shopping-list/store-sections';
+import {
+  getSectionForCategory,
+  getActiveStoreLayout,
+} from './shopping-list/store-sections';
 import { OverlayContainer } from './components/overlay-container';
 import { parseRawUserInput } from './simple-parser';
 import { BREAKDOWN_CATEGORIES } from './constants';
@@ -2955,8 +2958,11 @@ function renderCombinedShoppingList(): void {
     }
   });
 
-  const { buyItems, optionalItems, stapleItems } =
-    processShoppingList(ingredients);
+  const activeLayout = getActiveStoreLayout();
+  const { buyItems, optionalItems, stapleItems } = processShoppingList(
+    ingredients,
+    activeLayout,
+  );
 
   // Merge staples into buyItems and sort combined items by section order & name
   const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {
@@ -3220,8 +3226,11 @@ function copyShoppingListToClipboard(
     }
   });
 
-  const { buyItems, optionalItems, stapleItems } =
-    processShoppingList(ingredients);
+  const activeLayout = getActiveStoreLayout();
+  const { buyItems, optionalItems, stapleItems } = processShoppingList(
+    ingredients,
+    activeLayout,
+  );
 
   let clipboardText = '';
 

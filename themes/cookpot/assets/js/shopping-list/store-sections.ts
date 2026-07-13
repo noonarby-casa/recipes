@@ -1,3 +1,5 @@
+import usGrocerySizes from '../../data/stores/us-grocery.json';
+
 export interface StoreSection {
   id: string;
   name: string;
@@ -9,6 +11,7 @@ export interface StoreLayout {
   id: string;
   name: string;
   sections: StoreSection[];
+  itemSizes?: Record<string, [number, string][]>;
 }
 
 export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
@@ -441,16 +444,19 @@ export const STORE_LAYOUTS: StoreLayout[] = [
     id: 'standard',
     name: 'Standard Layout (Produce First)',
     sections: STANDARD_SECTIONS,
+    itemSizes: usGrocerySizes as unknown as Record<string, [number, string][]>,
   },
   {
     id: 'dairy-first',
     name: 'Dairy First Layout',
     sections: DAIRY_FIRST_SECTIONS,
+    itemSizes: usGrocerySizes as unknown as Record<string, [number, string][]>,
   },
   {
     id: 'meat-first',
     name: 'Meat First Layout',
     sections: MEAT_FIRST_SECTIONS,
+    itemSizes: usGrocerySizes as unknown as Record<string, [number, string][]>,
   },
 ];
 

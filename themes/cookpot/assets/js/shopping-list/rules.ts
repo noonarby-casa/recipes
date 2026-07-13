@@ -54,11 +54,6 @@ export const ITEM_RULES: ItemRule[] = [
   // 2. Butter
   {
     items: ['butter'],
-    itemSizes: [
-      [1, 'stick'],
-      [4, 'stick'],
-      [8, 'stick'],
-    ],
     unitEquivalences: {
       stick: { base: 'tablespoon', factor: 8 },
     },
@@ -67,11 +62,6 @@ export const ITEM_RULES: ItemRule[] = [
   // 3. Eggs
   {
     items: ['egg', 'egg yolk'],
-    itemSizes: [
-      [6, 'egg'],
-      [12, 'egg'],
-      [18, 'egg'],
-    ],
   },
 
   // 4. Lemons
@@ -95,11 +85,6 @@ export const ITEM_RULES: ItemRule[] = [
   // 6. Half-Pint Liquids
   {
     items: ['sour cream', 'ricotta'],
-    itemSizes: [
-      [1, 'half-pint (8 oz)'],
-      [2, 'pint (16 oz)'],
-      [4, 'quart (32 oz)'],
-    ],
     unitEquivalences: {
       'half-pint (8 oz)': { base: 'cup', factor: 1 },
       'pint (16 oz)': { base: 'cup', factor: 2 },
@@ -121,10 +106,6 @@ export const ITEM_RULES: ItemRule[] = [
       'vegetable broth',
       'vegetable stock',
     ],
-    itemSizes: [
-      [1, 'pint (16 fl oz)'],
-      [1, 'quart (32 fl oz)'],
-    ],
     unitEquivalences: {
       'pint (16 fl oz)': { base: 'cup', factor: 2 },
       'quart (32 fl oz)': { base: 'cup', factor: 4 },
@@ -134,7 +115,6 @@ export const ITEM_RULES: ItemRule[] = [
   // 8. Ginger
   {
     items: ['ginger'],
-    itemSizes: [[1, 'root']],
     unitEquivalences: {
       root: { base: 'tablespoon', factor: 3 },
     },
@@ -151,9 +131,9 @@ export const ITEM_RULES: ItemRule[] = [
   // 10. Coconut Milk
   {
     items: ['coconut milk', 'canned coconut milk'],
-    itemSizes: [[1, 'can (13.5 oz)']],
     unitEquivalences: {
       'can (13.5 oz)': { base: 'ounce', factor: 13.5 },
+      'can (400 ml)': { base: 'ounce', factor: 13.53 },
       can: { base: 'ounce', factor: 13.5 },
     },
   },
@@ -169,7 +149,6 @@ export const ITEM_RULES: ItemRule[] = [
   // 12. Scallions
   {
     items: ['scallion', 'spring onion', 'green onion'],
-    itemSizes: [[1, 'bundle']],
     unitEquivalences: {
       bundle: { base: 'cup', factor: 2 }, // 1 bundle ≈ 2 cups chopped
     },
@@ -191,7 +170,6 @@ export const ITEM_RULES: ItemRule[] = [
       'rigatoni',
       'orzo pasta',
     ],
-    itemSizes: [[1, 'box (16 oz)']],
     unitEquivalences: {
       'box (16 oz)': { base: 'ounce', factor: 16 },
     },
@@ -206,9 +184,9 @@ export const ITEM_RULES: ItemRule[] = [
       'cannellini bean',
       'pinto bean',
     ],
-    itemSizes: [[1, 'can (15 oz)']],
     unitEquivalences: {
       'can (15 oz)': { base: 'ounce', factor: 15 },
+      'can (400 g)': { base: 'ounce', factor: 14.1 },
       can: { base: 'ounce', factor: 15 },
     },
   },
@@ -222,13 +200,10 @@ export const ITEM_RULES: ItemRule[] = [
       'tomato sauce',
       'tomato paste',
     ],
-    itemSizes: [
-      [1, 'can (15 oz)'],
-      [1, 'can (28 oz)'],
-    ],
     unitEquivalences: {
       'can (15 oz)': { base: 'ounce', factor: 15 },
       'can (28 oz)': { base: 'ounce', factor: 28 },
+      'can (400 g)': { base: 'ounce', factor: 14.1 },
       can: { base: 'ounce', factor: 15 },
     },
   },
@@ -236,7 +211,6 @@ export const ITEM_RULES: ItemRule[] = [
   // 16. Roasted Red Peppers
   {
     items: ['jarred roasted red pepper', 'roasted red pepper'],
-    itemSizes: [[1, '8-oz jar']],
     unitEquivalences: {
       '8-oz jar': { base: 'ounce', factor: 8 },
       jar: { base: 'ounce', factor: 8 },
@@ -247,7 +221,6 @@ export const ITEM_RULES: ItemRule[] = [
   // 17. Potato Gnocchi
   {
     items: ['potato gnocchi', 'gnocchi'],
-    itemSizes: [[1, '17.5-oz package']],
     unitEquivalences: {
       '17.5-oz package': { base: 'ounce', factor: 17.5 },
       package: { base: 'ounce', factor: 17.5 },
@@ -257,7 +230,6 @@ export const ITEM_RULES: ItemRule[] = [
   // 18. Baby Spinach
   {
     items: ['baby spinach', 'spinach'],
-    itemSizes: [[1, '8 oz bag']],
     unitEquivalences: {
       '8 oz bag': { base: 'ounce', factor: 8 },
       bag: { base: 'ounce', factor: 8 },
