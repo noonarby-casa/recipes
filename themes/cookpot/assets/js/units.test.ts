@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { getAdaptiveUnit, formatCookingNumber } from './units';
+import {
+  getAdaptiveUnit,
+  formatCookingNumber,
+  pluralizeWord,
+  formatItemQuantity,
+} from './units';
 
 describe('getAdaptiveUnit', () => {
   test('returns empty string if unit is empty', () => {
@@ -60,5 +65,58 @@ describe('formatCookingNumber', () => {
     expect(formatCookingNumber(1.56)).toBe('1.56');
     expect(formatCookingNumber(0.44)).toBe('0.44');
     expect(formatCookingNumber(2.81)).toBe('2.81');
+  });
+});
+
+describe('pluralizeWord', () => {
+  test('pluralizes singular words correctly', () => {
+    expect(pluralizeWord('tablespoon')).toBe('tablespoons');
+    expect(pluralizeWord('lime')).toBe('limes');
+    expect(pluralizeWord('head')).toBe('heads');
+    expect(pluralizeWord('peach')).toBe('peaches');
+    expect(pluralizeWord('zucchini')).toBe('zucchinis');
+  });
+
+  test('keeps already pluralized words as-is', () => {
+    expect(pluralizeWord('tablespoons')).toBe('tablespoons');
+    expect(pluralizeWord('limes')).toBe('limes');
+    expect(pluralizeWord('heads')).toBe('heads');
+    expect(pluralizeWord('peaches')).toBe('peaches');
+    expect(pluralizeWord('zucchinis')).toBe('zucchinis');
+  });
+
+  test('handles size prefixes correctly', () => {
+    expect(pluralizeWord('large tablespoon')).toBe('large tablespoons');
+    expect(pluralizeWord('medium lime')).toBe('medium limes');
+    expect(pluralizeWord('small head')).toBe('small heads');
+    expect(pluralizeWord('large tablespoons')).toBe('large tablespoons');
+    expect(pluralizeWord('medium limes')).toBe('medium limes');
+    expect(pluralizeWord('small heads')).toBe('small heads');
+  });
+
+  test('handles parenthesized suffixes correctly', () => {
+    expect(pluralizeWord('can (15 oz)')).toBe('cans (15 oz)');
+    expect(pluralizeWord('cans (15 oz)')).toBe('cans (15 oz)');
+  });
+});
+
+describe('formatItemQuantity', () => {
+  test('does not double pluralize units for qty > 1', () => {
+    expect(formatItemQuantity(2, 'tablespoons', 'butter')).toEqual({
+      qtyStr: '2 tablespoons',
+      itemStr: 'butter',
+    });
+    expect(formatItemQuantity(2, '', 'lime')).toEqual({
+      qtyStr: '2',
+      itemStr: 'limes',
+    });
+    expect(formatItemQuantity(2, '', 'limes')).toEqual({
+      qtyStr: '2',
+      itemStr: 'limes',
+    });
+    expect(formatItemQuantity(2, 'heads', 'garlic')).toEqual({
+      qtyStr: '2 heads',
+      itemStr: 'garlic',
+    });
   });
 });

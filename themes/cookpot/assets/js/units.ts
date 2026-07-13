@@ -81,15 +81,35 @@ export function formatCookingNumber(val: number): string {
  * Pluralizes a word (either a unit or an item) leveraging SINGULAR_TO_PLURAL and fallback rules.
  */
 export function pluralizeWord(word: string): string {
-  const lower = word.toLowerCase().trim();
-  if (SINGULAR_TO_PLURAL[lower]) {
-    return SINGULAR_TO_PLURAL[lower];
+  if (!word) {
+    return '';
   }
-  if (word.includes('(')) {
-    const parts = word.split('(');
+
+  let prefix = '';
+  let base = word.trim();
+  const lowerBase = base.toLowerCase();
+
+  const SIZE_PREFIXES = ['large', 'medium', 'small'];
+  for (const p of SIZE_PREFIXES) {
+    if (lowerBase.startsWith(p + ' ')) {
+      prefix = base.substring(0, p.length + 1);
+      base = base.substring(p.length + 1).trim();
+      break;
+    }
+  }
+
+  const lower = base.toLowerCase();
+  if (PLURAL_TO_SINGULAR[lower]) {
+    return prefix + base;
+  }
+  if (SINGULAR_TO_PLURAL[lower]) {
+    return prefix + SINGULAR_TO_PLURAL[lower];
+  }
+  if (base.includes('(')) {
+    const parts = base.split('(');
     const firstWord = parts[0].trim();
     const rest = parts.slice(1).join('(');
-    return `${pluralizeWord(firstWord)} (${rest}`;
+    return `${prefix}${pluralizeWord(firstWord)} (${rest}`;
   }
   if (
     lower.endsWith('y') &&
@@ -98,18 +118,20 @@ export function pluralizeWord(word: string): string {
     !lower.endsWith('oy') &&
     !lower.endsWith('uy')
   ) {
-    return word.slice(0, -1) + 'ies';
+    return prefix + base.slice(0, -1) + 'ies';
   }
   if (
     lower.endsWith('ch') ||
     lower.endsWith('sh') ||
-    lower.endsWith('s') ||
     lower.endsWith('x') ||
     lower.endsWith('z')
   ) {
-    return word + 'es';
+    return prefix + base + 'es';
   }
-  return word + 's';
+  if (lower.endsWith('s')) {
+    return prefix + base;
+  }
+  return prefix + base + 's';
 }
 
 /**
