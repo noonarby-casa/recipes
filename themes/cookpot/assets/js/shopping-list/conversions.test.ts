@@ -3188,6 +3188,62 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       staple: 'in-pantry',
     },
   },
+  {
+    input: {
+      item: 'butternut squash',
+      qty: 1,
+      unit: '',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'butternut squash',
+      qty: 1,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'shallot',
+      qty: 2,
+      unit: '',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'shallot',
+      qty: 2,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'fresh sage',
+      qty: 10,
+      unit: 'leaf',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'fresh sage',
+      qty: 10,
+      unit: 'leaves',
+      category: 'fresh-herbs',
+    },
+  },
+  {
+    input: {
+      item: 'kale',
+      qty: 1,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'kale',
+      qty: 1,
+      unit: 'cup',
+      category: 'fresh-produce',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

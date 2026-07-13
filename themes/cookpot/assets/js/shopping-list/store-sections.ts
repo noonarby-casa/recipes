@@ -29,6 +29,7 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
       'mint',
       'oregano fresh',
       'fresh oregano',
+      'fresh sage',
     ],
   },
   {
