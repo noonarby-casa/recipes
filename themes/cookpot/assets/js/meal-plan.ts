@@ -3018,7 +3018,7 @@ function renderCombinedShoppingList(): void {
   });
 }
 
-function formatItemNotes(item: ShoppingItem): string {
+function getNotesString(item: ShoppingItem): string {
   const notesStrs: string[] = [];
   if (item.note) {
     if (item.note.sizeNote) {
@@ -3046,7 +3046,21 @@ function formatItemNotes(item: ShoppingItem): string {
       notesStrs.push(`or ${alts.join(' or ')}`);
     }
   }
-  return notesStrs.length > 0 ? ` (${notesStrs.join('; ')})` : '';
+  return notesStrs.join('; ');
+}
+
+function formatItemNotes(item: ShoppingItem): string {
+  const notesStr = getNotesString(item);
+  return notesStr ? ` (${notesStr})` : '';
+}
+
+function formatItemNotesHtml(item: ShoppingItem): string {
+  const notesStr = getNotesString(item);
+  return notesStr
+    ? `<div class="shopping-item-details">
+         <span class="shopping-item-note">(${notesStr})</span>
+       </div>`
+    : '';
 }
 
 function renderBuyItemsWithSections(items: ShoppingItem[]): string {
@@ -3068,7 +3082,7 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
     const checkedAttr = isChecked ? 'checked' : '';
     const checkedClass = isChecked ? 'checked' : '';
 
-    const notesStr = formatItemNotes(item);
+    const notesHtml = formatItemNotesHtml(item);
     const { qtyStr, itemStr } = formatItemQuantity(
       item.qty,
       item.unit,
@@ -3079,7 +3093,7 @@ function renderBuyItemsWithSections(items: ShoppingItem[]): string {
       <li class="shopping-item ${checkedClass}">
         <label class="shopping-item-label">
           <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" data-item="${item.item}" ${checkedAttr} />
-          <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}</span>
+          <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesHtml}</span>
         </label>
       </li>
     `;
@@ -3096,7 +3110,7 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
       const checkedAttr = isChecked ? 'checked' : '';
       const checkedClass = isChecked ? 'checked' : '';
 
-      const notesStr = formatItemNotes(item);
+      const notesHtml = formatItemNotesHtml(item);
       const { qtyStr, itemStr } = formatItemQuantity(
         item.qty,
         item.unit,
@@ -3105,9 +3119,9 @@ function renderItemsBlock(items: ShoppingItem[], isStaple: boolean): string {
 
       return `
         <li class="shopping-item ${checkedClass}">
-          <label class="shopping-item-label" style="display: flex; align-items: center; width: 100%;">
-            <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" data-item="${item.item}" ${checkedAttr} style="margin-right: 0.5rem;" />
-            <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}</span>
+          <label class="shopping-item-label">
+            <input type="checkbox" class="shopping-item-checkbox" data-key="${key}" data-item="${item.item}" ${checkedAttr} />
+            <span>${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesHtml}</span>
           </label>
         </li>
       `;
