@@ -110,8 +110,9 @@ Before squashing or committing any changes:
 
 1. **Lint and Format:** Execute `pnpm run ci` to run typechecking (`tsc`), linting (`eslint`), formatting (`prettier`), and unit tests (`vitest`).
 2. **Auto-Fix:** Use `pnpm fix` to automatically correct linting or formatting issues if any are found.
-3. **Verify Category Mapping**: Check the linter output of the unit tests. If any new recipe ingredients fall back to `"Other"` (or are misclassified into incorrect categories due to substring collisions), add corresponding keywords to [store-sections.ts](../../../themes/cookpot/assets/js/shopping-list/store-sections.ts) or define equivalence rules in [rules.ts](../../../themes/cookpot/assets/js/shopping-list/rules.ts) to ensure correct grocery list section mapping and to prevent collisions.
-4. **Hugo Build:** Run `hugo --minify` in the repository root to verify that the static site builds successfully and index validation succeeds.
+3. **Add Ingredient Conversion Tests**: Because the test suite requires every unique recipe ingredient to be covered by at least one unit test, you **must** add a corresponding test case for any new ingredient to the `INGREDIENT_TEST_CASES` array in [conversions.test.ts](../../../themes/cookpot/assets/js/shopping-list/conversions.test.ts).
+4. **Verify Category Mapping**: Check the linter output of the unit tests. If any new recipe ingredients fall back to `"Other"` (or are misclassified into incorrect categories due to substring collisions), add corresponding keywords to [store-sections.ts](../../../themes/cookpot/assets/js/shopping-list/store-sections.ts) or define equivalence rules in [rules.ts](../../../themes/cookpot/assets/js/shopping-list/rules.ts) to ensure correct grocery list section mapping and to prevent collisions.
+5. **Hugo Build:** Run `hugo --minify` in the repository root to verify that the static site builds successfully and index validation succeeds.
 
 ## 🔱 5. Version Control Protocol (Jujutsu)
 
@@ -120,4 +121,4 @@ Always use the standard Jujutsu workflow when implementing changes:
 1. Describe the target (parent) commit: `jj describe -m "Add recipe: <Recipe Name>"`
 2. Create a scratch commit: `jj new`
 3. Implement files and perform testing.
-4. Squash changes into the described commit: `jj squash`
+4. Squash changes into the described commit: `jj squash -u`
