@@ -37,6 +37,10 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
     keywords: ['tofu', 'tempeh'],
   },
   {
+    category: 'frozen',
+    keywords: ['frozen', 'ice cream', 'dumpling'],
+  },
+  {
     category: 'fresh-produce',
     keywords: [
       'lettuce',
@@ -78,6 +82,8 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
       'sugar snap pea',
       'snow pea',
       'snap pea',
+      'jalapeño',
+      'jalapeno',
     ],
   },
   {
@@ -151,10 +157,7 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
     category: 'deli',
     keywords: ['deli', 'hummus', 'pesto'],
   },
-  {
-    category: 'frozen',
-    keywords: ['frozen', 'ice cream', 'dumpling'],
-  },
+
   {
     category: 'pasta-grains',
     keywords: [

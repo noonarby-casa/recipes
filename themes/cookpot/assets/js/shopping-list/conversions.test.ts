@@ -1224,7 +1224,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'jalapeño',
       qty: 2,
       unit: '',
-      category: 'other',
+      category: 'fresh-produce',
     },
   },
   {
@@ -3242,6 +3242,104 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'cup',
       category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'green bell pepper',
+      qty: 1,
+      prep: 'diced',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'green bell pepper',
+      qty: 1,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'frozen corn',
+      qty: 1,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'frozen corn',
+      qty: 1,
+      unit: 'cup',
+      category: 'frozen',
+    },
+  },
+  {
+    input: {
+      item: 'refried beans',
+      qty: 1,
+      unit: 'can',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'refried beans',
+      qty: 1,
+      unit: 'can',
+      category: 'canned-beans',
+    },
+  },
+  {
+    input: {
+      item: 'green enchilada sauce',
+      qty: 1.5,
+      unit: 'cup',
+      desc: 'divided',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'green enchilada sauce',
+      qty: 1.5,
+      unit: 'cups',
+      category: 'condiments',
+    },
+  },
+  {
+    input: {
+      item: 'tortilla',
+      qty: 12,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'tortilla',
+      qty: 12,
+      unit: '',
+      category: 'bakery',
+    },
+  },
+  {
+    input: {
+      item: 'jalapeño slices',
+      prep: 'for topping',
+      optional: true,
+    },
+    expectedList: 'optional',
+    expectedItem: {
+      item: 'jalapeño slices',
+      qty: null,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'vegan cream cheese',
+      qty: 8,
+      unit: 'ounce',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'vegan cream cheese',
+      qty: 1,
+      unit: 'cup',
+      category: 'milk-cream',
     },
   },
 ];
