@@ -21,9 +21,9 @@ ingredients = [
   { category = "Oats", items = [
     { qty = 0.333, unit = "cup", item = "Greek yogurt", desc = "vanilla or plain nonfat" },
     { qty = 0.666, unit = "cup", item = "almond milk", desc = "unsweetened vanilla" },
-    { qty = 0.5, unit = "tablespoon", item = "chia seed" },
-    { qty = 0.5, unit = "cup", item = "rolled oat" },
-    { qty = 1, unit = "tablespoon", item = "maple syrup", prep = "(or to taste)", optional = true }
+    { qty = 0.5, unit = "tablespoon", item = "chia seeds" },
+    { qty = 0.5, unit = "cup", item = "rolled oats" },
+    { qty = 1, unit = "tablespoon", item = "maple syrup", prep = "to taste", optional = true }
   ] },
   { category = "Topping", items = [
     { qty = 1, unit = "tablespoon", item = "peanut butter", desc = "natural, drippy" },

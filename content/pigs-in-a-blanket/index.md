@@ -15,8 +15,8 @@ tags = [
 ]
 ingredients = [
   { items = [
-    { qty = 1, unit = "can", item = "Pillsbury crescent roll" },
-    { qty = 1, unit = "package", item = "cocktail weenie" },
+    { qty = 1, unit = "can", item = "Pillsbury crescent rolls" },
+    { qty = 1, unit = "package", item = "cocktail weenies" },
     { item = "ketchup", prep = "for serving" }
   ] }
 ]

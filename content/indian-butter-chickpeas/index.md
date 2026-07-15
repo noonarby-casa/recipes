@@ -21,7 +21,7 @@ ingredients = [
   { items = [
     { qty = 4, unit = "tablespoon", item = "butter" },
     { qty = 0.25, unit = "teaspoon", item = "cumin powder" },
-    { qty = 1.5, unit = "cup", item = "onion", prep = "finely chopped (about 1 large)" },
+    { qty = 1.5, unit = "cup", item = "onion", prep = "finely chopped", alt={qty =1,   unit="large"} },
     { qty = 2, unit = "large clove", item = "garlic", prep = "finely chopped" },
     { qty = 2, unit = "teaspoon", item = "ginger", prep = "finely chopped" },
     { qty = 1, unit = "teaspoon", item = "salt", prep = "divided, or to taste" },
@@ -48,3 +48,7 @@ ingredients = [
 5. Add the tomato sauce ({{< qty "1 can" >}}), cashew powder {{< qty "3 tablespoons" >}}, chickpeas ({{< qty "2 cans" >}}), and water ({{< qty "1/2 cup" >}}). Stir well, reduce the heat to low, cover, and cook for {{< timer "10 minutes" >}} (stirring every {{< timer "3-4 minutes" >}} to make sure that it does not burn on the bottom).
 6. Uncover, stir in the heavy cream ({{< qty "1/2 cup" >}}), maple syrup ({{< qty "2 tablespoons" >}}), and the remaining salt ({{< qty "1/2 teaspoon" >}}). Let simmer for about {{< timer "2 minutes" >}} (mix in a splash of water if the curry looks too thick).
 7. Remove from the heat and let the curry rest for a few minutes before serving.
+
+## Tips
+
+- Kasoori methi is dried fenugreek leaves and is one of the essential ingredients in an authentic butter chicken recipe. However, it can be skipped if you don't have it stocked.

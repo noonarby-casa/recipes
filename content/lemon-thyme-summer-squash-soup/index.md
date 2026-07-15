@@ -24,12 +24,12 @@ ingredients = [
     { qty = 2, unit = "tablespoon", item = "butter", alt = { item = "olive oil" } },
     { qty = 1, unit = "small", item = "sweet onion", prep = "chopped" },
     { qty = 3, unit = "clove", item = "garlic", prep = "minced" },
-    { qty = 4, item = "summer squash", desc = "(about 7-8 ounces each)", prep = "sliced into 1/8-inch half moons" },
+    { qty = 4, item = "summer squash", prep = "sliced into 1/8-inch half moons", alt={ qty=[7,8], unit="ounce", each=true} },
     { qty = 1, unit = "tablespoon", item = "thyme", desc = "fresh" },
     { qty = 1, unit = "teaspoon", item = "sea salt" },
     { item = "black pepper", prep = "to taste" },
     { qty = 4, unit = "cup", item = "water" },
-    { qty = 1, item = "lemon", prep = "zested (about 1 teaspoon zest)" },
+    { qty = 1, item = "lemon", prep = "zested", alt={qty=1, unit="teaspoon"} },
     { qty = 0.5, unit = "cup", item = "heavy cream" },
     { qty = 2, unit = "tablespoon", item = "lemon juice", desc = "fresh", prep = "(plus more to taste)" }
   ] }

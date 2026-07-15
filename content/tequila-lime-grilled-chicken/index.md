@@ -22,12 +22,12 @@ tags = [
 ]
 ingredients = [
   { category = "Brine", items = [
-    { qty = 0.333, unit = "cup", item = "salt", prep = "(for brine)" },
-    { qty = 3, unit = "tablespoon", item = "sugar", prep = "(for brine)" },
-    { qty = 6, unit = "cup", item = "water", prep = "(for brine)" }
+    { qty = 0.333, unit = "cup", item = "salt"},
+    { qty = 3, unit = "tablespoon", item = "sugar"},
+    { qty = 6, unit = "cup", item = "water"}
   ] },
   { category = "Chicken", items = [
-    { qty = 4, item = "chicken breast", desc = "12-ounce split bone-in, skin-on" }
+    { qty = 4, item = "chicken breasts", desc = "bone-in, skin-on", prep="split", alt={qty=12, unit="ounce", each=true} }
   ] },
   { category = "Sauce", items = [
     { qty = 0.5, unit = "cup", item = "mayonnaise" },
@@ -36,8 +36,8 @@ ingredients = [
     { qty = 4, unit = "tablespoon", item = "lime juice", desc = "fresh" },
     { qty = 2, unit = "medium clove", item = "garlic", prep = "minced" },
     { qty = 0.333, unit = "cup", item = "cilantro", desc = "fresh", prep = "chopped" },
-    { qty = 1, unit = "teaspoon", item = "sugar", prep = "(for sauce)" },
-    { qty = 1, unit = "teaspoon", item = "salt", prep = "(for sauce)" }
+    { qty = 1, unit = "teaspoon", item = "sugar" },
+    { qty = 1, unit = "teaspoon", item = "salt" }
   ] },
   { category = "Serving & Grilling", items = [
     { item = "vegetable oil", prep = "for the grill" },

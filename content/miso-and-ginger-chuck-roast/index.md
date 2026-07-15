@@ -25,13 +25,13 @@ ingredients = [
     { qty = 2, unit = "tablespoon", item = "honey" },
     { qty = 1.333, unit = "tablespoon", item = "rice wine vinegar" },
     { qty = 3, unit = "clove", item = "garlic", prep = "minced or grated" },
-    { qty = 3, unit = "tablespoon", item = "ginger", desc = "fresh, about 3 inches", prep = "finely grated" },
+    { qty = 3, unit = "tablespoon", item = "ginger", desc = "fresh", prep = "finely grated" },
     { qty = 1, unit = "teaspoon", item = "red pepper flakes" },
     { qty = 1, unit = "cup", item = "beef bone broth", desc = "if using a Dutch oven" }
   ] },
   { category = "Garnish", items = [
-    { item = "green onion", prep = "thinly sliced", desc = "for garnish" },
-    { item = "sesame seed", desc = "for garnish" }
+    { item = "green onions", prep = "thinly sliced" },
+    { item = "sesame seed" }
   ] }
 ]
 +++

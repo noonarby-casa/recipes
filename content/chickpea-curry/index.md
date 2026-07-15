@@ -30,9 +30,9 @@ ingredients = [
     { qty = 1, unit = "tablespoon", item = "curry powder" },
     { qty = 1, unit = "teaspoon", item = "cumin" },
     { qty = 0.5, unit = "teaspoon", item = "coriander" },
-    { qty = 0.75, unit = "teaspoon", item = "kosher salt" },
-    { qty = 2, unit = "can (15 ounce)", item = "chickpea" },
-    { qty = 0.5, unit = "cup", item = "coconut milk", desc = "full fat canned" },
+    { qty = 0.75, unit = "teaspoon", item = "salt" },
+    { qty = 2, unit = "can (15 ounce)", item = "chickpeas" },
+    { qty = 0.5, unit = "cup", item = "coconut milk", desc = "canned" },
     { item = "basmati rice", desc = "white or brown", prep = "to serve" }
   ] }
 ]

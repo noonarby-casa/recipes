@@ -16,10 +16,10 @@ tags = [
 
 ingredients = [
   { category = "Smoothie", items = [
-    { qty = 1, unit = "cup", item = "low-fat plain kefir" },
-    { qty = 1, unit = "cup", item = "frozen mixed berries" },
+    { qty = 1, unit = "cup", item = "plain kefir", alt= { item = "plain yogurt" } },
+    { qty = 1, unit = "cup", desc = "frozen", item = "mixed berries" },
     { qty = 0.25, unit = "cup", item = "orange juice" },
-    { qty = [1, 2], unit = "tablespoon", item = "fresh mint" },
+    { qty = [1, 2], unit = "tablespoon", desc="fresh", item = "mint" },
     { qty = 1, unit = "tablespoon", item = "honey" }
   ] }
 ]

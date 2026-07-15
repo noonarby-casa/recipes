@@ -20,14 +20,14 @@ ingredients = [
     { qty = 3, unit = "tablespoon", item = "canola oil" },
     { qty = 2, item = "egg", prep = "beaten" },
     { qty = 1, unit = "medium", item = "onion", prep = "halved, each half thickly sliced" },
-    { qty = 3, unit = "medium", item = "carrot", prep = "bias-cut into 1/2-inch-thick slices", desc = "about 1 1/2 cups" },
-    { qty = 4, unit = "ounce", item = "snow peas or sugar snap peas", prep = "trimmed", desc = "about 1 1/2 cups" },
+    { qty = 3, unit = "medium", item = "carrot", prep = "bias-cut into 1/2-inch-thick slices", alt={qty=1.5, unit="cup"} },
+    { qty = 4, unit = "ounce", item = "snow peas or sugar snap peas", prep = "trimmed", alt={qty=1.5, unit="cup"} },
     { qty = 3, unit = "clove", item = "garlic", prep = "minced" },
-    { qty = 4, unit = "cup", item = "white rice", desc = "cold", prep = "cooked" },
+    { qty = 4, unit = "cup", item = "white rice", prep = "cold" },
     { qty = 2, unit = "teaspoon", item = "sesame oil" },
     { qty = 0.5, unit = "teaspoon", item = "salt" },
     { item = "pepper", prep = "to taste" },
-    { qty = 0.75, unit = "cup", item = "scallion", prep = "thinly sliced", desc = "about 1 bunch" }
+    { qty = 0.75, unit = "cup", item = "scallion", prep = "thinly sliced", alt = { qty = 1, unit = "bunch" } }
   ] }
 ]
 +++

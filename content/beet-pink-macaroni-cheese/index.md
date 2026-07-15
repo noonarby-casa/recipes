@@ -23,7 +23,7 @@ ingredients = [
     { qty = 1, unit = "head", item = "garlic" },
     { qty = 1, item = "lemon", prep = "for juice and zest" },
     { qty = 3, unit = "ounce", item = "parmesan", prep = "grated" },
-    { item = "Diamond Crystal kosher salt" },
+    { item = "salt" },
     { qty = 16, unit = "ounce", item = "rigatoni pasta", desc = "short" },
     { qty = 0.25, unit = "cup", item = "olive oil", desc = "extra-virgin" },
     { qty = 1, unit = "teaspoon", item = "basil", desc = "dried" }

@@ -26,13 +26,13 @@ ingredients = [
   { category = "Filling", items = [
     { qty = 6, unit = "large", item = "egg yolk" },
     { qty = 0.25, unit = "cup", item = "granulated sugar", prep = "for filling" },
-    { qty = 1, unit = "pinch", item = "kosher salt" },
+    { qty = 1, unit = "pinch", item = "salt" },
     { qty = 1, unit = "can (14-ounce)", item = "sweetened condensed milk" },
     { qty = 2, unit = "tablespoon", item = "lemon zest", prep = "grated" },
     { qty = 0.75, unit = "cup", item = "lemon juice", desc = "fresh" }
   ] },
   { category = "For Serving", items = [
-    { item = "whipped cream", desc = "freshly", prep = "for serving" }
+    { item = "whipped cream", prep = "for serving" }
   ] }
 ]
 +++

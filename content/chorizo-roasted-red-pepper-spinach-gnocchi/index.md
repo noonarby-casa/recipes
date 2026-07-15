@@ -19,11 +19,11 @@ tags = [
 ]
 ingredients = [
   { items = [
-    { qty = 16, unit = "ounce", item = "potato gnocchi" },
+    { qty = 16, unit = "ounce", item = "gnocchi" },
     { qty = 0.5, unit = "pound", item = "chorizo", desc = "fresh", prep = "casing removed" },
-    { qty = 0.75, unit = "cup", item = "jarred roasted red pepper", prep = "chopped" },
+    { qty = 0.75, unit = "cup", desc="jarred", item = "roasted red pepper", prep = "chopped" },
     { qty = 1, unit = "small", item = "onion", prep = "chopped" },
-    { qty = 0.5, unit = "teaspoon", item = "kosher salt" },
+    { qty = 0.5, unit = "teaspoon", item = "salt" },
     { qty = 3, unit = "cup", item = "baby spinach", prep = "loosely packed" }
   ] }
 ]

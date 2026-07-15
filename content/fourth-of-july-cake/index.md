@@ -19,7 +19,7 @@ tags = [
 ]
 ingredients = [
   { items = [
-    { qty = 1, unit = "box (16 ounces)", item = "pound cake mix", prep = "(plus ingredients required by package instructions)" },
+    { qty = 1, unit = "box", item = "pound cake mix", prep = "(plus ingredients required by package instructions)", alt = { qty = 16, unit = "ounce" } },
     { qty = 1.5, unit = "cup", item = "heavy cream" },
     { qty = 0.25, unit = "cup", item = "powdered sugar" },
     { qty = 1, unit = "teaspoon", item = "vanilla extract" },

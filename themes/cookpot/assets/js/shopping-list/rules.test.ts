@@ -12,11 +12,18 @@ import {
   STORE_LAYOUTS,
 } from './store-sections';
 import { getConversionFactor } from './utils';
+import { IngredientInput } from './types';
+import { validateIngredient } from './validator';
 
-function getAllIngredientsFromContent(): string[] {
-  // Path to content directory relative to this test file location
+interface RecipeIngredients {
+  title: string;
+  filepath: string;
+  ingredients: IngredientInput[];
+}
+
+function getRecipeIngredients(): RecipeIngredients[] {
   const contentDir = path.resolve(__dirname, '../../../../../content');
-  const ingredients: string[] = [];
+  const recipes: RecipeIngredients[] = [];
 
   function scanDir(dir: string) {
     if (!fs.existsSync(dir)) {
@@ -28,30 +35,90 @@ function getAllIngredientsFromContent(): string[] {
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
         scanDir(fullPath);
-      } else if (file.endsWith('.md')) {
+      } else if (file.endsWith('.md') && file !== '_index.md') {
         const text = fs.readFileSync(fullPath, 'utf-8');
+
+        // Find title
+        const titleMatch = text.match(/title\s*=\s*"([^"]+)"/);
+        const title = titleMatch ? titleMatch[1] : file;
+
         // Find ingredients block in TOML front matter
-        const startIdx = text.indexOf('ingredients = [');
-        if (startIdx !== -1) {
-          const endIdx = text.indexOf('+++', startIdx);
-          const ingredientsBlock = text.slice(startIdx, endIdx);
-          // Match all items like: item = "butter"
-          const itemMatches = ingredientsBlock.match(/item\s*=\s*"([^"]+)"/g);
-          if (itemMatches) {
-            itemMatches.forEach((m: string) => {
-              const itemMatch = m.match(/"([^"]+)"/);
-              if (itemMatch) {
-                ingredients.push(itemMatch[1]);
-              }
-            });
+        const startMatch = text.match(/ingredients\s*=\s*\[/);
+        if (!startMatch || startMatch.index === undefined) {
+          continue;
+        }
+
+        let bracketCount = 1;
+        let idx = startMatch.index + startMatch[0].length;
+        let inString = false;
+        let stringChar = '';
+
+        while (idx < text.length && bracketCount > 0) {
+          const char = text[idx];
+          if (inString) {
+            if (char === stringChar && text[idx - 1] !== '\\') {
+              inString = false;
+            }
+          } else if (char === '"' || char === "'") {
+            inString = true;
+            stringChar = char;
+          } else if (char === '[') {
+            bracketCount++;
+          } else if (char === ']') {
+            bracketCount--;
           }
+          idx++;
+        }
+
+        const tomlSlice = text.slice(startMatch.index, idx);
+
+        // Remove TOML comments from slice
+        const withoutComments = tomlSlice.replace(/#.*/g, '');
+
+        // Replace '=' with ':' for JavaScript object notation
+        const jsCode = withoutComments.replace(
+          /([a-zA-Z_][a-zA-Z0-9_]*)\s*=/g,
+          '$1:',
+        );
+
+        try {
+          const result = new Function(`return { ${jsCode} }`)();
+          const parsedIngredients: IngredientInput[] = [];
+          if (Array.isArray(result.ingredients)) {
+            for (const section of result.ingredients) {
+              if (section && Array.isArray(section.items)) {
+                for (const item of section.items) {
+                  if (typeof item === 'string') {
+                    parsedIngredients.push({ item });
+                  } else if (item && typeof item === 'object') {
+                    parsedIngredients.push(item as IngredientInput);
+                  }
+                }
+              }
+            }
+          }
+          recipes.push({
+            title,
+            filepath: fullPath,
+            ingredients: parsedIngredients,
+          });
+        } catch (err) {
+          throw new Error(`Failed to parse ingredients block in ${fullPath}`, {
+            cause: err,
+          });
         }
       }
     }
   }
 
   scanDir(contentDir);
-  return Array.from(new Set(ingredients));
+  return recipes;
+}
+
+function getAllIngredientsFromContent(): string[] {
+  const recipes = getRecipeIngredients();
+  const items = recipes.flatMap((r) => r.ingredients.map((ing) => ing.item));
+  return Array.from(new Set(items));
 }
 
 describe('Static configuration and recipe database tests', () => {
@@ -167,5 +234,38 @@ describe('Static configuration and recipe database tests', () => {
         }
       }
     }
+  });
+
+  test('recipe database ingredient validation linter', () => {
+    const recipes = getRecipeIngredients();
+    const errorsList: string[] = [];
+    const warningsList: string[] = [];
+
+    for (const recipe of recipes) {
+      for (const ing of recipe.ingredients) {
+        const errors = validateIngredient(ing);
+        for (const error of errors) {
+          const relativePath = path.relative(
+            path.resolve(__dirname, '../../../../../'),
+            recipe.filepath,
+          );
+          const formatted = `${recipe.title} (file: ${relativePath}): [${error.severity.toUpperCase()}] ${error.message} (Ingredient: ${JSON.stringify(ing)})`;
+          if (error.severity === 'error') {
+            errorsList.push(formatted);
+          } else {
+            warningsList.push(formatted);
+          }
+        }
+      }
+    }
+
+    if (warningsList.length > 0) {
+      console.warn(
+        `\n[LINTER WARNINGS] Found ${warningsList.length} ingredient warnings:`,
+      );
+      warningsList.forEach((w) => console.warn(`  - ${w}`));
+    }
+
+    expect(errorsList).toEqual([]);
   });
 });

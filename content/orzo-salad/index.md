@@ -23,7 +23,7 @@ ingredients = [
     { qty = 1.5, unit = "cup", item = "orzo pasta", desc = "dry" },
     { qty = 2, item = "Persian cucumber", prep = "halved vertically and sliced 1/4-inch thick" },
     { qty = 2, unit = "cup", item = "cherry tomato", prep = "halved" },
-    { qty = 1, unit = "cup", item = "chickpea", desc = "cooked", prep = "drained and rinsed" },
+    { qty = 1, unit = "cup", item = "chickpeas", desc = "cooked", prep = "drained and rinsed" },
     { qty = 4, unit = "ounce", item = "feta cheese", prep = "cut into 1/4-inch cubes" },
     { qty = 0.333, unit = "cup", item = "red onion", prep = "thinly sliced" },
     { qty = 0.5, unit = "cup", item = "Kalamata olive", desc = "pitted" },

@@ -20,7 +20,7 @@ tags = [
 ]
 ingredients = [
   { items = [
-    { qty = 0.666, unit = "cup", item = "bread-and-butter pickle", prep = "minced" },
+    { qty = 0.666, unit = "cup", item = "bread-and-butter pickles", prep = "minced" },
     { qty = 4, item = "scallion", prep = "trimmed and thinly sliced, plus more for garnish" },
     { qty = 0.75, unit = "cup", item = "mayonnaise" },
     { qty = 0.25, unit = "cup", item = "milk" },
@@ -28,9 +28,9 @@ ingredients = [
     { qty = 0.25, unit = "cup", item = "dill", desc = "fresh", prep = "chopped, plus small sprigs for garnish" },
     { qty = 4, unit = "teaspoon", item = "Dijon mustard" },
     { qty = 1, unit = "teaspoon", item = "lemon zest", desc = "fresh" },
-    { qty = 4, unit = "teaspoon", item = "lemon juice", desc = "fresh", prep = "(from 1 large lemon)" },
+    { qty = 4, unit = "teaspoon", item = "lemon juice", desc = "fresh" },
     { qty = 1, unit = "teaspoon", item = "granulated sugar" },
-    { item = "kosher salt", prep = "to taste" },
+    { item = "salt", prep = "to taste" },
     { item = "black pepper", desc = "freshly ground", prep = "to taste" },
     { qty = 16, unit = "ounce", item = "elbow macaroni" }
   ] }

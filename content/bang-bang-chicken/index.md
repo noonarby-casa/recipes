@@ -9,9 +9,9 @@ times = [
 recipeSource = "Carly Rickarby"
 ingredients = [
   { category = "Bang Bang Sauce", items = [
-    { qty = 1, unit = "cup", item = "whole-egg mayonnaise" },
-    { qty = 0.25, unit = "cup", item = "sweet chilli sauce" },
-    { qty = 1, unit = "tablespoon", item = "sriracha", optional = true, alt = { item = "hot chilli sauce" } },
+    { qty = 1, unit = "cup", desc="whole egg", item = "mayonnaise" },
+    { qty = 0.25, unit = "cup", item = "sweet chili sauce" },
+    { qty = 1, unit = "tablespoon", item = "sriracha", optional = true, alt = { item = "hot chili sauce" } },
     { qty = 1, unit = "tablespoon", item = "honey" },
     { qty = 1, unit = "tablespoon", item = "lime juice", desc = "fresh" }
   ] },
@@ -20,13 +20,13 @@ ingredients = [
     { qty = 1, unit = "teaspoon", item = "paprika", desc = "sweet" },
     { qty = 1, unit = "teaspoon", item = "onion powder" },
     { qty = 0.25, unit = "teaspoon", item = "black pepper", desc = "freshly cracked" },
-    { qty = 1, unit = "tablespoon", item = "tamari", alt = { item = "regular soy sauce" } },
+    { qty = 1, unit = "tablespoon", item = "tamari", alt = { item = "soy sauce" } },
     { qty = 1, unit = "tablespoon", item = "brown sugar" },
     { qty = 1, unit = "tablespoon", item = "olive oil" }
   ] },
   { category = "Serving & Garnish", items = [
     { qty = 1, item = "spring onion", prep = "sliced", alt = { item = "scallion" } },
-    { item = "steamed rice", prep = "for serving" },
+    { item = "white rice", prep = "steamed" },
     { qty = 75, unit = "gram", item = "red cabbage", prep = "shredded" },
     { qty = 2, item = "carrot", prep = "grated or julienned" },
     { qty = 1, item = "cucumber", prep = "sliced" },

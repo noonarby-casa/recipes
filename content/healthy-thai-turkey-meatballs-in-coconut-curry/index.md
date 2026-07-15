@@ -25,7 +25,7 @@ ingredients = [
   { category = "Meatballs", items = [
     { qty = 1, unit = "pound", item = "ground turkey", desc = "organic", alt = { item = "ground chicken" } },
     { qty = 1, item = "egg" },
-    { qty = 1, unit = "cup", item = "cracker crumb", desc = "gluten-free", alt = { item = "grain-free cracker crumb" } },
+    { qty = 1, unit = "cup", item = "cracker crumb", desc = "gluten-free", alt = { desc = "grain-free" } },
     { qty = 2, unit = "clove", item = "garlic", prep = "minced" },
     { qty = 1, unit = "teaspoon", item = "ginger", desc = "ground" },
     { qty = 1.5, unit = "tablespoon", item = "coconut amino" },

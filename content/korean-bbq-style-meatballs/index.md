@@ -25,7 +25,7 @@ ingredients = [
     { qty = 0.5, unit = "cup", item = "scallion", desc = "fresh", prep = "chopped", alt = { qty = 2, unit = "tablespoon", desc = "freeze-dried" } },
     { qty = 2, unit = "tablespoon", item = "soy sauce", desc = "low-sodium" },
     { qty = 2, unit = "tablespoon", item = "garlic", prep = "minced" },
-    { qty = 1, unit = "teaspoon", item = "kosher salt" },
+    { qty = 1, unit = "teaspoon", item = "salt" },
     { qty = 1, unit = "teaspoon", item = "black pepper", desc = "freshly ground" }
   ] },
   { category = "Vegetables & Rice", items = [

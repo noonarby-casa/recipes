@@ -20,7 +20,7 @@ tags = [
 ]
 ingredients = [
   { items = [
-    { qty = 1, unit = "package (12- to 18-ounces)", item = "potato gnocchi", desc = "shelf-stable" },
+    { qty = 1, unit = "package", item = "gnocchi", desc = "shelf-stable", alt = { qty = [12, 18], unit = "ounce" } },
     { qty = 1, unit = "large head", item = "broccoli", prep = "florets cut into 1.5- to 2-inch pieces, stems thinly sliced" },
     { qty = 0.25, unit = "cup", item = "olive oil", desc = "extra-virgin" },
     { qty = 2, unit = "clove", item = "garlic", prep = "finely grated" },

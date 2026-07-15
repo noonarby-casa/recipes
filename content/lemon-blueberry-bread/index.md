@@ -28,7 +28,7 @@ ingredients = [
     { qty = 1.5, unit = "cup", item = "all-purpose flour" },
     { qty = 1, unit = "teaspoon", item = "baking powder" },
     { qty = 0.25, unit = "teaspoon", item = "baking soda" },
-    { qty = 0.5, unit = "teaspoon", item = "kosher salt" },
+    { qty = 0.5, unit = "teaspoon", item = "salt" },
     { qty = 0.5, unit = "cup", item = "sour cream", alt = { item = "plain Greek yogurt" } },
     { qty = 2, unit = "tablespoon", item = "lemon zest" },
     { qty = 1, unit = "cup", item = "blueberry", prep = "fresh or frozen" }

@@ -19,16 +19,16 @@ tags = [
 ingredients = [
   { category = "Ingredients", items = [
     { qty = 2, unit = "tablespoon", item = "olive oil", desc = "divided" },
-    { qty = 1, item = "butternut squash", desc = "large, about 2 pounds" },
-    { item = "kosher salt" },
+    { qty = 1, unit = "large", item = "butternut squash", alt = { qty = 2, unit = "pound" } },
+    { item = "salt" },
     { item = "black pepper", desc = "freshly ground" },
     { qty = 2, item = "shallot", prep = "chopped" },
     { qty = [2, 3], unit = "clove", item = "garlic", prep = "minced" },
-    { qty = 10, unit = "leaf", item = "fresh sage", desc = "divided (or 1/2 teaspoon dried sage)" },
-    { qty = 2.5, unit = "cup", item = "orzo pasta", alt = { qty = 500, unit = "gram", item = "orzo pasta" } },
-    { qty = 5, unit = "cup", item = "vegetable stock", desc = "plus 1/2 cup if needed" },
-    { qty = 1, unit = "cup", item = "kale", desc = "chopped", alt = { qty = 100, unit = "gram", item = "kale" } },
-    { qty = 0.75, unit = "cup", item = "parmesan", desc = "freshly grated", alt = { qty = 50, unit = "gram", item = "parmesan" } }
+    { qty = 10, unit = "leaf", item = "sage", desc = "divided", prep="fresh", alt = { qty = 0.5, unit = "teaspoon", prep = "dried" } },
+    { qty = 2.5, unit = "cup", item = "orzo pasta", alt = { qty = 500, unit = "gram" } },
+    { qty = [5, 5.5], unit = "cup", item = "vegetable stock" },
+    { qty = 1, unit = "cup", item = "kale", desc = "chopped", alt = { qty = 100, unit = "gram"   } },
+    { qty = 0.75, unit = "cup", item = "parmesan", desc = "freshly grated", alt = { qty = 50, unit = "gram" } }
   ] }
 ]
 +++

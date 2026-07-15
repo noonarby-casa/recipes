@@ -36,19 +36,19 @@ ingredients = [
     { qty = 2, unit = "tablespoon", item = "all-purpose flour" }
   ] },
   { category = "Frosting", items = [
-    { qty = 8, unit = "ounce", item = "cream cheese", desc = "full-fat", prep = "a little softer than room temperature (for frosting)" },
-    { qty = 10, unit = "tablespoon", item = "butter", desc = "unsalted", prep = "a little softer than room temperature (for frosting)" },
-    { qty = 4, unit = "cup", item = "confectioners' sugar", prep = "more if needed (for frosting)" },
-    { qty = 2, unit = "teaspoon", item = "lemon zest", desc = "fresh", prep = "(for frosting)" },
-    { qty = 1, unit = "tablespoon", item = "lemon juice", desc = "fresh", prep = "(for frosting)" },
-    { qty = 0.25, unit = "teaspoon", item = "lemon extract", desc = "pure", prep = "(for frosting)", optional = true },
-    { qty = 0.25, unit = "teaspoon", item = "salt", prep = "(for frosting)" },
-    { qty = 2, unit = "tablespoon", item = "sour cream", prep = "(for frosting)" }
+    { qty = 8, unit = "ounce", item = "cream cheese", desc = "full-fat", prep = "a little softer than room temperature" },
+    { qty = 10, unit = "tablespoon", item = "butter", desc = "unsalted", prep = "a little softer than room temperature" },
+    { qty = 4, unit = "cup", item = "confectioners' sugar", prep = "more if needed" },
+    { qty = 2, unit = "teaspoon", item = "lemon zest", desc = "fresh" },
+    { qty = 1, unit = "tablespoon", item = "lemon juice", desc = "fresh" },
+    { qty = 0.25, unit = "teaspoon", item = "lemon extract", desc = "pure", optional = true },
+    { qty = 0.25, unit = "teaspoon", item = "salt" },
+    { qty = 2, unit = "tablespoon", item = "sour cream" }
   ] },
   { category = "Garnish", items = [
-    { qty = 0.5, unit = "cup", item = "raspberry preserve", prep = "(for garnish)" },
-    { qty = 1, item = "lemon", prep = "thinly sliced (for garnish)" },
-    { qty = 1, unit = "cup", item = "raspberry", desc = "fresh", prep = "(for garnish)" }
+    { qty = 0.5, unit = "cup", item = "raspberry preserves" },
+    { qty = 1, item = "lemon", prep = "thinly sliced" },
+    { qty = 1, unit = "cup", item = "raspberry", desc = "fresh" }
   ] }
 ]
 +++

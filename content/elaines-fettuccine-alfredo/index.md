@@ -18,12 +18,12 @@ tags = [
 ingredients = [
   { items = [
     { qty = 2, unit = "tablespoon", item = "butter" },
-    { qty = 1, unit = "clove", item = "garlic", desc = "small", prep = "finely chopped" },
+    { qty = 1, unit = "clove", item = "garlic", prep = "finely chopped" },
     { qty = 1.5, unit = "cup", item = "heavy cream" },
     { qty = 1, unit = "large", item = "egg yolk" },
     { qty = 1, unit = "pound", item = "fettuccine", desc = "fresh" },
     { qty = 1, unit = "cup", item = "Parmigiano-Reggiano", desc = "freshly grated" },
-    { item = "kosher salt", prep = "to taste" },
+    { item = "salt", prep = "to taste" },
     { item = "black pepper", desc = "freshly ground", prep = "to taste" }
   ] }
 ]

@@ -17,9 +17,9 @@ ingredients = [
     { qty = 1, unit = "teaspoon", item = "cinnamon", desc = "ground", optional = true },
     { qty = 1, unit = "teaspoon", item = "vanilla extract" },
     { qty = 0.5, unit = "teaspoon", item = "sea salt" },
-    { qty = 0.5, unit = "cup", item = "chocolate chip", optional = true },
-    { qty = 1, unit = "cup", item = "berry", desc = "fresh", optional = true },
-    { qty = 0.5, unit = "cup", item = "raisin", optional = true, alt = { item = "dried cranberry" } }
+    { qty = 0.5, unit = "cup", item = "chocolate chips", optional = true },
+    { qty = 1, unit = "cup", item = "berries", desc = "fresh", optional = true },
+    { qty = 0.5, unit = "cup", item = "raisins", optional = true, alt = { item = "dried cranberries" } }
   ] }
 ]
 +++
