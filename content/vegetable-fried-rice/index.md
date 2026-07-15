@@ -23,7 +23,7 @@ ingredients = [
     { qty = 3, unit = "medium", item = "carrot", prep = "bias-cut into 1/2-inch-thick slices", alt={qty=1.5, unit="cup"} },
     { qty = 4, unit = "ounce", item = "snow peas or sugar snap peas", prep = "trimmed", alt={qty=1.5, unit="cup"} },
     { qty = 3, unit = "clove", item = "garlic", prep = "minced" },
-    { qty = 4, unit = "cup", item = "white rice", prep = "cold" },
+    { qty = 4, unit = "cup", item = "white rice", prep = "cooked and cooled" },
     { qty = 2, unit = "teaspoon", item = "sesame oil" },
     { qty = 0.5, unit = "teaspoon", item = "salt" },
     { item = "pepper", prep = "to taste" },

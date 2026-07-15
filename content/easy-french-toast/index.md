@@ -20,7 +20,7 @@ ingredients = [
     { qty = 3, unit = "teaspoon", item = "vanilla extract" },
     { qty = 1.5, unit = "teaspoon", item = "cinnamon", desc = "ground" },
     { qty = 0.75, unit = "cup", item = "milk" },
-    { qty = 1, unit = "loaf", item = "brioche", prep = "sliced into 12 slices" }
+    { qty = 1, unit = "loaf", item = "brioche", prep = "sliced" }
   ] }
 ]
 +++

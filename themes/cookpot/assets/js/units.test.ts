@@ -3,7 +3,9 @@ import {
   getAdaptiveUnit,
   formatCookingNumber,
   pluralizeWord,
+  singularizeWord,
   formatItemQuantity,
+  formatRecipeIngredientHTML,
 } from './units';
 
 describe('getAdaptiveUnit', () => {
@@ -118,5 +120,99 @@ describe('formatItemQuantity', () => {
       qtyStr: '2 heads',
       itemStr: 'garlic',
     });
+  });
+
+  test('forces collection items to be plural regardless of unit quantity', () => {
+    expect(formatItemQuantity(1, 'can', 'black bean')).toEqual({
+      qtyStr: '1 can',
+      itemStr: 'black beans',
+    });
+    expect(formatItemQuantity(0.5, 'cup', 'Kalamata olive')).toEqual({
+      qtyStr: '1/2 cup',
+      itemStr: 'Kalamata olives',
+    });
+    expect(formatItemQuantity(1.5, 'tablespoons', 'coconut amino')).toEqual({
+      qtyStr: '1 1/2 tablespoons',
+      itemStr: 'coconut aminos',
+    });
+  });
+
+  test('treats mass nouns as uncountable', () => {
+    expect(formatItemQuantity(2, 'cups', 'flour')).toEqual({
+      qtyStr: '2 cups',
+      itemStr: 'flour',
+    });
+    expect(formatItemQuantity(0.5, 'cup', 'milk')).toEqual({
+      qtyStr: '1/2 cup',
+      itemStr: 'milk',
+    });
+  });
+
+  test('scales size-only units and pluralizes/singularizes item', () => {
+    expect(formatItemQuantity(3, 'large', 'egg')).toEqual({
+      qtyStr: '3 large',
+      itemStr: 'eggs',
+    });
+    expect(formatItemQuantity(1, 'large', 'eggs')).toEqual({
+      qtyStr: '1 large',
+      itemStr: 'egg',
+    });
+  });
+});
+
+describe('singularizeWord', () => {
+  test('singularizes plural words correctly', () => {
+    expect(singularizeWord('tablespoons')).toBe('tablespoon');
+    expect(singularizeWord('limes')).toBe('lime');
+    expect(singularizeWord('heads')).toBe('head');
+    expect(singularizeWord('peaches')).toBe('peach');
+    expect(singularizeWord('zucchinis')).toBe('zucchini');
+  });
+
+  test('keeps already singular words as-is', () => {
+    expect(singularizeWord('tablespoon')).toBe('tablespoon');
+    expect(singularizeWord('lime')).toBe('lime');
+  });
+
+  test('handles size prefixes correctly', () => {
+    expect(singularizeWord('large tablespoons')).toBe('large tablespoon');
+    expect(singularizeWord('medium limes')).toBe('medium lime');
+  });
+});
+
+describe('formatRecipeIngredientHTML', () => {
+  test('formats standard recipe ingredients', () => {
+    expect(formatRecipeIngredientHTML(12, '', 'corn tortilla', '', '')).toBe(
+      '<span class="recipe-quantity" data-base-qty="12" data-unit="">12</span> corn tortillas',
+    );
+    expect(
+      formatRecipeIngredientHTML(
+        3,
+        'medium',
+        'carrot',
+        '',
+        'bias-cut into slices',
+      ),
+    ).toBe(
+      '<span class="recipe-quantity" data-base-qty="3" data-unit="medium">3 medium</span> carrots, bias-cut into slices',
+    );
+  });
+
+  test('formats ingredients with alternates', () => {
+    expect(
+      formatRecipeIngredientHTML(0.75, 'cup', 'scallion', '', 'thinly sliced', {
+        qty: 1,
+        unit: 'bunch',
+      }),
+    ).toBe(
+      '<span class="recipe-quantity" data-base-qty="0.75" data-unit="cup">3/4 cup</span> scallions, thinly sliced (<span class="recipe-quantity" data-base-qty="1" data-unit="bunch">1 bunch</span>)',
+    );
+    expect(
+      formatRecipeIngredientHTML(2, '', 'spring onion', '', 'sliced', {
+        item: 'scallion',
+      }),
+    ).toBe(
+      '<span class="recipe-quantity" data-base-qty="2" data-unit="">2</span> spring onions, sliced (or scallions)',
+    );
   });
 });

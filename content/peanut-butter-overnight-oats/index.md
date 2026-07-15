@@ -27,7 +27,7 @@ ingredients = [
   ] },
   { category = "Topping", items = [
     { qty = 1, unit = "tablespoon", item = "peanut butter", desc = "natural, drippy" },
-    { qty = 2, unit = "tablespoon", item = "chocolate chip", desc = "semisweet or dark" },
+    { qty = 2, unit = "tablespoon", item = "chocolate chips", desc = "semisweet or dark" },
     { qty = 0.25, unit = "teaspoon", item = "coconut oil" },
     { item = "sea salt", desc = "flaky", optional = true }
   ] }

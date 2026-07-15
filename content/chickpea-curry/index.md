@@ -25,13 +25,13 @@ ingredients = [
     { qty = 1, unit = "large clove", item = "garlic" },
     { qty = 1, unit = "teaspoon", item = "ginger", prep = "grated" },
     { qty = 1, unit = "tablespoon", item = "coconut oil", alt = { item = "olive oil" } },
-    { qty = 5, unit = "ounce", item = "baby spinach", desc = "leaves", alt = { item = "spinach", prep = "chopped" } },
+    { qty = 5, unit = "ounce", item = "baby spinach",  alt = { item = "spinach", prep = "chopped" } },
     { qty = 1, unit = "can (28 ounce)", item = "fire roasted tomato", prep = "crushed" },
     { qty = 1, unit = "tablespoon", item = "curry powder" },
     { qty = 1, unit = "teaspoon", item = "cumin" },
     { qty = 0.5, unit = "teaspoon", item = "coriander" },
     { qty = 0.75, unit = "teaspoon", item = "salt" },
-    { qty = 2, unit = "can (15 ounce)", item = "chickpeas" },
+    { qty = 2, unit = "can (15 ounce)", item = "chickpea" },
     { qty = 0.5, unit = "cup", item = "coconut milk", desc = "canned" },
     { item = "basmati rice", desc = "white or brown", prep = "to serve" }
   ] }

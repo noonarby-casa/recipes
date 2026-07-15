@@ -24,7 +24,7 @@ ingredients = [
   { items = [
     { qty = 2, unit = "tablespoon", item = "olive oil", desc = "extra virgin" },
     { qty = 1, item = "yellow onion", prep = "chopped" },
-    { qty = 1, unit = "pound", item = "chicken thighs", desc = "boneless skinless", alt = { item = "chicken breasts" } },
+    { qty = 1, unit = "pound", item = "chicken thigh", desc = "boneless skinless", alt = { item = "chicken breast" } },
     { qty = 2, unit = "teaspoon", item = "chili powder" },
     { qty = 2, unit = "teaspoon", item = "smoked paprika" },
     { qty = 1, unit = "teaspoon", item = "oregano", desc = "dried" },
@@ -33,7 +33,7 @@ ingredients = [
     { qty = [1,2], item = "poblano pepper", prep = "chopped" },
     { qty = 2, unit = "cup", item = "salsa verde" },
     { qty = 6, unit = "cup", item = "chicken broth", desc = "low sodium" },
-    { qty = 1, unit = "can (14 ounce)", item = "black beans", prep = "drained" },
+    { qty = 1, unit = "can (14 ounce)", item = "black bean", prep = "drained" },
     { qty = 2, unit = "tablespoon", item = "lime juice" },
     { qty = 0.5, unit = "cup", item = "cilantro", prep = "chopped" },
     { qty = 3, unit = "cup", item = "rice", desc = "cooked" },
@@ -41,7 +41,7 @@ ingredients = [
     { item = "yogurt", prep = "for serving" },
     { item = "avocado", prep = "for serving" },
     { item = "cheese", prep = "for serving" },
-    { item = "green onions", prep = "for serving" }
+    { item = "green onion", prep = "for serving" }
   ] }
 ]
 +++

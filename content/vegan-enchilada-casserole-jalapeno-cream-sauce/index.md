@@ -32,7 +32,7 @@ ingredients = [
     { item = "black pepper", prep = "to taste" },
     { qty = 1, unit = "can", item = "refried beans" },
     { qty = 1, unit = "can", item = "black beans", prep = "drained and rinsed" },
-    { qty = 1.5, unit = "cup", item = "green enchilada sauce", desc = "divided" },
+    { qty = 1.5, unit = "cup", item = "green enchilada sauce", prep = "divided" },
     { qty = 12, item = "tortilla", desc = "corn" },
     { item = "cilantro", desc = "fresh", prep = "chopped, for topping", optional = true },
     { item = "jalapeño slices", prep = "for topping", optional = true }

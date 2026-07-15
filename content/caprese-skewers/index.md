@@ -15,8 +15,8 @@ tags = [
 ]
 ingredients = [
   { items = [
-    { qty = 1, unit = "package", item = "grape tomatos" },
-    { qty = 1, unit = "container", item = "mozzarella balls" },
+    { qty = 1, unit = "package", item = "grape tomato" },
+    { qty = 1, unit = "container", item = "mozzarella ball" },
     { item = "basil", desc = "fresh" },
     { item = "balsamic glaze" }
   ] }

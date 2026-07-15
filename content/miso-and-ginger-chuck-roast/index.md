@@ -21,13 +21,13 @@ ingredients = [
   { category = "Roast", items = [
     { qty = 3, unit = "pound", item = "beef chuck roast", prep = "cut into thirds" },
     { qty = 0.333, unit = "cup", item = "tamari" },
-    { qty = 2, unit = "tablespoon", item = "miso", desc = "white or yellow recommended" },
+    { qty = 2, unit = "tablespoon", item = "miso", desc = "white or yellow" },
     { qty = 2, unit = "tablespoon", item = "honey" },
     { qty = 1.333, unit = "tablespoon", item = "rice wine vinegar" },
     { qty = 3, unit = "clove", item = "garlic", prep = "minced or grated" },
     { qty = 3, unit = "tablespoon", item = "ginger", desc = "fresh", prep = "finely grated" },
     { qty = 1, unit = "teaspoon", item = "red pepper flakes" },
-    { qty = 1, unit = "cup", item = "beef bone broth", desc = "if using a Dutch oven" }
+    { qty = 1, unit = "cup", item = "beef bone broth", prep = "if using a Dutch oven" }
   ] },
   { category = "Garnish", items = [
     { item = "green onions", prep = "thinly sliced" },

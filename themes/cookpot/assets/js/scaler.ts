@@ -1,4 +1,8 @@
-import { getAdaptiveUnit, formatCookingNumber } from './units';
+import {
+  getAdaptiveUnit,
+  formatCookingNumber,
+  formatRecipeIngredientHTML,
+} from './units';
 import { parseSimpleQty } from './simple-parser';
 
 export function initScaler(): void {
@@ -33,9 +37,88 @@ export function initScaler(): void {
       servingCountEl.textContent = currentServings.toString();
     }
 
-    const currentQuantities =
+    // 1. Update recipe-ingredient list items (re-rendering the full ingredient HTML)
+    const ingredients =
+      document.querySelectorAll<HTMLElement>('.recipe-ingredient');
+    ingredients.forEach((el) => {
+      const rawQty = el.dataset.qty || '';
+      let qty: number | [number, number] | null = null;
+      if (rawQty) {
+        if (rawQty.includes('-') || rawQty.includes(',')) {
+          const parts = rawQty.split(/[-,]/).map((p) => parseFloat(p.trim()));
+          if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+            qty = [parts[0] * factor, parts[1] * factor];
+          }
+        } else {
+          const parsed = parseFloat(rawQty);
+          if (!isNaN(parsed)) {
+            qty = parsed * factor;
+          }
+        }
+      }
+
+      const unit = el.dataset.unit || '';
+      const item = el.dataset.item || '';
+      const desc = el.dataset.desc || '';
+      const prep = el.dataset.prep || '';
+
+      let alt:
+        | {
+            qty: number | [number, number] | null;
+            unit: string;
+            item: string;
+            desc: string;
+            prep: string;
+          }
+        | undefined = undefined;
+
+      if (el.dataset.altItem || el.dataset.altQty) {
+        let altQty: number | [number, number] | null = null;
+        const rawAltQty = el.dataset.altQty || '';
+        if (rawAltQty) {
+          if (rawAltQty.includes('-') || rawAltQty.includes(',')) {
+            const parts = rawAltQty
+              .split(/[-,]/)
+              .map((p) => parseFloat(p.trim()));
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+              altQty = [parts[0] * factor, parts[1] * factor];
+            }
+          } else {
+            const parsed = parseFloat(rawAltQty);
+            if (!isNaN(parsed)) {
+              altQty = parsed * factor;
+            }
+          }
+        }
+
+        alt = {
+          qty: altQty,
+          unit: el.dataset.altUnit || '',
+          item: el.dataset.altItem || '',
+          desc: el.dataset.altDesc || '',
+          prep: el.dataset.altPrep || '',
+        };
+      }
+
+      el.innerHTML = formatRecipeIngredientHTML(
+        qty,
+        unit,
+        item,
+        desc,
+        prep,
+        alt,
+      );
+    });
+
+    // 2. Update standalone quantity spans (e.g. in step instructions)
+    const standaloneQuantities =
       document.querySelectorAll<HTMLElement>('.recipe-quantity');
-    currentQuantities.forEach((el) => {
+    standaloneQuantities.forEach((el) => {
+      // Skip if inside a recipe-ingredient list item (already updated)
+      if (el.closest('.recipe-ingredient')) {
+        return;
+      }
+
       if (!el.dataset.baseQty) {
         const baseText = el.dataset.baseText || el.textContent || '';
         const parsed = parseSimpleQty(baseText);

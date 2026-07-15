@@ -27,7 +27,7 @@ ingredients = [
     { qty = 6, unit = "cup", item = "water"}
   ] },
   { category = "Chicken", items = [
-    { qty = 4, item = "chicken breasts", desc = "bone-in, skin-on", prep="split", alt={qty=12, unit="ounce", each=true} }
+    { qty = 4, item = "chicken breast", desc = "bone-in, skin-on", prep="split", alt={qty=12, unit="ounce", each=true} }
   ] },
   { category = "Sauce", items = [
     { qty = 0.5, unit = "cup", item = "mayonnaise" },

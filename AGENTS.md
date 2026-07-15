@@ -49,6 +49,11 @@ Timers can either specify a range or a single time. Separate sounds are played f
 ### Parsing Ingredients & Scaling
 
 Ingredients get automatically parsed for scaling in [scaler.ts](themes/cookpot/assets/js/scaler.ts). UI controls on the recipe page allow a recipe to be scaled.
+The system formats and dynamically pluralizes ingredients using a unit-based heuristic in [units.ts](themes/cookpot/assets/js/units.ts):
+
+- **Countable Items:** Items with no unit or size-only units (e.g. `large`, `medium`, `small`) are scaled and pluralized/singularized based on quantity (e.g., `1 banana`, `2 bananas`, `3 large eggs`).
+- **Collection Items:** Items measured by container/weight/volume units that are in `PLURAL_BY_DEFAULT_ITEMS` (defined in [constants.ts](themes/cookpot/assets/js/constants.ts)) are forced to stay plural (e.g., `1 can black beans`, `1/2 cup pitted Kalamata olives`).
+- **Mass Nouns:** Other items measured by container/weight/volume units are treated as uncountable mass nouns and are never pluralized or singularized (e.g., `1 cup flour`, `2 cups milk`).
 
 ### Shopping List
 
