@@ -258,7 +258,7 @@ export function formatItemQuantity(
 ): { qtyStr: string; itemStr: string } {
   let displayUnit = unit.trim();
   let displayItem = item.trim();
-  const shouldPluralize = !disablePluralization && (qty === null || qty > 1);
+  const shouldPluralize = !disablePluralization && qty !== null && qty > 1;
 
   if (displayUnit) {
     const isSubstring =
