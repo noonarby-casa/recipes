@@ -21,7 +21,7 @@ ingredients = [
     { qty = 2, item = "egg", prep = "beaten" },
     { qty = 1, unit = "medium", item = "onion", prep = "halved, each half thickly sliced" },
     { qty = 3, unit = "medium", item = "carrot", prep = "bias-cut into 1/2-inch-thick slices", alt={qty=1.5, unit="cup"} },
-    { qty = 4, unit = "ounce", item = "snow peas or sugar snap peas", prep = "trimmed", alt={qty=1.5, unit="cup"} },
+    { qty = 4, unit = "ounce", item = "snow peas", prep = "trimmed", alt = { qty = 1.5, unit = "cup", item = "sugar snap peas" } },
     { qty = 3, unit = "clove", item = "garlic", prep = "minced" },
     { qty = 4, unit = "cup", item = "white rice", prep = "cooked and cooled" },
     { qty = 2, unit = "teaspoon", item = "sesame oil" },

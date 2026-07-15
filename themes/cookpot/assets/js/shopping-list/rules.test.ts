@@ -13,12 +13,14 @@ import {
 } from './store-sections';
 import { getConversionFactor } from './utils';
 import { IngredientInput } from './types';
-import { validateIngredient } from './validator';
+import { validateRecipe } from './validator';
 
 interface RecipeIngredients {
   title: string;
   filepath: string;
   ingredients: IngredientInput[];
+  sections: { category: string; items: IngredientInput[] }[];
+  instructions: string;
 }
 
 function getRecipeIngredients(): RecipeIngredients[] {
@@ -72,6 +74,10 @@ function getRecipeIngredients(): RecipeIngredients[] {
 
         const tomlSlice = text.slice(startMatch.index, idx);
 
+        const frontMatterEndIdx = text.indexOf('+++', 3);
+        const instructions =
+          frontMatterEndIdx !== -1 ? text.slice(frontMatterEndIdx + 3) : '';
+
         // Remove TOML comments from slice
         const withoutComments = tomlSlice.replace(/#.*/g, '');
 
@@ -84,23 +90,32 @@ function getRecipeIngredients(): RecipeIngredients[] {
         try {
           const result = new Function(`return { ${jsCode} }`)();
           const parsedIngredients: IngredientInput[] = [];
+          const sections: { category: string; items: IngredientInput[] }[] = [];
           if (Array.isArray(result.ingredients)) {
             for (const section of result.ingredients) {
+              const category = section.category || 'Ingredients';
+              const items: IngredientInput[] = [];
               if (section && Array.isArray(section.items)) {
                 for (const item of section.items) {
+                  let parsed: IngredientInput;
                   if (typeof item === 'string') {
-                    parsedIngredients.push({ item });
-                  } else if (item && typeof item === 'object') {
-                    parsedIngredients.push(item as IngredientInput);
+                    parsed = { item };
+                  } else {
+                    parsed = item as IngredientInput;
                   }
+                  parsedIngredients.push(parsed);
+                  items.push(parsed);
                 }
               }
+              sections.push({ category, items });
             }
           }
           recipes.push({
             title,
             filepath: fullPath,
             ingredients: parsedIngredients,
+            sections,
+            instructions,
           });
         } catch (err) {
           throw new Error(`Failed to parse ingredients block in ${fullPath}`, {
@@ -242,19 +257,21 @@ describe('Static configuration and recipe database tests', () => {
     const warningsList: string[] = [];
 
     for (const recipe of recipes) {
-      for (const ing of recipe.ingredients) {
-        const errors = validateIngredient(ing);
-        for (const error of errors) {
-          const relativePath = path.relative(
-            path.resolve(__dirname, '../../../../../'),
-            recipe.filepath,
-          );
-          const formatted = `${recipe.title} (file: ${relativePath}): [${error.severity.toUpperCase()}] ${error.message} (Ingredient: ${JSON.stringify(ing)})`;
-          if (error.severity === 'error') {
-            errorsList.push(formatted);
-          } else {
-            warningsList.push(formatted);
-          }
+      const errors = validateRecipe({
+        title: recipe.title,
+        ingredients: recipe.sections,
+        instructions: recipe.instructions,
+      });
+      for (const error of errors) {
+        const relativePath = path.relative(
+          path.resolve(__dirname, '../../../../../'),
+          recipe.filepath,
+        );
+        const formatted = `${recipe.title} (file: ${relativePath}): [${error.severity.toUpperCase()}] ${error.message}`;
+        if (error.severity === 'error') {
+          errorsList.push(formatted);
+        } else {
+          warningsList.push(formatted);
         }
       }
     }

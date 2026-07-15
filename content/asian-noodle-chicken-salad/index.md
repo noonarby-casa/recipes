@@ -29,7 +29,7 @@ ingredients = [
     { qty = 8, item = "green onion", prep = "finely sliced" },
     { qty = 1, unit = "head", item = "cabbage", prep = "thinly sliced or chopped" },
     { qty = 2, unit = "package", item = "ramen noodles", prep = "broken up", alt = { qty = 3, unit = "ounce", each = true } },
-    { qty = 2, unit = "cup", item = "chicken", desc = "cooked", prep = "chopped or shredded", alt = { qty = 3, unit = "cup" } }
+    { qty = [2, 3], unit = "cup", item = "chicken", desc = "cooked", prep = "chopped or shredded" }
   ] },
   { category = "Dressing", items = [
     { qty = 0.25, unit = "cup", item = "sugar" },

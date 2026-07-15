@@ -25,7 +25,7 @@ ingredients = [
     { qty = 1, unit = "large clove", item = "garlic" },
     { qty = 1, unit = "teaspoon", item = "ginger", prep = "grated" },
     { qty = 1, unit = "tablespoon", item = "coconut oil", alt = { item = "olive oil" } },
-    { qty = 5, unit = "ounce", item = "baby spinach",  alt = { item = "spinach", prep = "chopped" } },
+    { qty = 5, unit = "ounce", item = "baby spinach" },
     { qty = 1, unit = "can (28 ounce)", item = "fire roasted tomato", prep = "crushed" },
     { qty = 1, unit = "tablespoon", item = "curry powder" },
     { qty = 1, unit = "teaspoon", item = "cumin" },

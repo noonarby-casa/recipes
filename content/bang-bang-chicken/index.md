@@ -25,12 +25,11 @@ ingredients = [
     { qty = 1, unit = "tablespoon", item = "olive oil" }
   ] },
   { category = "Serving & Garnish", items = [
-    { qty = 1, item = "spring onion", prep = "sliced", alt = { item = "scallion" } },
+    { qty = 2, item = "spring onion", prep = "sliced or finely sliced" },
     { item = "white rice", prep = "steamed" },
     { qty = 75, unit = "gram", item = "red cabbage", prep = "shredded" },
     { qty = 2, item = "carrot", prep = "grated or julienned" },
-    { qty = 1, item = "cucumber", prep = "sliced" },
-    { qty = 1, item = "spring onion", prep = "finely sliced", alt = { item = "scallion" } }
+    { qty = 1, item = "cucumber", prep = "sliced" }
   ] }
 ]
 +++

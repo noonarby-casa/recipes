@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { validateIngredient } from './validator';
+import { validateIngredient, validateRecipe } from './validator';
 import { IngredientInput } from './types';
 
 describe('validateIngredient', () => {
@@ -154,5 +154,148 @@ describe('validateIngredient', () => {
     expect(validateIngredient(ing3)[0].message).toContain(
       'must not contain the word "about"',
     );
+  });
+
+  test('divided is a prep term, not a desc term', () => {
+    const ing1: IngredientInput = {
+      item: 'butter',
+      desc: 'divided',
+    };
+    const ing2: IngredientInput = {
+      item: 'butter',
+      desc: 'divided usage',
+    };
+    const ing3: IngredientInput = {
+      item: 'butter',
+      alt: {
+        item: 'oil',
+        desc: 'divided',
+      },
+    };
+
+    expect(validateIngredient(ing1)[0].message).toContain(
+      'is a preparation term, not a descriptor',
+    );
+    expect(validateIngredient(ing2)[0].message).toContain(
+      'is a preparation term, not a descriptor',
+    );
+    expect(validateIngredient(ing3)[0].message).toContain(
+      'is a preparation term, not a descriptor',
+    );
+  });
+
+  test('alt unit must not be same as unit, prefer range syntax', () => {
+    const ing: IngredientInput = {
+      item: 'butter',
+      qty: 1,
+      unit: 'cup',
+      alt: {
+        qty: 2,
+        unit: 'cup',
+      },
+    };
+    const errors = validateIngredient(ing);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].message).toContain(
+      'alt unit must not be same as unit, prefer range syntax',
+    );
+
+    // Piece/countable items with undefined units (representing same unit)
+    const ingNoUnit: IngredientInput = {
+      item: 'banana',
+      qty: 1,
+      alt: {
+        qty: 2,
+      },
+    };
+    const errorsNoUnit = validateIngredient(ingNoUnit);
+    expect(errorsNoUnit).toHaveLength(1);
+    expect(errorsNoUnit[0].message).toContain(
+      'alt unit must not be same as unit, prefer range syntax',
+    );
+
+    // Substitution with same unit is allowed
+    const ingSub: IngredientInput = {
+      item: 'butter',
+      qty: 1,
+      unit: 'cup',
+      alt: {
+        qty: 1,
+        unit: 'cup',
+        item: 'margarine',
+      },
+    };
+    expect(validateIngredient(ingSub)).toHaveLength(0);
+  });
+
+  test('"or" and parentheses are not allowed in item name', () => {
+    const ingOr: IngredientInput = {
+      item: 'butter or margarine',
+    };
+    const ingParen: IngredientInput = {
+      item: 'butter (salted)',
+    };
+    const ingAltOr: IngredientInput = {
+      item: 'milk',
+      alt: {
+        item: 'soy or almond milk',
+      },
+    };
+
+    expect(validateIngredient(ingOr)[0].message).toContain(
+      'must not contain "or" or parentheses',
+    );
+    expect(validateIngredient(ingParen)[0].message).toContain(
+      'must not contain "or" or parentheses',
+    );
+    expect(validateIngredient(ingAltOr)[0].message).toContain(
+      'must not contain "or" or parentheses',
+    );
+  });
+
+  test('alt item must not match same canonical name as item through rules', () => {
+    const ing: IngredientInput = {
+      item: 'garlic',
+      alt: {
+        item: 'garlic clove',
+      },
+    };
+    const errors = validateIngredient(ing);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].message).toContain('resolves to the same canonical item');
+  });
+
+  test('validateRecipe checks for duplicate items in same section and instructions references', () => {
+    const recipe = {
+      title: 'Test Recipe',
+      ingredients: [
+        {
+          category: 'Sauce',
+          items: [
+            { item: 'olive oil', qty: 1, unit: 'tablespoon' },
+            { item: 'oil', qty: 2, unit: 'tablespoon' },
+            { item: 'garlic', qty: 1 },
+            { item: 'garlic', qty: 2 },
+          ],
+        },
+      ],
+      instructions: 'Sauté the garlic and olive oil.',
+    };
+
+    const errors = validateRecipe(recipe);
+    // Should have duplicate error for garlic, and unreferenced error for oil
+    expect(
+      errors.some((e) => e.message.includes('Duplicate item "garlic"')),
+    ).toBe(true);
+    expect(
+      errors.some((e) =>
+        e.message.includes('Ingredient "oil" is not referenced'),
+      ),
+    ).toBe(true);
+    expect(
+      errors.some((e) =>
+        e.message.includes('Ingredient "olive oil" is not referenced'),
+      ),
+    ).toBe(false);
   });
 });
