@@ -100,6 +100,8 @@ export function initScaler(): void {
         };
       }
 
+      const optional = el.dataset.optional === 'true';
+
       el.innerHTML = formatRecipeIngredientHTML(
         qty,
         unit,
@@ -107,6 +109,7 @@ export function initScaler(): void {
         desc,
         prep,
         alt,
+        optional,
       );
     });
 

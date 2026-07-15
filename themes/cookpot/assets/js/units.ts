@@ -325,6 +325,7 @@ export function formatRecipeIngredientHTML(
     desc?: string;
     prep?: string;
   },
+  optional?: boolean,
 ): string {
   let displayQtyVal: number | null = null;
   let displayQtyStr = '';
@@ -437,6 +438,10 @@ export function formatRecipeIngredientHTML(
     if (altText) {
       mainText = `${mainText} ${altText}`;
     }
+  }
+
+  if (optional) {
+    mainText = `${mainText.trim()} <span class="ingredient-optional-badge">Optional</span>`;
   }
 
   return mainText;

@@ -3269,8 +3269,7 @@ function copyShoppingListToClipboard(
   });
 
   if (format === 'google-keep') {
-    const allItems = [...filteredBuy, ...filteredOptional];
-    const lines = allItems.map((item) => {
+    const buyLines = filteredBuy.map((item) => {
       const { qtyStr, itemStr } = formatItemQuantity(
         item.qty,
         item.unit,
@@ -3278,7 +3277,15 @@ function copyShoppingListToClipboard(
       );
       return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}`;
     });
-    clipboardText = lines.join('\n');
+    const optionalLines = filteredOptional.map((item) => {
+      const { qtyStr, itemStr } = formatItemQuantity(
+        item.qty,
+        item.unit,
+        item.item,
+      );
+      return `${qtyStr ? qtyStr + ' ' : ''}${itemStr} (optional)`;
+    });
+    clipboardText = [...buyLines, ...optionalLines].join('\n');
   } else {
     // Markdown format: Unchecked markdown checklists (- [ ] Item)
     clipboardText = '## Combined Shopping List\n';

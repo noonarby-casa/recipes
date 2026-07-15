@@ -170,8 +170,7 @@ export function initShoppingList(): void {
     let clipboardText = '';
 
     if (format === 'google-keep') {
-      const allItems = [...filteredBuy, ...filteredOptional];
-      const lines = allItems.map((item) => {
+      const buyLines = filteredBuy.map((item) => {
         const { qtyStr, itemStr } = formatItemQuantity(
           item.qty,
           item.unit,
@@ -179,7 +178,15 @@ export function initShoppingList(): void {
         );
         return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}`;
       });
-      clipboardText = lines.join('\n');
+      const optionalLines = filteredOptional.map((item) => {
+        const { qtyStr, itemStr } = formatItemQuantity(
+          item.qty,
+          item.unit,
+          item.item,
+        );
+        return `${qtyStr ? qtyStr + ' ' : ''}${itemStr} (optional)`;
+      });
+      clipboardText = [...buyLines, ...optionalLines].join('\n');
     } else {
       // Markdown format
       clipboardText = `## SHOPPING LIST: ${recipeTitle}\n`;

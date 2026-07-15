@@ -231,6 +231,22 @@
     transform 0.2s;
 }
 
+.ingredient-optional-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.12rem 0.35rem;
+  border-radius: 4px;
+  background-color: var(--noonblue-bg-light);
+  border: 1px solid var(--noonblue-border-light);
+  color: var(--noonblue);
+  margin-left: 0.5rem;
+  line-height: 1;
+  vertical-align: middle;
+}
+
 .recipe-ingredient .qty-num {
   color: var(--noonblue);
   font-weight: 700;
