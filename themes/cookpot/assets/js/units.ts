@@ -261,9 +261,11 @@ export function formatItemQuantity(
   const shouldPluralize = !disablePluralization && (qty === null || qty > 1);
 
   if (displayUnit) {
-    const isSubstring = displayItem
-      .toLowerCase()
-      .includes(displayUnit.toLowerCase());
+    const isSubstring =
+      displayItem.toLowerCase().includes(displayUnit.toLowerCase()) ||
+      singularizeWord(displayItem)
+        .toLowerCase()
+        .includes(singularizeWord(displayUnit).toLowerCase());
     if (isSubstring) {
       if (shouldPluralize) {
         displayItem = pluralizeWord(displayItem);

@@ -58,4 +58,12 @@ test.describe('Recipe Scaling E2E', () => {
       .nth(0);
     await expect(coconutMilk).toContainText('1/4');
   });
+
+  test('should pluralize egg on load', async ({ page }) => {
+    await page.goto('/vegetable-fried-rice/');
+    const eggIngredient = page.locator('.recipe-ingredient', {
+      hasText: 'egg',
+    });
+    await expect(eggIngredient).toContainText('2 eggs, beaten');
+  });
 });

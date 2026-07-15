@@ -11,6 +11,7 @@ import {
   StoreLayout,
 } from './store-sections';
 import { formatCookingNumber } from '../units';
+import { UNIT_CONVERSIONS } from '../constants';
 import {
   IngredientInput,
   ShoppingItem,
@@ -105,7 +106,13 @@ export function processShoppingList(
     if (rule?.unitEquivalences) {
       const firstEq = Object.values(rule.unitEquivalences)[0];
       if (firstEq) {
-        targetUnit = firstEq.base;
+        const isFromVolumeWeight = getSingularUnit(unit) in UNIT_CONVERSIONS;
+        const isToVolumeWeight =
+          getSingularUnit(firstEq.base) in UNIT_CONVERSIONS;
+        const factor = getConversionFactor(unit, firstEq.base, rule);
+        if (factor > 0 || (!isFromVolumeWeight && !isToVolumeWeight)) {
+          targetUnit = firstEq.base;
+        }
       }
     } else if (unit) {
       if (getConversionFactor(unit, 'teaspoon') > 0) {
@@ -173,18 +180,22 @@ export function processShoppingList(
       const originalQty = finalQty;
       const originalUnit = finalUnit;
       for (const [limit, sizeUnit] of itemSizes) {
-        const sizeInBase = convertQty(limit, sizeUnit, finalUnit, rule);
-        if (sizeInBase >= finalQty) {
-          finalQty = limit;
-          finalUnit = sizeUnit;
-          matched = true;
-          break;
+        const factor = getConversionFactor(sizeUnit, finalUnit, rule);
+        if (factor > 0) {
+          const sizeInBase = limit * factor;
+          if (sizeInBase >= finalQty) {
+            finalQty = limit;
+            finalUnit = sizeUnit;
+            matched = true;
+            break;
+          }
         }
       }
       if (!matched) {
         const largest = itemSizes[itemSizes.length - 1];
-        const sizeInBase = convertQty(largest[0], largest[1], finalUnit, rule);
-        if (sizeInBase > 0) {
+        const factor = getConversionFactor(largest[1], finalUnit, rule);
+        if (factor > 0) {
+          const sizeInBase = largest[0] * factor;
           finalQty = Math.ceil(finalQty / sizeInBase) * largest[0];
           finalUnit = largest[1];
         }

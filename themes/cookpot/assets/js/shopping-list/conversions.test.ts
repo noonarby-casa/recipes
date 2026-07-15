@@ -391,10 +391,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'green onion',
-      qty: 4,
-      unit: 'bundles',
+      qty: 8,
+      unit: '',
       category: 'fresh-produce',
-      sizeNote: '8 cups needed',
+      sizeNote: '8 needed',
     },
   },
   {
@@ -700,9 +700,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'spring onion',
       qty: 1,
-      unit: 'bundle',
+      unit: '',
       category: 'fresh-produce',
-      sizeNote: '1 cup needed',
+      sizeNote: '1 needed',
     },
   },
   {
@@ -714,7 +714,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'scallion',
       qty: null,
-      unit: 'cup',
+      unit: '',
       category: 'fresh-produce',
     },
   },
@@ -742,7 +742,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'red cabbage',
       qty: 75,
-      unit: 'heads',
+      unit: 'grams',
       category: 'fresh-produce',
     },
   },
@@ -1042,7 +1042,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'spinach',
       qty: null,
-      unit: 'ounce',
+      unit: '',
       category: 'fresh-produce',
     },
   },
@@ -1057,9 +1057,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'fire roasted tomato',
       qty: 1,
-      unit: 'can (15 oz)',
+      unit: 'can (28 oz)',
       category: 'fresh-produce',
-      sizeNote: '1 oz needed',
+      sizeNote: '28 oz needed',
     },
   },
   {
@@ -1130,10 +1130,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'chickpea',
-      qty: 1,
-      unit: 'can (15 oz)',
+      qty: 2,
+      unit: 'cans (15 oz)',
       category: 'canned-beans',
-      sizeNote: '2 oz needed',
+      sizeNote: '30 oz needed',
     },
   },
   {
@@ -1192,8 +1192,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'lime zest',
-      qty: 3,
-      unit: 'limes',
+      qty: 0.5,
+      unit: 'lime',
       category: 'fresh-produce',
     },
   },
@@ -1484,7 +1484,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'box (16 oz)',
       category: 'pasta-grains',
-      sizeNote: '1 oz needed',
+      sizeNote: '16 oz needed',
     },
   },
   {
@@ -1919,7 +1919,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'can (15 oz)',
       category: 'fresh-produce',
-      sizeNote: '1 oz needed',
+      sizeNote: '15 oz needed',
     },
   },
   {
@@ -1947,7 +1947,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'chickpeas',
       qty: 2,
-      unit: 'can (15-ounce)s',
+      unit: 'cans (15-ounce)',
       category: 'canned-beans',
     },
   },
@@ -2855,7 +2855,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'can (15 oz)',
       category: 'canned-beans',
-      sizeNote: '1 oz needed',
+      sizeNote: '14 oz needed',
     },
   },
   {
@@ -2895,7 +2895,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'yogurt',
       qty: null,
-      unit: 'cup',
+      unit: '',
       category: 'milk-cream',
     },
   },
@@ -2939,7 +2939,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'box (16 oz)',
       category: 'pasta-grains',
-      sizeNote: '1 oz needed',
+      sizeNote: '16 oz needed',
     },
   },
   {
@@ -3096,7 +3096,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'vegetable stock',
       qty: null,
-      unit: 'cup',
+      unit: '',
       category: 'canned-other',
     },
   },

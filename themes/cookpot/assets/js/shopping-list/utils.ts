@@ -1,10 +1,6 @@
-import { formatCookingNumber } from '../units';
+import { formatCookingNumber, pluralizeWord } from '../units';
 import { QtyValue, IngredientInput, ItemRule } from './types';
-import {
-  UNIT_CONVERSIONS,
-  SINGULAR_TO_PLURAL,
-  PLURAL_TO_SINGULAR,
-} from '../constants';
+import { UNIT_CONVERSIONS, PLURAL_TO_SINGULAR } from '../constants';
 
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.
@@ -13,8 +9,23 @@ export function getSingularUnit(unit: string): string {
   if (!unit) {
     return '';
   }
-  const lower = unit.toLowerCase().trim();
-  return PLURAL_TO_SINGULAR[lower] || lower;
+  let base = unit.toLowerCase().trim();
+  base = base
+    .replace(/-ounce/g, ' oz')
+    .replace(/ounces/g, 'oz')
+    .replace(/ounce/g, 'oz')
+    .replace(/fl oz/g, 'oz')
+    .replace(/fl\. oz/g, 'oz')
+    .replace(/\s+/g, ' ');
+
+  if (base.includes('(')) {
+    const parts = base.split('(');
+    const firstWord = parts[0].trim();
+    const rest = parts.slice(1).join('(');
+    return `${getSingularUnit(firstWord)} (${rest}`;
+  }
+
+  return PLURAL_TO_SINGULAR[base] || base;
 }
 
 export function formatQty(qty: QtyValue): string {
@@ -50,27 +61,7 @@ export function pluralizeUnit(unit: string, qty: QtyValue): string {
     return unit;
   }
 
-  let prefix = '';
-  let base = unit.toLowerCase().trim();
-  for (const p of SIZE_PREFIXES) {
-    if (base.startsWith(p + ' ')) {
-      // Preserve original case of the prefix
-      prefix = unit.substring(0, p.length + 1);
-      base = base.substring(p.length + 1).trim();
-      break;
-    }
-  }
-
-  const pluralBase = SINGULAR_TO_PLURAL[base];
-  if (pluralBase) {
-    return prefix + pluralBase;
-  }
-
-  // Fallback naive pluralization if not found in dictionary
-  if (base.endsWith('s')) {
-    return prefix + base;
-  }
-  return prefix + base + 's';
+  return pluralizeWord(unit);
 }
 
 /**
@@ -82,13 +73,30 @@ export function assembleIngredientText(
 ): string {
   let text = '';
 
+  let displayUnit = ing.unit || '';
+  let displayItem = ing.item || '';
+  let hasUnit = !!displayUnit;
+
+  if (displayUnit && !disablePluralization) {
+    const isSubstring =
+      displayItem.toLowerCase().includes(displayUnit.toLowerCase()) ||
+      getSingularUnit(displayItem).includes(getSingularUnit(displayUnit));
+    if (isSubstring) {
+      if (ing.qty !== undefined) {
+        displayItem = pluralizeUnit(displayItem, ing.qty);
+      }
+      displayUnit = '';
+      hasUnit = false;
+    }
+  }
+
   // 1. Primary Amount
   if (ing.qty !== undefined) {
     text += formatQty(ing.qty);
-    if (ing.unit) {
+    if (displayUnit) {
       const unitStr = disablePluralization
-        ? ing.unit
-        : pluralizeUnit(ing.unit, ing.qty);
+        ? displayUnit
+        : pluralizeUnit(displayUnit, ing.qty);
       text += ' ' + unitStr;
     }
   }
@@ -169,9 +177,9 @@ export function assembleIngredientText(
     itemParts.push(ing.desc);
   }
 
-  let itemName = ing.item;
-  if (ing.qty !== undefined && !ing.unit && !disablePluralization) {
-    itemName = pluralizeUnit(ing.item, ing.qty);
+  let itemName = displayItem;
+  if (ing.qty !== undefined && !hasUnit && !disablePluralization) {
+    itemName = pluralizeUnit(displayItem, ing.qty);
   }
   itemParts.push(itemName);
 
@@ -193,6 +201,23 @@ export function assembleIngredientText(
   return text.trim();
 }
 
+function isVolumeWeightUnit(unit: string, rule?: ItemRule): boolean {
+  const sing = getSingularUnit(unit);
+  if (!sing) {
+    return false;
+  }
+  if (sing in UNIT_CONVERSIONS) {
+    return true;
+  }
+  if (rule?.unitEquivalences) {
+    const eq = rule.unitEquivalences[sing];
+    if (eq && getSingularUnit(eq.base) in UNIT_CONVERSIONS) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function getConversionFactor(
   fromUnit: string,
   toUnit: string,
@@ -206,6 +231,9 @@ export function getConversionFactor(
   if (fromSing === toSing) {
     return 1;
   }
+
+  const fromVolWt = isVolumeWeightUnit(fromSing, rule);
+  const toVolWt = isVolumeWeightUnit(toSing, rule);
 
   // Check item-specific equivalences first
   if (rule?.unitEquivalences) {
@@ -224,7 +252,7 @@ export function getConversionFactor(
     // Case B: fromUnit is in equivalences, toUnit is universal
     if (fromEq) {
       // Convert fromUnit -> base, then base -> toUnit
-      const baseFactor = getConversionFactor(fromEq.base, toSing);
+      const baseFactor = getConversionFactor(fromEq.base, toSing, rule);
       if (baseFactor > 0) {
         return fromEq.factor * baseFactor;
       }
@@ -232,11 +260,16 @@ export function getConversionFactor(
 
     // Case C: toUnit is in equivalences, fromUnit is universal
     if (toEq) {
-      const baseFactor = getConversionFactor(fromSing, toEq.base);
+      const baseFactor = getConversionFactor(fromSing, toEq.base, rule);
       if (baseFactor > 0) {
         return baseFactor / toEq.factor;
       }
     }
+  }
+
+  if (!fromVolWt && !toVolWt) {
+    // Both are countable and no custom equivalence overrides it
+    return 1;
   }
 
   // Check universal table

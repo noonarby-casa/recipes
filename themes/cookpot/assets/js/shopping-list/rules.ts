@@ -70,6 +70,8 @@ export const ITEM_RULES: ItemRule[] = [
     unitEquivalences: {
       tablespoon: { base: 'lemon', factor: 0.3333 }, // 1 tbsp ≈ 1/3 lemon
       tbsp: { base: 'lemon', factor: 0.3333 },
+      teaspoon: { base: 'lemon', factor: 0.1111 },
+      tsp: { base: 'lemon', factor: 0.1111 },
     },
   },
 
@@ -79,6 +81,8 @@ export const ITEM_RULES: ItemRule[] = [
     unitEquivalences: {
       tablespoon: { base: 'lime', factor: 0.5 }, // 1 tbsp ≈ 1/2 lime
       tbsp: { base: 'lime', factor: 0.5 },
+      teaspoon: { base: 'lime', factor: 0.1666 },
+      tsp: { base: 'lime', factor: 0.1666 },
     },
   },
 
@@ -109,6 +113,8 @@ export const ITEM_RULES: ItemRule[] = [
     unitEquivalences: {
       'pint (16 fl oz)': { base: 'cup', factor: 2 },
       'quart (32 fl oz)': { base: 'cup', factor: 4 },
+      'pint (16 oz)': { base: 'cup', factor: 2 },
+      'quart (32 oz)': { base: 'cup', factor: 4 },
     },
   },
 
@@ -172,6 +178,8 @@ export const ITEM_RULES: ItemRule[] = [
     ],
     unitEquivalences: {
       'box (16 oz)': { base: 'ounce', factor: 16 },
+      pound: { base: 'ounce', factor: 16 },
+      lb: { base: 'ounce', factor: 16 },
     },
   },
 
@@ -185,9 +193,12 @@ export const ITEM_RULES: ItemRule[] = [
       'pinto bean',
     ],
     unitEquivalences: {
+      'can (14 oz)': { base: 'ounce', factor: 14 },
       'can (15 oz)': { base: 'ounce', factor: 15 },
       'can (400 g)': { base: 'ounce', factor: 14.1 },
       can: { base: 'ounce', factor: 15 },
+      pound: { base: 'ounce', factor: 16 },
+      lb: { base: 'ounce', factor: 16 },
     },
   },
 
@@ -205,6 +216,8 @@ export const ITEM_RULES: ItemRule[] = [
       'can (28 oz)': { base: 'ounce', factor: 28 },
       'can (400 g)': { base: 'ounce', factor: 14.1 },
       can: { base: 'ounce', factor: 15 },
+      pound: { base: 'ounce', factor: 16 },
+      lb: { base: 'ounce', factor: 16 },
     },
   },
 
@@ -215,6 +228,8 @@ export const ITEM_RULES: ItemRule[] = [
       '8-oz jar': { base: 'ounce', factor: 8 },
       jar: { base: 'ounce', factor: 8 },
       cup: { base: 'ounce', factor: 8 },
+      pound: { base: 'ounce', factor: 16 },
+      lb: { base: 'ounce', factor: 16 },
     },
   },
 
@@ -224,6 +239,8 @@ export const ITEM_RULES: ItemRule[] = [
     unitEquivalences: {
       '17.5-oz package': { base: 'ounce', factor: 17.5 },
       package: { base: 'ounce', factor: 17.5 },
+      pound: { base: 'ounce', factor: 16 },
+      lb: { base: 'ounce', factor: 16 },
     },
   },
 
@@ -234,6 +251,8 @@ export const ITEM_RULES: ItemRule[] = [
       '8 oz bag': { base: 'ounce', factor: 8 },
       bag: { base: 'ounce', factor: 8 },
       cup: { base: 'ounce', factor: 1 },
+      pound: { base: 'ounce', factor: 16 },
+      lb: { base: 'ounce', factor: 16 },
     },
   },
 ];

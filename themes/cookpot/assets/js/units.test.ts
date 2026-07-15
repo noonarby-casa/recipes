@@ -158,6 +158,41 @@ describe('formatItemQuantity', () => {
       itemStr: 'egg',
     });
   });
+
+  test('correctly handles user reported items', () => {
+    expect(formatItemQuantity(8, '', 'green onion')).toEqual({
+      qtyStr: '8',
+      itemStr: 'green onions',
+    });
+    expect(formatItemQuantity(1.5, '', 'yellow onion')).toEqual({
+      qtyStr: '1 1/2',
+      itemStr: 'yellow onions',
+    });
+    expect(formatItemQuantity(3, '', 'red bell pepper')).toEqual({
+      qtyStr: '3',
+      itemStr: 'red bell peppers',
+    });
+    expect(formatItemQuantity(3, '', 'green bell pepper')).toEqual({
+      qtyStr: '3',
+      itemStr: 'green bell peppers',
+    });
+    expect(formatItemQuantity(3, '', 'jalapeño')).toEqual({
+      qtyStr: '3',
+      itemStr: 'jalapeños',
+    });
+    expect(formatItemQuantity(2, '', 'egg')).toEqual({
+      qtyStr: '2',
+      itemStr: 'eggs',
+    });
+    expect(formatItemQuantity(0.25, 'cup', 'almond')).toEqual({
+      qtyStr: '1/4 cup',
+      itemStr: 'almonds',
+    });
+    expect(formatItemQuantity(0.25, 'cup', 'sesame seed')).toEqual({
+      qtyStr: '1/4 cup',
+      itemStr: 'sesame seeds',
+    });
+  });
 });
 
 describe('singularizeWord', () => {
