@@ -2,16 +2,16 @@ import { STAPLE_ITEMS, ITEM_RULES } from './rules';
 import {
   convertQty,
   getConversionFactor,
-  getSingularUnit,
   pluralizeUnit,
+  isVolumeUnit,
+  isWeightUnit,
+  formatQtyValueWithUnit,
 } from './utils';
 import {
   getSectionForCategory,
   classifyItemToCategory,
   StoreLayout,
 } from './store-sections';
-import { formatCookingNumber } from '../units';
-import { UNIT_CONVERSIONS } from '../constants';
 import {
   IngredientInput,
   ShoppingItem,
@@ -19,6 +19,7 @@ import {
   ItemRule,
   ShoppingItemNote,
   IngredientNote,
+  QtyValue,
 } from './types';
 
 function getRuleForItem(itemName: string): ItemRule | undefined {
@@ -55,25 +56,100 @@ function isStaple(itemName: string): boolean {
   return false;
 }
 
-function getAverageQty(qty?: number | [number, number]): number | null {
-  if (qty === undefined) {
-    return null;
+function getItemCanonicalInfo(itemName: string): { key: string; name: string } {
+  const lower = itemName.toLowerCase().trim();
+  const rule = getRuleForItem(lower);
+  if (rule?.canonicalName) {
+    return { key: rule.canonicalName.toLowerCase(), name: rule.canonicalName };
   }
-  if (Array.isArray(qty)) {
-    return (qty[0] + qty[1]) / 2;
-  }
-  return qty;
+  return { key: lower, name: itemName };
 }
 
-function formatNoteUnit(unit: string, qty: number): string {
-  const singular = getSingularUnit(unit);
-  if (singular === 'tablespoon') {
-    return 'tbsp';
+function determineTargetUnit(units: string[], rule?: ItemRule): string {
+  const uniqueUnits = Array.from(
+    new Set(units.map((u) => u.trim().toLowerCase())),
+  );
+  if (
+    uniqueUnits.length === 0 ||
+    (uniqueUnits.length === 1 && uniqueUnits[0] === '')
+  ) {
+    return '';
   }
-  if (singular === 'teaspoon') {
-    return 'tsp';
+
+  if (rule?.unitEquivalences) {
+    const firstEq = Object.values(rule.unitEquivalences)[0];
+    if (firstEq) {
+      const canConvertAll = uniqueUnits.every(
+        (u) => u === '' || getConversionFactor(u, firstEq.base, rule) > 0,
+      );
+      if (canConvertAll) {
+        return firstEq.base;
+      }
+    }
   }
-  return pluralizeUnit(singular, qty);
+
+  if (uniqueUnits.length === 1) {
+    return units[0];
+  }
+
+  const hasVolume = uniqueUnits.some(
+    (u) => getConversionFactor(u, 'teaspoon') > 0,
+  );
+  const hasWeight = uniqueUnits.some(
+    (u) => getConversionFactor(u, 'ounce') > 0,
+  );
+
+  if (hasVolume && !hasWeight) {
+    if (uniqueUnits.includes('cup')) {
+      return 'cup';
+    }
+    if (uniqueUnits.includes('tablespoon') || uniqueUnits.includes('tbsp')) {
+      return 'tablespoon';
+    }
+    return 'teaspoon';
+  }
+  if (hasWeight && !hasVolume) {
+    if (uniqueUnits.includes('pound') || uniqueUnits.includes('lb')) {
+      return 'pound';
+    }
+    return 'ounce';
+  }
+  return units[0];
+}
+
+function addQtyValues(
+  a: QtyValue | undefined,
+  b: QtyValue | undefined,
+): QtyValue | undefined {
+  if (a === undefined) {
+    return b;
+  }
+  if (b === undefined) {
+    return a;
+  }
+  const aMin = Array.isArray(a) ? a[0] : a;
+  const aMax = Array.isArray(a) ? a[1] : a;
+  const bMin = Array.isArray(b) ? b[0] : b;
+  const bMax = Array.isArray(b) ? b[1] : b;
+  if (Array.isArray(a) || Array.isArray(b)) {
+    return [aMin + bMin, aMax + bMax];
+  }
+  return a + b;
+}
+
+function convertQtyValue(
+  qty: QtyValue,
+  fromUnit: string,
+  toUnit: string,
+  rule?: ItemRule,
+): QtyValue {
+  if (Array.isArray(qty)) {
+    return [
+      convertQty(qty[0], fromUnit, toUnit, rule),
+      convertQty(qty[1], fromUnit, toUnit, rule),
+    ];
+  }
+  return convertQty(qty, fromUnit, toUnit, rule);
 }
 
 /**
@@ -84,79 +160,35 @@ export function processShoppingList(
   ingredients: IngredientInput[],
   layout?: StoreLayout,
 ): ProcessedShoppingList {
-  const map = new Map<
+  const groupsMap = new Map<
     string,
     {
-      baseQty: number;
-      baseUnit: string;
-      unquantified: boolean;
-      ingredientNotes: IngredientNote[];
-      item: string;
+      key: string;
+      name: string;
+      ingredients: IngredientInput[];
       optional: boolean;
     }
   >();
 
   for (const ing of ingredients) {
     const itemName = ing.item.toLowerCase().trim();
-    const rule = getRuleForItem(itemName);
-    const qty = getAverageQty(ing.qty);
-    const unit = ing.unit || '';
-
-    let targetUnit = unit;
-    if (rule?.unitEquivalences) {
-      const firstEq = Object.values(rule.unitEquivalences)[0];
-      if (firstEq) {
-        const isFromVolumeWeight = getSingularUnit(unit) in UNIT_CONVERSIONS;
-        const isToVolumeWeight =
-          getSingularUnit(firstEq.base) in UNIT_CONVERSIONS;
-        const factor = getConversionFactor(unit, firstEq.base, rule);
-        if (factor > 0 || (!isFromVolumeWeight && !isToVolumeWeight)) {
-          targetUnit = firstEq.base;
-        }
-      }
-    } else if (unit) {
-      if (getConversionFactor(unit, 'teaspoon') > 0) {
-        targetUnit = 'teaspoon';
-      } else if (getConversionFactor(unit, 'ounce') > 0) {
-        targetUnit = 'ounce';
-      }
+    if (itemName === 'water') {
+      continue;
     }
-
-    let convertedQty = qty;
-    if (qty !== null && unit !== targetUnit) {
-      convertedQty = convertQty(qty, unit, targetUnit, rule);
-    }
-
-    let existing = map.get(itemName);
+    const info = getItemCanonicalInfo(itemName);
+    let existing = groupsMap.get(info.key);
     if (!existing) {
       existing = {
-        baseQty: 0,
-        baseUnit: targetUnit,
-        unquantified: false,
-        ingredientNotes: [],
-        item: ing.item,
-        optional: !!ing.optional,
+        key: info.key,
+        name: info.name,
+        ingredients: [],
+        optional: true,
       };
-      map.set(itemName, existing);
+      groupsMap.set(info.key, existing);
     }
-
-    if (convertedQty !== null) {
-      existing.baseQty += convertedQty;
-    } else {
-      existing.unquantified = true;
-    }
-
+    existing.ingredients.push(ing);
     if (!ing.optional) {
       existing.optional = false;
-    }
-
-    // Add note entry if it has recipe source, alt option, or description
-    if (ing.recipe || ing.alt?.item || ing.desc) {
-      existing.ingredientNotes.push({
-        recipe: ing.recipe || undefined,
-        altItem: ing.alt?.item || undefined,
-        descriptor: ing.desc || undefined,
-      });
     }
   }
 
@@ -164,21 +196,75 @@ export function processShoppingList(
   const optionalItems: ShoppingItem[] = [];
   const stapleItems: ShoppingItem[] = [];
 
-  for (const [itemName, group] of map.entries()) {
-    const rule = getRuleForItem(itemName);
-    let finalQty: number | null = group.unquantified ? null : group.baseQty;
-    let finalUnit = group.baseUnit;
+  for (const group of groupsMap.values()) {
+    const rule = getRuleForItem(group.key);
+    const units = group.ingredients
+      .map((ing) => ing.unit || '')
+      .filter(Boolean);
+    const targetUnit = determineTargetUnit(units, rule);
+
+    let totalQty: QtyValue | undefined = undefined;
+    let unquantified = false;
+    const ingredientNotes: IngredientNote[] = [];
+
+    for (const ing of group.ingredients) {
+      if (ing.recipe || ing.alt?.item || ing.desc) {
+        ingredientNotes.push({
+          recipe: ing.recipe || undefined,
+          altItem: ing.alt?.item || undefined,
+          descriptor: ing.desc || undefined,
+        });
+      }
+
+      if (ing.qty === undefined) {
+        if (rule?.defaultQty !== undefined) {
+          const unit = ing.unit || '';
+          let converted: QtyValue = rule.defaultQty;
+          if (unit !== targetUnit) {
+            converted = convertQtyValue(
+              rule.defaultQty,
+              unit,
+              targetUnit,
+              rule,
+            );
+          }
+          totalQty = addQtyValues(totalQty, converted);
+        } else {
+          unquantified = true;
+        }
+      } else {
+        const unit = ing.unit || '';
+        let converted: QtyValue;
+        if (unit === targetUnit) {
+          converted = ing.qty;
+        } else {
+          converted = convertQtyValue(ing.qty, unit, targetUnit, rule);
+        }
+        totalQty = addQtyValues(totalQty, converted);
+      }
+    }
+
+    let finalQty: number | null =
+      unquantified || totalQty === undefined
+        ? null
+        : Array.isArray(totalQty)
+          ? totalQty[1]
+          : totalQty;
+    let finalUnit = targetUnit;
     let sizeNote: string | undefined = undefined;
 
-    const canonicalName =
-      rule && rule.items.length > 0 ? rule.items[0] : itemName;
+    const canonicalName = rule?.canonicalName || group.name;
+    const sizeLookupKey =
+      rule && rule.items.length > 0 ? rule.items[0] : canonicalName;
     const itemSizes =
-      layout?.itemSizes?.[canonicalName] || layout?.itemSizes?.[itemName];
+      layout?.itemSizes?.[sizeLookupKey.toLowerCase()] ||
+      layout?.itemSizes?.[group.key];
+
+    let matched = false;
+    const originalQty = totalQty;
+    const originalUnit = targetUnit;
 
     if (finalQty !== null && itemSizes && itemSizes.length > 0) {
-      let matched = false;
-      const originalQty = finalQty;
-      const originalUnit = finalUnit;
       for (const [limit, sizeUnit] of itemSizes) {
         const factor = getConversionFactor(sizeUnit, finalUnit, rule);
         if (factor > 0) {
@@ -198,55 +284,37 @@ export function processShoppingList(
           const sizeInBase = largest[0] * factor;
           finalQty = Math.ceil(finalQty / sizeInBase) * largest[0];
           finalUnit = largest[1];
-        }
-      }
-
-      // Generate the size note showing recipe quantity needed
-      const sizeUnitLower = finalUnit.toLowerCase();
-      const originalUnitLower = originalUnit.toLowerCase();
-      const isOunceRelevant =
-        sizeUnitLower.includes('oz') ||
-        sizeUnitLower.includes('ounce') ||
-        originalUnitLower.includes('oz') ||
-        originalUnitLower.includes('ounce');
-
-      const ozFactor = isOunceRelevant
-        ? getConversionFactor(originalUnit, 'ounce', rule)
-        : 0;
-      if (ozFactor > 0) {
-        const neededOz = originalQty * ozFactor;
-        sizeNote = `${formatCookingNumber(neededOz)} oz needed`;
-      } else {
-        const formattedUnit = formatNoteUnit(originalUnit, originalQty);
-        sizeNote = `${formatCookingNumber(originalQty)} ${formattedUnit} needed`
-          .replace(/\s+/g, ' ')
-          .trim();
-      }
-    } else if (finalQty !== null) {
-      if (finalUnit === 'teaspoon') {
-        if (finalQty >= 48) {
-          finalQty = finalQty / 48;
-          finalUnit = 'cup';
-        } else if (finalQty >= 3) {
-          finalQty = finalQty / 3;
-          finalUnit = 'tablespoon';
-        }
-      } else if (finalUnit === 'ounce') {
-        if (finalQty >= 16) {
-          finalQty = finalQty / 16;
-          finalUnit = 'pound';
+          matched = true;
         }
       }
     }
 
-    const category = classifyItemToCategory(group.item);
-    const itemIsStaple = isStaple(itemName);
+    if (finalQty !== null) {
+      if (matched) {
+        finalQty = Math.ceil(finalQty);
+        sizeNote = `${formatQtyValueWithUnit(originalQty!, originalUnit)} needed`;
+      } else {
+        if (isVolumeUnit(finalUnit)) {
+          sizeNote = `${formatQtyValueWithUnit(totalQty!, finalUnit)} needed`;
+          finalQty = null;
+          finalUnit = '';
+        } else if (isWeightUnit(finalUnit)) {
+          finalQty = Math.ceil(finalQty * 100) / 100;
+        } else {
+          // Countable/package items round up to integers
+          finalQty = Math.ceil(finalQty);
+        }
+      }
+    }
+
+    const category = classifyItemToCategory(group.name);
+    const itemIsStaple = isStaple(group.key);
     const stapleState: 'in-pantry' | undefined = itemIsStaple
       ? 'in-pantry'
       : undefined;
 
     const note: ShoppingItemNote = {
-      ingredientNotes: group.ingredientNotes,
+      ingredientNotes,
     };
     if (sizeNote) {
       note.sizeNote = sizeNote;
@@ -255,9 +323,9 @@ export function processShoppingList(
     const finalUnitPlural =
       finalQty !== null ? pluralizeUnit(finalUnit, finalQty) : finalUnit;
     const shopItem: ShoppingItem = {
-      qty: finalQty !== null ? Math.ceil(finalQty * 100) / 100 : null,
+      qty: finalQty,
       unit: finalUnitPlural,
-      item: group.item,
+      item: group.name,
       category,
       staple: stapleState,
       note,

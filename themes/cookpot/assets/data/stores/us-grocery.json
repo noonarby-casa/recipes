@@ -8,8 +8,8 @@
   ],
   "sour cream": [
     [1, "half-pint (8 oz)"],
-    [2, "pint (16 oz)"],
-    [4, "quart (32 oz)"]
+    [1, "pint (16 oz)"],
+    [1, "quart (32 oz)"]
   ],
   "broth": [
     [1, "pint (16 fl oz)"],
@@ -29,5 +29,18 @@
   "baby spinach": [[1, "8 oz bag"]],
   "cream cheese": [[1, "8-oz package"]],
   "feta cheese": [[1, "8-oz package"]],
-  "chocolate chips": [[1, "12-oz bag"]]
+  "chocolate chips": [[1, "12-oz bag"]],
+  "lemon juice": [[1, "bottle (16 fl oz)"]],
+  "lime juice": [[1, "bottle (16 fl oz)"]],
+  "tortilla": [
+    [1, "package of 10"],
+    [1, "package of 24"],
+    [1, "package of 30"]
+  ],
+  "green enchilada sauce": [
+    [1, "10-oz can"],
+    [1, "28-oz can"]
+  ],
+  "kale": [[1, "5-oz package"]],
+  "parmesan": [[1, "wedge"]]
 }

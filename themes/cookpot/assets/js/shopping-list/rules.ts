@@ -52,6 +52,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 1. Garlic: cloves -> heads
   {
     items: ['garlic', 'garlic clove', 'clove garlic'],
+    canonicalName: 'garlic',
     unitEquivalences: {
       head: { base: 'clove', factor: 10 },
       bulb: { base: 'clove', factor: 10 },
@@ -61,6 +62,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 2. Butter
   {
     items: ['butter'],
+    canonicalName: 'butter',
     unitEquivalences: {
       'box (4 sticks)': { base: 'tablespoon', factor: 32 },
       stick: { base: 'tablespoon', factor: 8 },
@@ -70,11 +72,16 @@ export const ITEM_RULES: ItemRule[] = [
   // 3. Eggs
   {
     items: ['egg', 'egg yolk'],
+    canonicalName: 'egg',
+    unitEquivalences: {
+      yolk: { base: 'egg', factor: 1 },
+    },
   },
 
   // 4. Lemons
   {
-    items: ['lemon', 'lemon juice', 'lemon zest'],
+    items: ['lemon', 'lemon zest'],
+    canonicalName: 'lemon',
     unitEquivalences: {
       tablespoon: { base: 'lemon', factor: 0.3333 }, // 1 tbsp ≈ 1/3 lemon
       tbsp: { base: 'lemon', factor: 0.3333 },
@@ -83,14 +90,35 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
+  // 4a. Lemon Juice
+  {
+    items: ['lemon juice'],
+    canonicalName: 'lemon juice',
+    unitEquivalences: {
+      'bottle (16 fl oz)': { base: 'ounce', factor: 16 },
+      bottle: { base: 'ounce', factor: 16 },
+    },
+  },
+
   // 5. Limes
   {
-    items: ['lime', 'lime juice', 'lime zest'],
+    items: ['lime', 'lime zest'],
+    canonicalName: 'lime',
     unitEquivalences: {
       tablespoon: { base: 'lime', factor: 0.5 }, // 1 tbsp ≈ 1/2 lime
       tbsp: { base: 'lime', factor: 0.5 },
       teaspoon: { base: 'lime', factor: 0.1666 },
       tsp: { base: 'lime', factor: 0.1666 },
+    },
+  },
+
+  // 5a. Lime Juice
+  {
+    items: ['lime juice'],
+    canonicalName: 'lime juice',
+    unitEquivalences: {
+      'bottle (16 fl oz)': { base: 'ounce', factor: 16 },
+      bottle: { base: 'ounce', factor: 16 },
     },
   },
 
@@ -255,6 +283,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 18. Baby Spinach
   {
     items: ['baby spinach', 'spinach'],
+    canonicalName: 'baby spinach',
     unitEquivalences: {
       '8 oz bag': { base: 'ounce', factor: 8 },
       bag: { base: 'ounce', factor: 8 },
@@ -267,6 +296,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 19. Cream Cheese
   {
     items: ['cream cheese'],
+    canonicalName: 'cream cheese',
     unitEquivalences: {
       '8-oz package': { base: 'ounce', factor: 8 },
       package: { base: 'ounce', factor: 8 },
@@ -276,6 +306,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 20. Feta Cheese
   {
     items: ['feta cheese', 'feta'],
+    canonicalName: 'feta cheese',
     unitEquivalences: {
       '8-oz package': { base: 'ounce', factor: 8 },
       package: { base: 'ounce', factor: 8 },
@@ -285,11 +316,66 @@ export const ITEM_RULES: ItemRule[] = [
   // 21. Chocolate Chips
   {
     items: ['chocolate chips', 'chocolate chip'],
+    canonicalName: 'chocolate chips',
     unitEquivalences: {
       '12-oz bag': { base: 'ounce', factor: 12 },
       bag: { base: 'ounce', factor: 12 },
       cup: { base: 'ounce', factor: 6 }, // 1 cup ≈ 6 oz
       tablespoon: { base: 'ounce', factor: 0.375 }, // 1 tbsp ≈ 3/8 oz
     },
+  },
+
+  // 22. Tortillas
+  {
+    items: ['tortilla', 'tortillas'],
+    canonicalName: 'tortilla',
+    unitEquivalences: {
+      'package of 10': { base: 'tortilla', factor: 10 },
+      'package of 24': { base: 'tortilla', factor: 24 },
+      'package of 30': { base: 'tortilla', factor: 30 },
+      package: { base: 'tortilla', factor: 10 },
+    },
+  },
+
+  // 23. Green Enchilada Sauce
+  {
+    items: ['green enchilada sauce', 'enchilada sauce'],
+    canonicalName: 'green enchilada sauce',
+    unitEquivalences: {
+      '10-oz can': { base: 'ounce', factor: 10 },
+      '28-oz can': { base: 'ounce', factor: 28 },
+      can: { base: 'ounce', factor: 10 },
+      cup: { base: 'ounce', factor: 8 },
+    },
+  },
+
+  // 24. Kale
+  {
+    items: ['kale'],
+    canonicalName: 'kale',
+    unitEquivalences: {
+      '5-oz package': { base: 'ounce', factor: 5 },
+      package: { base: 'ounce', factor: 5 },
+      cup: { base: 'ounce', factor: 2 }, // 1 cup kale is about 2 oz
+    },
+  },
+
+  // 25. Parmesan
+  {
+    items: ['parmesan', 'parmesan cheese', 'parmigiano', 'parmigiano-reggiano'],
+    canonicalName: 'parmesan',
+    unitEquivalences: {
+      wedge: { base: 'ounce', factor: 8 },
+      tablespoon: { base: 'ounce', factor: 0.3 },
+      tbsp: { base: 'ounce', factor: 0.3 },
+      cup: { base: 'ounce', factor: 4 },
+    },
+  },
+
+  // 26. Jalapeños
+  {
+    items: ['jalapeño', 'jalapeno', 'jalapeño slices', 'jalapeno slices'],
+    canonicalName: 'jalapeño',
+    defaultQty: 1,
   },
 ];

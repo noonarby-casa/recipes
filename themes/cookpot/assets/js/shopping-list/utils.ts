@@ -210,9 +210,14 @@ function isVolumeWeightUnit(unit: string, rule?: ItemRule): boolean {
     return true;
   }
   if (rule?.unitEquivalences) {
-    const eq = rule.unitEquivalences[sing];
-    if (eq && getSingularUnit(eq.base) in UNIT_CONVERSIONS) {
-      return true;
+    const eqKey = Object.keys(rule.unitEquivalences).find(
+      (k) => getSingularUnit(k) === sing,
+    );
+    if (eqKey) {
+      const eq = rule.unitEquivalences[eqKey];
+      if (eq && getSingularUnit(eq.base) in UNIT_CONVERSIONS) {
+        return true;
+      }
     }
   }
   return false;
@@ -237,14 +242,20 @@ export function getConversionFactor(
 
   // Check item-specific equivalences first
   if (rule?.unitEquivalences) {
-    const fromEq = rule.unitEquivalences[fromSing];
-    const toEq = rule.unitEquivalences[toSing];
+    const fromEqKey = Object.keys(rule.unitEquivalences).find(
+      (k) => getSingularUnit(k) === fromSing,
+    );
+    const toEqKey = Object.keys(rule.unitEquivalences).find(
+      (k) => getSingularUnit(k) === toSing,
+    );
+    const fromEq = fromEqKey ? rule.unitEquivalences[fromEqKey] : undefined;
+    const toEq = toEqKey ? rule.unitEquivalences[toEqKey] : undefined;
 
     // Case A: Both units are defined in equivalences
     if (fromEq && toEq) {
       // e.g. "can (15 oz)" -> "ounce" and "can (28 oz)" -> "ounce"
       // If they share the same base, we can convert.
-      if (fromEq.base === toEq.base) {
+      if (getSingularUnit(fromEq.base) === getSingularUnit(toEq.base)) {
         return fromEq.factor / toEq.factor;
       }
     }
@@ -295,4 +306,39 @@ export function convertQty(
     return qty * factor;
   }
   return qty;
+}
+
+export function isVolumeUnit(unit: string): boolean {
+  const sing = getSingularUnit(unit);
+  return sing in UNIT_CONVERSIONS && UNIT_CONVERSIONS[sing].system === 'volume';
+}
+
+export function isWeightUnit(unit: string): boolean {
+  const sing = getSingularUnit(unit);
+  return sing in UNIT_CONVERSIONS && UNIT_CONVERSIONS[sing].system === 'weight';
+}
+
+export function formatQtyValueWithUnit(qty: QtyValue, unit: string): string {
+  const minVal = Array.isArray(qty) ? qty[0] : qty;
+  const maxVal = Array.isArray(qty) ? qty[1] : qty;
+  const singular = getSingularUnit(unit);
+  let displayUnit = singular;
+  if (singular === 'tablespoon') {
+    displayUnit = 'tbsp';
+  } else if (singular === 'teaspoon') {
+    displayUnit = 'tsp';
+  } else if (singular === 'oz' || singular === 'ounce') {
+    displayUnit = 'oz';
+  } else if (singular) {
+    displayUnit = pluralizeUnit(singular, maxVal);
+  }
+
+  if (Array.isArray(qty)) {
+    const minStr = formatCookingNumber(minVal);
+    const maxStr = formatCookingNumber(maxVal);
+    return `${minStr}-${maxStr} ${displayUnit}`.replace(/\s+/g, ' ').trim();
+  } else {
+    const qtyStr = formatCookingNumber(qty);
+    return `${qtyStr} ${displayUnit}`.replace(/\s+/g, ' ').trim();
+  }
 }

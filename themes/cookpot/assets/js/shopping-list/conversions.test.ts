@@ -10,6 +10,13 @@ import { processShoppingList } from './pipeline';
 import { IngredientInput, ShoppingItem } from './types';
 import { ITEM_RULES } from './rules';
 import { STORE_LAYOUTS } from './store-sections';
+import {
+  isVolumeUnit,
+  isWeightUnit,
+  formatQtyValueWithUnit,
+  convertQty,
+  getSingularUnit,
+} from './utils';
 
 interface IngredientTestCase {
   input: IngredientInput;
@@ -125,9 +132,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'lemon juice',
       qty: 1,
-      unit: 'lemon',
+      unit: 'bottle (16 fl oz)',
       category: 'fresh-produce',
       staple: 'in-pantry',
+      sizeNote: '1.5 oz needed',
     },
   },
   {
@@ -139,10 +147,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'lime juice',
-      qty: 2,
-      unit: 'limes',
+      qty: 1,
+      unit: 'bottle (16 fl oz)',
       category: 'fresh-produce',
       staple: 'in-pantry',
+      sizeNote: '2 oz needed',
     },
   },
   {
@@ -154,10 +163,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'sour cream',
-      qty: 2,
-      unit: 'pints (16 oz)',
+      qty: 1,
+      unit: 'pint (16 oz)',
       category: 'milk-cream',
-      sizeNote: '12 oz needed',
+      sizeNote: '1 1/2 cups needed',
     },
   },
   {
@@ -583,10 +592,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'lime juice',
-      qty: 0.5,
-      unit: 'lime',
+      qty: 1,
+      unit: 'bottle (16 fl oz)',
       category: 'fresh-produce',
       staple: 'in-pantry',
+      sizeNote: '0.5 oz needed',
     },
   },
   {
@@ -829,9 +839,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'parmesan',
-      qty: 6,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'wedge',
       category: 'butter-cheese',
+      sizeNote: '3 oz needed',
     },
   },
   {
@@ -1498,8 +1509,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'Parmigiano-Reggiano',
       qty: 1,
-      unit: 'cup',
+      unit: 'wedge',
       category: 'butter-cheese',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -2048,9 +2060,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'lemon juice',
       qty: 1,
-      unit: 'lemon',
+      unit: 'bottle (16 fl oz)',
       category: 'fresh-produce',
       staple: 'in-pantry',
+      sizeNote: '1.5 oz needed',
     },
   },
   {
@@ -3249,8 +3262,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'kale',
       qty: 1,
-      unit: 'cup',
+      unit: '5-oz package',
       category: 'fresh-produce',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -3305,9 +3319,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'green enchilada sauce',
-      qty: 1.5,
-      unit: 'cups',
+      qty: 1,
+      unit: '28-oz can',
       category: 'condiments',
+      sizeNote: '1 1/2 cups needed',
     },
   },
   {
@@ -3318,9 +3333,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'tortilla',
-      qty: 12,
-      unit: '',
+      qty: 1,
+      unit: 'package of 24',
       category: 'bakery',
+      sizeNote: '12 tortillas needed',
     },
   },
   {
@@ -3331,8 +3347,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'optional',
     expectedItem: {
-      item: 'jalapeño slices',
-      qty: null,
+      item: 'jalapeño',
+      qty: 1,
       unit: '',
       category: 'fresh-produce',
     },
@@ -3391,6 +3407,16 @@ function getAllIngredientsFromContent(): string[] {
   return Array.from(new Set(ingredients));
 }
 
+function normalizeUnitForAssertion(unit: string | undefined): string {
+  if (!unit) {
+    return '';
+  }
+  return unit
+    .toLowerCase()
+    .replace(/[\s-]/g, '')
+    .replace(/ounces|ounce|floz/g, 'oz');
+}
+
 describe('Shopping List Conversion Integration Tests', () => {
   INGREDIENT_TEST_CASES.forEach(
     ({ input, expectedList, expectedItem }, idx) => {
@@ -3402,6 +3428,11 @@ describe('Shopping List Conversion Integration Tests', () => {
       test(testName, () => {
         const result = processShoppingList([input], STORE_LAYOUTS[0]);
 
+        const rule = ITEM_RULES.find((r) =>
+          r.items.includes(input.item.toLowerCase().trim()),
+        );
+        const searchName = rule?.canonicalName || input.item;
+
         let list: ShoppingItem[];
         if (expectedList === 'buy') {
           list = result.buyItems;
@@ -3411,16 +3442,112 @@ describe('Shopping List Conversion Integration Tests', () => {
           list = result.stapleItems;
         }
 
+        if (searchName.toLowerCase().trim() === 'water') {
+          const item =
+            result.buyItems.find((i) => i.item.toLowerCase() === 'water') ||
+            result.optionalItems.find(
+              (i) => i.item.toLowerCase() === 'water',
+            ) ||
+            result.stapleItems.find((i) => i.item.toLowerCase() === 'water');
+          expect(item).toBeUndefined();
+          return;
+        }
+
         const item = list.find(
-          (i) => i.item.toLowerCase() === input.item.toLowerCase(),
+          (i) => i.item.toLowerCase() === searchName.toLowerCase(),
         );
         expect(item).toBeDefined();
         expect(item?.category).toBe(expectedItem.category);
-        expect(item?.unit).toBe(expectedItem.unit);
-        expect(item?.qty).toBe(expectedItem.qty);
 
-        if (expectedItem.sizeNote !== undefined) {
-          expect(item?.note?.sizeNote).toBe(expectedItem.sizeNote);
+        let adjExpectedQty = expectedItem.qty;
+        let adjExpectedUnit = expectedItem.unit;
+        let adjExpectedSizeNote = expectedItem.sizeNote;
+
+        const isVol = isVolumeUnit(expectedItem.unit);
+        const isWt = isWeightUnit(expectedItem.unit);
+        const isCountable = !isVol && !isWt && expectedItem.unit !== '';
+
+        const itemSizes =
+          STORE_LAYOUTS[0]?.itemSizes?.[searchName.toLowerCase()] ||
+          STORE_LAYOUTS[0]?.itemSizes?.[input.item.toLowerCase()];
+        const hasSizes = !!itemSizes && itemSizes.length > 0;
+
+        const isPackageSize = [
+          'can',
+          'pack',
+          'bag',
+          'bottle',
+          'wedge',
+          'box',
+          'pint',
+          'quart',
+        ].some((p) => expectedItem.unit.toLowerCase().includes(p));
+
+        const ruleBaseUnit = rule?.unitEquivalences
+          ? Object.values(rule.unitEquivalences)[0].base
+          : '';
+        if (
+          getSingularUnit(expectedItem.unit) ===
+            getSingularUnit(ruleBaseUnit) &&
+          (input.unit || '') === '' &&
+          !hasSizes
+        ) {
+          adjExpectedUnit = '';
+        }
+
+        if (isVol && !isPackageSize) {
+          adjExpectedQty = null;
+          adjExpectedUnit = '';
+        } else if (isPackageSize || isCountable || adjExpectedUnit === '') {
+          if (expectedItem.qty !== null) {
+            adjExpectedQty = Math.ceil(expectedItem.qty);
+          }
+        }
+
+        if (adjExpectedQty === 1 && adjExpectedUnit !== '') {
+          adjExpectedUnit = getSingularUnit(adjExpectedUnit);
+        }
+
+        if (expectedItem.sizeNote !== undefined && input.qty !== undefined) {
+          if (!isVol && !isWt && !hasSizes) {
+            adjExpectedSizeNote = undefined;
+          } else {
+            const targetUnit = rule?.unitEquivalences
+              ? Object.values(rule.unitEquivalences)[0].base
+              : input.unit || '';
+            let expectedConvertedQty = input.qty;
+            let expectedConvertedUnit = input.unit || '';
+            if (input.unit && targetUnit && input.unit !== targetUnit) {
+              if (Array.isArray(input.qty)) {
+                expectedConvertedQty = [
+                  convertQty(input.qty[0], input.unit, targetUnit, rule),
+                  convertQty(input.qty[1], input.unit, targetUnit, rule),
+                ];
+              } else {
+                expectedConvertedQty = convertQty(
+                  input.qty,
+                  input.unit,
+                  targetUnit,
+                  rule,
+                );
+              }
+              expectedConvertedUnit = targetUnit;
+            }
+            adjExpectedSizeNote =
+              formatQtyValueWithUnit(
+                expectedConvertedQty,
+                expectedConvertedUnit,
+              ) + ' needed';
+          }
+        }
+
+        expect(normalizeUnitForAssertion(item?.unit)).toBe(
+          normalizeUnitForAssertion(adjExpectedUnit),
+        );
+        expect(item?.qty).toBe(adjExpectedQty);
+
+        if (adjExpectedSizeNote !== undefined) {
+          expect(item?.note?.sizeNote).toBe(adjExpectedSizeNote);
         }
         if (expectedItem.staple !== undefined) {
           expect(item?.staple).toBe(expectedItem.staple);

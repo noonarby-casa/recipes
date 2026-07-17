@@ -28,7 +28,7 @@ describe('processShoppingList', () => {
     expect(result.buyItems[0].unit).toBe('pounds');
   });
 
-  test('converts smaller volume units to larger ones when scaling up', () => {
+  test('handles volume units with no package size by moving them to notes', () => {
     const ingredients: IngredientInput[] = [
       { item: 'soy sauce', qty: 2, unit: 'tablespoon' },
       { item: 'soy sauce', qty: 2, unit: 'tablespoon' },
@@ -36,24 +36,9 @@ describe('processShoppingList', () => {
 
     const result = processShoppingList(ingredients);
     expect(result.buyItems).toHaveLength(1);
-    // 4 tablespoons converted to cup: 16 tablespoons = 1 cup.
-    // 4 tablespoons / 16 = 0.25 cup. Wait, in pipeline.ts:
-    // "if (finalUnit === 'teaspoon') { ... if (finalQty >= 48) { cup } else if (finalQty >= 3) { tablespoon } }"
-    // If unit is tablespoon, wait! Let's check how convertQty handles soy sauce.
-    // In pipeline.ts line 63-69:
-    //   if (convertQty(1, unit, 'teaspoon') > 0) { targetUnit = 'teaspoon'; }
-    // Since tablespoon converts to teaspoon (1 tbsp = 3 tsp), targetUnit becomes teaspoon!
-    // So 2 tablespoons = 6 teaspoons, 2 tablespoons = 6 teaspoons.
-    // Combined baseQty = 12 teaspoons.
-    // In formatting step line 137:
-    //   if (finalUnit === 'teaspoon') {
-    //     if (finalQty >= 48) { cup }
-    //     else if (finalQty >= 3) { finalQty = finalQty / 3; finalUnit = 'tablespoon'; }
-    //   }
-    // So 12 teaspoons is >= 3, so finalQty = 4, finalUnit = 'tablespoon'.
-    // That means it will output 4 tablespoons! Let's assert that:
-    expect(result.buyItems[0].qty).toBe(4);
-    expect(result.buyItems[0].unit).toBe('tablespoons');
+    expect(result.buyItems[0].qty).toBeNull();
+    expect(result.buyItems[0].unit).toBe('');
+    expect(result.buyItems[0].note?.sizeNote).toBe('4 tbsp needed');
   });
 
   test('separates staples and optional items', () => {
