@@ -9,12 +9,15 @@ export const STAPLE_ITEMS: Set<string> = new Set([
   'cooking spray',
   'sugar',
   'flour',
+  'all-purpose flour',
+  'cake flour',
   'baking powder',
   'baking soda',
   'vanilla extract',
   'cornstarch',
   'yeast',
   'paprika',
+  'smoked paprika',
   'cumin',
   'garlic powder',
   'onion powder',
@@ -39,6 +42,10 @@ export const STAPLE_ITEMS: Set<string> = new Set([
   'lemon juice',
   'lime juice',
   'water',
+  'bay leaf',
+  'curry powder',
+  'garam masala powder',
+  'sesame seed',
 ]);
 
 export const ITEM_RULES: ItemRule[] = [
@@ -55,6 +62,7 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['butter'],
     unitEquivalences: {
+      'box (4 sticks)': { base: 'tablespoon', factor: 32 },
       stick: { base: 'tablespoon', factor: 8 },
     },
   },
@@ -253,6 +261,35 @@ export const ITEM_RULES: ItemRule[] = [
       cup: { base: 'ounce', factor: 1 },
       pound: { base: 'ounce', factor: 16 },
       lb: { base: 'ounce', factor: 16 },
+    },
+  },
+
+  // 19. Cream Cheese
+  {
+    items: ['cream cheese'],
+    unitEquivalences: {
+      '8-oz package': { base: 'ounce', factor: 8 },
+      package: { base: 'ounce', factor: 8 },
+    },
+  },
+
+  // 20. Feta Cheese
+  {
+    items: ['feta cheese', 'feta'],
+    unitEquivalences: {
+      '8-oz package': { base: 'ounce', factor: 8 },
+      package: { base: 'ounce', factor: 8 },
+    },
+  },
+
+  // 21. Chocolate Chips
+  {
+    items: ['chocolate chips', 'chocolate chip'],
+    unitEquivalences: {
+      '12-oz bag': { base: 'ounce', factor: 12 },
+      bag: { base: 'ounce', factor: 12 },
+      cup: { base: 'ounce', factor: 6 }, // 1 cup ≈ 6 oz
+      tablespoon: { base: 'ounce', factor: 0.375 }, // 1 tbsp ≈ 3/8 oz
     },
   },
 ];

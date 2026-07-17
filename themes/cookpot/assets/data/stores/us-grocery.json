@@ -1,6 +1,6 @@
 {
   "garlic": [[1, "head"]],
-  "butter": [[1, "stick"]],
+  "butter": [[1, "box (4 sticks)"]],
   "egg": [
     [6, "egg"],
     [12, "egg"],
@@ -26,5 +26,8 @@
   ],
   "jarred roasted red pepper": [[1, "8-oz jar"]],
   "potato gnocchi": [[1, "17.5-oz package"]],
-  "baby spinach": [[1, "8 oz bag"]]
+  "baby spinach": [[1, "8 oz bag"]],
+  "cream cheese": [[1, "8-oz package"]],
+  "feta cheese": [[1, "8-oz package"]],
+  "chocolate chips": [[1, "12-oz bag"]]
 }
