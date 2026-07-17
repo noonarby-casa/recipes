@@ -3018,35 +3018,88 @@ function renderCombinedShoppingList(): void {
   });
 }
 
-function getNotesString(item: ShoppingItem): string {
-  const notesStrs: string[] = [];
-  if (item.note) {
-    if (item.note.sizeNote) {
-      notesStrs.push(item.note.sizeNote);
-    }
-    const recipes = Array.from(
-      new Set(item.note.ingredientNotes.map((n) => n.recipe).filter(Boolean)),
-    );
-    const alts = Array.from(
-      new Set(item.note.ingredientNotes.map((n) => n.altItem).filter(Boolean)),
-    );
-    const descriptors = Array.from(
-      new Set(
-        item.note.ingredientNotes.map((n) => n.descriptor).filter(Boolean),
-      ),
-    );
+interface GroupedNote {
+  descriptor?: string;
+  altItem?: string;
+  recipes: string[];
+}
 
-    if (descriptors.length > 0) {
-      notesStrs.push(descriptors.join(', '));
-    }
-    if (recipes.length > 0) {
-      notesStrs.push(`from ${recipes.join(', ')}`);
-    }
-    if (alts.length > 0) {
-      notesStrs.push(`or ${alts.join(' or ')}`);
-    }
+function getGroupedNotes(item: ShoppingItem): {
+  sizeNote?: string;
+  details: GroupedNote[];
+  fallbackRecipes: string[];
+} {
+  const details: GroupedNote[] = [];
+  const fallbackRecipes: string[] = [];
+
+  if (!item.note) {
+    return { details, fallbackRecipes };
   }
-  return notesStrs.join('; ');
+
+  const sizeNote = item.note.sizeNote;
+  const groups: Record<string, GroupedNote> = {};
+
+  (item.note.ingredientNotes || []).forEach((n) => {
+    const desc = n.descriptor || '';
+    const alt = n.altItem || '';
+    const recipe = n.recipe;
+
+    if (!desc && !alt) {
+      if (recipe && !fallbackRecipes.includes(recipe)) {
+        fallbackRecipes.push(recipe);
+      }
+    } else {
+      const key = `${desc}|${alt}`;
+      if (!groups[key]) {
+        groups[key] = {
+          descriptor: n.descriptor,
+          altItem: n.altItem,
+          recipes: [],
+        };
+      }
+      if (recipe && !groups[key].recipes.includes(recipe)) {
+        groups[key].recipes.push(recipe);
+      }
+    }
+  });
+
+  return {
+    sizeNote,
+    details: Object.values(groups),
+    fallbackRecipes,
+  };
+}
+
+function getNotesString(item: ShoppingItem): string {
+  const parts: string[] = [];
+  const { sizeNote, details, fallbackRecipes } = getGroupedNotes(item);
+
+  if (sizeNote) {
+    parts.push(sizeNote);
+  }
+
+  details.forEach((group) => {
+    const detailParts: string[] = [];
+    if (group.descriptor) {
+      detailParts.push(group.descriptor);
+    }
+    if (group.altItem) {
+      detailParts.push(`or ${group.altItem}`);
+    }
+    const detailText = detailParts.join(' ');
+
+    if (group.recipes.length > 0) {
+      parts.push(`${detailText} for ${group.recipes.join(', ')}`);
+    } else {
+      parts.push(detailText);
+    }
+  });
+
+  if (fallbackRecipes.length > 0) {
+    parts.push(`for ${fallbackRecipes.join(', ')}`);
+  }
+
+  return parts.join('; ');
 }
 
 function formatItemNotes(item: ShoppingItem): string {
@@ -3054,12 +3107,70 @@ function formatItemNotes(item: ShoppingItem): string {
   return notesStr ? ` (${notesStr})` : '';
 }
 
+function getKeepNotesString(item: ShoppingItem): string {
+  const parts: string[] = [];
+  const { sizeNote, details } = getGroupedNotes(item);
+
+  if (sizeNote) {
+    parts.push(sizeNote);
+  }
+
+  details.forEach((group) => {
+    const detailParts: string[] = [];
+    if (group.descriptor) {
+      detailParts.push(group.descriptor);
+    }
+    if (group.altItem) {
+      detailParts.push(`or ${group.altItem}`);
+    }
+    if (detailParts.length > 0) {
+      parts.push(detailParts.join(' '));
+    }
+  });
+
+  return parts.join('; ');
+}
+
+function formatKeepItemNotes(item: ShoppingItem): string {
+  const notesStr = getKeepNotesString(item);
+  return notesStr ? ` (${notesStr})` : '';
+}
+
 function formatItemNotesHtml(item: ShoppingItem): string {
-  const notesStr = getNotesString(item);
-  return notesStr
-    ? `<div class="shopping-item-details">
-         <span class="shopping-item-note">(${notesStr})</span>
-       </div>`
+  const htmlParts: string[] = [];
+  const { sizeNote, details, fallbackRecipes } = getGroupedNotes(item);
+
+  if (sizeNote) {
+    htmlParts.push(`<span class="shopping-item-note">${sizeNote}</span>`);
+  }
+
+  details.forEach((group) => {
+    const detailParts: string[] = [];
+    if (group.descriptor) {
+      detailParts.push(group.descriptor);
+    }
+    if (group.altItem) {
+      detailParts.push(`or ${group.altItem}`);
+    }
+    const detailText = detailParts.join(' ');
+
+    if (group.recipes.length > 0) {
+      htmlParts.push(
+        `<span class="shopping-item-note">${detailText} for ${group.recipes.join(', ')}</span>`,
+      );
+    } else {
+      htmlParts.push(`<span class="shopping-item-note">${detailText}</span>`);
+    }
+  });
+
+  if (fallbackRecipes.length > 0) {
+    htmlParts.push(
+      `<span class="shopping-item-note muted">for ${fallbackRecipes.join(', ')}</span>`,
+    );
+  }
+
+  return htmlParts.length > 0
+    ? `<div class="shopping-item-details">${htmlParts.join('')}</div>`
     : '';
 }
 
@@ -3275,7 +3386,8 @@ function copyShoppingListToClipboard(
         item.unit,
         item.item,
       );
-      return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}`;
+      const notesStr = formatKeepItemNotes(item);
+      return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}`;
     });
     const optionalLines = filteredOptional.map((item) => {
       const { qtyStr, itemStr } = formatItemQuantity(
@@ -3283,7 +3395,8 @@ function copyShoppingListToClipboard(
         item.unit,
         item.item,
       );
-      return `${qtyStr ? qtyStr + ' ' : ''}${itemStr} (optional)`;
+      const notesStr = formatKeepItemNotes(item);
+      return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr} (optional)`;
     });
     clipboardText = [...buyLines, ...optionalLines].join('\n');
   } else {

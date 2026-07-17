@@ -176,7 +176,8 @@ export function initShoppingList(): void {
           item.unit,
           item.item,
         );
-        return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}`;
+        const notesStr = formatItemNotes(item);
+        return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}`;
       });
       const optionalLines = filteredOptional.map((item) => {
         const { qtyStr, itemStr } = formatItemQuantity(
@@ -184,7 +185,8 @@ export function initShoppingList(): void {
           item.unit,
           item.item,
         );
-        return `${qtyStr ? qtyStr + ' ' : ''}${itemStr} (optional)`;
+        const notesStr = formatItemNotes(item);
+        return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr} (optional)`;
       });
       clipboardText = [...buyLines, ...optionalLines].join('\n');
     } else {
@@ -403,23 +405,29 @@ export function initShoppingList(): void {
     const descriptors = Array.from(
       new Set(notesArr.map((n) => n.descriptor).filter(Boolean)),
     );
-    const notesStrs = [];
+    const noteHtmlParts: string[] = [];
     if (item.note?.sizeNote) {
-      notesStrs.push(item.note.sizeNote);
+      noteHtmlParts.push(
+        `<span class="shopping-item-note">${item.note.sizeNote}</span>`,
+      );
     }
     if (descriptors.length > 0) {
-      notesStrs.push(descriptors.join(', '));
+      noteHtmlParts.push(
+        `<span class="shopping-item-note">${descriptors.join(', ')}</span>`,
+      );
     }
     if (alts.length > 0) {
-      notesStrs.push(`or ${alts.join(' or ')}`);
+      noteHtmlParts.push(
+        `<span class="shopping-item-note">or ${alts.join(' or ')}</span>`,
+      );
     }
-    const notesStr = notesStrs.length > 0 ? notesStrs.join('; ') : '';
 
-    const noteHtml = notesStr
-      ? `<div class="shopping-item-details">
-             <span class="shopping-item-note">(${notesStr})</span>
+    const noteHtml =
+      noteHtmlParts.length > 0
+        ? `<div class="shopping-item-details">
+             ${noteHtmlParts.join('')}
            </div>`
-      : '';
+        : '';
 
     targetList.insertAdjacentHTML(
       'beforeend',
