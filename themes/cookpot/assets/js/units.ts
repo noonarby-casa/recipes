@@ -344,7 +344,9 @@ export function formatRecipeIngredientHTML(
 
   let mainQtyHTML = '';
   if (qty !== null) {
-    const finalUnit = qtyStr.substring(displayQtyStr.length).trim();
+    const formattedQtyValStr =
+      displayQtyVal !== null ? formatCookingNumber(displayQtyVal) : '';
+    const finalUnit = qtyStr.substring(formattedQtyValStr.length).trim();
     const displayStr = `${displayQtyStr}${finalUnit ? ' ' + finalUnit : ''}`;
     mainQtyHTML = `<span class="recipe-quantity" data-base-qty="${Array.isArray(qty) ? qty[0] + '-' + qty[1] : qty}" data-unit="${unit}">${displayStr}</span>`;
   }
@@ -392,8 +394,10 @@ export function formatRecipeIngredientHTML(
           altUnit,
           altItem,
         );
+        const formattedAltQtyValStr =
+          altQtyVal !== null ? formatCookingNumber(altQtyVal) : '';
         const finalAltUnit = altFormattedQtyStr
-          .substring(altQtyStr.length)
+          .substring(formattedAltQtyValStr.length)
           .trim();
         const altDisplayStr = `${altQtyStr}${finalAltUnit ? ' ' + finalAltUnit : ''}`;
         const altQtyHTML = `<span class="recipe-quantity" data-base-qty="${Array.isArray(altQty) ? altQty[0] + '-' + altQty[1] : altQty}" data-unit="${altUnit}">${altDisplayStr}</span>`;
@@ -427,8 +431,10 @@ export function formatRecipeIngredientHTML(
         altUnit,
         '',
       );
+      const formattedAltQtyValStr =
+        altQtyVal !== null ? formatCookingNumber(altQtyVal) : '';
       const finalAltUnit = altFormattedQtyStr
-        .substring(altQtyStr.length)
+        .substring(formattedAltQtyValStr.length)
         .trim();
       const altDisplayStr = `${altQtyStr}${finalAltUnit ? ' ' + finalAltUnit : ''}`;
       const altQtyHTML = `<span class="recipe-quantity" data-base-qty="${Array.isArray(altQty) ? altQty[0] + '-' + altQty[1] : altQty}" data-unit="${altUnit}">${altDisplayStr}</span>`;

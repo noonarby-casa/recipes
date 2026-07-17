@@ -250,4 +250,23 @@ describe('formatRecipeIngredientHTML', () => {
       '<span class="recipe-quantity" data-base-qty="2" data-unit="">2</span> spring onions, sliced (or scallions)',
     );
   });
+
+  test('formats ingredients with range quantities and range alternates', () => {
+    // Range quantity as main
+    expect(
+      formatRecipeIngredientHTML([7, 8], 'ounce', 'summer squash', '', ''),
+    ).toBe(
+      '<span class="recipe-quantity" data-base-qty="7-8" data-unit="ounce">7-8 ounces</span> summer squash',
+    );
+
+    // Range quantity as alternate
+    expect(
+      formatRecipeIngredientHTML(4, '', 'summer squash', '', 'sliced', {
+        qty: [7, 8],
+        unit: 'ounce',
+      }),
+    ).toBe(
+      '<span class="recipe-quantity" data-base-qty="4" data-unit="">4</span> summer squashes, sliced (<span class="recipe-quantity" data-base-qty="7-8" data-unit="ounce">7-8 ounces</span>)',
+    );
+  });
 });
