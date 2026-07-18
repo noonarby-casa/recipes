@@ -333,6 +333,32 @@
             ✕ Clear All Filters
           </button>
         </div>
+        <!-- Favorites Filter Row -->
+        <div
+          class="planner-favorite-filter-row"
+          style="display: flex; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-subtle);"
+        >
+          <button
+            type="button"
+            class="tag-filter-pill favorites-pill"
+            id="planner-favorites-filter-btn"
+            aria-pressed="false"
+            style="display: inline-flex; align-items: center;"
+          >
+            <svg
+              class="heart-icon-badge"
+              viewBox="0 0 24 24"
+              width="11"
+              height="11"
+              style="margin-right: 4px; fill: currentColor; stroke: none;"
+            >
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+              ></path>
+            </svg>
+            <span>Favorites Only</span>
+          </button>
+        </div>
         <h4
           style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);"
         >
@@ -364,16 +390,27 @@
     style="display: none;"
   >
     <div class="planner-modal-content">
-      <div class="planner-modal-header">
-        <h3 id="modal-title-day">Add Recipe to Day</h3>
-        <button
-          type="button"
-          id="btn-close-modal"
-          class="modal-close-btn"
-          aria-label="Close modal"
+      <div
+        class="planner-modal-header"
+        style="flex-direction: column; align-items: flex-start; gap: 0.25rem;"
+      >
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; width: 100%;"
         >
-          ✕
-        </button>
+          <h3 id="modal-title-day" style="margin: 0;">Add Recipe to Day</h3>
+          <button
+            type="button"
+            id="btn-close-modal"
+            class="modal-close-btn"
+            aria-label="Close modal"
+            style="margin: 0;"
+          >
+            ✕
+          </button>
+        </div>
+        <span style="font-size: 0.85rem; color: var(--text-muted);"
+          >Click on a recipe to add it to the plan.</span
+        >
       </div>
 
       <!-- Active Tag Notice -->

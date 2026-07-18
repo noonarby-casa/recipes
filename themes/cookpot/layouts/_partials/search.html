@@ -43,6 +43,25 @@
     </button>
   </div>
   <div class="homepage-tags-bar" id="homepage-tags-bar">
+    <button
+      type="button"
+      class="tag-filter-pill favorites-pill"
+      id="favorites-only-chip"
+      style="display: inline-flex; align-items: center;"
+    >
+      <svg
+        class="heart-icon-badge"
+        viewBox="0 0 24 24"
+        width="11"
+        height="11"
+        style="margin-right: 4px; fill: currentColor; stroke: none;"
+      >
+        <path
+          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+        ></path>
+      </svg>
+      <span>Favorites</span>
+    </button>
     <div class="primary-tags-wrapper" id="primary-tags-wrapper"></div>
     <button type="button" class="btn-more-filters" id="btn-more-filters">
       <svg
@@ -146,6 +165,23 @@
           alt=""
           loading="lazy"
         />
+      </div>
+      <div
+        class="recipe-favorite-badge"
+        data-short-id=""
+        style="display: none;"
+        title="Favorited recipe"
+      >
+        <svg
+          class="heart-icon-badge"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          stroke="none"
+        >
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+          ></path>
+        </svg>
       </div>
     </div>
     <div class="recipe-list-content">

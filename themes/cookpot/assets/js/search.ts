@@ -1,4 +1,5 @@
 import { PRIMARY_TAGS } from './constants';
+import { isFavorite } from './favorites';
 
 interface RecipeTime {
   step: string;
@@ -8,6 +9,7 @@ interface RecipeTime {
 interface Recipe {
   title: string;
   permalink: string;
+  shortId?: string;
   dateMachine: string;
   dateHuman: string;
   times?: RecipeTime[];
@@ -34,6 +36,10 @@ export function initSearch(): void {
 
   // Homepage-specific new elements
   const primaryTagsWrapper = document.getElementById('primary-tags-wrapper');
+  const favoritesOnlyChip = document.getElementById(
+    'favorites-only-chip',
+  ) as HTMLButtonElement | null;
+  let showFavoritesOnly = false;
   const btnMoreFilters = document.getElementById('btn-more-filters');
   const filtersModal = document.getElementById('search-filters-modal');
   const btnCloseFiltersModal = document.getElementById(
@@ -386,6 +392,11 @@ export function initSearch(): void {
         return false;
       }
 
+      // 6. Favorites Filter
+      if (showFavoritesOnly && recipe.shortId && !isFavorite(recipe.shortId)) {
+        return false;
+      }
+
       return true;
     });
   }
@@ -396,7 +407,8 @@ export function initSearch(): void {
       includedTags.size > 0 ||
       excludedTags.size > 0 ||
       includedSources.size > 0 ||
-      excludedSources.size > 0;
+      excludedSources.size > 0 ||
+      showFavoritesOnly;
 
     if (isFilterActive) {
       const matches = getFilteredRecipesList();
@@ -436,6 +448,36 @@ export function initSearch(): void {
       });
     }
   }
+
+  if (favoritesOnlyChip) {
+    favoritesOnlyChip.addEventListener('click', () => {
+      ensureDataFetched().then(() => {
+        showFavoritesOnly = !showFavoritesOnly;
+        favoritesOnlyChip.classList.toggle('include', showFavoritesOnly);
+        performFilterAndSearch();
+      });
+    });
+  }
+
+  document.addEventListener('favoritesChanged', (e: Event) => {
+    const customEvent = e as CustomEvent<{
+      shortId: string;
+      isFavorite: boolean;
+    }>;
+    const { shortId, isFavorite: isFav } = customEvent.detail;
+
+    // Update dynamically rendered search result list badges
+    const badges = document.querySelectorAll(
+      `.recipe-favorite-badge[data-short-id="${shortId}"]`,
+    );
+    badges.forEach((b) => {
+      (b as HTMLElement).style.display = isFav ? 'flex' : 'none';
+    });
+
+    if (showFavoritesOnly) {
+      performFilterAndSearch();
+    }
+  });
 
   if (headerSearchToggle) {
     headerSearchToggle.addEventListener('click', (e) => {
@@ -556,6 +598,18 @@ export function initSearch(): void {
           img.src = recipe.image130 || '';
           img.srcset = `${recipe.image90} 90w, ${recipe.image130} 130w, ${recipe.image180} 180w, ${recipe.image260} 260w`;
           img.alt = recipe.title;
+        }
+      }
+
+      // Favorites Badge overlay on image
+      if (recipe.shortId) {
+        const badge = clone.querySelector<HTMLElement>(
+          '.recipe-favorite-badge',
+        );
+        if (badge) {
+          badge.setAttribute('data-short-id', recipe.shortId);
+          const isFav = isFavorite(recipe.shortId);
+          badge.style.display = isFav ? 'flex' : 'none';
         }
       }
 

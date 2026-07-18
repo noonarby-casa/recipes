@@ -8,6 +8,7 @@ import { initDarkMode } from './darkmode';
 import { initMealPlanner, initRecipePagePlanIntegration } from './meal-plan';
 import { initScrollable } from './components/scrollable';
 import { initStoreSelector } from './store-selector';
+import { initFavorites } from './favorites';
 
 document.addEventListener('DOMContentLoaded', () => {
   initDarkMode();
@@ -21,4 +22,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initShoppingList();
   initMealPlanner();
   initScrollable();
+  initFavorites();
 });

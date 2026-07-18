@@ -1,5 +1,5 @@
 {{- $styles := slice }}
-{{- $files := slice "css/variables.css" "css/global.css" "css/components/compound-list.css" "css/components/toggle.css" "css/components/button.css" "css/components/scrollable.css" "css/components/titlebar.css" "css/components/dropdown.css" "css/components/modal.css" "css/components/overlay-container.css" "css/recipe-list.css" "css/recipe-single.css" "css/timers.css" "css/shopping-list.css" "css/meal-plan.css" "css/sitemap.css" }}
+{{- $files := slice "css/variables.css" "css/global.css" "css/components/compound-list.css" "css/components/toggle.css" "css/components/button.css" "css/components/scrollable.css" "css/components/titlebar.css" "css/components/dropdown.css" "css/components/modal.css" "css/components/overlay-container.css" "css/components/favorites.css" "css/recipe-list.css" "css/recipe-single.css" "css/timers.css" "css/shopping-list.css" "css/meal-plan.css" "css/sitemap.css" }}
 
 {{- range $files }}
   {{- with resources.Get . }}

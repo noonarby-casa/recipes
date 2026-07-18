@@ -11,6 +11,7 @@ import { OverlayContainer } from './components/overlay-container';
 import { parseRawUserInput } from './simple-parser';
 import { BREAKDOWN_CATEGORIES } from './constants';
 import { assembleIngredientText } from './shopping-list/utils';
+import { isFavorite } from './favorites';
 
 interface Recipe {
   title: string;
@@ -43,6 +44,7 @@ const includedSources: Set<string> = new Set();
 const excludedSources: Set<string> = new Set();
 let searchQuery = '';
 let shoppingListStates: Record<string, boolean> = {};
+let plannerFavoritesOnly = false;
 
 function isItemChecked(key: string, isStaple: boolean): boolean {
   if (key in shoppingListStates) {
@@ -295,6 +297,10 @@ function saveSettings(): void {
  */
 function getFilteredRecipes(): Recipe[] {
   return recipesIndex.filter((r) => {
+    if (plannerFavoritesOnly && (!r.shortId || !isFavorite(r.shortId))) {
+      return false;
+    }
+
     let matchesIncludedTags = true;
     for (const tag of includedTags) {
       if (r.tags === undefined || !r.tags.includes(tag)) {
@@ -462,6 +468,14 @@ function setupEventListeners(): void {
       excludedTags.clear();
       includedSources.clear();
       excludedSources.clear();
+      plannerFavoritesOnly = false;
+      const favoritesFilterBtn = document.getElementById(
+        'planner-favorites-filter-btn',
+      );
+      if (favoritesFilterBtn) {
+        favoritesFilterBtn.classList.remove('include');
+        favoritesFilterBtn.setAttribute('aria-pressed', 'false');
+      }
       saveFilters();
       buildTagCloud();
       buildSourceCloud();
@@ -706,6 +720,47 @@ function setupEventListeners(): void {
 
   document.addEventListener('store-layout:change', () => {
     renderUI();
+  });
+
+  const favoritesFilterBtn = document.getElementById(
+    'planner-favorites-filter-btn',
+  );
+  if (favoritesFilterBtn) {
+    favoritesFilterBtn.addEventListener('click', () => {
+      plannerFavoritesOnly = !plannerFavoritesOnly;
+      favoritesFilterBtn.classList.toggle('include', plannerFavoritesOnly);
+      favoritesFilterBtn.setAttribute(
+        'aria-pressed',
+        String(plannerFavoritesOnly),
+      );
+      renderModalBrowseShelf();
+      buildTagCloud();
+      buildSourceCloud();
+    });
+  }
+
+  document.addEventListener('favoritesChanged', (e: Event) => {
+    const customEvent = e as CustomEvent<{
+      shortId: string;
+      isFavorite: boolean;
+    }>;
+    const { shortId, isFavorite: isFav } = customEvent.detail;
+
+    // Update any visible planned recipe card badges on the calendar grid
+    const badges = document.querySelectorAll(
+      `.recipe-favorite-badge[data-short-id="${shortId}"]`,
+    );
+    badges.forEach((b) => {
+      (b as HTMLElement).style.display = isFav ? 'flex' : 'none';
+    });
+
+    // Re-render the shelf to update addition/favorites icon states
+    renderModalBrowseShelf();
+
+    if (plannerFavoritesOnly) {
+      buildTagCloud();
+      buildSourceCloud();
+    }
   });
 
   // Mobile column tab triggers
@@ -1076,6 +1131,11 @@ function generateDinnerPlan(): void {
     (r) => r.tags && r.tags.some((t) => t.toLowerCase() === 'dinner'),
   );
   if (dinnerPool.length === 0) {
+    if (plannerFavoritesOnly) {
+      showFavoritesWarningToast(
+        'No dinner recipes have been favorited yet. Add some favorites to generate a dinner plan.',
+      );
+    }
     return;
   }
 
@@ -1198,6 +1258,11 @@ function renderModalBrowseShelf(): void {
           : '';
         const plannedClass = isPlanned ? 'planned' : '';
 
+        const isFav = r.shortId ? isFavorite(r.shortId) : false;
+        const actionBtn = isFav
+          ? `<button type="button" class="browse-add-btn browse-fav-active" aria-label="Favorited recipe" style="background: none; color: var(--heart-color); font-size: 0.85rem;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>`
+          : `<button type="button" class="browse-add-btn" aria-label="Add to plan">+</button>`;
+
         // Extract first segment of title for image naming fallback
         const slug =
           r.permalink.split('/').filter(Boolean).pop() || 'placeholder';
@@ -1211,7 +1276,7 @@ function renderModalBrowseShelf(): void {
                 ${plannedBadge}
               </div>
             </div>
-            <button type="button" class="browse-add-btn" aria-label="Add to plan">+</button>
+            ${actionBtn}
           </div>
         `;
       })
@@ -1497,6 +1562,38 @@ function mergePlans(
   });
 
   return merged;
+}
+
+/**
+ * Shows a toast/notification warning the user that no dinner favorites are available.
+ */
+function showFavoritesWarningToast(message: string): void {
+  const existingWarning = document.querySelector('.toast-favorites-warning');
+  if (existingWarning) {
+    return;
+  }
+
+  const overlay = OverlayContainer.getInstance();
+  const toast = document.createElement('div');
+  toast.className = 'plan-toast-notification warning toast-favorites-warning';
+
+  toast.innerHTML = `
+    <div class="toast-body">
+      <span>${message}</span>
+    </div>
+    <button type="button" class="toast-close-btn" aria-label="Dismiss toast">✕</button>
+  `;
+
+  const closeBtn = toast.querySelector('.toast-close-btn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => overlay.remove(toast));
+  }
+
+  overlay.add(toast);
+
+  window.setTimeout(() => {
+    overlay.remove(toast);
+  }, 6000);
 }
 
 /**
@@ -2054,10 +2151,27 @@ function renderUI(highlightInstanceId?: string): void {
           `
               : '';
 
+          const isFav = rec && rec.shortId ? isFavorite(rec.shortId) : false;
+          const favoriteBadge =
+            isFav && rec && rec.shortId
+              ? `<div class="recipe-favorite-badge" data-short-id="${rec.shortId}" style="display: flex;" title="Favorited recipe">
+                   <svg class="heart-icon-badge" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                   </svg>
+                 </div>`
+              : rec && rec.shortId
+                ? `<div class="recipe-favorite-badge" data-short-id="${rec.shortId}" style="display: none;" title="Favorited recipe">
+                     <svg class="heart-icon-badge" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                     </svg>
+                   </div>`
+                : '';
+
           cardsHtml += `
             <div class="planned-recipe-item ${highlightClass} ${dinnerClass} ${!rec ? 'custom-item-card' : ''}" data-instance-id="${dm.instanceId}" data-day="${day}">
               <div class="recipe-card-media-wrapper" draggable="true">
                 <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-600.png';" />
+                ${favoriteBadge}
               </div>
               <div class="recipe-card-body">
                 ${titleHtml}
@@ -2134,11 +2248,28 @@ function renderUI(highlightInstanceId?: string): void {
             `
                 : '';
 
+            const isFav = rec && rec.shortId ? isFavorite(rec.shortId) : false;
+            const favoriteBadge =
+              isFav && rec && rec.shortId
+                ? `<div class="recipe-favorite-badge" data-short-id="${rec.shortId}" style="display: flex;" title="Favorited recipe">
+                     <svg class="heart-icon-badge" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                     </svg>
+                   </div>`
+                : rec && rec.shortId
+                  ? `<div class="recipe-favorite-badge" data-short-id="${rec.shortId}" style="display: none;" title="Favorited recipe">
+                       <svg class="heart-icon-badge" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                       </svg>
+                     </div>`
+                  : '';
+
             if (rec) {
               return `
                 <a href="${dm.permalink}?from=plan&instanceId=${dm.instanceId}&servings=${portions}" class="planned-recipe-item view-mode-card" data-instance-id="${dm.instanceId}">
                   <div class="recipe-card-media-wrapper">
                     <img class="recipe-card-img" src="${basePath}${slug}/featured-image.webp" alt="${title}" onerror="this.src='${basePath}icon-600.png';" />
+                    ${favoriteBadge}
                   </div>
                   <div class="recipe-card-body">
                     <h4 class="recipe-card-title">${title}</h4>
@@ -3582,10 +3713,41 @@ function openDetailsOverlay(instanceId: string): void {
         </div>
         <div class="planner-modal-body" style="padding: 1.25rem 1.5rem; overflow-y: auto;">
           <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Portions</h4>
-          <div class="portion-picker" style="margin-bottom: 1.5rem; display: inline-flex;">
-            <button type="button" class="portion-btn" id="details-dec-portions">-</button>
-            <span class="portion-val" style="min-width: 3rem; text-align: center; font-weight: bold; line-height: 32px;">${portions}</span>
-            <button type="button" class="portion-btn" id="details-inc-portions">+</button>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+            <div class="portion-picker" style="display: inline-flex;">
+              <button type="button" class="portion-btn" id="details-dec-portions">-</button>
+              <span class="portion-val" style="min-width: 3rem; text-align: center; font-weight: bold; line-height: 32px;">${portions}</span>
+              <button type="button" class="portion-btn" id="details-inc-portions">+</button>
+            </div>
+
+            ${
+              rec && rec.shortId
+                ? `
+            <button
+              type="button"
+              class="recipe-favorite-btn ${isFavorite(rec.shortId) ? 'is-favorite' : ''}"
+              id="details-favorite-btn"
+              data-short-id="${rec.shortId}"
+              aria-label="Favorite recipe"
+              aria-pressed="${isFavorite(rec.shortId) ? 'true' : 'false'}"
+              title="Favorite recipe"
+            >
+              <svg
+                class="heart-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                ></path>
+              </svg>
+            </button>
+            `
+                : ''
+            }
           </div>
 
           <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Sides & Extra Ingredients</h4>

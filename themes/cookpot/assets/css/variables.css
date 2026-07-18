@@ -57,6 +57,10 @@
   --timer-paused-bg: #e2e8f0;
   --timer-paused-border: rgba(0, 0, 0, 0.12);
   --timer-paused-text: #373737;
+  /* Heart/Favorites Accent Colors */
+  --heart-color: #d11a5b;
+  --heart-bg-hover: rgba(209, 26, 91, 0.08);
+  --heart-border-hover: rgba(209, 26, 91, 0.4);
 }
 
 /* Dark Theme Variables */
@@ -118,4 +122,8 @@ html.dark-mode {
   --timer-paused-bg: #3a3a3a;
   --timer-paused-border: rgba(255, 255, 255, 0.15);
   --timer-paused-text: #b8b8b8;
+  /* Heart/Favorites Accent Colors */
+  --heart-color: #ff6584;
+  --heart-bg-hover: rgba(255, 101, 132, 0.15);
+  --heart-border-hover: rgba(255, 101, 132, 0.5);
 }
