@@ -356,13 +356,13 @@ html.dark-mode .tag-filter-pill.exclude .tag-count {
 /* Calendar Grid Columns */
 .planned-recipes-grid {
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  grid-template-columns: 1fr;
   margin-bottom: 1.5rem;
 }
 
 .planned-recipes-grid.grid-5day {
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: 1fr;
 }
 
 .day-column {
@@ -1015,6 +1015,15 @@ a.planned-recipe-item {
     overflow-y: auto;
     padding-right: 0.5rem;
   }
+
+  .planned-recipes-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+  }
+
+  .planned-recipes-grid.grid-5day {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
 @media (max-width: 767px) {
@@ -1032,13 +1041,6 @@ a.planned-recipe-item {
   .planner-controls-toolbar {
     gap: 0.75rem;
     justify-content: center;
-  }
-
-  /* Stack calendar days vertically */
-  .planned-recipes-grid,
-  .planned-recipes-grid.grid-5day {
-    gap: 1rem;
-    grid-template-columns: 1fr;
   }
 
   .planned-recipes-grid .supplemental-section,
@@ -1240,15 +1242,17 @@ a.planned-recipe-item {
 }
 
 /* In 7-day mode (default) */
-.planned-recipes-grid .supplemental-section {
-  grid-column: 3 / span 3;
-  margin-top: 0;
-}
+@media (min-width: 768px) {
+  .planned-recipes-grid .supplemental-section {
+    grid-column: 3 / span 3;
+    margin-top: 0;
+  }
 
-/* In 5-day mode (.grid-5day) */
-.planned-recipes-grid.grid-5day .supplemental-section {
-  grid-column: 1 / span 5;
-  margin-top: 0;
+  /* In 5-day mode (.grid-5day) */
+  .planned-recipes-grid.grid-5day .supplemental-section {
+    grid-column: 1 / span 5;
+    margin-top: 0;
+  }
 }
 
 .supplemental-title {
