@@ -22,3 +22,7 @@ firebase-debug.log
 # Playwright
 /playwright-report/
 /test-results/
+
+# Compiled static assets
+/themes/cookpot/static/dist/
+

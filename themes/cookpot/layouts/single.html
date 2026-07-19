@@ -75,59 +75,14 @@
 
     <div class="recipe-header-right">
       <div
-        class="recipe-scale-panel"
+        id="recipe-favorite-mount"
+        data-short-id="{{ .Params.shortId }}"
+      ></div>
+      <div
+        id="recipe-scale-mount"
         data-base-servings="{{ .Params.servings | default 4 }}"
-      >
-        <button
-          type="button"
-          class="recipe-favorite-btn"
-          id="recipe-favorite-btn"
-          data-short-id="{{ .Params.shortId }}"
-          aria-label="Favorite recipe"
-          aria-pressed="false"
-          title="Favorite recipe"
-        >
-          <svg
-            class="heart-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-            ></path>
-          </svg>
-        </button>
-        <div class="scale-header">
-          <span class="scale-label">Servings</span>
-        </div>
-        <div class="scale-controls">
-          <div class="portion-picker">
-            <button
-              type="button"
-              class="portion-btn dec-btn"
-              id="recipe-dec-btn"
-            >
-              −
-            </button>
-            <span class="portion-val" id="recipe-serving-count"
-              >{{ .Params.servings | default 4 }}</span
-            >
-            <button
-              type="button"
-              class="portion-btn inc-btn"
-              id="recipe-inc-btn"
-            >
-              +
-            </button>
-          </div>
-          <span class="scale-subtitle"
-            >(Original: {{ .Params.servings | default 4 }})</span
-          >
-        </div>
-      </div>
+        data-short-id="{{ .Params.shortId }}"
+      ></div>
     </div>
   </div>
 
@@ -265,4 +220,5 @@
 
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
   </div>
+  <div id="recipe-timers-mount"></div>
 {{ end }}

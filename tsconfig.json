@@ -2,16 +2,16 @@
   "compilerOptions": {
     "target": "es2022",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["../themes/cookpot/assets/*"]
-    }
+    "resolveJsonModule": true
   },
-  "include": ["../themes/cookpot/assets/js/**/*"]
+  "include": [
+    "themes/cookpot/assets/js/**/*",
+    "vite.config.mts",
+    "svelte.config.js"
+  ]
 }
