@@ -80,6 +80,7 @@
   }
 
   onMount(async () => {
+    document.body.classList.add('meal-planner-layout');
     try {
       const basePath = getSiteBasePath();
       const res = await fetch(`${basePath}index.json`);
@@ -133,6 +134,7 @@
     if (unsubscribeUrlSync) {
       unsubscribeUrlSync();
     }
+    document.body.classList.remove('meal-planner-layout');
   });
 
   // Global Portions Scaler (+/-)

@@ -960,7 +960,18 @@ a.planned-recipe-item {
     overflow: hidden;
   }
 
+  /* main just passes remaining height down to the Svelte mount point */
   body.meal-planner-layout main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+    margin-bottom: 0.5rem;
+    min-height: 0;
+  }
+
+  /* #meal-planner is the Svelte mount wrapper — it owns the grid layout */
+  body.meal-planner-layout main #meal-planner {
     display: grid;
     flex: 1;
     gap: 0.75rem;
@@ -972,7 +983,6 @@ a.planned-recipe-item {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto 1fr;
     height: 100%;
-    margin-bottom: 0.5rem;
     min-height: 0;
   }
 
