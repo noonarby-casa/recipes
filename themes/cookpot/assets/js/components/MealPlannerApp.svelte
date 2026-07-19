@@ -15,6 +15,8 @@
   import PlannedRecipeDetailsModal from './PlannedRecipeDetailsModal.svelte';
   import { formatItemQuantity } from '../units';
   import { STORE_LAYOUTS } from '../shopping-list/store-sections';
+  import { getSiteBasePath } from '../utils/site';
+  import ToggleGroup from './ToggleGroup.svelte';
 
   let isFiltersModalOpen = $state(false);
   let activeAddDay = $state<string | null>(null);
@@ -35,14 +37,7 @@
     supplemental: 'Anytime / Supplemental'
   };
 
-  function getSiteBasePath(): string {
-    if (typeof window === 'undefined') {return '/';}
-    const currentPath = window.location.pathname;
-    if (currentPath.startsWith('/recipes/')) {
-      return '/recipes/';
-    }
-    return '/';
-  }
+
 
   function getLocalPlanFromStorage(): PlannedItem[] {
     if (typeof localStorage === 'undefined') {return [];}
@@ -514,31 +509,16 @@
 
 <!-- 2. Mode Selector Header Row -->
 <div class="planner-mode-header">
-  <div class="mode-toggle-group toggle-group">
-    <button
-      type="button"
-      id="mode-edit-btn"
-      class="mode-toggle-btn toggle-btn {$settingsStore.activeTab === 'edit' ? 'active btn-brand' : ''}"
-      onclick={() => settingsStore.update(s => ({ ...s, activeTab: 'edit' }))}
-    >
-      Edit Plan
-    </button>
-    <button
-      type="button"
-      id="mode-view-btn"
-      class="mode-toggle-btn toggle-btn {$settingsStore.activeTab === 'view' ? 'active btn-brand' : ''}"
-      onclick={() => settingsStore.update(s => ({ ...s, activeTab: 'view' }))}
-    >
-      View Plan
-    </button>
-    <button
-      type="button"
-      id="mode-shop-btn"
-      class="mode-toggle-btn toggle-btn {$settingsStore.activeTab === 'shop' ? 'active btn-brand' : ''}"
-      onclick={() => settingsStore.update(s => ({ ...s, activeTab: 'shop' }))}
-    >
-      Shopping List {#if shoppingCount > 0}<span id="shopping-count-badge"> ({shoppingCount})</span>{/if}
-    </button>
+  <div class="mode-toggle-group">
+    <ToggleGroup
+      options={[
+        { id: 'edit', label: 'Edit Plan', idAttr: 'mode-edit-btn' },
+        { id: 'view', label: 'View Plan', idAttr: 'mode-view-btn' },
+        { id: 'shop', label: `Shopping List` + (shoppingCount > 0 ? ` (${shoppingCount})` : ''), idAttr: 'mode-shop-btn' }
+      ]}
+      selectedId={$settingsStore.activeTab}
+      onChange={(id) => settingsStore.update(s => ({ ...s, activeTab: id as any }))}
+    />
   </div>
 </div>
 
@@ -548,23 +528,15 @@
   id="toolbar-edit"
   style="display: {$settingsStore.activeTab === 'edit' ? 'flex' : 'none'};"
 >
-  <div class="week-toggle-group toggle-group" id="week-toggle-group">
-    <button
-      type="button"
-      id="week-7day-btn"
-      class="week-toggle-btn toggle-btn {!$settingsStore.workWeekOnly ? 'active btn-brand' : ''}"
-      onclick={() => settingsStore.update(s => ({ ...s, workWeekOnly: false }))}
-    >
-      7-Day Week
-    </button>
-    <button
-      type="button"
-      id="week-5day-btn"
-      class="week-toggle-btn toggle-btn {$settingsStore.workWeekOnly ? 'active btn-brand' : ''}"
-      onclick={() => settingsStore.update(s => ({ ...s, workWeekOnly: true }))}
-    >
-      5-Day Week
-    </button>
+  <div class="week-toggle-group" id="week-toggle-group">
+    <ToggleGroup
+      options={[
+        { id: '7day', label: '7-Day Week', idAttr: 'week-7day-btn' },
+        { id: '5day', label: '5-Day Week', idAttr: 'week-5day-btn' }
+      ]}
+      selectedId={$settingsStore.workWeekOnly ? '5day' : '7day'}
+      onChange={(id) => settingsStore.update(s => ({ ...s, workWeekOnly: id === '5day' }))}
+    />
   </div>
 
   <div class="global-scaler-panel" id="global-scaler-panel">

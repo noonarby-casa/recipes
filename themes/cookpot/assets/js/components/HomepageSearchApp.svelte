@@ -6,6 +6,7 @@
   import RecipeCard from './RecipeCard.svelte';
   import FiltersModal from './FiltersModal.svelte';
   import { PRIMARY_TAGS } from '../constants';
+  import { getSiteBasePath } from '../utils/site';
 
   let hasHydrated = $state(false);
   let isFiltersOpen = $state(false);
@@ -76,14 +77,7 @@
 
   let paginatedResults = $derived(searchResults.slice(0, displayCount));
 
-  function getSiteBasePath(): string {
-    if (typeof window === 'undefined') {return '/';}
-    const currentPath = window.location.pathname;
-    if (currentPath.startsWith('/recipes/')) {
-      return '/recipes/';
-    }
-    return '/';
-  }
+
 
   async function hydrate() {
     if (hasHydrated) {return;}

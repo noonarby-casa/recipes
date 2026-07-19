@@ -95,24 +95,11 @@
     >
       <div class="column-titlebar">
         <h2>Ingredients</h2>
-        <div class="shopping-view-toggle toggle-group">
-          <button
-            type="button"
-            class="view-toggle-btn toggle-btn active btn-brand"
-            id="btn-recipe-view"
-            aria-label="Show original recipe ingredients"
-          >
-            Recipe
-          </button>
-          <button
-            type="button"
-            class="view-toggle-btn toggle-btn"
-            id="btn-shopping-view"
-            aria-label="Show converted shopping list"
-          >
-            Shopping List
-          </button>
-        </div>
+        <div
+          class="shopping-view-toggle toggle-group-mount"
+          data-options="recipe:Recipe,shopping:Shopping List"
+          data-selected="recipe"
+        ></div>
       </div>
 
       <div class="recipe-ingredients-list compound-list">
@@ -161,6 +148,7 @@
             {{ end }}
           </ul>
         {{ end }}
+        <div id="recipe-sides-mount"></div>
       </div>
 
       <div class="shopping-list-wrapper" style="display: none;">
@@ -193,21 +181,12 @@
     >
       <div class="column-titlebar">
         <h2>Instructions</h2>
-        <div class="font-controls toggle-group">
-          <button type="button" class="font-btn toggle-btn" data-size="smaller">
-            Smaller
-          </button>
-          <button
-            type="button"
-            class="font-btn toggle-btn active btn-brand"
-            data-size="default"
-          >
-            Default
-          </button>
-          <button type="button" class="font-btn toggle-btn" data-size="larger">
-            Larger
-          </button>
-        </div>
+        <div
+          class="font-controls toggle-group-mount"
+          data-options="smaller:Smaller,default:Default,larger:Larger"
+          data-selected="default"
+          data-storage-key="recipe-instructions-font-size"
+        ></div>
       </div>
       {{ replace .Content `<h2 id="instructions">Instructions</h2>` "" 1 | safeHTML }}
     </div>
@@ -220,5 +199,5 @@
 
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
   </div>
-  <div id="recipe-timers-mount"></div>
+  <div id="recipe-plan-back-mount"></div>
 {{ end }}

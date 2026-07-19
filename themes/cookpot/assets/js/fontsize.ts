@@ -1,5 +1,3 @@
-import { initToggleGroup } from './components/toggle';
-
 export function initFontSize(): void {
   const instructionsCol = document.querySelector<HTMLElement>(
     '.instructions-column',
@@ -33,18 +31,12 @@ export function initFontSize(): void {
   const savedFontSize = localStorage.getItem(storageKey) || 'default';
   applyFontSize(savedFontSize);
 
-  // Initialize unified toggle behavior
-  initToggleGroup('.font-controls', (size) => {
-    applyFontSize(size);
-  });
-
-  // Ensure active class matches saved preference on initialization
-  const fontBtns = document.querySelectorAll<HTMLElement>('.font-btn');
-  fontBtns.forEach((btn) => {
-    if (btn.dataset.size === savedFontSize) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
+  // Initialize unified toggle behavior using custom event
+  const fontControls = document.querySelector<HTMLElement>('.font-controls');
+  if (fontControls) {
+    fontControls.addEventListener('change', (e) => {
+      const size = (e as CustomEvent).detail.value;
+      applyFontSize(size);
+    });
+  }
 }

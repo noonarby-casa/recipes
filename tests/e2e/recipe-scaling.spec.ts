@@ -66,4 +66,44 @@ test.describe('Recipe Scaling E2E', () => {
     });
     await expect(eggIngredient).toContainText('2 eggs, beaten');
   });
+
+  test('should mount Svelte ToggleGroup components', async ({ page }) => {
+    const shoppingToggle = page.locator('.shopping-view-toggle');
+    await expect(shoppingToggle).toBeVisible();
+    const toggleGroup = shoppingToggle.locator('.toggle-group');
+    await expect(toggleGroup).toBeVisible();
+    await expect(toggleGroup).toHaveCSS('display', 'flex');
+
+    const toggleButtons = shoppingToggle.locator('.toggle-btn');
+    await expect(toggleButtons).toHaveCount(2);
+    await expect(toggleButtons.nth(0)).toContainText('Recipe');
+    await expect(toggleButtons.nth(1)).toContainText('Shopping List');
+
+    const fontControls = page.locator('.font-controls');
+    await expect(fontControls).toBeVisible();
+    const fontButtons = fontControls.locator('.toggle-btn');
+    await expect(fontButtons).toHaveCount(3);
+    await expect(fontButtons.nth(0)).toContainText('Smaller');
+    await expect(fontButtons.nth(1)).toContainText('Default');
+    await expect(fontButtons.nth(2)).toContainText('Larger');
+  });
+
+  test('should toggle active tab state and visibility on click', async ({
+    page,
+  }) => {
+    const shoppingToggle = page.locator('.shopping-view-toggle');
+    const recipeBtn = shoppingToggle.locator('.toggle-btn').nth(0);
+    const shoppingBtn = shoppingToggle.locator('.toggle-btn').nth(1);
+
+    // Initial state: recipe is active
+    await expect(recipeBtn).toHaveClass(/active/);
+    await expect(shoppingBtn).not.toHaveClass(/active/);
+
+    // Click "Shopping List"
+    await shoppingBtn.click();
+
+    // Verification: shopping button is now active, recipe is inactive
+    await expect(shoppingBtn).toHaveClass(/active/);
+    await expect(recipeBtn).not.toHaveClass(/active/);
+  });
 });

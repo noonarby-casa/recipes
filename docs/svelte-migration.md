@@ -37,7 +37,7 @@ gantt
 
 ---
 
-### 🧩 Task 1: Build Setup & Pipeline Integration
+### 🧩 Task 1: Build Setup & Pipeline Integration — ✅ COMPLETE
 
 **Objective:** Configure Vite to compile Svelte components and export them to Hugo's static asset directory.
 
@@ -46,7 +46,7 @@ gantt
     ```bash
     pnpm add -D vite svelte @sveltejs/vite-plugin-svelte vite-plugin-css-injected-by-js svelte-check eslint-plugin-svelte
     ```
-2.  **Create Vite Config (`vite.config.ts`):**
+2.  **Create Vite Config (`vite.config.mts`):**
     Configure Vite to preprocess Svelte components via `vitePreprocess`, bundle CSS inside the IIFE JS bundle (using `vite-plugin-css-injected-by-js` for clean inline injection), and output directly to the Hugo static directory:
     ```typescript
     import { defineConfig } from 'vite';
@@ -133,11 +133,11 @@ gantt
     });
     ```
 6.  **Integrate Script into Hugo Layouts:**
-    Load `/dist/meal-planner.js` dynamically inside [head/js.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/_partials/head/js.html).
+    Load `/dist/meal-planner.js` dynamically inside [head/js.html](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/layouts/_partials/head/js.html). Done — line 18 unconditionally loads `{{ "dist/meal-planner.js" | relURL }}` with `defer`.
 
 ---
 
-### 🧩 Task 2: Core State Stores (`stores/`)
+### 🧩 Task 2: Core State Stores (`stores/`) — ✅ COMPLETE
 
 **Objective:** Port the monolithic state logic into dedicated Svelte stores syncing with LocalStorage.
 
@@ -173,7 +173,7 @@ Create the files inside `themes/cookpot/assets/js/stores/`:
 
 ---
 
-### 🧩 Task 3: Base Shared Svelte Components
+### 🧩 Task 3: Base Shared Svelte Components — ✅ COMPLETE
 
 **Objective:** Build low-level UI components and the shared recipe card to isolate styles.
 
@@ -188,7 +188,7 @@ Create the files inside `themes/cookpot/assets/js/stores/`:
 
 ---
 
-### 🧩 Task 4: Browse Shelf, Search, and Modals
+### 🧩 Task 4: Browse Shelf, Search, and Modals — ✅ COMPLETE
 
 **Objective:** Port the filter panel overlays, search modal UI, and item details to Svelte.
 
@@ -206,7 +206,7 @@ Create the files inside `themes/cookpot/assets/js/stores/`:
 
 ---
 
-### 🧩 Task 5: Calendar Grid & Drag mechanics
+### 🧩 Task 5: Calendar Grid & Drag mechanics — ✅ COMPLETE
 
 **Objective:** Implement the meal planning columns and integrate the drag-and-drop system.
 
@@ -223,7 +223,7 @@ Create the files inside `themes/cookpot/assets/js/stores/`:
 
 ---
 
-### 🧩 Task 6: Orchestration, HTML layouts & Build Hookup
+### 🧩 Task 6: Orchestration, HTML layouts & Build Hookup — ✅ COMPLETE
 
 **Objective:** Clean up the legacy template assets and run the Svelte application.
 
@@ -235,14 +235,14 @@ Create the files inside `themes/cookpot/assets/js/stores/`:
     - Orchestrates the search input field, filter tag bar, and filter chips.
     - Uses `RecipeCard.svelte` to display dynamically filtered recipe search results in the homepage grid.
 3.  **Layout Cleanup (`plan.html` and `home.html`):**
-    - **`plan.html`:** Remove legacy DOM markup and replace with `<div id="meal-planner"></div>`.
-    - **`home.html`:** Replace search container and dynamic search results with a mount point: `<div id="homepage-search-mount"></div>`.
-4.  **Disable Legacy Logic:**
-    - Comment out `initMealPlanner()` and `initSearch()` inside [main.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/main.ts) once the Svelte components are verified.
+    - **`plan.html`:** Contains only `<div id="meal-planner"></div>` — legacy DOM removed.
+    - **`home.html`:** Contains `<div id="homepage-search-mount"></div>` alongside the static fallback recipe grid (first 24 recipes rendered by Hugo for progressive enhancement).
+4.  **Legacy Logic (`main.ts`):**
+    - `initMealPlanner()` and `initSearch()` were not in `main.ts` — the only meal-plan entry point is `initRecipePagePlanIntegration()`, which is intentionally retained. It handles the "Back to Meal Plan" floating button and injecting `extraIngredients` (sides) from `localStorage` into the static ingredient list when navigating from the planner with `?from=plan`. This is not covered by any Svelte component.
 
 ---
 
-### 🧩 Task 7: Single Recipe Page Islands
+### 🧩 Task 7: Single Recipe Page Islands — ✅ COMPLETE
 
 **Objective:** Migrate the interactive elements on individual recipe detail pages to Svelte components.
 
@@ -260,13 +260,14 @@ Create the files inside `themes/cookpot/assets/js/stores/`:
     - Appends countdown objects to a shared active timers list and renders floating active timer countdown overlay panels on the screen.
     - Integrates audio alerts (using `playLowerBoundChime`, `playUpperBoundChime`, and `stopAudio` from [audio.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/audio.ts)) and Screen Wake Lock API requests.
 5.  **Layout Cleanup (`single.html`):**
-    - Replace the serving selector panels with `<div id="recipe-scale-mount"></div>` and favorites button with `<div id="recipe-favorite-mount"></div>`.
-6.  **Disable Legacy Logic:**
-    - Comment out `initScaler()`, `initTimers()`, and `initFavorites()` inside [main.ts](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/main.ts) once the Svelte recipe islands are verified.
+    - `#recipe-favorite-mount` (with `data-short-id`) and `#recipe-scale-mount` (with `data-base-servings` and `data-short-id`) are present in `.recipe-header-right`.
+    - `#recipe-timers-mount` is present at the bottom of the layout.
+6.  **Legacy Logic (`main.ts`):**
+    - `initScaler()`, `initTimers()`, and `initFavorites()` were not separate functions in `main.ts` — those features were always initialised inline. The only retained legacy call is `initRecipePagePlanIntegration()` (see Task 6 note above).
 
 ---
 
-### 🧩 Task 8: Tooling Adjustments & Testing
+### 🧩 Task 8: Tooling Adjustments & Testing — ✅ COMPLETE (component unit tests pending)
 
 **Objective:** Set up checks and compile tests to ensure code quality.
 
@@ -279,16 +280,18 @@ Create the files inside `themes/cookpot/assets/js/stores/`:
 2.  **Update Typecheck Script:**
     Update the `typecheck` script in `package.json` to verify Svelte files:
     ```json
-    "typecheck": "svelte-check --tsconfig assets/tsconfig.json && tsc --noEmit -p assets/tsconfig.json"
+    "typecheck": "svelte-check --tsconfig tsconfig.json && tsc --noEmit -p tsconfig.json"
     ```
-3.  **Vitest Component Tests:**
+    > **Note:** After the migration, `tsconfig.json` was consolidated to the project root (from `assets/tsconfig.json`) and `jsconfig.json` was kept at `themes/cookpot/assets/jsconfig.json`. The Vite config is `vite.config.mts` (TypeScript module syntax) at the project root.
+3.  🔲 **Vitest Component Tests:**
     - Add `@testing-library/svelte` and verify Svelte component mounts, store updates, and interaction events.
+    - **Not yet done** — `@testing-library/svelte` is installed but no `.svelte.test.ts` component test files exist yet.
 4.  **Playwright verification:**
     - Run `pnpm test:e2e` to verify that UI flows (e.g., calendar populating, checkboxes state, settings persisting, scaling servings) continue to pass. Fix any selector mismatch errors.
 
 ---
 
-### 🧩 Task 9: CI/CD Pipeline Build Steps
+### 🧩 Task 9: CI/CD Pipeline Build Steps — ✅ COMPLETE
 
 **Objective:** Configure GitHub workflows to build Vite assets before deploying to Firebase.
 

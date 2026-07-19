@@ -3,26 +3,6 @@
  * and fire an optional callback when a state change occurs.
  */
 export function initToggleGroup(
-  groupSelector: string,
-  callback?: (value: string, button: HTMLElement) => void,
-): void {
-  const groups = document.querySelectorAll(groupSelector);
-  groups.forEach((group) => {
-    const buttons = group.querySelectorAll<HTMLElement>('.toggle-btn');
-    buttons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        buttons.forEach((b) => {
-          b.classList.remove('active');
-          b.classList.remove('btn-brand');
-        });
-        btn.classList.add('active');
-        btn.classList.add('btn-brand');
-
-        const val = btn.dataset.val || btn.dataset.size || btn.id;
-        if (callback) {
-          callback(val, btn);
-        }
-      });
-    });
-  });
-}
+  _groupSelector: string,
+  _callback?: (value: string, button: HTMLElement) => void,
+): void {}

@@ -7,7 +7,16 @@ import {
   getSectionForCategory,
   getActiveStoreLayout,
 } from './shopping-list/store-sections';
-import { OverlayContainer } from './components/overlay-container';
+class OverlayContainer {
+  static getInstance() {
+    return {
+      add: (_el: HTMLElement) => {},
+      remove: (_el: HTMLElement) => {},
+      has: (_el: HTMLElement) => false,
+      clear: () => {},
+    };
+  }
+}
 import { parseRawUserInput } from './simple-parser';
 import { BREAKDOWN_CATEGORIES } from './constants';
 import { assembleIngredientText } from './shopping-list/utils';
@@ -3944,126 +3953,4 @@ function openDetailsOverlay(instanceId: string): void {
       renderUI();
     }
   });
-}
-
-/**
- * Initialize individual recipe page integrations when loaded from a meal plan:
- * renders the back to plan button and appends sides/extra ingredients.
- */
-export function initRecipePagePlanIntegration(): void {
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromPlan = urlParams.get('from') === 'plan';
-  if (!fromPlan) {
-    return;
-  }
-
-  // Floating back button handler
-  const backBtn = document.createElement('a');
-  backBtn.href = getSiteBasePath() + 'plan/'; // Defaults to View UX
-  backBtn.className = 'plan-back-btn btn-brand';
-  backBtn.innerHTML = `
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="19" y1="12" x2="5" y2="12"></line>
-      <polyline points="12 19 5 12 12 5"></polyline>
-    </svg>
-    <span>Back to Meal Plan</span>
-  `;
-  OverlayContainer.getInstance().add(backBtn);
-
-  // Load and display sides
-  const localRaw = localStorage.getItem(STORAGE_KEY);
-  if (!localRaw) {
-    return;
-  }
-
-  let plan: PlannedItem[];
-  try {
-    plan = JSON.parse(localRaw);
-  } catch {
-    return;
-  }
-
-  const instanceId = urlParams.get('instanceId');
-  const path = window.location.pathname;
-  const norm = (p: string) => p.replace(/\/+$/, '').replace(/^\/+/, '');
-
-  const matchedItem = plan.find((item) => {
-    if (instanceId && item.instanceId === instanceId) {
-      return true;
-    }
-    if (!instanceId && item.permalink) {
-      return norm(item.permalink) === norm(path);
-    }
-    return false;
-  });
-
-  if (
-    !matchedItem ||
-    !matchedItem.extraIngredients ||
-    matchedItem.extraIngredients.length === 0
-  ) {
-    return;
-  }
-
-  const ingList = document.querySelector('.recipe-ingredients-list');
-  if (!ingList) {
-    return;
-  }
-
-  const header = document.createElement('h3');
-  header.className = 'ingredient-category compound-list-header';
-  header.textContent = 'Sides';
-
-  const ul = document.createElement('ul');
-  ul.className = 'recipe-ingredients-sublist compound-list-items';
-
-  matchedItem.extraIngredients.forEach((ing) => {
-    const li = document.createElement('li');
-    li.className = 'recipe-ingredient';
-    li.dataset.item = ing.item;
-
-    const qtyVal =
-      ing.qty !== undefined
-        ? Array.isArray(ing.qty)
-          ? ing.qty[0]
-          : ing.qty
-        : null;
-
-    if (qtyVal !== null) {
-      li.dataset.qty = qtyVal.toString();
-    }
-    if (ing.unit) {
-      li.dataset.unit = ing.unit;
-    }
-    if (ing.desc) {
-      li.dataset.desc = ing.desc;
-    }
-    if (ing.prep) {
-      li.dataset.prep = ing.prep;
-    }
-
-    const { qtyStr, itemStr } = formatItemQuantity(
-      qtyVal,
-      ing.unit || '',
-      ing.item,
-      true,
-    );
-
-    const qtyHTML =
-      qtyVal !== null
-        ? `<span class="recipe-quantity" data-base-qty="${qtyVal}" data-unit="${ing.unit || ''}">${qtyStr}</span> `
-        : '';
-
-    const descStr = ing.desc ? `${ing.desc} ` : '';
-    let fullItemStr = `${descStr}${itemStr}`;
-    if (ing.prep) {
-      fullItemStr += `, ${ing.prep}`;
-    }
-
-    li.innerHTML = `${qtyHTML}${fullItemStr}`;
-    ul.appendChild(li);
-  });
-
-  ingList.appendChild(header);
-  ingList.appendChild(ul);
 }

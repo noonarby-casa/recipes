@@ -5,7 +5,6 @@ import {
 } from './shopping-list/pipeline';
 import { ShoppingItem } from './shopping-list/types';
 // removed formatNotesArray
-import { initToggleGroup } from './components/toggle';
 import {
   getSectionForCategory,
   getActiveStoreLayout,
@@ -21,8 +20,6 @@ export function initShoppingList(): void {
     return;
   }
 
-  const btnRecipeView = document.getElementById('btn-recipe-view');
-  const btnShoppingView = document.getElementById('btn-shopping-view');
   const recipeList = document.querySelector<HTMLElement>(
     '.recipe-ingredients-list',
   );
@@ -36,17 +33,37 @@ export function initShoppingList(): void {
   const copyBtn = document.getElementById('btn-copy-shopping-list');
 
   if (
-    !btnRecipeView ||
-    !btnShoppingView ||
     !recipeList ||
     !shoppingWrapper ||
-    !buyList
+    !buyList ||
+    !optionalList ||
+    !copyBtn
   ) {
     return;
   }
 
+  let activeTab: 'recipe' | 'shopping' = 'recipe';
   let currentScale = 1.0;
-  let activeTab = 'recipe'; // 'recipe' or 'shopping'
+
+  // Toggle View Click Handlers
+  const viewToggle = container.querySelector<HTMLElement>(
+    '.shopping-view-toggle',
+  );
+  if (viewToggle) {
+    viewToggle.addEventListener('change', (e) => {
+      const val = (e as CustomEvent).detail.value;
+      if (val === 'recipe') {
+        activeTab = 'recipe';
+        recipeList.style.display = 'block';
+        shoppingWrapper.style.display = 'none';
+      } else if (val === 'shopping') {
+        activeTab = 'shopping';
+        recipeList.style.display = 'none';
+        shoppingWrapper.style.display = 'block';
+        renderShoppingList(currentScale);
+      }
+    });
+  }
 
   const checklistStates: Record<string, boolean> = {};
 
@@ -78,20 +95,6 @@ export function initShoppingList(): void {
 
   // Initialize: Render the list once
   renderShoppingList(currentScale);
-
-  // Toggle View Click Handlers
-  initToggleGroup('.shopping-view-toggle', (value) => {
-    if (value === 'btn-recipe-view') {
-      activeTab = 'recipe';
-      recipeList.style.display = 'block';
-      shoppingWrapper.style.display = 'none';
-    } else if (value === 'btn-shopping-view') {
-      activeTab = 'shopping';
-      recipeList.style.display = 'none';
-      shoppingWrapper.style.display = 'block';
-      renderShoppingList(currentScale);
-    }
-  });
 
   // Listen to the Servings Scaler custom event
   document.addEventListener('recipe:scale', (e: Event) => {

@@ -2,6 +2,8 @@
   import type { Recipe } from '../types';
   import { favoritesStore } from '../stores/favorites';
 
+  import { getSiteBasePath } from '../utils/site';
+
   interface Props {
     recipe: Recipe;
     isPlanned: boolean;
@@ -11,15 +13,6 @@
   let { recipe, isPlanned, onAdd }: Props = $props();
 
   let isFav = $derived(recipe.shortId ? $favoritesStore.includes(recipe.shortId) : false);
-  
-  function getSiteBasePath(): string {
-    if (typeof window === 'undefined') {return '/';}
-    const currentPath = window.location.pathname;
-    if (currentPath.startsWith('/recipes/')) {
-      return '/recipes/';
-    }
-    return '/';
-  }
 
   let basePath = $derived(getSiteBasePath());
 </script>

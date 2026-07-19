@@ -34,3 +34,140 @@
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
   </svg>
 </button>
+
+<style>
+  :global(.recipe-favorite-btn) {
+    background: transparent;
+    border: 1px solid var(--btn-border);
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--btn-shadow);
+    color: var(--text-muted);
+  }
+
+  :global(.recipe-favorite-btn:hover) {
+    background-color: var(--heart-bg-hover);
+    border-color: var(--heart-border-hover);
+    color: var(--heart-color);
+    transform: scale(1.05);
+  }
+
+  :global(.recipe-favorite-btn:active) {
+    transform: scale(0.95);
+  }
+
+  :global(.recipe-favorite-btn .heart-icon) {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    transition:
+      fill 0.25s ease,
+      stroke 0.25s ease;
+    width: 18px;
+    height: 18px;
+  }
+
+  :global(.recipe-favorite-btn.is-favorite) {
+    border-color: var(--heart-color);
+    background-color: var(--heart-bg-hover);
+    color: var(--heart-color);
+  }
+
+  :global(.recipe-favorite-btn.is-favorite .heart-icon) {
+    fill: var(--heart-color);
+    stroke: var(--heart-color);
+  }
+
+  :global(.recipe-favorite-btn .heart-icon.pop-anim) {
+    animation: heart-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes heart-pop {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.35);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  :global(.recipe-list-image-container),
+  :global(.browse-img-wrapper) {
+    position: relative;
+    display: flex;
+  }
+
+  :global(.recipe-favorite-badge) {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    pointer-events: none;
+    z-index: 5;
+    transition: opacity 0.2s ease;
+  }
+
+  :global(html.dark-mode) :global(.recipe-favorite-badge) {
+    background-color: rgba(30, 30, 30, 0.85);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  :global(.recipe-favorite-badge .heart-icon-badge) {
+    fill: var(--heart-color);
+    stroke: var(--heart-color);
+    stroke-width: 1;
+    width: 12px;
+    height: 12px;
+    display: block;
+  }
+
+  :global(.recipe-list-image-container .recipe-favorite-badge) {
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+  }
+
+  :global(.recipe-list-image-container .recipe-favorite-badge .heart-icon-badge) {
+    width: 14px;
+    height: 14px;
+  }
+
+  :global(.recipe-scale-panel) {
+    position: relative;
+  }
+
+  :global(.recipe-scale-panel .recipe-favorite-btn) {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    z-index: 10;
+  }
+
+  @media (min-width: 768px) {
+    :global(.recipe-scale-panel .recipe-favorite-btn) {
+      position: static;
+      margin-left: auto;
+    }
+  }
+</style>

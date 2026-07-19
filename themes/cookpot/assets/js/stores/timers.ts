@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { playLowerBoundChime, playUpperBoundChime, stopAudio } from '../audio';
-import { OverlayContainer } from '../components/overlay-container';
+import { overlayStore } from './overlay';
 
 export interface TimerState {
   recipeTitle: string;
@@ -83,44 +83,6 @@ function cleanupStoredTimers(timers: TimerState[]): TimerState[] {
   });
 }
 
-function syncOverlayUI(timers: TimerState[]) {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  const recipeUrl = window.location.pathname;
-  const dashboardTimers = timers.filter((t) => t.recipeUrl !== recipeUrl);
-  if (dashboardTimers.length === 0) {
-    return;
-  }
-
-  const now = Date.now();
-  let hasExpired = false;
-  let hasInRange = false;
-  let hasRunning = false;
-
-  dashboardTimers.forEach((t) => {
-    const elapsed =
-      t.elapsedBeforeStart +
-      (t.status === 'running' && t.startedAt !== null
-        ? Math.floor((now - t.startedAt) / 1000)
-        : 0);
-
-    if (elapsed > t.maxSeconds) {
-      hasExpired = true;
-    } else if (elapsed >= t.minSeconds) {
-      hasInRange = true;
-    } else if (t.status === 'running') {
-      hasRunning = true;
-    }
-  });
-
-  OverlayContainer.getInstance().updateDashboardFabState(
-    hasExpired,
-    hasInRange,
-    hasRunning,
-  );
-}
-
 function createTimersStore() {
   const initial = getStoredTimers();
   const { subscribe, set, update } = writable<{
@@ -175,7 +137,6 @@ function createTimersStore() {
     updateWakeLock(cleaned);
     manageTick(cleaned);
     manageAudio(cleaned);
-    syncOverlayUI(cleaned);
   }
 
   function manageAudio(timers: TimerState[]) {
@@ -227,7 +188,7 @@ function createTimersStore() {
             updated.upperChimePlayed = true;
             updated.updatedAt = now;
             playUpperBoundChime();
-            OverlayContainer.getInstance().expand();
+            overlayStore.expand();
           }
         } else {
           if (elapsed >= t.minSeconds && !t.lowerChimePlayed) {
@@ -239,7 +200,7 @@ function createTimersStore() {
             updated.upperChimePlayed = true;
             updated.updatedAt = now;
             playUpperBoundChime();
-            OverlayContainer.getInstance().expand();
+            overlayStore.expand();
           }
         }
         return updated;
@@ -247,7 +208,6 @@ function createTimersStore() {
 
       saveStoredTimers(nextTimers);
       updateWakeLock(nextTimers);
-      syncOverlayUI(nextTimers);
       return { list: nextTimers, now };
     });
   }
@@ -317,7 +277,6 @@ function createTimersStore() {
         updateWakeLock(next);
         manageTick(next);
         manageAudio(next);
-        syncOverlayUI(next);
         return { list: next, now };
       });
     },
@@ -330,7 +289,6 @@ function createTimersStore() {
         updateWakeLock(next);
         manageTick(next);
         manageAudio(next);
-        syncOverlayUI(next);
         return { list: next, now: Date.now() };
       });
     },
@@ -341,7 +299,6 @@ function createTimersStore() {
         updateWakeLock(next);
         manageTick(next);
         manageAudio(next);
-        syncOverlayUI(next);
         return { list: next, now: Date.now() };
       });
     },
