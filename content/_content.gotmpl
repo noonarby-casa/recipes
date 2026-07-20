@@ -1,0 +1,27 @@
+{{ $pages := slice
+  (dict
+  "kind" "page"
+  "path" "plan"
+  "title" "Meal Plan"
+  "type" "plan"
+  "layout" "plan"
+  )
+  (dict
+  "kind" "page"
+  "path" "sitemap"
+  "title" "Sitemap"
+  "type" "sitemap"
+  "layout" "sitemap"
+  )
+  (dict
+  "kind" "page"
+  "path" "timers"
+  "title" "Timer Test Suite"
+  "type" "timers"
+  "layout" "timers"
+  )
+  }}
+
+{{ range $pages }}
+  {{ $.AddPage . }}
+{{ end }}

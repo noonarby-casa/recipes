@@ -5,8 +5,12 @@ const testPages = ['/timers/', '/lemon-blueberry-bread/'];
 for (const targetPage of testPages) {
   test.describe(`Overlay Minimize E2E on ${targetPage}`, () => {
     test.beforeEach(async ({ page }) => {
-      page.on('console', msg => console.log(`BROWSER CONSOLE (${targetPage}):`, msg.text()));
-      page.on('pageerror', err => console.error(`BROWSER ERROR (${targetPage}):`, err.message));
+      page.on('console', (msg) =>
+        console.log(`BROWSER CONSOLE (${targetPage}):`, msg.text()),
+      );
+      page.on('pageerror', (err) =>
+        console.error(`BROWSER ERROR (${targetPage}):`, err.message),
+      );
       // Install clock before loading the page so timers tick predictably
       await page.clock.install({ time: new Date('2026-07-10T12:00:00Z') });
     });
