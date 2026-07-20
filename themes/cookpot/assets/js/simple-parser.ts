@@ -1,7 +1,4 @@
-export interface ParsedQty {
-  qty: number | null;
-  unit: string;
-}
+import type { ParsedQty } from './types';
 
 export function parseSimpleQty(text: string): ParsedQty {
   text = text.trim();

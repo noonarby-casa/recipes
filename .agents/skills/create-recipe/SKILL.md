@@ -67,7 +67,7 @@ ingredients = [
    - Add other specific tags (e.g. `"chicken"`, `"baking"`, `"pasta"`, `"soup"`, `"salad"`, `"easy"`, `"summer"`) as appropriate.
 
 3. **`ingredients` Structure:**
-   - Mapped to the `IngredientInput` type in [types.ts](../../../themes/cookpot/assets/js/shopping-list/types.ts).
+   - Mapped to the `IngredientInput` type in [types.ts](../../../themes/cookpot/assets/js/types.ts).
    - `qty`: Numerical value (e.g., `2.25` or `0.333` instead of `"2 1/4"` or `"1/3"`).
      - **Range Support:** Can be a tuple range `[min, max]` (e.g., `qty = [2, 3]` for 2 to 3 garlic cloves).
    - `unit`: Supported unit name from [rules.ts](../../../themes/cookpot/assets/js/shopping-list/rules.ts). Prefer standard singular forms: `"pound"`, `"ounce"`, `"cup"`, `"tablespoon"`, `"teaspoon"`, `"clove"`, `"can"`, `"package"`, `"bag"`, `"box"`, `"jar"`, `"root"`, `"head"`, `"bundle"`, etc.

@@ -2,20 +2,7 @@ import { writable } from 'svelte/store';
 import { playLowerBoundChime, playUpperBoundChime, stopAudio } from '../audio';
 import { overlayStore } from './overlay';
 
-export interface TimerState {
-  recipeTitle: string;
-  recipeUrl: string;
-  timerIndex: number;
-  durationLabel: string;
-  minSeconds: number;
-  maxSeconds: number;
-  startedAt: number | null;
-  elapsedBeforeStart: number;
-  status: 'running' | 'paused';
-  lowerChimePlayed: boolean;
-  upperChimePlayed: boolean;
-  updatedAt?: number;
-}
+import type { TimerState } from '../types';
 
 const STORAGE_KEY = 'noonarby-casa-timers';
 

@@ -10,9 +10,8 @@ import {
 import {
   getSectionForCategory,
   classifyItemToCategory,
-  StoreLayout,
 } from './store-sections';
-import {
+import type {
   IngredientInput,
   ShoppingItem,
   ProcessedShoppingList,
@@ -20,7 +19,8 @@ import {
   ShoppingItemNote,
   IngredientNote,
   QtyValue,
-} from './types';
+  StoreLayout,
+} from '../types';
 
 function getRuleForItem(itemName: string): ItemRule | undefined {
   const lower = itemName.toLowerCase().trim();

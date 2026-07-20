@@ -2,7 +2,7 @@
   import { combinedShoppingList, shoppingCheckedStore, getIngredientKey, isItemChecked } from '../stores/shopping';
   import { formatItemQuantity } from '../units';
   import { scrollable } from '../actions/scrollable';
-  import type { ShoppingItem } from '../shopping-list/types';
+  import type { ShoppingItem } from '../types';
   import { STORE_LAYOUTS } from '../shopping-list/store-sections';
   import { storeLayout } from '../stores/shopping';
 

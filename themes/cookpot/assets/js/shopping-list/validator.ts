@@ -1,13 +1,12 @@
-import { IngredientInput, QtyValue } from './types';
+import type {
+  IngredientInput,
+  QtyValue,
+  ValidationError,
+  IngredientSection,
+} from '../types';
 import { SINGULAR_TO_PLURAL } from '../constants';
 import { getSingularUnit } from './utils';
 import { ITEM_RULES } from './rules';
-
-export interface ValidationError {
-  message: string;
-  field?: string;
-  severity: 'error' | 'warning';
-}
 
 const PLURAL_UNITS_SET = new Set(
   Object.entries(SINGULAR_TO_PLURAL)
@@ -356,11 +355,6 @@ export function validateIngredient(ing: IngredientInput): ValidationError[] {
   }
 
   return errors;
-}
-
-export interface IngredientSection {
-  category: string;
-  items: IngredientInput[];
 }
 
 export function validateRecipe(recipe: {

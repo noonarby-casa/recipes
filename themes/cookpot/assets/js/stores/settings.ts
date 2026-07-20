@@ -1,12 +1,8 @@
 import { writable } from 'svelte/store';
+import type { FontSizeOption, SettingsState } from '../types';
 
 const SETTINGS_KEY = 'noonarby-meal-plan-settings';
 const FONT_SIZE_KEY = 'recipe-instructions-font-size';
-
-export interface SettingsState {
-  activeTab: 'edit' | 'view' | 'shop';
-  workWeekOnly: boolean;
-}
 
 function loadSettings(): SettingsState {
   let workWeekOnly = true;
@@ -47,8 +43,6 @@ settingsStore.subscribe((state) => {
 // ---------------------------------------------------------------------------
 // Font size preference for recipe instruction columns
 // ---------------------------------------------------------------------------
-
-export type FontSizeOption = 'smaller' | 'default' | 'larger';
 
 function loadFontSize(): FontSizeOption {
   if (typeof localStorage === 'undefined') {

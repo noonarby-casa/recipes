@@ -7,7 +7,7 @@ import * as path from 'path';
 declare const __dirname: string;
 
 import { processShoppingList } from './pipeline';
-import { IngredientInput, ShoppingItem } from './types';
+import type { IngredientInput, ShoppingItem } from '../types';
 import { ITEM_RULES } from './rules';
 import { STORE_LAYOUTS } from './store-sections';
 import {

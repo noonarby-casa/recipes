@@ -1,19 +1,6 @@
 import { singularizeWord } from '../units';
 import usGrocerySizes from '../../data/stores/us-grocery.json';
-
-export interface StoreSection {
-  id: string;
-  name: string;
-  order: number;
-  categories: string[];
-}
-
-export interface StoreLayout {
-  id: string;
-  name: string;
-  sections: StoreSection[];
-  itemSizes?: Record<string, [number, string][]>;
-}
+import type { StoreLayout, StoreSection } from '../types';
 
 export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
   {

@@ -1,22 +1,11 @@
 import { writable, get } from 'svelte/store';
-import type { PlannedItem } from '../types';
+import type { PlannedItem, PlannerState } from '../types';
 import { recipesStore } from './recipes';
 import { settingsStore } from './settings';
 import { favoritesStore } from './favorites';
 import { filtersStore } from './filters';
 
 const STORAGE_KEY = 'noonarby-meal-plan';
-
-export interface PlannerState {
-  plan: PlannedItem[];
-  localPlan: PlannedItem[];
-  sharedPlan: PlannedItem[];
-  hasConflict: boolean;
-  isPreviewing: boolean;
-  previewMode: 'local' | 'shared';
-  lastRemovedRecipe: PlannedItem | null;
-  lastRemovedIndex: number | null;
-}
 
 function getLocalPlanFromStorage(): PlannedItem[] {
   if (typeof localStorage === 'undefined') {

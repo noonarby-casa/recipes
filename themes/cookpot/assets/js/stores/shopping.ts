@@ -1,7 +1,7 @@
 import { writable, derived } from 'svelte/store';
 import { plannerStore } from './planner';
 import { recipesStore } from './recipes';
-import type { IngredientInput } from '../shopping-list/types';
+import type { IngredientInput } from '../types';
 import { processShoppingList } from '../shopping-list/pipeline';
 import {
   getActiveStoreLayoutId,

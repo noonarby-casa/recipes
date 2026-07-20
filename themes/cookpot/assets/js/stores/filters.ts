@@ -2,14 +2,7 @@ import { writable } from 'svelte/store';
 
 const FILTERS_KEY = 'noonarby-meal-plan-filters';
 
-export interface FiltersState {
-  searchQuery: string;
-  favoritesOnly: boolean;
-  includedTags: string[];
-  excludedTags: string[];
-  includedSources: string[];
-  excludedSources: string[];
-}
+import type { FiltersState } from '../types';
 
 function loadFilters(): FiltersState {
   let includedTags: string[] = [];

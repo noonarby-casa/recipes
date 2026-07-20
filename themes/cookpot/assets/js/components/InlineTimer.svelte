@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { timersStore, type TimerState } from '../stores/timers';
+  import { timersStore } from '../stores/timers';
+  import type { TimerState } from '../types';
 
   interface Props {
     duration: string;

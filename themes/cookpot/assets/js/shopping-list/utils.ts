@@ -1,5 +1,5 @@
 import { formatCookingNumber, pluralizeWord } from '../units';
-import { QtyValue, IngredientInput, ItemRule } from './types';
+import type { QtyValue, IngredientInput, ItemRule } from '../types';
 import { UNIT_CONVERSIONS, PLURAL_TO_SINGULAR } from '../constants';
 
 /**

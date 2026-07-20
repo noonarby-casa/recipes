@@ -1,4 +1,4 @@
-import { ItemRule } from './types';
+import type { ItemRule } from '../types';
 
 export const STAPLE_ITEMS: Set<string> = new Set([
   'salt',

@@ -1,6 +1,7 @@
 <script lang="ts">
   import {onMount} from 'svelte';
-  import {fontSizeStore, type FontSizeOption} from '../stores/settings';
+  import {fontSizeStore} from '../stores/settings';
+  import type {FontSizeOption} from '../types';
 
   const SIZE_MAP: Record<FontSizeOption, string> = {
     smaller: '1.0rem',

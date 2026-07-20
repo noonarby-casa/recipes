@@ -7,7 +7,7 @@
     processShoppingList,
     extractIngredientsFromDOM,
   } from '../shopping-list/pipeline';
-  import type {ShoppingItem} from '../shopping-list/types';
+  import type {ShoppingItem} from '../types';
   import {
     getSectionForCategory,
     getActiveStoreLayout,
