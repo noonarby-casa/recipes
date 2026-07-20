@@ -12,17 +12,9 @@ tags = []
 servings = 4
 draft = true
 
-[[ingredients]]
-  # category = "Main" (optional grouping)
-  [[ingredients.items]]
-    qty = 1
-    unit = "cup"
-    item = "ingredient name"
-    # desc = "optional descriptor (e.g. fresh)"
-    # prep = "optional prep (e.g. diced)"
-    # optional = true
-    # [ingredients.items.alt]
-    #   item = "alternate item"
-    #   qty = 1
-    #   unit = "tablespoon"
+ingredients = [
+  { category = "Main", items = [
+    { qty = 1, unit = "unit", desc = "desc", item = "item", prep = "prep" },
+  ] },
+]
 +++

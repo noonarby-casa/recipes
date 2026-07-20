@@ -1,6 +1,7 @@
 <script lang="ts">
   import { settingsStore } from '../stores/settings';
   import { plannerStore } from '../stores/planner';
+  import { scrollable } from '../actions/scrollable';
   import type { PlannedItem } from '../types';
   import DayColumn from './DayColumn.svelte';
   import PlannedRecipeCard from './PlannedRecipeCard.svelte';
@@ -95,6 +96,7 @@
 
 <div
   class="planner-column scrollable-area"
+  use:scrollable
   id="col-planner"
   tabindex="0"
   role="region"

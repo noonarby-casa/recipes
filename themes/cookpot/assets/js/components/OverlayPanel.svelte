@@ -1,10 +1,42 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { overlayStore, overlayVisible } from '../stores/overlay';
   import { timersStore } from '../stores/timers';
   import TimersManager from './TimersManager.svelte';
 
-
   const state = $derived($overlayStore);
+
+  let dashboardFabEl = $state<HTMLButtonElement | null>(null);
+  let backFabEl = $state<HTMLButtonElement | null>(null);
+
+  onMount(() => {
+    timersStore.syncWithStorage();
+  });
+
+  $effect(() => {
+    if (typeof window !== 'undefined') {
+      const recipeUrl = window.location.pathname;
+      const dashboardTimers = $timersStore.list.filter((t) => t.recipeUrl !== recipeUrl);
+      overlayStore.setHasDashboard(dashboardTimers.length > 0);
+    }
+  });
+
+  // Replicate the focus shifts from the old OverlayContainer class when minimized state changes
+  $effect(() => {
+    const minimized = state.isMinimized;
+    if (minimized) {
+      if (state.hasDashboard && dashboardFabEl) {
+        dashboardFabEl.focus();
+      } else if (state.backHref && backFabEl) {
+        backFabEl.focus();
+      }
+    } else {
+      const db = document.getElementById('cooking-dashboard');
+      if (db) {
+        db.focus();
+      }
+    }
+  });
 
   // Derive dashboard FAB status reactively from timersStore
   const fabStatus = $derived.by(() => {
@@ -49,7 +81,7 @@
 <svelte:window onkeydown={handleKeyDown} />
 
 {#if $overlayVisible}
-  <div class="overlay-container" class:is-minimized={state.isMinimized}>
+  <div id="overlay-container" class="overlay-container" class:is-minimized={state.isMinimized}>
     <button
       type="button"
       class="overlay-toggle-btn"
@@ -71,6 +103,7 @@
 
     {#if state.hasDashboard}
       <button
+        bind:this={dashboardFabEl}
         type="button"
         class="minimized-fab fab-dashboard"
         class:is-expired={fabStatus.hasExpired}
@@ -90,6 +123,7 @@
 
     {#if state.backHref}
       <button
+        bind:this={backFabEl}
         type="button"
         class="minimized-fab fab-back"
         aria-label="Back to Meal Plan"

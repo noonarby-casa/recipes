@@ -2,6 +2,7 @@
   import { recipesStore } from '../stores/recipes';
   import { favoritesStore } from '../stores/favorites';
   import { plannerStore } from '../stores/planner';
+  import { scrollable } from '../actions/scrollable';
   import type { PlannedItem } from '../types';
   import { formatItemQuantity } from '../units';
   import { parseRawUserInput } from '../simple-parser';
@@ -120,7 +121,7 @@
         <h3 style="margin: 0;">Edit Details: {title}</h3>
         <button type="button" class="modal-close-btn" onclick={onClose} style="margin: 0; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">✕</button>
       </div>
-      <div class="planner-modal-body scrollable-area" style="padding: 1.25rem 1.5rem; overflow-y: auto;">
+      <div class="planner-modal-body scrollable-area" use:scrollable style="padding: 1.25rem 1.5rem; overflow-y: auto;">
         {#if !rec}
           <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Title</h4>
           <input

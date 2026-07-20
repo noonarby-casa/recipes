@@ -2,6 +2,7 @@
   import { recipesStore } from '../stores/recipes';
   import { filtersStore } from '../stores/filters';
   import { favoritesStore } from '../stores/favorites';
+  import { scrollable } from '../actions/scrollable';
 
   interface Props {
     isOpen: boolean;
@@ -182,6 +183,7 @@
       </div>
       <div
         class="planner-modal-body scrollable-area"
+        use:scrollable
         style="padding: 1.25rem 1.5rem;"
         tabindex="0"
         role="region"

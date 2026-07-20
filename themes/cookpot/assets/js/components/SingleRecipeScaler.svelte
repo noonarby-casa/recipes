@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { formatRecipeIngredientHTML } from '../units';
+  import {onMount} from 'svelte';
+  import {formatRecipeIngredientHTML} from '../units';
+  import {recipeScaleStore} from '../stores/settings';
   import FavoriteButton from './FavoriteButton.svelte';
 
   interface Props {
@@ -24,7 +25,12 @@
   });
 
   $effect(() => {
-    scaleIngredientsInDOM(portions / baseServings);
+    const scale = portions / baseServings;
+    scaleIngredientsInDOM(scale);
+    recipeScaleStore.set(scale);
+    document.dispatchEvent(
+      new CustomEvent('recipe:scale', {detail: {factor: scale}}),
+    );
   });
 
   function scaleIngredientsInDOM(scale: number) {

@@ -1,4 +1,6 @@
 import { mount } from 'svelte';
+import { initDarkMode } from './darkmode';
+import { initRandomRecipe } from './random';
 import MealPlannerApp from './components/MealPlannerApp.svelte';
 import HomepageSearchApp from './components/HomepageSearchApp.svelte';
 import SingleRecipeScaler from './components/SingleRecipeScaler.svelte';
@@ -8,10 +10,13 @@ import RecipeSidesInjector from './components/RecipeSidesInjector.svelte';
 import PlanBackButton from './components/PlanBackButton.svelte';
 import InlineTimer from './components/InlineTimer.svelte';
 import ToggleGroup from './components/ToggleGroup.svelte';
+import FontSizeController from './components/FontSizeController.svelte';
+import StoreSelectorModal from './components/StoreSelectorModal.svelte';
+import RecipeShoppingList from './components/RecipeShoppingList.svelte';
+import type { Component } from 'svelte';
 
 function mountAppToTarget(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: any,
+  component: Component<any, any>,
   idOrSelector: string,
   options: {
     many?: boolean;
@@ -37,10 +42,23 @@ function filterNullish<T>(arr: (T | null)[]): T[] {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // ---------------------------------------------------------------------------
+  // Plain utilities (no Svelte needed — targets Hugo-rendered header elements)
+  // ---------------------------------------------------------------------------
+  initDarkMode();
+  initRandomRecipe();
+
+  // ---------------------------------------------------------------------------
+  // Svelte islands
+  // ---------------------------------------------------------------------------
+
+  // Meal planning functionality at /plan
   mountAppToTarget(MealPlannerApp, 'meal-planner');
 
+  // Search functionality on homepage and tags/
   mountAppToTarget(HomepageSearchApp, 'homepage-search-mount');
 
+  // Recipe scaling functionality on a recipe page
   mountAppToTarget(SingleRecipeScaler, 'recipe-scale-mount', {
     clearInner: true,
     props: (el) => ({
@@ -49,13 +67,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }),
   });
 
+  // Favorite button functionality
   mountAppToTarget(FavoriteButton, 'recipe-favorite-mount', {
     props: (el) => ({ shortId: el.dataset['shortId'] ?? '' }),
   });
 
+  // Overlay panel for displaying content in the bottom left of the site
   mountAppToTarget(OverlayPanel, 'overlay-panel-mount');
   mountAppToTarget(RecipeSidesInjector, 'recipe-sides-mount');
   mountAppToTarget(PlanBackButton, 'recipe-plan-back-mount');
+
+  // Font-size controller — single-recipe pages only (no-ops elsewhere)
+  mountAppToTarget(FontSizeController, 'font-size-controller-mount');
+
+  // Store-selector modal — replaces imperative store-selector.ts + modal.ts
+  mountAppToTarget(StoreSelectorModal, 'store-selector-modal-mount');
+
+  // Recipe shopping list — replaces imperative shopping-list.ts
+  mountAppToTarget(RecipeShoppingList, 'recipe-shopping-list-mount');
 
   mountAppToTarget(InlineTimer, '.recipe-timer', {
     many: true,

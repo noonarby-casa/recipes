@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 
 const SETTINGS_KEY = 'noonarby-meal-plan-settings';
+const FONT_SIZE_KEY = 'recipe-instructions-font-size';
 
 export interface SettingsState {
   activeTab: 'edit' | 'view' | 'shop';
@@ -42,3 +43,34 @@ settingsStore.subscribe((state) => {
     }
   }
 });
+
+// ---------------------------------------------------------------------------
+// Font size preference for recipe instruction columns
+// ---------------------------------------------------------------------------
+
+export type FontSizeOption = 'smaller' | 'default' | 'larger';
+
+function loadFontSize(): FontSizeOption {
+  if (typeof localStorage === 'undefined') {
+    return 'default';
+  }
+  const saved = localStorage.getItem(FONT_SIZE_KEY);
+  if (saved === 'smaller' || saved === 'larger') {
+    return saved;
+  }
+  return 'default';
+}
+
+export const fontSizeStore = writable<FontSizeOption>(loadFontSize());
+
+fontSizeStore.subscribe((size) => {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(FONT_SIZE_KEY, size);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Current scale factor shared between SingleRecipeScaler and RecipeShoppingList
+// ---------------------------------------------------------------------------
+
+export const recipeScaleStore = writable<number>(1.0);

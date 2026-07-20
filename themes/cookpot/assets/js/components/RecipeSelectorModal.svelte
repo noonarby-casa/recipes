@@ -3,6 +3,7 @@
   import { filtersStore } from '../stores/filters';
   import { favoritesStore } from '../stores/favorites';
   import { plannerStore } from '../stores/planner';
+  import { scrollable } from '../actions/scrollable';
   import BrowseCard from './BrowseCard.svelte';
 
 
@@ -183,6 +184,7 @@
       <div
         bind:this={shelfElement}
         class="planner-browse-shelf scrollable-area"
+        use:scrollable
         tabindex="0"
         role="region"
         aria-label="Available Recipes Shelf"

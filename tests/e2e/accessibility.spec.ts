@@ -2,6 +2,10 @@ import { test, expect, Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Helper to format Axe violations for clean console/report output
 function formatViolations(violations: any[]): string {
