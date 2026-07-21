@@ -699,4 +699,53 @@
   .plan-toast-notification {
     display: flex;
   }
+
+  .dropdown-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: var(--card-bg);
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230080d8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--btn-shadow);
+    color: var(--text-color);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.45rem 2.2rem 0.45rem 0.9rem; /* space on the right for arrow */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dropdown-select:hover {
+    background-color: var(--noonblue-bg-light);
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300518c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    border-color: var(--noonblue);
+    box-shadow: 0 4px 12px var(--noonblue-shadow-subtle);
+    color: var(--noonblue);
+  }
+
+  .dropdown-select:focus {
+    border-color: var(--noonblue);
+    box-shadow: 0 0 0 3px var(--noonblue-shadow);
+    outline: none;
+  }
+
+  .dropdown-select option {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+  }
+
+  /* Dark Mode Dropdown Arrow Overrides */
+  :global(html.dark-mode) .dropdown-select {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2360bbff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  }
+
+  :global(html.dark-mode) .dropdown-select:hover {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2360bbff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  }
 </style>

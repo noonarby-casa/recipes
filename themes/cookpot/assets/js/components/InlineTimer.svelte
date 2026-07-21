@@ -176,3 +176,213 @@
 >
   <ResetIcon size={14} strokeWidth={2.5} class="timer-svg-icon timer-reset-icon" />
 </button>
+
+<style>
+  :global(.recipe-timer) {
+    align-items: stretch;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    box-sizing: border-box;
+    display: inline-flex;
+    margin: 0 0.35rem;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    vertical-align: middle;
+  }
+
+  :global(.recipe-timer:hover) {
+    box-shadow: 0 6px 14px var(--noonblue-shadow);
+    transform: translateY(-0.5px);
+  }
+
+  :global(.recipe-timer:active) {
+    transform: translateY(0.5px) scale(0.97);
+  }
+
+  .recipe-timer-btn {
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: inherit;
+    font-size: 0.95em;
+    font-weight: 600;
+    gap: 0.45rem;
+    outline: none;
+    padding: 0.35rem 0.85rem;
+    transition: background-color 0.2s ease;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  .recipe-timer-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .recipe-timer-reset {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-left: 1.5px solid rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    display: none; /* Hidden by default */
+    font-size: 0.95rem;
+    justify-content: center;
+    outline: none;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+    width: 36px; /* Generous touch target for tablets */
+  }
+
+  .recipe-timer-reset:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #fff;
+  }
+
+  /* Show reset button when active or paused */
+  :global(.recipe-timer.has-started) .recipe-timer-reset {
+    display: inline-flex;
+  }
+
+  /* Running State */
+  :global(.recipe-timer.is-running) {
+    animation: timer-pulse 2s infinite ease-in-out;
+  }
+
+  @keyframes timer-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(0, 128, 216, 0.4);
+    }
+
+    50% {
+      box-shadow: 0 0 0 5px rgba(0, 128, 216, 0.15);
+    }
+  }
+
+  /* Hide brand background gradient pseudo-element once timer starts */
+  :global(.recipe-timer.has-started::before) {
+    display: none !important;
+  }
+
+  /* Base started style (blue/running) */
+  :global(.recipe-timer.has-started) {
+    background: var(--btn-brand-bg) !important;
+    border: 1px solid transparent !important;
+    box-shadow: 0 3px 8px var(--noonblue-shadow-subtle) !important;
+  }
+
+  /* Green State: In Range / Complete */
+  :global(.recipe-timer.is-in-range) {
+    background-color: var(--timer-in-range-bg-start) !important;
+    background-image: linear-gradient(
+      135deg,
+      var(--timer-in-range-bg-start),
+      var(--timer-in-range-bg-end)
+    ) !important;
+    box-shadow: 0 4px 10px var(--timer-in-range-shadow) !important;
+  }
+
+  :global(.recipe-timer.is-in-range.is-running) {
+    animation: timer-pulse-green 2s infinite ease-in-out;
+  }
+
+  @keyframes timer-pulse-green {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 var(--timer-in-range-pulse-0);
+    }
+
+    50% {
+      box-shadow: 0 0 0 5px var(--timer-in-range-pulse-50);
+    }
+  }
+
+  /* Orange State: Beyond Range (Overtime) */
+  :global(.recipe-timer.is-beyond-range) {
+    background-color: var(--timer-beyond-range-bg-start) !important;
+    background-image: linear-gradient(
+      135deg,
+      var(--timer-beyond-range-bg-start),
+      var(--timer-beyond-range-bg-end)
+    ) !important;
+    box-shadow: 0 4px 10px var(--timer-beyond-range-shadow) !important;
+  }
+
+  :global(.recipe-timer.is-beyond-range.is-running) {
+    animation: timer-pulse-orange 1s infinite ease-in-out;
+  }
+
+  @keyframes timer-pulse-orange {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 var(--timer-beyond-range-pulse-0);
+    }
+
+    50% {
+      box-shadow: 0 0 0 5px var(--timer-beyond-range-pulse-50);
+    }
+  }
+
+  /* Unified Paused State - wins over other active states via class specificity */
+  :global(.recipe-timer.has-started:not(.is-running)) {
+    background: var(--timer-paused-bg) !important;
+    border: 1px solid var(--timer-paused-border) !important;
+    box-shadow: none !important;
+  }
+
+  :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-btn,
+  :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-reset {
+    color: var(--timer-paused-text) !important;
+  }
+
+  :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-reset {
+    border-left-color: var(--timer-paused-border) !important;
+  }
+
+  :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-btn:hover,
+  :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-reset:hover {
+    background-color: var(--border-subtle);
+  }
+
+  /* SVG Icon support */
+  .timer-icon {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+  }
+
+  :global(.timer-svg-icon) {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* Toggle play/pause SVG icons based on running state */
+  :global(.recipe-timer) :global(.timer-pause-icon) {
+    display: none;
+  }
+
+  :global(.recipe-timer.is-running) :global(.timer-play-icon) {
+    display: none;
+  }
+
+  :global(.recipe-timer.is-running) :global(.timer-pause-icon) {
+    display: block;
+  }
+
+  /* Prevent reflow on countdown update / negative sign */
+  .timer-label {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  :global(.recipe-timer.has-started) .timer-label {
+    min-width: 6ch;
+  }
+</style>

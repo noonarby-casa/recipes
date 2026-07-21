@@ -107,7 +107,8 @@ a:hover {
 
 .header-search-toggle,
 .header-random-recipe,
-.header-theme-toggle {
+.header-theme-toggle,
+.header-store-btn {
   align-items: center;
   background: transparent;
   border: none;
@@ -122,14 +123,16 @@ a:hover {
 
 .header-search-toggle:hover,
 .header-random-recipe:hover,
-.header-theme-toggle:hover {
+.header-theme-toggle:hover,
+.header-store-btn:hover {
   background-color: var(--noonblue-bg-light);
   color: var(--noonblue);
 }
 
 .header-search-toggle svg,
 .header-random-recipe svg,
-.header-theme-toggle svg {
+.header-theme-toggle svg,
+.header-store-btn svg {
   display: block;
 }
 
