@@ -3,6 +3,7 @@
   import { filtersStore } from '../stores/filters';
   import { favoritesStore } from '../stores/favorites';
   import { scrollable } from '../actions/scrollable';
+  import Modal from './Modal.svelte';
 
   interface Props {
     /** Whether the filters modal dialog is open and visible. */
@@ -158,185 +159,80 @@
       excludedSources: [],
     }));
   }
-
-  function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  }
 </script>
 
-{#if isOpen}
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="planner-modal-backdrop" onclick={handleBackdropClick} style="display: flex;">
-    <div class="planner-modal-content" style="max-height: 75vh; height: auto;">
-      <div class="planner-modal-header">
-        <h3>Filter Recipes</h3>
+<Modal
+  {isOpen}
+  {onClose}
+  title="Filter Recipes"
+  backdropClass="planner-modal-backdrop"
+  contentClass="planner-modal-content"
+  contentStyle="max-height: 75vh; height: auto;"
+>
+  <div
+    class="planner-modal-body scrollable-area"
+    use:scrollable
+    style="padding: 1.25rem 1.5rem;"
+    tabindex="0"
+    role="region"
+    aria-label="Recipe Filters"
+  >
+    <div
+      style="margin-bottom: 1.25rem; display: flex; gap: 0.75rem; align-items: center; justify-content: space-between;"
+    >
+      <span style="font-size: 0.85rem; color: var(--text-muted);">
+        Active filters apply to the recipes list.
+      </span>
+      <button
+        type="button"
+        class="planner-clear-btn"
+        style="font-size: 0.8rem; padding: 0.35rem 0.75rem; margin: 0;"
+        onclick={clearAll}
+      >
+        ✕ Clear All Filters
+      </button>
+    </div>
+    <h4 style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);">
+      Filter by Tag
+    </h4>
+    <div class="planner-tag-filters" style="margin-bottom: 1.5rem;">
+      {#each uniqueTags as tag}
+        {@const isInc = $filtersStore.includedTags.includes(tag)}
+        {@const isExc = $filtersStore.excludedTags.includes(tag)}
+        {@const count = tagTallies[tag] || 0}
+        {@const isDim = count === 0 && !isInc && !isExc}
         <button
           type="button"
-          class="modal-close-btn"
-          title="Close filters modal"
-          aria-label="Close filters modal"
-          onclick={onClose}
+          class="tag-filter-pill {isInc ? 'include' : ''} {isExc ? 'exclude' : ''} {isDim ? 'dimmed' : ''}"
+          disabled={isDim}
+          onclick={() => toggleTag(tag)}
         >
-          ✕
+          {#if isInc}✓{:else if isExc}✕{/if} {tag.charAt(0).toUpperCase() + tag.slice(1)} <span class="tag-count">{count}</span>
         </button>
-      </div>
-      <div
-        class="planner-modal-body scrollable-area"
-        use:scrollable
-        style="padding: 1.25rem 1.5rem;"
-        tabindex="0"
-        role="region"
-        aria-label="Recipe Filters"
-      >
-        <div
-          style="margin-bottom: 1.25rem; display: flex; gap: 0.75rem; align-items: center; justify-content: space-between;"
+      {/each}
+    </div>
+    <hr
+      class="shopping-divider"
+      style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--border-subtle);"
+    />
+    <h4 style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);">
+      Filter by Source
+    </h4>
+    <div class="planner-tag-filters">
+      {#each uniqueSources as src}
+        {@const isInc = $filtersStore.includedSources.includes(src)}
+        {@const isExc = $filtersStore.excludedSources.includes(src)}
+        {@const count = sourceTallies[src] || 0}
+        {@const isDim = count === 0 && !isInc && !isExc}
+        <button
+          type="button"
+          class="tag-filter-pill {isInc ? 'include' : ''} {isExc ? 'exclude' : ''} {isDim ? 'dimmed' : ''}"
+          disabled={isDim}
+          onclick={() => toggleSource(src)}
         >
-          <span style="font-size: 0.85rem; color: var(--text-muted);">
-            Active filters apply to the recipes list.
-          </span>
-          <button
-            type="button"
-            class="planner-clear-btn"
-            style="font-size: 0.8rem; padding: 0.35rem 0.75rem; margin: 0;"
-            onclick={clearAll}
-          >
-            ✕ Clear All Filters
-          </button>
-        </div>
-        <h4 style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);">
-          Filter by Tag
-        </h4>
-        <div class="planner-tag-filters" style="margin-bottom: 1.5rem;">
-          {#each uniqueTags as tag}
-            {@const isInc = $filtersStore.includedTags.includes(tag)}
-            {@const isExc = $filtersStore.excludedTags.includes(tag)}
-            {@const count = tagTallies[tag] || 0}
-            {@const isDim = count === 0 && !isInc && !isExc}
-            <button
-              type="button"
-              class="tag-filter-pill {isInc ? 'include' : ''} {isExc ? 'exclude' : ''} {isDim ? 'dimmed' : ''}"
-              disabled={isDim}
-              onclick={() => toggleTag(tag)}
-            >
-              {#if isInc}✓{:else if isExc}✕{/if} {tag.charAt(0).toUpperCase() + tag.slice(1)} <span class="tag-count">{count}</span>
-            </button>
-          {/each}
-        </div>
-        <hr
-          class="shopping-divider"
-          style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--border-subtle);"
-        />
-        <h4 style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);">
-          Filter by Source
-        </h4>
-        <div class="planner-tag-filters">
-          {#each uniqueSources as src}
-            {@const isInc = $filtersStore.includedSources.includes(src)}
-            {@const isExc = $filtersStore.excludedSources.includes(src)}
-            {@const count = sourceTallies[src] || 0}
-            {@const isDim = count === 0 && !isInc && !isExc}
-            <button
-              type="button"
-              class="tag-filter-pill {isInc ? 'include' : ''} {isExc ? 'exclude' : ''} {isDim ? 'dimmed' : ''}"
-              disabled={isDim}
-              onclick={() => toggleSource(src)}
-            >
-              {#if isInc}✓{:else if isExc}✕{/if} {src} <span class="tag-count">{count}</span>
-            </button>
-          {/each}
-        </div>
-      </div>
+          {#if isInc}✓{:else if isExc}✕{/if} {src} <span class="tag-count">{count}</span>
+        </button>
+      {/each}
     </div>
   </div>
-{/if}
-
-<style>
-  :global(.modal-backdrop) {
-    align-items: center;
-    backdrop-filter: blur(4px);
-    background-color: rgba(0, 0, 0, 0.55);
-    display: none;
-    height: 100vh;
-    justify-content: center;
-    left: 0;
-    position: fixed;
-    top: 0;
-    width: 100vw;
-    z-index: 100000;
-  }
-
-  :global(.modal-backdrop.active) {
-    display: flex;
-  }
-
-  :global(.modal-content) {
-    animation: modalFadeIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 16px;
-    box-shadow: var(--card-shadow);
-    display: flex;
-    flex-direction: column;
-    max-width: 450px;
-    width: 90%;
-  }
-
-  :global(.modal-header) {
-    align-items: center;
-    border-bottom: 1px solid var(--border-ultra-subtle);
-    display: flex;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem 0.75rem 1.5rem;
-  }
-
-  :global(.modal-title) {
-    color: var(--text-title);
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin: 0;
-  }
-
-  :global(.modal-close-btn) {
-    align-items: center;
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: inline-flex;
-    font-size: 1.5rem;
-    font-weight: 300;
-    height: 28px;
-    justify-content: center;
-    line-height: 1;
-    padding: 0;
-    transition: all 0.2s ease;
-    width: 28px;
-  }
-
-  :global(.modal-close-btn:hover) {
-    background-color: var(--font-controls-bg);
-    color: var(--text-title);
-  }
-
-  :global(.modal-body) {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 1.5rem;
-  }
-
-  @keyframes modalFadeIn {
-    0% {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-</style>
+</Modal>

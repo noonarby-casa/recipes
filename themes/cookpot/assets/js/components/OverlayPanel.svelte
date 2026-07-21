@@ -4,7 +4,7 @@
   import { timersStore } from '../stores/timers';
   import TimersManager from './TimersManager.svelte';
 
-  const state = $derived($overlayStore);
+  const overlayState = $derived($overlayStore);
 
   let dashboardFabEl = $state<HTMLButtonElement | null>(null);
   let backFabEl = $state<HTMLButtonElement | null>(null);
@@ -23,11 +23,11 @@
 
   // Replicate the focus shifts from the old OverlayContainer class when minimized state changes
   $effect(() => {
-    const minimized = state.isMinimized;
+    const minimized = overlayState.isMinimized;
     if (minimized) {
-      if (state.hasDashboard && dashboardFabEl) {
+      if (overlayState.hasDashboard && dashboardFabEl) {
         dashboardFabEl.focus();
-      } else if (state.backHref && backFabEl) {
+      } else if (overlayState.backHref && backFabEl) {
         backFabEl.focus();
       }
     } else {
@@ -72,7 +72,7 @@
   });
 
   function handleKeyDown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && !state.isMinimized && $overlayVisible) {
+    if (e.key === 'Escape' && !overlayState.isMinimized && $overlayVisible) {
       overlayStore.minimize();
     }
   }
@@ -81,15 +81,15 @@
 <svelte:window onkeydown={handleKeyDown} />
 
 {#if $overlayVisible}
-  <div id="overlay-container" class="overlay-container" class:is-minimized={state.isMinimized}>
+  <div id="overlay-container" class="overlay-container" class:is-minimized={overlayState.isMinimized}>
     <button
       type="button"
       class="overlay-toggle-btn"
-      aria-label={state.isMinimized ? 'Expand overlay' : 'Minimize overlay'}
-      aria-expanded={!state.isMinimized}
+      aria-label={overlayState.isMinimized ? 'Expand overlay' : 'Minimize overlay'}
+      aria-expanded={!overlayState.isMinimized}
       onclick={() => overlayStore.toggle()}
     >
-      {#if state.isMinimized}
+      {#if overlayState.isMinimized}
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -101,7 +101,7 @@
       {/if}
     </button>
 
-    {#if state.hasDashboard}
+    {#if overlayState.hasDashboard}
       <button
         bind:this={dashboardFabEl}
         type="button"
@@ -121,14 +121,14 @@
       </button>
     {/if}
 
-    {#if state.backHref}
+    {#if overlayState.backHref}
       <button
         bind:this={backFabEl}
         type="button"
         class="minimized-fab fab-back"
         aria-label="Back to Meal Plan"
         data-tooltip="Back to Meal Plan"
-        onclick={() => { window.location.href = state.backHref!; }}
+        onclick={() => { window.location.href = overlayState.backHref!; }}
       >
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -136,9 +136,9 @@
         </svg>
       </button>
       <a
-        href={state.backHref}
+        href={overlayState.backHref}
         class="plan-back-btn btn-brand"
-        class:hidden={state.isMinimized}
+        class:hidden={overlayState.isMinimized}
       >
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>

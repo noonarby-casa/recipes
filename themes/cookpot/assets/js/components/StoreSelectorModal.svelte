@@ -5,6 +5,7 @@
     getActiveStoreLayoutId,
     setActiveStoreLayoutId,
   } from '../shopping-list/store-sections';
+  import Modal from './Modal.svelte';
 
   let isOpen = $state(false);
   let activeId = $state(getActiveStoreLayoutId());
@@ -22,14 +23,6 @@
     isOpen = false;
   }
 
-  function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) {close();}
-  }
-
-  function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') {close();}
-  }
-
   onMount(() => {
     const btn = document.getElementById('header-store-btn');
     const handleOpen = (e: Event) => {
@@ -42,43 +35,45 @@
   });
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<Modal
+  {isOpen}
+  onClose={close}
+  backdropClass="store-modal-backdrop"
+  contentClass="store-modal-content"
+  ariaLabel="Store Layout"
+>
+  {#snippet header()}
+    <div class="store-modal-header">
+      <h3 class="store-modal-title">Store Layout</h3>
+      <button
+        type="button"
+        class="store-modal-close-btn"
+        aria-label="Close modal"
+        onclick={close}
+      >×</button>
+    </div>
+  {/snippet}
 
-{#if isOpen}
-  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-  <div class="store-modal-backdrop" onclick={handleBackdropClick}>
-    <div class="store-modal-content" role="dialog" aria-modal="true" aria-label="Store Layout">
-      <div class="store-modal-header">
-        <h3 class="store-modal-title">Store Layout</h3>
+  <div class="store-modal-body">
+    <span class="store-selector-label">Choose your layout route:</span>
+    <div class="store-layout-options">
+      {#each STORE_LAYOUTS as layout (layout.id)}
         <button
           type="button"
-          class="store-modal-close-btn"
-          aria-label="Close modal"
-          onclick={close}
-        >×</button>
-      </div>
-      <div class="store-modal-body">
-        <span class="store-selector-label">Choose your layout route:</span>
-        <div class="store-layout-options">
-          {#each STORE_LAYOUTS as layout (layout.id)}
-            <button
-              type="button"
-              class="store-layout-option-btn"
-              class:active={layout.id === activeId}
-              class:btn-brand={layout.id === activeId}
-              onclick={() => selectLayout(layout.id)}
-            >
-              {layout.name}
-            </button>
-          {/each}
-        </div>
-      </div>
+          class="store-layout-option-btn"
+          class:active={layout.id === activeId}
+          class:btn-brand={layout.id === activeId}
+          onclick={() => selectLayout(layout.id)}
+        >
+          {layout.name}
+        </button>
+      {/each}
     </div>
   </div>
-{/if}
+</Modal>
 
 <style>
-  .store-modal-backdrop {
+  :global(.store-modal-backdrop) {
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
     bottom: 0;
@@ -91,7 +86,7 @@
     z-index: 1000;
   }
 
-  .store-modal-content {
+  :global(.store-modal-content) {
     animation: modalFadeIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     background-color: var(--card-bg);
     border: 1px solid var(--border-subtle);

@@ -5,6 +5,7 @@
   import { plannerStore } from '../stores/planner';
   import { scrollable } from '../actions/scrollable';
   import BrowseCard from './BrowseCard.svelte';
+  import Modal from './Modal.svelte';
 
 
   interface Props {
@@ -117,12 +118,6 @@
     }, 10);
   }
 
-  function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  }
-
   const DAY_NAMES: Record<string, string> = {
     sun: 'Sunday',
     mon: 'Monday',
@@ -142,74 +137,75 @@
   let plannedPermalinks = $derived(new Set($plannerStore.plan.map((p) => p.permalink)));
 </script>
 
-{#if isOpen}
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="planner-modal-backdrop" onclick={handleBackdropClick} style="display: flex;">
-    <div class="planner-modal-content">
-      <div
-        class="planner-modal-header"
-        style="flex-direction: column; align-items: flex-start; gap: 0.25rem;"
-      >
-        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-          <h3 style="margin: 0;">{titleDay}</h3>
-          <button
-            type="button"
-            class="modal-close-btn"
-            aria-label="Close modal"
-            style="margin: 0;"
-            onclick={onClose}
-          >
-            ✕
-          </button>
-        </div>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">
-          Click on a recipe to add it to the plan.
-        </span>
+<Modal
+  {isOpen}
+  {onClose}
+  backdropClass="planner-modal-backdrop"
+  contentClass="planner-modal-content"
+>
+  {#snippet header()}
+    <div
+      class="planner-modal-header"
+      style="flex-direction: column; align-items: flex-start; gap: 0.25rem;"
+    >
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h3 style="margin: 0;">{titleDay}</h3>
+        <button
+          type="button"
+          class="modal-close-btn"
+          aria-label="Close modal"
+          style="margin: 0;"
+          onclick={onClose}
+        >
+          ✕
+        </button>
       </div>
-
-      {#if filtersNotice}
-        <div class="modal-tags-notice" style="display: block;">
-          {filtersNotice}
-        </div>
-      {/if}
-
-      <div class="modal-search-wrapper">
-        <input
-          type="text"
-          bind:this={searchInput}
-          bind:value={searchQuery}
-          onkeydown={handleKeydown}
-          placeholder="Search available recipes by title..."
-          autocomplete="off"
-        />
-      </div>
-
-      <div
-        bind:this={shelfElement}
-        class="planner-browse-shelf scrollable-area"
-        use:scrollable
-        tabindex="0"
-        role="region"
-        aria-label="Available Recipes Shelf"
-      >
-        {#if filteredRecipes.length === 0}
-          <div class="planner-empty-state" style="margin-top: 1rem;">
-            {searchQuery.trim() ? 'No matching recipes found' : 'No recipes found'}
-          </div>
-        {:else}
-          {#each filteredRecipes as r, idx}
-            {@const isPlanned = plannedPermalinks.has(r.permalink)}
-            <div class={idx === keyboardFocusedIndex ? 'keyboard-focused' : ''} style="display: contents;">
-              <BrowseCard
-                recipe={r}
-                isPlanned={isPlanned}
-                onAdd={() => onSelect(r.permalink)}
-              />
-            </div>
-          {/each}
-        {/if}
-      </div>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">
+        Click on a recipe to add it to the plan.
+      </span>
     </div>
-  </div>
-{/if}
+  {/snippet}
+
+  {#if filtersNotice}
+      <div class="modal-tags-notice" style="display: block;">
+        {filtersNotice}
+      </div>
+    {/if}
+
+    <div class="modal-search-wrapper">
+      <input
+        type="text"
+        bind:this={searchInput}
+        bind:value={searchQuery}
+        onkeydown={handleKeydown}
+        placeholder="Search available recipes by title..."
+        autocomplete="off"
+      />
+    </div>
+
+    <div
+      bind:this={shelfElement}
+      class="planner-browse-shelf scrollable-area"
+      use:scrollable
+      tabindex="0"
+      role="region"
+      aria-label="Available Recipes Shelf"
+    >
+      {#if filteredRecipes.length === 0}
+        <div class="planner-empty-state" style="margin-top: 1rem;">
+          {searchQuery.trim() ? 'No matching recipes found' : 'No recipes found'}
+        </div>
+      {:else}
+        {#each filteredRecipes as r, idx}
+          {@const isPlanned = plannedPermalinks.has(r.permalink)}
+          <div class={idx === keyboardFocusedIndex ? 'keyboard-focused' : ''} style="display: contents;">
+            <BrowseCard
+              recipe={r}
+              isPlanned={isPlanned}
+              onAdd={() => onSelect(r.permalink)}
+            />
+          </div>
+        {/each}
+      {/if}
+    </div>
+</Modal>
