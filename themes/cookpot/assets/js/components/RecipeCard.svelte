@@ -1,6 +1,10 @@
 <script lang="ts">
   import type { Recipe } from '../types';
   import { favoritesStore } from '../stores/favorites';
+  import HeartIcon from './icons/HeartIcon.svelte';
+  import CalendarIcon from './icons/CalendarIcon.svelte';
+  import ClockIcon from './icons/ClockIcon.svelte';
+  import UserIcon from './icons/UserIcon.svelte';
 
   interface Props {
     /** The recipe data to display in the card. */
@@ -54,16 +58,7 @@
           data-short-id={recipe.shortId}
           title="Favorited recipe"
         >
-          <svg
-            class="heart-icon-badge"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            stroke="none"
-          >
-            <path
-              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-            ></path>
-          </svg>
+          <HeartIcon fill="currentColor" color="none" class="heart-icon-badge" />
         </div>
       {/if}
     </div>
@@ -80,22 +75,7 @@
       <div class="recipe-metadata-items">
         {#if recipe.dateHuman}
           <div class="recipe-meta-item recipe-date">
-            <svg
-              class="date-icon"
-              viewBox="0 0 24 24"
-              width="14"
-              height="14"
-              stroke="currentColor"
-              stroke-width="2.5"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
+            <CalendarIcon size={14} strokeWidth={2.5} class="date-icon" />
             <time datetime={recipe.dateMachine} class="recipe-list-date"
               >{recipe.dateHuman}</time
             >
@@ -103,20 +83,7 @@
         {/if}
         {#if recipe.times && recipe.times.length > 0}
           <div class="recipe-meta-item recipe-time">
-            <svg
-              class="time-icon"
-              viewBox="0 0 24 24"
-              width="14"
-              height="14"
-              stroke="currentColor"
-              stroke-width="2.5"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
+            <ClockIcon size={14} strokeWidth={2.5} class="time-icon" />
             <span>
               {#each recipe.times as t, index}
                 {#if index > 0}{" + "}{/if}
@@ -126,20 +93,7 @@
           </div>
         {/if}
         <div class="recipe-meta-item recipe-source">
-          <svg
-            class="source-icon"
-            viewBox="0 0 24 24"
-            width="14"
-            height="14"
-            stroke="currentColor"
-            stroke-width="2.5"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
+          <UserIcon size={14} strokeWidth={2.5} class="source-icon" />
           <span>{recipe.recipeSource || 'Noonarby'}</span>
         </div>
       </div>

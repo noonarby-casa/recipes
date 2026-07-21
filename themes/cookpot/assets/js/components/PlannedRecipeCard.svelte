@@ -4,6 +4,8 @@
   import type { PlannedItem } from '../types';
   import { formatItemQuantity } from '../units';
   import PortionPicker from './PortionPicker.svelte';
+  import SwapIcon from './icons/SwapIcon.svelte';
+  import EditIcon from './icons/EditIcon.svelte';
 
   interface Props {
     /** The planned item (recipe or custom food item) to display. */
@@ -71,15 +73,11 @@
         <div class="recipe-card-controls">
           {#if rec}
             <button type="button" class="recipe-swap-btn" onclick={onSwap} title="Swap recipe">
-              <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/>
-              </svg>
+              <SwapIcon size={12} strokeWidth={2.5} />
             </button>
           {/if}
           <button type="button" class="recipe-edit-details-btn" onclick={onEditDetails} title="Edit details">
-            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
+            <EditIcon size={12} strokeWidth={2.5} />
           </button>
           <button type="button" class="recipe-remove-btn" onclick={onRemove} title="Remove recipe">✕</button>
           <div class="recipe-drag-handle">⠿</div>

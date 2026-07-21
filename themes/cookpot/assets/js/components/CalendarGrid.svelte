@@ -6,6 +6,7 @@
   import DayColumn from './DayColumn.svelte';
   import PlannedRecipeCard from './PlannedRecipeCard.svelte';
   import DietBreakdownPanel from './DietBreakdownPanel.svelte';
+  import TrashIcon from './icons/TrashIcon.svelte';
 
   interface Props {
     /** Whether the meal planner is currently in edit mode (allowing adding/moving/removing/editing recipes). */
@@ -137,19 +138,7 @@
       }
     }}
   >
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      stroke="currentColor"
-      stroke-width="2"
-      fill="none"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <polyline points="3 6 5 6 21 6"></polyline>
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    </svg>
+    <TrashIcon size={20} strokeWidth={2} />
     <span>Drop here to delete</span>
   </div>
 

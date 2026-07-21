@@ -16,6 +16,8 @@
   import { formatItemQuantity } from '../units';
   import { STORE_LAYOUTS } from '../shopping-list/store-sections';
   import ToggleGroup from './ToggleGroup.svelte';
+  import SearchIcon from './icons/SearchIcon.svelte';
+  import DiceIcon from './icons/DiceIcon.svelte';
 
   let isFiltersModalOpen = $state(false);
   let activeAddDay = $state<string | null>(null);
@@ -569,9 +571,7 @@
       class="planner-btn-secondary"
       onclick={() => isFiltersModalOpen = true}
     >
-      <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
+      <SearchIcon size={14} strokeWidth={2.5} />
       Filters
     </button>
     <button
@@ -580,9 +580,7 @@
       class="planner-btn-primary btn-brand"
       onclick={handleGenerateDinnerPlan}
     >
-      <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"></circle><circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"></circle>
-      </svg>
+      <DiceIcon size={14} strokeWidth={2.5} />
       Generate Dinner Plan
     </button>
     <button type="button" id="btn-clear-plan" class="planner-clear-btn" onclick={() => plannerStore.clearPlan()}>

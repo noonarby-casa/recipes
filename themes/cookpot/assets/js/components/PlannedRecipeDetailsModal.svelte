@@ -8,6 +8,8 @@
   import { parseRawUserInput } from '../simple-parser';
   import { assembleIngredientText } from '../shopping-list/utils';
   import Modal from './Modal.svelte';
+  import HeartIcon from './icons/HeartIcon.svelte';
+  import EditIcon from './icons/EditIcon.svelte';
 
   interface Props {
     /** Whether the details editor modal is open and visible. */
@@ -151,16 +153,7 @@
             aria-pressed={isFav ? 'true' : 'false'}
             title="Favorite recipe"
           >
-            <svg
-              class="heart-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
+            <HeartIcon class="heart-icon" />
           </button>
         {/if}
       </div>
@@ -180,10 +173,7 @@
               <span>{formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{fullItem}</span>
               <div class="extras-actions">
                 <button type="button" onclick={() => handleEditExtra(idx)} title="Edit side" class="action-btn edit-btn">
-                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                  </svg>
+                  <EditIcon size={14} strokeWidth={2.5} />
                 </button>
                 <button type="button" onclick={() => handleRemoveExtra(idx)} class="action-btn remove-btn">✕</button>
               </div>

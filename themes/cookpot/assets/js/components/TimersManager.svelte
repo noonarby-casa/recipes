@@ -3,6 +3,9 @@
   import { timersStore } from '../stores/timers';
   import type { TimerState } from '../types';
   import { overlayStore } from '../stores/overlay';
+  import PlayIcon from './icons/PlayIcon.svelte';
+  import PauseIcon from './icons/PauseIcon.svelte';
+  import ResetIcon from './icons/ResetIcon.svelte';
 
   let recipeUrl = $state('');
 
@@ -116,13 +119,9 @@
                     aria-label={t.status === 'running' ? 'Pause' : 'Play'}
                   >
                     {#if t.status === 'running'}
-                      <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>
-                      </svg>
+                      <PauseIcon size={12} strokeWidth={2.5} />
                     {:else}
-                      <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                      </svg>
+                      <PlayIcon size={12} strokeWidth={2.5} />
                     {/if}
                   </button>
                   <button
@@ -131,9 +130,7 @@
                     onclick={() => handleReset(t)}
                     aria-label="Reset"
                   >
-                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                    </svg>
+                    <ResetIcon size={12} strokeWidth={2.5} />
                   </button>
                   <button
                     type="button"
@@ -319,7 +316,7 @@
     color: var(--text-color);
   }
 
-  .dashboard-timer-btn svg {
+  .dashboard-timer-btn :global(svg) {
     display: block;
   }
 </style>

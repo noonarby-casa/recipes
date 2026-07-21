@@ -3,6 +3,10 @@
   import { overlayStore, overlayVisible } from '../stores/overlay';
   import { timersStore } from '../stores/timers';
   import TimersManager from './TimersManager.svelte';
+  import PlusIcon from './icons/PlusIcon.svelte';
+  import MinusIcon from './icons/MinusIcon.svelte';
+  import ClockIcon from './icons/ClockIcon.svelte';
+  import ArrowLeftIcon from './icons/ArrowLeftIcon.svelte';
 
   const overlayState = $derived($overlayStore);
 
@@ -90,14 +94,9 @@
       onclick={() => overlayStore.toggle()}
     >
       {#if overlayState.isMinimized}
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+        <PlusIcon size={16} strokeWidth={2.5} />
       {:else}
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+        <MinusIcon size={16} strokeWidth={2.5} />
       {/if}
     </button>
 
@@ -113,11 +112,7 @@
         data-tooltip="Restore Cooking Dashboard"
         onclick={() => overlayStore.expand()}
       >
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polyline points="12 6 12 12 16 14"></polyline>
-          <line x1="12" y1="2" x2="12" y2="4"></line>
-        </svg>
+        <ClockIcon size={20} strokeWidth={2.5} showTopButton={true} />
       </button>
     {/if}
 
@@ -130,20 +125,14 @@
         data-tooltip="Back to Meal Plan"
         onclick={() => { window.location.href = overlayState.backHref!; }}
       >
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
+        <ArrowLeftIcon size={20} strokeWidth={2.5} />
       </button>
       <a
         href={overlayState.backHref}
         class="plan-back-btn btn-brand"
         class:hidden={overlayState.isMinimized}
       >
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
+        <ArrowLeftIcon size={16} strokeWidth={2.5} />
         <span>Back to Meal Plan</span>
       </a>
     {/if}
@@ -213,7 +202,7 @@
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
-  .minimized-fab svg {
+  .minimized-fab :global(svg) {
     transition: transform 0.2s ease;
   }
 
@@ -222,7 +211,7 @@
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
   }
 
-  .minimized-fab:hover svg {
+  .minimized-fab:hover :global(svg) {
     transform: scale(1.1);
   }
 

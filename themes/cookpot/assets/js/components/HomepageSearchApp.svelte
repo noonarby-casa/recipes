@@ -6,6 +6,10 @@
   import RecipeCard from './RecipeCard.svelte';
   import FiltersModal from './FiltersModal.svelte';
   import { PRIMARY_TAGS } from '../constants';
+  import SearchIcon from './icons/SearchIcon.svelte';
+  import XIcon from './icons/XIcon.svelte';
+  import HeartIcon from './icons/HeartIcon.svelte';
+  import FilterIcon from './icons/FilterIcon.svelte';
 
   let hasHydrated = $state(false);
   let isFiltersOpen = $state(false);
@@ -185,20 +189,7 @@
 {#if hasHydrated}
   <div class="recipe-search-container">
     <div class="recipe-search-box">
-      <svg
-        class="search-icon"
-        viewBox="0 0 24 24"
-        width="18"
-        height="18"
-        stroke="currentColor"
-        stroke-width="2.5"
-        fill="none"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
+      <SearchIcon size={18} strokeWidth={2.5} class="search-icon" />
       <input
         type="search"
         id="recipe-search-input-hydrated"
@@ -215,9 +206,7 @@
           aria-label="Clear search"
           onclick={() => filtersStore.update(f => ({ ...f, searchQuery: '' }))}
         >
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+          <XIcon size={16} strokeWidth={2.5} />
         </button>
       {/if}
     </div>
@@ -227,14 +216,7 @@
         class="tag-filter-pill favorites-pill {$filtersStore.favoritesOnly ? 'include' : ''}"
         onclick={() => filtersStore.update(f => ({ ...f, favoritesOnly: !f.favoritesOnly }))}
       >
-        <svg
-          class="heart-icon-badge"
-          viewBox="0 0 24 24"
-          width="11"
-          height="11"
-        >
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-        </svg>
+        <HeartIcon size={11} fill="currentColor" color="none" class="heart-icon-badge" />
         <span>Favorites</span>
       </button>
       <div class="primary-tags-wrapper">
@@ -251,9 +233,7 @@
         {/each}
       </div>
       <button type="button" class="btn-more-filters" onclick={() => isFiltersOpen = true}>
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-        </svg>
+        <FilterIcon size={14} strokeWidth={2.5} />
         Filters
       </button>
     </div>
@@ -285,7 +265,7 @@
     display: inline-flex;
     align-items: center;
   }
-  .heart-icon-badge {
+  :global(.heart-icon-badge) {
     margin-right: 4px;
     fill: currentColor;
     stroke: none;

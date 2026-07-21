@@ -2,6 +2,9 @@
   import { onMount } from 'svelte';
   import { timersStore } from '../stores/timers';
   import type { TimerState } from '../types';
+  import PlayIcon from './icons/PlayIcon.svelte';
+  import PauseIcon from './icons/PauseIcon.svelte';
+  import ResetIcon from './icons/ResetIcon.svelte';
 
   interface Props {
     /** The raw duration string (e.g., '10m', '1-2h', '15-20 mins'). */
@@ -156,13 +159,9 @@
 >
   <span class="timer-icon">
     {#if isRunning}
-      <svg class="timer-svg-icon timer-pause-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>
-      </svg>
+      <PauseIcon size={14} strokeWidth={2.5} class="timer-svg-icon timer-pause-icon" />
     {:else}
-      <svg class="timer-svg-icon timer-play-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-      </svg>
+      <PlayIcon size={14} strokeWidth={2.5} class="timer-svg-icon timer-play-icon" />
     {/if}
   </span>
   <span class="timer-label">{labelText}</span>
@@ -175,7 +174,5 @@
   aria-label="Reset timer"
   title="Reset timer"
 >
-  <svg class="timer-svg-icon timer-reset-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-  </svg>
+  <ResetIcon size={14} strokeWidth={2.5} class="timer-svg-icon timer-reset-icon" />
 </button>
