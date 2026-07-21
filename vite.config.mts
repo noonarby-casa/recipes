@@ -3,6 +3,7 @@ import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 
 export default defineConfig({
+  publicDir: false,
   plugins: [
     svelte({
       preprocess: vitePreprocess(),
