@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PlannedItem } from '../types';
   import { plannerStore } from '../stores/planner';
-  import PlannedRecipeCard from './PlannedRecipeCard.svelte';
+  import RecipeCard from './RecipeCard.svelte';
   import { recipesStore } from '../stores/recipes';
 
   interface Props {
@@ -132,8 +132,9 @@
         ondragleave={handleDragLeave}
         ondrop={(e) => { e.stopPropagation(); handleDrop(e, item); }}
       >
-        <PlannedRecipeCard
+        <RecipeCard
           {item}
+          variant="planner"
           {editMode}
           onRemove={() => plannerStore.removeRecipe(item.instanceId)}
           onSwap={() => onSwapRecipe(item)}

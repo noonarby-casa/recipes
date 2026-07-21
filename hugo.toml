@@ -2,6 +2,7 @@ baseURL = 'https://recipes.noonarby.casa/'
 locale = 'en-us'
 title = 'Recipes'
 theme = 'cookpot'
+disableKinds = ["taxonomy", "term"]
 
 [pagination]
   pagerSize = 10

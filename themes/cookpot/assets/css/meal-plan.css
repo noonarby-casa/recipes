@@ -477,8 +477,9 @@ a.planned-recipe-item {
 }
 
 .recipe-card-media-wrapper {
+  aspect-ratio: 1 / 1;
   background-color: var(--image-bg);
-  height: 80px;
+  height: auto;
   position: relative;
   width: 100%;
 }
@@ -570,9 +571,9 @@ a.planned-recipe-item {
   align-items: center;
   background-color: var(--font-controls-bg);
   border: 1px solid var(--border-ultra-subtle);
-  border-radius: 12px;
+  border-radius: 10px;
   display: inline-flex;
-  padding: 1px;
+  padding: 2px;
 }
 
 .portion-btn {
@@ -583,12 +584,12 @@ a.planned-recipe-item {
   color: var(--font-btn-text);
   cursor: pointer;
   display: inline-flex;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  height: 20px;
+  height: 28px;
   justify-content: center;
   transition: all 0.2s ease;
-  width: 20px;
+  width: 28px;
 }
 
 .portion-btn:hover {
@@ -607,28 +608,26 @@ a.planned-recipe-item {
 
 .recipe-remove-btn {
   align-items: center;
-  background: rgba(0, 0, 0, 0.6);
-  border: none;
-  border-radius: 50%;
-  color: #fff;
+  background: var(--font-controls-bg);
+  border: 1px solid var(--border-ultra-subtle);
+  border-radius: 8px;
+  color: var(--font-btn-text);
   cursor: pointer;
   display: inline-flex;
   font-size: 0.85rem;
-  height: 22px;
+  height: 32px;
   justify-content: center;
   line-height: 1;
   padding: 0;
-  position: absolute;
-  right: 6px;
-  top: 6px;
+  position: relative;
   transition: all 0.2s ease;
-  width: 22px;
-  z-index: 10;
+  width: 32px;
 }
 
 .recipe-remove-btn:hover {
-  background-color: #ff3b30;
-  color: #fff;
+  background-color: rgba(255, 59, 48, 0.15);
+  border-color: #ff3b30;
+  color: #ff3b30;
 }
 
 /* Drag-and-drop dragging active styles */
@@ -1002,12 +1001,12 @@ a.planned-recipe-item {
   }
 
   .planned-recipes-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 0.75rem;
   }
 
   .planned-recipes-grid.grid-5day {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
 
@@ -1040,67 +1039,16 @@ a.planned-recipe-item {
     padding: 0.75rem 1rem;
   }
 
-  /* Horizontal row layout for daily calendar recipe cards and touch drag mirror */
-  .day-recipes-list .planned-recipe-item,
-  .planned-recipe-item.dragging-mirror {
-    align-items: stretch;
-    display: grid;
-    grid-template-areas:
-      'media body'
-      'media footer';
-    grid-template-columns: 90px 1fr;
-    min-height: 90px;
+  /* Unified vertical recipe card layout in day columns */
+  .day-recipes-list .recipe-card-unified {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
   }
 
-  .day-recipes-list .planned-recipe-item.view-mode-card {
-    grid-template-areas: 'media body';
-    grid-template-rows: 1fr;
-  }
-
-  .day-recipes-list .recipe-card-media-wrapper,
-  .planned-recipe-item.dragging-mirror .recipe-card-media-wrapper {
-    grid-area: media;
-    height: 100%;
-    position: static;
-    width: 90px;
-  }
-
-  .day-recipes-list .recipe-card-body,
-  .planned-recipe-item.dragging-mirror .recipe-card-body {
-    grid-area: body;
-    padding: 0.6rem 3.5rem 0.25rem 0.75rem; /* Space on right for absolute-positioned buttons */
-  }
-
-  .day-recipes-list .planned-recipe-item.view-mode-card .recipe-card-body {
-    padding-right: 0.75rem;
-  }
-
-  .day-recipes-list .recipe-card-title,
-  .planned-recipe-item.dragging-mirror .recipe-card-title {
+  .day-recipes-list .recipe-card-title {
     font-size: 0.85rem;
     line-height: 1.3;
-  }
-
-  .day-recipes-list .recipe-card-footer,
-  .planned-recipe-item.dragging-mirror .recipe-card-footer {
-    align-items: center;
-    gap: 0.5rem;
-    grid-area: footer;
-    justify-content: flex-start;
-    padding: 0.25rem 0.75rem 0.6rem 0.75rem;
-  }
-
-  /* Position card action buttons relative to the card container */
-  .day-recipes-list .planned-recipe-item .recipe-remove-btn,
-  .planned-recipe-item.dragging-mirror .recipe-remove-btn {
-    right: 8px;
-    top: 8px;
-  }
-
-  .day-recipes-list .planned-recipe-item .recipe-swap-btn,
-  .planned-recipe-item.dragging-mirror .recipe-swap-btn {
-    right: 34px;
-    top: 8px;
   }
 
   .day-recipes-list .planned-recipe-item .recipe-drag-handle,
@@ -1165,31 +1113,28 @@ a.planned-recipe-item {
 
 /* Primary generate button */
 
-/* Card swap button */
 .recipe-swap-btn {
   align-items: center;
-  background: rgba(0, 0, 0, 0.6);
-  border: none;
-  border-radius: 50%;
-  color: #fff;
+  background: var(--font-controls-bg);
+  border: 1px solid var(--border-ultra-subtle);
+  border-radius: 8px;
+  color: var(--font-btn-text);
   cursor: pointer;
   display: inline-flex;
-  font-size: 0.75rem;
-  height: 22px;
+  font-size: 0.85rem;
+  height: 32px;
   justify-content: center;
   line-height: 1;
   padding: 0;
-  position: absolute;
-  right: 32px;
-  top: 6px;
+  position: relative;
   transition: all 0.2s ease;
-  width: 22px;
-  z-index: 10;
+  width: 32px;
 }
 
 .recipe-swap-btn:hover {
-  background-color: var(--btn-brand-bg);
-  color: #fff;
+  background-color: var(--noonblue-bg-light);
+  border-color: var(--noonblue);
+  color: var(--noonblue);
 }
 
 /* Supplemental Anytime tray */
@@ -1326,54 +1271,6 @@ a.planned-recipe-item {
 
 .plan-toast-notification .toast-close-btn:hover {
   color: var(--text-color);
-}
-
-/* Card buttons controls section */
-.recipe-card-controls {
-  display: flex;
-  gap: 0.35rem;
-  align-items: center;
-}
-
-.recipe-card-controls .recipe-remove-btn,
-.recipe-card-controls .recipe-swap-btn,
-.recipe-card-controls .recipe-edit-details-btn {
-  position: static !important;
-  align-items: center;
-  background: var(--font-controls-bg);
-  border: 1px solid var(--border-ultra-subtle);
-  border-radius: 6px;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 0.8rem;
-  height: 26px;
-  width: 26px;
-  justify-content: center;
-  line-height: 1;
-  padding: 0;
-  transition: all 0.2s ease;
-  z-index: auto;
-}
-
-.recipe-card-controls .recipe-remove-btn:hover {
-  background-color: #fff0f0 !important;
-  color: #ff3b30 !important;
-  border-color: #ffcdd2 !important;
-}
-
-.recipe-card-controls .recipe-swap-btn:hover,
-.recipe-card-controls .recipe-edit-details-btn:hover {
-  background-color: var(--noonblue-bg-light) !important;
-  color: var(--noonblue) !important;
-  border-color: var(--noonblue-border-light) !important;
-}
-
-@media (max-width: 767px) {
-  .day-recipes-list .recipe-card-body,
-  .planned-recipe-item.dragging-mirror .recipe-card-body {
-    padding-right: 0.75rem !important;
-  }
 }
 
 /* Extra Ingredients on Cards styling */

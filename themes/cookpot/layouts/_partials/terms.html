@@ -16,7 +16,11 @@
     <div>{{ $label }}:</div>
     <ul>
       {{- range . }}
-        <li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
+        <li>
+          <a href="{{ site.Home.RelPermalink }}?tag={{ .LinkTitle | lower }}"
+            >{{ .LinkTitle }}</a
+          >
+        </li>
       {{- end }}
     </ul>
   </div>

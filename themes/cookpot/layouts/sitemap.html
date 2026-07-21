@@ -175,16 +175,11 @@
                       {{- with .Params.tags -}}
                         <div class="sitemap-recipe-tags">
                           {{- range . -}}
-                            {{- $tagPage := site.GetPage (printf "/tags/%s" (. | urlize)) -}}
-                            {{- if $tagPage -}}
-                              <a
-                                href="{{ $tagPage.RelPermalink }}"
-                                class="sitemap-tag-pill"
-                                >{{ . }}</a
-                              >
-                            {{- else -}}
-                              <span class="sitemap-tag-pill">{{ . }}</span>
-                            {{- end -}}
+                            <a
+                              href="{{ site.Home.RelPermalink }}?tag={{ . | lower }}"
+                              class="sitemap-tag-pill"
+                              >{{ . }}</a
+                            >
                           {{- end -}}
                         </div>
                       {{- end -}}

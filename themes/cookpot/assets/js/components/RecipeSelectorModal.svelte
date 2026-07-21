@@ -4,7 +4,7 @@
   import { favoritesStore } from '../stores/favorites';
   import { plannerStore } from '../stores/planner';
   import { scrollable } from '../actions/scrollable';
-  import BrowseCard from './BrowseCard.svelte';
+  import RecipeCard from './RecipeCard.svelte';
   import Modal from './Modal.svelte';
 
 
@@ -195,10 +195,11 @@
         {#each filteredRecipes as r, idx}
           {@const isPlanned = plannedPermalinks.has(r.permalink)}
           <div class="card-wrapper {idx === keyboardFocusedIndex ? 'keyboard-focused' : ''}">
-            <BrowseCard
+            <RecipeCard
               recipe={r}
-              isPlanned={isPlanned}
-              onAdd={() => onSelect(r.permalink)}
+              variant="compact"
+              {isPlanned}
+              onClick={() => onSelect(r.permalink)}
             />
           </div>
         {/each}

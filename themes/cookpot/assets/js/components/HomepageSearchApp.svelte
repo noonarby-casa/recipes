@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { recipesStore } from '../stores/recipes';
   import { favoritesStore } from '../stores/favorites';
   import { filtersStore } from '../stores/filters';
@@ -143,8 +143,54 @@
       });
     }
 
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const hasFilterParams =
+        params.has('tag') ||
+        params.has('tags') ||
+        params.has('q') ||
+        params.has('query') ||
+        params.has('search') ||
+        params.has('source') ||
+        params.has('sources') ||
+        params.has('favorites') ||
+        params.has('favorite');
+
+      if (hasFilterParams) {
+        hydrate().then(async () => {
+          if (params.get('search') === 'focus') {
+            await tick();
+            const hydratedInput = document.getElementById('recipe-search-input-hydrated') as HTMLInputElement | null;
+            if (hydratedInput) {
+              hydratedInput.focus();
+            }
+          }
+        });
+      }
+    }
+
+    // Automatic background hydration during browser idle time
+    let idleId: number | undefined;
+    let timerId: ReturnType<typeof setTimeout> | undefined;
+
+    if ('requestIdleCallback' in window) {
+      idleId = window.requestIdleCallback(() => {
+        hydrate();
+      }, { timeout: 1500 });
+    } else {
+      timerId = setTimeout(() => {
+        hydrate();
+      }, 500);
+    }
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (idleId !== undefined && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timerId !== undefined) {
+        clearTimeout(timerId);
+      }
     };
   });
 

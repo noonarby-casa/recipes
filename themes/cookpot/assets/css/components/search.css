@@ -1,0 +1,127 @@
+/* Search Component Styling */
+
+.recipe-search-container {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.recipe-search-box {
+  align-items: center;
+  background: var(--btn-bg);
+  border: 1.5px solid var(--btn-border);
+  border-radius: 12px;
+  box-shadow: var(--btn-shadow);
+  display: flex;
+  padding: 0.25rem 0.75rem;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.recipe-search-box:focus-within {
+  border-color: var(--noonblue-border-hover);
+  box-shadow: 0 6px 18px var(--noonblue-shadow-subtle);
+}
+
+.search-icon {
+  color: var(--text-muted);
+  display: block;
+  flex-shrink: 0;
+  margin-right: 0.65rem;
+  transition: color 0.2s ease;
+}
+
+.recipe-search-box:focus-within .search-icon {
+  color: var(--noonblue);
+}
+
+.recipe-search-input {
+  background: transparent;
+  border: none;
+  color: var(--text-title);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  padding: 0.55rem 0;
+  width: 100%;
+}
+
+.recipe-search-input::placeholder {
+  color: var(--search-placeholder);
+}
+
+/* Remove default cross icon in IE/Edge and Chrome */
+.recipe-search-input::-webkit-search-cancel-button,
+.recipe-search-input::-webkit-search-decoration,
+.recipe-search-input::-webkit-search-results-button,
+.recipe-search-input::-webkit-search-results-decoration {
+  display: none;
+}
+
+.search-clear-btn {
+  align-items: center;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  margin-left: 0.5rem;
+  padding: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.search-clear-btn:hover {
+  background-color: var(--tag-bg);
+  color: var(--text-title);
+}
+
+.search-clear-btn svg {
+  display: block;
+}
+
+.search-results-info {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  font-size: 0.9rem;
+  font-weight: 500;
+  justify-content: space-between;
+  margin-top: 0.85rem;
+  padding: 0 0.25rem;
+}
+
+.search-results-clear-link {
+  color: var(--noonblue);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.search-results-clear-link:hover {
+  color: var(--noonblue);
+  text-decoration: underline;
+}
+
+.search-no-results {
+  background: var(--btn-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  box-sizing: border-box;
+  color: var(--text-muted);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.search-no-results h3 {
+  color: var(--text-color);
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.search-no-results p {
+  font-size: 0.95rem;
+  margin: 0;
+}

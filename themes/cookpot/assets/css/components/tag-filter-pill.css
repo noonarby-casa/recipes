@@ -1,0 +1,82 @@
+/* Tag Filter Pill & Homepage Tags Bar */
+
+.homepage-tags-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.primary-tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex-grow: 1;
+}
+
+.primary-tags-wrapper .tag-filter-pill {
+  background: var(--tag-bg);
+  border: 1px solid var(--border-ultra-subtle);
+  border-radius: 20px;
+  color: var(--tag-text);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.primary-tags-wrapper .tag-filter-pill:hover {
+  background: var(--noonblue-btn-hover-bg);
+  border-color: var(--noonblue-border-hover);
+  color: var(--noonblue);
+}
+
+.tag-filter-pill.include {
+  background: var(--noonblue);
+  border-color: var(--noonblue);
+  color: #fff;
+}
+
+.tag-filter-pill.include:hover {
+  background: var(--noonblue-hover);
+  border-color: var(--noonblue-hover);
+  color: #fff;
+}
+
+.tag-filter-pill.exclude {
+  background: #e53e3e;
+  border-color: #e53e3e;
+  color: #fff;
+}
+
+.tag-filter-pill.exclude:hover {
+  background: #c53030;
+  border-color: #c53030;
+  color: #fff;
+}
+
+.btn-more-filters {
+  align-items: center;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 20px;
+  color: var(--tag-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-more-filters:hover {
+  background: var(--noonblue-btn-hover-bg);
+  border-color: var(--noonblue-border-hover);
+  color: var(--noonblue);
+}

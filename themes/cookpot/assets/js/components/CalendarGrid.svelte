@@ -4,7 +4,7 @@
   import { scrollable } from '../actions/scrollable';
   import type { PlannedItem } from '../types';
   import DayColumn from './DayColumn.svelte';
-  import PlannedRecipeCard from './PlannedRecipeCard.svelte';
+  import RecipeCard from './RecipeCard.svelte';
   import DietBreakdownPanel from './DietBreakdownPanel.svelte';
   import TrashIcon from './icons/TrashIcon.svelte';
 
@@ -107,7 +107,7 @@
   role="region"
   aria-label="Meal Planner Calendar"
 >
-  <div id="planned-recipes-list-grid" class="planned-recipes-grid">
+  <div id="planned-recipes-list-grid" class="planned-recipes-grid" class:grid-5day={$settingsStore.workWeekOnly}>
     {#each activeDays as day}
       <DayColumn
         {day}
@@ -118,6 +118,49 @@
         {onEditDetails}
       />
     {/each}
+
+    {#if editMode || supplementalItems.length > 0}
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="supplemental-section" id="supplemental-section">
+        <h2 class="supplemental-title">Anytime / Supplemental</h2>
+        <div
+          class="supplemental-recipes-list"
+          class:drag-over={isDragOverSupp}
+          id="supplemental-recipes-list"
+          ondragover={handleDragOverSupp}
+          ondragleave={handleDragLeaveSupp}
+          ondrop={(e) => handleDropSupp(e)}
+        >
+          {#each supplementalItems as item (item.instanceId)}
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div
+              class="drag-wrapper"
+              draggable={editMode ? "true" : "false"}
+              ondragstart={(e) => handleDragStartSupp(e, item)}
+              ondragend={handleDragEndSupp}
+              ondragover={handleDragOverSupp}
+              ondragleave={handleDragLeaveSupp}
+              ondrop={(e) => { e.stopPropagation(); handleDropSupp(e, item); }}
+            >
+              <RecipeCard
+                {item}
+                variant="planner"
+                {editMode}
+                onRemove={() => plannerStore.removeRecipe(item.instanceId)}
+                onSwap={() => onSwapRecipe(item)}
+                onEditDetails={() => onEditDetails(item)}
+              />
+            </div>
+          {/each}
+
+          {#if editMode}
+            <div class="empty-slot-box" data-day="supplemental" title="Add supplemental recipe" onclick={() => onAddRecipe('supplemental')}>
+              <span class="empty-slot-plus">+</span>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
   </div>
 
   <!-- Trash Zone -->
@@ -141,48 +184,6 @@
     <TrashIcon size={20} strokeWidth={2} />
     <span>Drop here to delete</span>
   </div>
-
-  {#if editMode || supplementalItems.length > 0}
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="supplemental-section" id="supplemental-section">
-      <h2 class="supplemental-title">Anytime / Supplemental</h2>
-      <div
-        class="supplemental-recipes-list"
-        class:drag-over={isDragOverSupp}
-        id="supplemental-recipes-list"
-        ondragover={handleDragOverSupp}
-        ondragleave={handleDragLeaveSupp}
-        ondrop={(e) => handleDropSupp(e)}
-      >
-        {#each supplementalItems as item (item.instanceId)}
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <div
-            class="drag-wrapper"
-            draggable={editMode ? "true" : "false"}
-            ondragstart={(e) => handleDragStartSupp(e, item)}
-            ondragend={handleDragEndSupp}
-            ondragover={handleDragOverSupp}
-            ondragleave={handleDragLeaveSupp}
-            ondrop={(e) => { e.stopPropagation(); handleDropSupp(e, item); }}
-          >
-            <PlannedRecipeCard
-              {item}
-              {editMode}
-              onRemove={() => plannerStore.removeRecipe(item.instanceId)}
-              onSwap={() => onSwapRecipe(item)}
-              onEditDetails={() => onEditDetails(item)}
-            />
-          </div>
-        {/each}
-
-        {#if editMode}
-          <div class="empty-slot-box" data-day="supplemental" title="Add supplemental recipe" onclick={() => onAddRecipe('supplemental')}>
-            <span class="empty-slot-plus">+</span>
-          </div>
-        {/if}
-      </div>
-    </div>
-  {/if}
 
   <DietBreakdownPanel />
 </div>
