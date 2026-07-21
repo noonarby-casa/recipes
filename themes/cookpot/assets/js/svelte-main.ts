@@ -4,7 +4,6 @@ import { initRandomRecipe } from './random';
 import MealPlannerApp from './components/MealPlannerApp.svelte';
 import HomepageSearchApp from './components/HomepageSearchApp.svelte';
 import SingleRecipeScaler from './components/SingleRecipeScaler.svelte';
-import FavoriteButton from './components/FavoriteButton.svelte';
 import OverlayPanel from './components/OverlayPanel.svelte';
 import RecipeSidesInjector from './components/RecipeSidesInjector.svelte';
 import PlanBackButton from './components/PlanBackButton.svelte';
@@ -66,12 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
       shortId: el.dataset['shortId'],
     }),
   });
-
-  // Favorite button functionality
-  mountAppToTarget(FavoriteButton, 'recipe-favorite-mount', {
-    props: (el) => ({ shortId: el.dataset['shortId'] ?? '' }),
-  });
-
   // Overlay panel for displaying content in the bottom left of the site
   mountAppToTarget(OverlayPanel, 'overlay-panel-mount');
   mountAppToTarget(RecipeSidesInjector, 'recipe-sides-mount');
