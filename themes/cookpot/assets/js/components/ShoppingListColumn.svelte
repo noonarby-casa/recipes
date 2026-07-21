@@ -121,11 +121,11 @@
               {@const isChecked = isItemChecked(key, isStaple, $shoppingCheckedStore)}
               {@const notes = getGroupedNotes(item)}
               {@const formatted = formatItemQuantity(item.qty, item.unit, item.item)}
-              <li class="shopping-item {isChecked ? 'checked' : ''}">
-                <label class="shopping-item-label">
+              <li class="checklist-item {isChecked ? 'checked' : ''}">
+                <label class="checklist-item-label">
                   <input
                     type="checkbox"
-                    class="shopping-item-checkbox"
+                    class="checklist-item-checkbox"
                     data-key={key}
                     data-item={item.item}
                     checked={isChecked}
@@ -135,18 +135,18 @@
                     {formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{formatted.itemStr}
                     
                     {#if notes.sizeNote || notes.details.length > 0 || notes.fallbackRecipes.length > 0}
-                      <div class="shopping-item-details">
+                      <div class="checklist-item-details">
                         {#if notes.sizeNote}
-                          <span class="shopping-item-note">{notes.sizeNote}</span>
+                          <span class="checklist-item-note">{notes.sizeNote}</span>
                         {/if}
                         {#each notes.details as detail}
                           {@const detailText = `${detail.descriptor || ''} ${detail.altItem ? 'or ' + detail.altItem : ''}`.trim()}
-                          <span class="shopping-item-note">
+                          <span class="checklist-item-note">
                             {detailText} {detail.recipes.length > 0 ? 'for ' + detail.recipes.join(', ') : ''}
                           </span>
                         {/each}
                         {#if notes.fallbackRecipes.length > 0}
-                          <span class="shopping-item-note muted">for {notes.fallbackRecipes.join(', ')}</span>
+                          <span class="checklist-item-note muted">for {notes.fallbackRecipes.join(', ')}</span>
                         {/if}
                       </div>
                     {/if}
@@ -168,11 +168,11 @@
             {@const isChecked = isItemChecked(key, false, $shoppingCheckedStore)}
             {@const notes = getGroupedNotes(item)}
             {@const formatted = formatItemQuantity(item.qty, item.unit, item.item)}
-            <li class="shopping-item {isChecked ? 'checked' : ''}">
-              <label class="shopping-item-label">
+            <li class="checklist-item {isChecked ? 'checked' : ''}">
+              <label class="checklist-item-label">
                 <input
                   type="checkbox"
-                  class="shopping-item-checkbox"
+                  class="checklist-item-checkbox"
                   data-key={key}
                   data-item={item.item}
                   checked={isChecked}
@@ -182,18 +182,18 @@
                   {formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{formatted.itemStr}
                   
                   {#if notes.sizeNote || notes.details.length > 0 || notes.fallbackRecipes.length > 0}
-                    <div class="shopping-item-details">
+                    <div class="checklist-item-details">
                       {#if notes.sizeNote}
-                        <span class="shopping-item-note">{notes.sizeNote}</span>
+                        <span class="checklist-item-note">{notes.sizeNote}</span>
                       {/if}
                       {#each notes.details as detail}
                         {@const detailText = `${detail.descriptor || ''} ${detail.altItem ? 'or ' + detail.altItem : ''}`.trim()}
-                        <span class="shopping-item-note">
+                        <span class="checklist-item-note">
                           {detailText} {detail.recipes.length > 0 ? 'for ' + detail.recipes.join(', ') : ''}
                         </span>
                       {/each}
                       {#if notes.fallbackRecipes.length > 0}
-                        <span class="shopping-item-note muted">for {notes.fallbackRecipes.join(', ')}</span>
+                        <span class="checklist-item-note muted">for {notes.fallbackRecipes.join(', ')}</span>
                       {/if}
                     </div>
                   {/if}

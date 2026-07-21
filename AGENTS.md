@@ -34,6 +34,14 @@ The project uses a pure **Vanilla CSS** modular design system located under [ass
 - Prevent layout shift with `scrollbar-gutter: stable` on `html` in [global.css](themes/cookpot/assets/css/global.css).
 - Theme-wide dark mode applies `.dark-mode` to `<html>` via inline script in [head.html](themes/cookpot/layouts/_partials/head.html) and toggle button in [darkmode.ts](themes/cookpot/assets/js/darkmode.ts).
 
+### Hybrid CSS Sharing Guidelines
+
+When building or modifying components in the hybrid Hugo + Svelte architecture, keep styling clean and unified:
+
+- **Design Tokens:** Always define theme properties (colors, borders, shadows, spacing) as CSS variables inside [variables.css](themes/cookpot/assets/css/variables.css). Both Hugo CSS files and Svelte `<style>` blocks should consume these variables directly to ensure changes propagate.
+- **Semantic Components & Utility Classes:** Define global styling rules and components (e.g. [compound-list.css](themes/cookpot/assets/css/components/compound-list.css)) inside Hugo's stylesheet bundle. Output identical class names (e.g., `compound-list`) in Svelte templates to inherit layout/style features without duplication.
+- **Selective Scoping:** Use Svelte's `:global()` modifier to style or react to Hugo-rendered parent states (e.g., `:global(html.dark-mode) .your-svelte-class`).
+
 ---
 
 ## ⌨️ Implementation & Major Features

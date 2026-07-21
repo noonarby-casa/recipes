@@ -568,7 +568,7 @@
     <button
       type="button"
       id="btn-toggle-filters"
-      class="planner-btn-secondary"
+      class="btn btn-secondary"
       onclick={() => isFiltersModalOpen = true}
     >
       <SearchIcon size={14} strokeWidth={2.5} />
@@ -577,7 +577,7 @@
     <button
       type="button"
       id="btn-generate-plan"
-      class="planner-btn-primary btn-brand"
+      class="btn btn-brand"
       onclick={handleGenerateDinnerPlan}
     >
       <DiceIcon size={14} strokeWidth={2.5} />
@@ -596,7 +596,7 @@
   id="toolbar-view"
 >
   <div class="planner-top-actions">
-    <button type="button" id="btn-share-plan" class="planner-btn-secondary" onclick={sharePlanUrl}>
+    <button type="button" id="btn-share-plan" class="btn btn-secondary" onclick={sharePlanUrl}>
       Share Plan
     </button>
   </div>
@@ -622,7 +622,7 @@
     <button
       type="button"
       id="btn-copy-menu-text"
-      class="planner-btn-secondary"
+      class="btn btn-secondary"
       title="Copy weekly menu as plain text"
       onclick={copyMenuTextToClipboard}
     >

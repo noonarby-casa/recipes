@@ -129,7 +129,7 @@
       </button>
       <a
         href={overlayState.backHref}
-        class="plan-back-btn btn-brand"
+        class="plan-back-btn btn btn-brand"
         class:hidden={overlayState.isMinimized}
       >
         <ArrowLeftIcon size={16} strokeWidth={2.5} />

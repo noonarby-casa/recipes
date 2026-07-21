@@ -274,11 +274,11 @@
           {getSectionForCategory(item.category).name}
         </li>
       {/if}
-      <li class="shopping-item" class:checked>
-        <label class="shopping-item-label">
+      <li class="checklist-item" class:checked>
+        <label class="checklist-item-label">
           <input
             type="checkbox"
-            class="shopping-item-checkbox"
+            class="checklist-item-checkbox"
             data-key={key}
             data-item={item.item}
             {checked}
@@ -287,15 +287,15 @@
           <span>
             {qtyStr ? qtyStr + ' ' : ''}{itemStr}
             {#if item.note?.sizeNote || descs.length || alts.length}
-              <div class="shopping-item-details">
+              <div class="checklist-item-details">
                 {#if item.note?.sizeNote}
-                  <span class="shopping-item-note">{item.note.sizeNote}</span>
+                  <span class="checklist-item-note">{item.note.sizeNote}</span>
                 {/if}
                 {#if descs.length}
-                  <span class="shopping-item-note">{descs.join(', ')}</span>
+                  <span class="checklist-item-note">{descs.join(', ')}</span>
                 {/if}
                 {#if alts.length}
-                  <span class="shopping-item-note">or {alts.join(' or ')}</span>
+                  <span class="checklist-item-note">or {alts.join(' or ')}</span>
                 {/if}
               </div>
             {/if}
@@ -313,11 +313,11 @@
       {@const key = getKey(false, item.unit, item.item)}
       {@const checked = isChecked(key, false)}
       {@const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item)}
-      <li class="shopping-item" class:checked>
-        <label class="shopping-item-label">
+      <li class="checklist-item" class:checked>
+        <label class="checklist-item-label">
           <input
             type="checkbox"
-            class="shopping-item-checkbox"
+            class="checklist-item-checkbox"
             data-key={key}
             data-item={item.item}
             {checked}

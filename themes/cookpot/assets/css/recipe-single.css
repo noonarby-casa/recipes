@@ -224,13 +224,6 @@
 
 /* Ingredients layout styling has been refactored to compound-list component style */
 
-.recipe-ingredient {
-  margin-bottom: 0.6rem;
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
-}
-
 .ingredient-optional-badge {
   display: inline-block;
   font-size: 0.7rem;
@@ -247,7 +240,7 @@
   vertical-align: middle;
 }
 
-.recipe-ingredient .qty-num {
+.checklist-item .qty-num {
   color: var(--noonblue);
   font-weight: 700;
   transition: color 0.2s;
@@ -275,7 +268,7 @@
 }
 
 /* Styling for quantities inside the ingredients list to look like standard bold/colored text */
-.recipe-ingredient .recipe-quantity {
+.checklist-item .recipe-quantity {
   background: none;
   border-bottom: none;
   border-radius: 0;
@@ -287,7 +280,7 @@
   padding: 0;
 }
 
-.recipe-ingredient .recipe-quantity:hover {
+.checklist-item .recipe-quantity:hover {
   background: none;
   border-bottom-color: transparent;
   box-shadow: none;
@@ -599,7 +592,6 @@
   .ingredients-column {
     border-right: 1px solid var(--border-subtle);
     height: 100%;
-    overflow-y: auto;
     padding-right: 1.5rem;
   }
 
@@ -615,7 +607,6 @@
 
   .instructions-column {
     height: 100%;
-    overflow-y: auto;
     padding-right: 1rem;
   }
 

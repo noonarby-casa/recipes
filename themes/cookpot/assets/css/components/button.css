@@ -1,0 +1,70 @@
+/* Reusable Button Component Style */
+
+.btn {
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.85rem;
+  font-weight: 600;
+  gap: 0.35rem;
+  justify-content: center;
+  padding: 0.45rem 0.9rem;
+  transition: all 0.2s ease;
+  user-select: none;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-brand {
+  background: var(--noonblue) !important;
+  border-color: transparent !important;
+  box-shadow: 0 3px 8px var(--noonblue-shadow-subtle) !important;
+  color: #fff !important;
+  isolation: isolate;
+  position: relative;
+}
+
+.btn-brand::before {
+  background: linear-gradient(
+    135deg,
+    var(--btn-brand-bg),
+    var(--btn-brand-light)
+  );
+  border-radius: inherit;
+  content: '';
+  height: 100%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transition: opacity 0.2s ease;
+  width: 100%;
+  z-index: -1;
+}
+
+.btn-brand:hover::before {
+  opacity: 0;
+}
+
+.btn-brand:hover {
+  color: var(--btn-brand-hover-text) !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--card-bg);
+  border: 1px solid var(--noonblue);
+  color: var(--noonblue);
+}
+
+.btn-secondary:hover {
+  background-color: var(--noonblue-bg-hover);
+  border-color: var(--noonblue);
+  color: var(--noonblue);
+  transform: translateY(-1px);
+}

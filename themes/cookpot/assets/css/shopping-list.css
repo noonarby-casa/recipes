@@ -109,60 +109,10 @@
   margin: 1.5rem 0;
 }
 
-.shopping-item {
-  font-size: 0.95rem;
-  line-height: 1.4;
-  margin-bottom: 0.6rem;
-}
-
 .shopping-item-main-row {
   align-items: baseline;
   color: var(--text-title);
   display: flex;
   font-weight: 400;
   gap: 0.5rem;
-}
-
-.shopping-item-details {
-  color: var(--text-color);
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin-top: 0.15rem;
-}
-
-.shopping-item-note {
-  background-color: var(--noonblue-bg-light);
-  border: 1px solid var(--noonblue-border-light);
-  border-radius: 4px;
-  color: var(--noonblue);
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-left: 0.25rem;
-  padding: 0.1rem 0.4rem;
-}
-
-.shopping-item-note.muted {
-  background-color: var(--tag-bg);
-  border-color: var(--border-subtle);
-  color: var(--tag-text);
-}
-
-/* Checklist checkbox and checked state styles */
-.shopping-item.checked span {
-  text-decoration: line-through;
-  opacity: 0.55;
-  color: var(--text-muted);
-}
-
-.shopping-item-label {
-  align-items: flex-start;
-  cursor: pointer;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.shopping-item-checkbox {
-  cursor: pointer;
-  margin-top: 0.25rem;
 }

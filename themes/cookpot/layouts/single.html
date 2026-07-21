@@ -116,7 +116,7 @@
                 {{ $ing = dict "item" $ing }}
               {{ end }}
               <li
-                class="recipe-ingredient"
+                class="recipe-ingredient checklist-item"
                 data-item="{{ $ing.item }}"
                 {{ if isset $ing "qty" }}
                   {{ if reflect.IsSlice $ing.qty }}

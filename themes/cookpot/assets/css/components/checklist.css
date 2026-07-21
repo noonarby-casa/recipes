@@ -1,0 +1,54 @@
+/* Reusable Checklist / Ingredient Item Component style */
+
+.checklist-item {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-bottom: 0.6rem;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.checklist-item-label {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.checklist-item-checkbox {
+  cursor: pointer;
+  margin-top: 0.25rem;
+}
+
+.checklist-item-details {
+  color: var(--text-color);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 0.15rem;
+}
+
+.checklist-item-note {
+  background-color: var(--noonblue-bg-light);
+  border: 1px solid var(--noonblue-border-light);
+  border-radius: 4px;
+  color: var(--noonblue);
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.25rem;
+  padding: 0.1rem 0.4rem;
+}
+
+.checklist-item-note.muted {
+  background-color: var(--tag-bg);
+  border-color: var(--border-subtle);
+  color: var(--tag-text);
+}
+
+/* Checked state styling */
+.checklist-item.checked span {
+  text-decoration: line-through;
+  opacity: 0.55;
+  color: var(--text-muted);
+}

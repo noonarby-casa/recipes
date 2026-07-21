@@ -190,11 +190,11 @@
           placeholder={editingIndex !== null ? 'Edit side...' : 'e.g. 1 can chickpeas'}
           class="extra-input"
         />
-        <button type="button" onclick={handleSaveExtra} class="planner-btn-primary btn-brand save-btn">
+        <button type="button" onclick={handleSaveExtra} class="btn btn-brand save-btn">
           {editingIndex !== null ? 'Save' : 'Add'}
         </button>
         {#if editingIndex !== null}
-          <button type="button" onclick={handleCancelEdit} class="planner-btn-secondary cancel-btn">
+          <button type="button" onclick={handleCancelEdit} class="btn btn-secondary cancel-btn">
             Cancel
           </button>
         {/if}

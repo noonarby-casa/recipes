@@ -33,7 +33,7 @@
           : null}
       {@const formatted = formatItemQuantity(qtyVal, ing.unit ?? '', ing.item, true)}
       <li
-        class="recipe-ingredient"
+        class="recipe-ingredient checklist-item"
         data-item={ing.item}
         data-qty={qtyVal ?? undefined}
         data-unit={ing.unit ?? undefined}
