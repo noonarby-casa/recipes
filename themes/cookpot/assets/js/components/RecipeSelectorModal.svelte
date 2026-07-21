@@ -144,30 +144,26 @@
   contentClass="planner-modal-content"
 >
   {#snippet header()}
-    <div
-      class="planner-modal-header"
-      style="flex-direction: column; align-items: flex-start; gap: 0.25rem;"
-    >
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <h3 style="margin: 0;">{titleDay}</h3>
+    <div class="planner-modal-header selector-modal-header">
+      <div class="header-main-row">
+        <h3>{titleDay}</h3>
         <button
           type="button"
           class="modal-close-btn"
           aria-label="Close modal"
-          style="margin: 0;"
           onclick={onClose}
         >
           ✕
         </button>
       </div>
-      <span style="font-size: 0.85rem; color: var(--text-muted);">
+      <span class="header-sub">
         Click on a recipe to add it to the plan.
       </span>
     </div>
   {/snippet}
 
   {#if filtersNotice}
-      <div class="modal-tags-notice" style="display: block;">
+      <div class="modal-tags-notice">
         {filtersNotice}
       </div>
     {/if}
@@ -192,13 +188,13 @@
       aria-label="Available Recipes Shelf"
     >
       {#if filteredRecipes.length === 0}
-        <div class="planner-empty-state" style="margin-top: 1rem;">
+        <div class="planner-empty-state">
           {searchQuery.trim() ? 'No matching recipes found' : 'No recipes found'}
         </div>
       {:else}
         {#each filteredRecipes as r, idx}
           {@const isPlanned = plannedPermalinks.has(r.permalink)}
-          <div class={idx === keyboardFocusedIndex ? 'keyboard-focused' : ''} style="display: contents;">
+          <div class="card-wrapper {idx === keyboardFocusedIndex ? 'keyboard-focused' : ''}">
             <BrowseCard
               recipe={r}
               isPlanned={isPlanned}
@@ -209,3 +205,36 @@
       {/if}
     </div>
 </Modal>
+
+<style>
+  .selector-modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  .header-main-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  h3 {
+    margin: 0;
+  }
+  .modal-close-btn {
+    margin: 0;
+  }
+  .header-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .modal-tags-notice {
+    display: block;
+  }
+  .planner-empty-state {
+    margin-top: 1rem;
+  }
+  .card-wrapper {
+    display: contents;
+  }
+</style>

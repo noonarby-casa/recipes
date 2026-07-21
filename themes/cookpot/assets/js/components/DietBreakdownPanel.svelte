@@ -28,7 +28,13 @@
 </script>
 
 {#if breakdownEntries.length > 0}
-  <div id="planner-balance-stats" class="planner-balance-stats" style="display: block;">
+  <div id="planner-balance-stats" class="planner-balance-stats">
     Plan breakdown: {@html breakdownEntries.join(', ')}
   </div>
 {/if}
+
+<style>
+  .planner-balance-stats {
+    display: block;
+  }
+</style>

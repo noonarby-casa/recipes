@@ -226,14 +226,12 @@
         type="button"
         class="tag-filter-pill favorites-pill {$filtersStore.favoritesOnly ? 'include' : ''}"
         onclick={() => filtersStore.update(f => ({ ...f, favoritesOnly: !f.favoritesOnly }))}
-        style="display: inline-flex; align-items: center;"
       >
         <svg
           class="heart-icon-badge"
           viewBox="0 0 24 24"
           width="11"
           height="11"
-          style="margin-right: 4px; fill: currentColor; stroke: none;"
         >
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
@@ -260,7 +258,7 @@
       </button>
     </div>
     {#if $filtersStore.searchQuery || $filtersStore.favoritesOnly || $filtersStore.includedTags.length > 0 || $filtersStore.excludedTags.length > 0 || $filtersStore.includedSources.length > 0 || $filtersStore.excludedSources.length > 0}
-      <div class="search-results-info" style="display: flex;">
+      <div class="search-results-info">
         <span>{searchResults.length} recipe{searchResults.length !== 1 ? 's' : ''} found</span>
         <button type="button" class="search-results-clear-link" onclick={clearAllFilters}>Clear filters</button>
       </div>
@@ -269,7 +267,7 @@
 
   <div class="recipe-list recipe-grid">
     {#if paginatedResults.length === 0}
-      <div class="search-no-results-text" style="grid-column: 1 / -1; text-align: center; padding: 4rem 1.5rem; color: var(--text-muted); font-size: 1.05rem;">
+      <div class="search-no-results-text">
         No recipes found matching your filters.
       </div>
     {:else}
@@ -281,3 +279,25 @@
 {/if}
 
 <FiltersModal isOpen={isFiltersOpen} onClose={() => isFiltersOpen = false} />
+
+<style>
+  .favorites-pill {
+    display: inline-flex;
+    align-items: center;
+  }
+  .heart-icon-badge {
+    margin-right: 4px;
+    fill: currentColor;
+    stroke: none;
+  }
+  .search-results-info {
+    display: flex;
+  }
+  .search-no-results-text {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+  }
+</style>

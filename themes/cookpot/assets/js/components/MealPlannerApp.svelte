@@ -437,7 +437,7 @@
 
 <!-- 1. Conflict Banner -->
 {#if $plannerStore.hasConflict}
-  <div id="plan-conflict-banner" class="planner-banner" style="display: flex;">
+  <div id="plan-conflict-banner" class="planner-banner">
     <div class="banner-compare-group">
       <span class="banner-text">Viewing shared plan. Compare layouts:</span>
       <div class="banner-tabs">
@@ -523,8 +523,8 @@
 <!-- 3. Edit Toolbar -->
 <div
   class="planner-controls-toolbar"
+  class:visible={$settingsStore.activeTab === 'edit'}
   id="toolbar-edit"
-  style="display: {$settingsStore.activeTab === 'edit' ? 'flex' : 'none'};"
 >
   <div class="week-toggle-group" id="week-toggle-group">
     <ToggleGroup
@@ -594,8 +594,8 @@
 <!-- 4. View Toolbar -->
 <div
   class="planner-controls-toolbar"
+  class:visible={$settingsStore.activeTab === 'view'}
   id="toolbar-view"
-  style="display: {$settingsStore.activeTab === 'view' ? 'flex' : 'none'};"
 >
   <div class="planner-top-actions">
     <button type="button" id="btn-share-plan" class="planner-btn-secondary" onclick={sharePlanUrl}>
@@ -607,8 +607,8 @@
 <!-- 5. Shop Toolbar -->
 <div
   class="planner-controls-toolbar"
+  class:visible={$settingsStore.activeTab === 'shop'}
   id="toolbar-shop"
-  style="display: {$settingsStore.activeTab === 'shop' ? 'flex' : 'none'};"
 >
   <div class="planner-top-actions">
     <select
@@ -679,7 +679,7 @@
 
 <!-- 8. Recovery / Undo Toast -->
 {#if $plannerStore.lastRemovedRecipe}
-  <div class="plan-toast-notification" style="display: flex;">
+  <div class="plan-toast-notification">
     <div class="toast-body">
       <span>Removed <strong>{removedRecipeTitle}</strong> from {DAY_NAMES[$plannerStore.lastRemovedRecipe.day]}.</span>
       <button type="button" class="toast-undo-btn" onclick={() => plannerStore.undoRemove()}>Undo</button>
@@ -687,3 +687,18 @@
     <button type="button" class="toast-close-btn" aria-label="Dismiss toast" onclick={() => plannerStore.clearLastRemoved()}>✕</button>
   </div>
 {/if}
+
+<style>
+  #plan-conflict-banner {
+    display: flex;
+  }
+  .planner-controls-toolbar {
+    display: none;
+  }
+  .planner-controls-toolbar.visible {
+    display: flex;
+  }
+  .plan-toast-notification {
+    display: flex;
+  }
+</style>

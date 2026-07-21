@@ -117,28 +117,28 @@
   contentStyle="max-height: 85vh; height: auto;"
 >
   {#snippet header()}
-    <div class="planner-modal-header" style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
-      <h3 style="margin: 0;">Edit Details: {title}</h3>
-      <button type="button" class="modal-close-btn" onclick={onClose} style="margin: 0; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">✕</button>
+    <div class="planner-modal-header details-modal-header">
+      <h3>Edit Details: {title}</h3>
+      <button type="button" class="modal-close-btn" onclick={onClose}>✕</button>
     </div>
   {/snippet}
 
-    <div class="planner-modal-body scrollable-area" use:scrollable style="padding: 1.25rem 1.5rem; overflow-y: auto;">
+    <div class="planner-modal-body scrollable-area" use:scrollable>
       {#if !rec}
-        <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Title</h4>
+        <h4>Title</h4>
         <input
           type="text"
           value={item.customTitle || ''}
           onchange={(e) => plannerStore.updateCustomTitle(item.instanceId, e.currentTarget.value)}
-          style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-body); margin-bottom: 1.5rem;"
+          class="title-input"
         />
       {/if}
 
-      <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Portions</h4>
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
-        <div class="portion-picker" style="display: inline-flex;">
+      <h4>Portions</h4>
+      <div class="portions-row">
+        <div class="portion-picker">
           <button type="button" class="portion-btn" onclick={decPortions}>-</button>
-          <span class="portion-val" style="min-width: 3rem; text-align: center; font-weight: bold; line-height: 32px;">{portions}</span>
+          <span class="portion-val">{portions}</span>
           <button type="button" class="portion-btn" onclick={incPortions}>+</button>
         </div>
 
@@ -165,59 +165,193 @@
         {/if}
       </div>
 
-      <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--text-title);">Sides & Extra Ingredients</h4>
+      <h4>Sides & Extra Ingredients</h4>
       {#if extras.length === 0}
-        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">No Sides or extra ingredients added yet.</div>
+        <div class="no-extras">No Sides or extra ingredients added yet.</div>
       {:else}
-        <ul style="list-style: none; padding: 0; margin: 0 0 1rem 0;">
+        <ul class="extras-list">
           {#each extras as ing, idx}
             {@const qtyVal = ing.qty !== undefined ? (Array.isArray(ing.qty) ? ing.qty[0] : ing.qty) : null}
             {@const formatted = formatItemQuantity(qtyVal, ing.unit || '', ing.item, true)}
             {@const descStr = ing.desc ? ing.desc + ' ' : ''}
             {@const fullItem = `${descStr}${formatted.itemStr}${ing.prep ? `, ${ing.prep}` : ''}`}
             {@const isEditing = editingIndex === idx}
-            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--border-subtle); {isEditing ? 'background: var(--font-controls-bg); border-radius: 4px;' : ''}">
+            <li class="extras-item" class:editing={isEditing}>
               <span>{formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{fullItem}</span>
-              <div style="display: flex; align-items: center; gap: 0.25rem;">
-                <button type="button" onclick={() => handleEditExtra(idx)} title="Edit side" style="background: none; border: none; color: var(--noonblue); cursor: pointer; padding: 0.25rem; display: flex; align-items: center;">
+              <div class="extras-actions">
+                <button type="button" onclick={() => handleEditExtra(idx)} title="Edit side" class="action-btn edit-btn">
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                   </svg>
                 </button>
-                <button type="button" onclick={() => handleRemoveExtra(idx)} style="background: none; border: none; color: var(--noonblue); font-weight: bold; cursor: pointer; padding: 0.25rem 0.5rem; font-size: 1rem; line-height: 1;">✕</button>
+                <button type="button" onclick={() => handleRemoveExtra(idx)} class="action-btn remove-btn">✕</button>
               </div>
             </li>
           {/each}
         </ul>
       {/if}
 
-      <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+      <div class="controls-row">
         <input
           type="text"
           bind:value={inputValue}
           onkeydown={handleKeydown}
           placeholder={editingIndex !== null ? 'Edit side...' : 'e.g. 1 can chickpeas'}
-          style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-card); color: var(--text-body);"
+          class="extra-input"
         />
-        <button type="button" onclick={handleSaveExtra} class="planner-btn-primary btn-brand" style="padding: 0.5rem 1rem; margin: 0;">
+        <button type="button" onclick={handleSaveExtra} class="planner-btn-primary btn-brand save-btn">
           {editingIndex !== null ? 'Save' : 'Add'}
         </button>
         {#if editingIndex !== null}
-          <button type="button" onclick={handleCancelEdit} class="planner-btn-secondary" style="padding: 0.5rem 1rem; margin: 0; background: var(--font-controls-bg); border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-body); cursor: pointer;">
+          <button type="button" onclick={handleCancelEdit} class="planner-btn-secondary cancel-btn">
             Cancel
           </button>
         {/if}
       </div>
 
       {#if parsedExtra && parsedExtra.item}
-        <div id="extra-preview-container" style="display: flex; font-size: 0.8rem; background: var(--font-controls-bg); border: 1px dashed var(--border-subtle); padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; gap: 0.75rem; flex-wrap: wrap;">
-          <div><strong>Qty:</strong> <span style="color: var(--noonblue); font-family: monospace;">{parsedExtra.qty !== undefined ? parsedExtra.qty.toString() : '—'}</span></div>
-          <div><strong>Unit:</strong> <span style="color: var(--noonblue); font-family: monospace;">{parsedExtra.unit || '—'}</span></div>
-          <div><strong>Desc:</strong> <span style="color: var(--noonblue); font-family: monospace;">{parsedExtra.desc || '—'}</span></div>
-          <div><strong>Item:</strong> <span style="color: var(--noonblue); font-family: monospace;">{parsedExtra.item || '—'}</span></div>
-          <div><strong>Prep:</strong> <span style="color: var(--noonblue); font-family: monospace;">{parsedExtra.prep || '—'}</span></div>
+        <div id="extra-preview-container" class="preview-container">
+          <div><strong>Qty:</strong> <span class="preview-val">{parsedExtra.qty !== undefined ? parsedExtra.qty.toString() : '—'}</span></div>
+          <div><strong>Unit:</strong> <span class="preview-val">{parsedExtra.unit || '—'}</span></div>
+          <div><strong>Desc:</strong> <span class="preview-val">{parsedExtra.desc || '—'}</span></div>
+          <div><strong>Item:</strong> <span class="preview-val">{parsedExtra.item || '—'}</span></div>
+          <div><strong>Prep:</strong> <span class="preview-val">{parsedExtra.prep || '—'}</span></div>
         </div>
       {/if}
     </div>
 </Modal>
+
+<style>
+  .details-modal-header {
+    gap: 0.5rem;
+  }
+  .details-modal-header h3 {
+    margin: 0;
+  }
+  .modal-close-btn {
+    margin: 0;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--text-muted);
+  }
+  .planner-modal-body {
+    padding: 1.25rem 1.5rem;
+    overflow-y: auto;
+  }
+  h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    color: var(--text-title);
+  }
+  .title-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    background: var(--bg-card);
+    color: var(--text-body);
+    margin-bottom: 1.5rem;
+  }
+  .portions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .portion-picker {
+    display: inline-flex;
+  }
+  .portion-val {
+    min-width: 3rem;
+    text-align: center;
+    font-weight: bold;
+    line-height: 32px;
+  }
+  .no-extras {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+  .extras-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+  }
+  .extras-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .extras-item.editing {
+    background: var(--font-controls-bg);
+    border-radius: 4px;
+  }
+  .extras-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .action-btn {
+    background: none;
+    border: none;
+    color: var(--noonblue);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .edit-btn {
+    padding: 0.25rem;
+  }
+  .remove-btn {
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .controls-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .extra-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    background: var(--bg-card);
+    color: var(--text-body);
+  }
+  .save-btn {
+    padding: 0.5rem 1rem;
+    margin: 0;
+  }
+  .cancel-btn {
+    padding: 0.5rem 1rem;
+    margin: 0;
+    background: var(--font-controls-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-body);
+    cursor: pointer;
+  }
+  .preview-container {
+    display: flex;
+    font-size: 0.8rem;
+    background: var(--font-controls-bg);
+    border: 1px dashed var(--border-subtle);
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .preview-val {
+    color: var(--noonblue);
+    font-family: monospace;
+  }
+</style>

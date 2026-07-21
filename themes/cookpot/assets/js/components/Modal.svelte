@@ -55,7 +55,6 @@
   <div 
     class={backdropClass} 
     onclick={handleBackdropClick} 
-    style="display: flex;"
   >
     <div 
       class={contentClass} 
@@ -93,6 +92,7 @@
 
 <style>
   .modal-backdrop {
+    display: flex;
     align-items: center;
     backdrop-filter: blur(4px);
     background-color: rgba(0, 0, 0, 0.55);

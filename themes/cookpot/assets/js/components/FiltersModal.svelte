@@ -172,30 +172,26 @@
   <div
     class="planner-modal-body scrollable-area"
     use:scrollable
-    style="padding: 1.25rem 1.5rem;"
     tabindex="0"
     role="region"
     aria-label="Recipe Filters"
   >
-    <div
-      style="margin-bottom: 1.25rem; display: flex; gap: 0.75rem; align-items: center; justify-content: space-between;"
-    >
-      <span style="font-size: 0.85rem; color: var(--text-muted);">
+    <div class="filter-header">
+      <span class="filter-desc">
         Active filters apply to the recipes list.
       </span>
       <button
         type="button"
         class="planner-clear-btn"
-        style="font-size: 0.8rem; padding: 0.35rem 0.75rem; margin: 0;"
         onclick={clearAll}
       >
         ✕ Clear All Filters
       </button>
     </div>
-    <h4 style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);">
+    <h4>
       Filter by Tag
     </h4>
-    <div class="planner-tag-filters" style="margin-bottom: 1.5rem;">
+    <div class="planner-tag-filters tag-section-margin">
       {#each uniqueTags as tag}
         {@const isInc = $filtersStore.includedTags.includes(tag)}
         {@const isExc = $filtersStore.excludedTags.includes(tag)}
@@ -211,11 +207,8 @@
         </button>
       {/each}
     </div>
-    <hr
-      class="shopping-divider"
-      style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--border-subtle);"
-    />
-    <h4 style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: var(--text-title);">
+    <hr class="shopping-divider" />
+    <h4>
       Filter by Source
     </h4>
     <div class="planner-tag-filters">
@@ -236,3 +229,44 @@
     </div>
   </div>
 </Modal>
+
+<style>
+  .planner-modal-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .filter-header {
+    margin-bottom: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .filter-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .planner-clear-btn {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    margin: 0;
+  }
+
+  h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.95rem;
+    color: var(--text-title);
+  }
+
+  .tag-section-margin {
+    margin-bottom: 1.5rem;
+  }
+
+  .shopping-divider {
+    margin: 1.25rem 0;
+    border: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+</style>

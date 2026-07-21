@@ -90,7 +90,7 @@
     </div>
 
     {#if editMode}
-      <div style="margin-top: 0.5rem;">
+      <div class="portion-picker-wrapper">
         <PortionPicker value={portions} onChange={handlePortionChange} />
       </div>
     {/if}
@@ -111,3 +111,9 @@
     {/if}
   </div>
 {/if}
+
+<style>
+  .portion-picker-wrapper {
+    margin-top: 0.5rem;
+  }
+</style>

@@ -124,13 +124,13 @@
     {#each items as item (item.instanceId)}
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div
+        class="drag-wrapper"
         draggable={editMode ? "true" : "false"}
         ondragstart={(e) => handleDragStart(e, item)}
         ondragend={handleDragEnd}
         ondragover={handleDragOver}
         ondragleave={handleDragLeave}
         ondrop={(e) => { e.stopPropagation(); handleDrop(e, item); }}
-        style="display: contents;"
       >
         <PlannedRecipeCard
           {item}
@@ -149,3 +149,9 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .drag-wrapper {
+    display: contents;
+  }
+</style>

@@ -124,7 +124,6 @@
   <div
     id="planner-trash-zone"
     class="planner-trash-zone"
-    style="display: none;"
     ondragover={(e) => e.preventDefault()}
     ondrop={(e) => {
       e.preventDefault();
@@ -169,13 +168,13 @@
         {#each supplementalItems as item (item.instanceId)}
           <!-- svelte-ignore a11y_no_static_element_interactions -->
           <div
+            class="drag-wrapper"
             draggable={editMode ? "true" : "false"}
             ondragstart={(e) => handleDragStartSupp(e, item)}
             ondragend={handleDragEndSupp}
             ondragover={handleDragOverSupp}
             ondragleave={handleDragLeaveSupp}
             ondrop={(e) => { e.stopPropagation(); handleDropSupp(e, item); }}
-            style="display: contents;"
           >
             <PlannedRecipeCard
               {item}
@@ -198,3 +197,12 @@
 
   <DietBreakdownPanel />
 </div>
+
+<style>
+  .planner-trash-zone {
+    display: none;
+  }
+  .drag-wrapper {
+    display: contents;
+  }
+</style>

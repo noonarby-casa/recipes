@@ -53,7 +53,6 @@
           class="recipe-favorite-badge"
           data-short-id={recipe.shortId}
           title="Favorited recipe"
-          style="display: flex;"
         >
           <svg
             class="heart-icon-badge"
@@ -163,3 +162,9 @@
     {@render children()}
   {/if}
 </article>
+
+<style>
+  .recipe-favorite-badge {
+    display: flex;
+  }
+</style>

@@ -42,7 +42,6 @@
       type="button"
       class="browse-add-btn browse-fav-active"
       aria-label="Favorited recipe"
-      style="background: none; color: var(--heart-color); font-size: 0.85rem;"
     >
       <svg
         viewBox="0 0 24 24"
@@ -62,3 +61,11 @@
     >
   {/if}
 </div>
+
+<style>
+  .browse-fav-active {
+    background: none;
+    color: var(--heart-color);
+    font-size: 0.85rem;
+  }
+</style>
