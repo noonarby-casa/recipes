@@ -2,8 +2,6 @@
   import type { Recipe } from '../types';
   import { favoritesStore } from '../stores/favorites';
 
-  import { getSiteBasePath } from '../utils/site';
-
   interface Props {
     /** The recipe data to display in the browse card. */
     recipe: Recipe;
@@ -18,8 +16,6 @@
   let isFav = $derived(
     recipe.shortId ? $favoritesStore.includes(recipe.shortId) : false,
   );
-
-  let basePath = $derived(getSiteBasePath());
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -28,10 +24,10 @@
   <div class="browse-info">
     <img
       class="browse-img"
-      src={recipe.image130 || `${basePath}icon-600.png`}
+      src={recipe.image130 || '/icon-600.png'}
       alt={recipe.title}
       onerror={(e) => {
-        (e.currentTarget as HTMLImageElement).src = `${basePath}icon-600.png`;
+        (e.currentTarget as HTMLImageElement).src = '/icon-600.png';
       }}
     />
     <div class="browse-title-wrapper">

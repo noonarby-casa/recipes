@@ -6,7 +6,6 @@
   import RecipeCard from './RecipeCard.svelte';
   import FiltersModal from './FiltersModal.svelte';
   import { PRIMARY_TAGS } from '../constants';
-  import { getSiteBasePath } from '../utils/site';
 
   let hasHydrated = $state(false);
   let isFiltersOpen = $state(false);
@@ -84,8 +83,7 @@
     hasHydrated = true;
 
     try {
-      const basePath = getSiteBasePath();
-      const res = await fetch(`${basePath}index.json`);
+      const res = await fetch('/index.json');
       if (!res.ok) {throw new Error('Failed to fetch recipes');}
       const data = await res.json();
       recipesStore.set(data);

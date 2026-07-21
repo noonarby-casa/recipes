@@ -57,7 +57,7 @@ function codeToPermalink(code: string, recipes: Recipe[]): string {
   if (rec) {
     return rec.permalink;
   }
-  return `/recipes/${code}/`;
+  return `/${code}/`;
 }
 
 export const planUrlQueryString = derived(

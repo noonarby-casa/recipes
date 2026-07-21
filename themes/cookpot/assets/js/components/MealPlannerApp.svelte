@@ -15,7 +15,6 @@
   import PlannedRecipeDetailsModal from './PlannedRecipeDetailsModal.svelte';
   import { formatItemQuantity } from '../units';
   import { STORE_LAYOUTS } from '../shopping-list/store-sections';
-  import { getSiteBasePath } from '../utils/site';
   import ToggleGroup from './ToggleGroup.svelte';
 
   let isFiltersModalOpen = $state(false);
@@ -77,8 +76,7 @@
   onMount(async () => {
     document.body.classList.add('meal-planner-layout');
     try {
-      const basePath = getSiteBasePath();
-      const res = await fetch(`${basePath}index.json`);
+      const res = await fetch('/index.json');
       if (!res.ok) {throw new Error('Failed to fetch recipes index');}
       const data: Recipe[] = await res.json();
       recipesStore.set(data);
