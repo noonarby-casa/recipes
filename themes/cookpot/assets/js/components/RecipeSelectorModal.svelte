@@ -8,9 +8,13 @@
 
 
   interface Props {
+    /** Whether the recipe selector modal dialog is open and visible. */
     isOpen: boolean;
+    /** The abbreviation of the target day of the week (e.g. 'mon', 'tue', or 'supplemental') where the recipe will be added. */
     day: string;
+    /** Callback function to close the recipe selector modal dialog. */
     onClose: () => void;
+    /** Callback function triggered when a recipe is selected (receives the recipe's permalink). */
     onSelect: (permalink: string) => void;
   }
 

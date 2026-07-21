@@ -9,8 +9,11 @@
   import { assembleIngredientText } from '../shopping-list/utils';
 
   interface Props {
+    /** Whether the details editor modal is open and visible. */
     isOpen: boolean;
+    /** The planned item (recipe or custom food item) whose details are being edited. */
     item: PlannedItem;
+    /** Callback function to close the details editor modal. */
     onClose: () => void;
   }
 

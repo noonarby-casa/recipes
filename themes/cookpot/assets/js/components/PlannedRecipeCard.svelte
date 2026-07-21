@@ -6,10 +6,15 @@
   import PortionPicker from './PortionPicker.svelte';
 
   interface Props {
+    /** The planned item (recipe or custom food item) to display. */
     item: PlannedItem;
+    /** Whether the meal planner is currently in edit mode. */
     editMode: boolean;
+    /** Callback triggered when removing the planned item from the planner. */
     onRemove: () => void;
+    /** Callback triggered when swapping the planned recipe/item for another. */
     onSwap: () => void;
+    /** Callback triggered when opening the details editor modal for this item. */
     onEditDetails: () => void;
   }
 

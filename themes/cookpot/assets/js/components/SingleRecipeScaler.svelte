@@ -5,7 +5,9 @@
   import FavoriteButton from './FavoriteButton.svelte';
 
   interface Props {
+    /** The default number of servings/portions for the recipe. */
     baseServings: number;
+    /** The optional unique short ID of the recipe, used for favoriting/tracking. */
     shortId?: string;
   }
 

@@ -3,9 +3,13 @@
   import { favoritesStore } from '../stores/favorites';
 
   interface Props {
+    /** The recipe data to display in the card. */
     recipe: Recipe;
+    /** Whether the card title and image should link to the recipe's detail page (defaults to true). */
     linkable?: boolean;
+    /** Whether to show the favorite button on the card (defaults to true). */
     showFavorite?: boolean;
+    /** Svelte Snippet for the inner HTML/children content of the card. */
     children?: import('svelte').Snippet;
   }
 

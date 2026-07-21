@@ -5,11 +5,17 @@
   import { recipesStore } from '../stores/recipes';
 
   interface Props {
+    /** The abbreviation of the day of the week (e.g. 'mon', 'tue'). */
     day: string;
+    /** The full display name of the day (e.g. 'Monday'). */
     dayName: string;
+    /** Whether the meal planner is currently in edit mode. */
     editMode: boolean;
+    /** Callback triggered when adding a new recipe to this specific day. */
     onAddRecipe: () => void;
+    /** Callback triggered when swapping an existing recipe on this day. */
     onSwapRecipe: (item: PlannedItem) => void;
+    /** Callback triggered when editing the portions or scale details of a recipe on this day. */
     onEditDetails: (item: PlannedItem) => void;
   }
 

@@ -9,8 +9,11 @@
   }
 
   interface Props {
+    /** The list of options available in the toggle group. */
     options: Option[];
+    /** The ID of the currently selected option. */
     selectedId: string;
+    /** Callback function triggered when the selection changes. */
     onChange: (id: string) => void;
   }
 

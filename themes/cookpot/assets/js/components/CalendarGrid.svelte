@@ -8,9 +8,13 @@
   import DietBreakdownPanel from './DietBreakdownPanel.svelte';
 
   interface Props {
+    /** Whether the meal planner is currently in edit mode (allowing adding/moving/removing/editing recipes). */
     editMode: boolean;
+    /** Callback triggered when requesting to add a recipe to a specific day. */
     onAddRecipe: (day: string) => void;
+    /** Callback triggered when requesting to swap a specific planned recipe. */
     onSwapRecipe: (item: PlannedItem) => void;
+    /** Callback triggered when requesting to edit detailed portions or scale of a planned recipe. */
     onEditDetails: (item: PlannedItem) => void;
   }
 

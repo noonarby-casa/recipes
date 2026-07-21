@@ -2,6 +2,7 @@
   import { favoritesStore } from '../stores/favorites';
 
   interface Props {
+    /** The unique short ID of the recipe. Used to check if it's in the favorites store and to toggle favorites state. */
     shortId: string;
   }
 

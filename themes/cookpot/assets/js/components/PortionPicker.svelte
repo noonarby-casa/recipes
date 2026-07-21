@@ -1,7 +1,10 @@
 <script lang="ts">
   interface Props {
+    /** The current number of portions/servings selected. */
     value: number;
+    /** The minimum allowable value for the portion picker (defaults to 1). */
     min?: number;
+    /** Callback function triggered when the portion value changes. */
     onChange: (value: number) => void;
   }
 

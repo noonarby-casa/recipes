@@ -5,7 +5,9 @@
   import { scrollable } from '../actions/scrollable';
 
   interface Props {
+    /** Whether the filters modal dialog is open and visible. */
     isOpen: boolean;
+    /** Callback function to close the filters modal dialog. */
     onClose: () => void;
   }
 

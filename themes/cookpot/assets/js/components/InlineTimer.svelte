@@ -4,8 +4,11 @@
   import type { TimerState } from '../types';
 
   interface Props {
+    /** The raw duration string (e.g., '10m', '1-2h', '15-20 mins'). */
     duration: string;
+    /** The zero-based index of this specific timer within the recipe. */
     index: number;
+    /** The parent DOM element to which this timer belongs. */
     target: HTMLElement;
   }
 
