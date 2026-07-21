@@ -95,7 +95,7 @@
       const staticList = document.getElementById('recipe-list-default');
       if (staticList) {staticList.style.display = 'none';}
 
-      const staticSearch = document.querySelector('.recipe-search-container') as HTMLElement | null;
+      const staticSearch = document.getElementById('recipe-search-static');
       if (staticSearch) {staticSearch.style.display = 'none';}
       
       const staticResults = document.getElementById('search-results');
@@ -193,6 +193,7 @@
       <input
         type="search"
         id="recipe-search-input-hydrated"
+        class="recipe-search-input"
         value={$filtersStore.searchQuery}
         oninput={(e) => filtersStore.update(f => ({ ...f, searchQuery: e.currentTarget.value }))}
         placeholder="Search recipes by title, ingredients, source, or tags..."

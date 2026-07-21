@@ -328,7 +328,7 @@
   color: var(--noonblue);
 }
 
-#recipe-search-input {
+.recipe-search-input {
   background: transparent;
   border: none;
   color: var(--text-title);
@@ -339,15 +339,15 @@
   width: 100%;
 }
 
-#recipe-search-input::placeholder {
+.recipe-search-input::placeholder {
   color: var(--search-placeholder);
 }
 
 /* Remove default cross icon in IE/Edge and Chrome */
-#recipe-search-input::-webkit-search-cancel-button,
-#recipe-search-input::-webkit-search-decoration,
-#recipe-search-input::-webkit-search-results-button,
-#recipe-search-input::-webkit-search-results-decoration {
+.recipe-search-input::-webkit-search-cancel-button,
+.recipe-search-input::-webkit-search-decoration,
+.recipe-search-input::-webkit-search-results-button,
+.recipe-search-input::-webkit-search-results-decoration {
   display: none;
 }
 
