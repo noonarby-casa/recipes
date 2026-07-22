@@ -7,22 +7,12 @@ import {
   getActiveStoreLayoutId,
   STORE_LAYOUTS,
 } from '../shopping-list/store-sections';
+import { ls } from '../utils/storage';
 
 const CHECKED_STORAGE_KEY = 'noonarby-shopping-checked-items-v2';
 
 function loadCheckedStates(): Record<string, boolean> {
-  if (typeof localStorage === 'undefined') {
-    return {};
-  }
-  try {
-    const raw = localStorage.getItem(CHECKED_STORAGE_KEY);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch (e) {
-    console.error('Error loading checklist checked states:', e);
-  }
-  return {};
+  return ls.getJson<Record<string, boolean>>(CHECKED_STORAGE_KEY) ?? {};
 }
 
 export const storeLayout = writable<string>(getActiveStoreLayoutId());
@@ -44,26 +34,20 @@ export const shoppingCheckedStore = {
     checkedStates.update((states) => {
       const current = states[key] !== undefined ? states[key] : isStaple;
       const next = { ...states, [key]: !current };
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(CHECKED_STORAGE_KEY, JSON.stringify(next));
-      }
+      ls.setJson(CHECKED_STORAGE_KEY, next);
       return next;
     });
   },
   setChecked(key: string, checked: boolean) {
     checkedStates.update((states) => {
       const next = { ...states, [key]: checked };
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(CHECKED_STORAGE_KEY, JSON.stringify(next));
-      }
+      ls.setJson(CHECKED_STORAGE_KEY, next);
       return next;
     });
   },
   clearChecked() {
     checkedStates.set({});
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem(CHECKED_STORAGE_KEY);
-    }
+    ls.remove(CHECKED_STORAGE_KEY);
   },
 };
 
@@ -89,6 +73,28 @@ export function isItemChecked(
   return isStaple;
 }
 
+/**
+ * Deep-clones an ingredient and scales its quantity (and alt quantity) by the
+ * given scale factor. Handles both scalar and [min, max] tuple quantities.
+ */
+export function scaleIngredient(
+  ing: IngredientInput,
+  scale: number,
+): IngredientInput {
+  const parsed: IngredientInput = JSON.parse(JSON.stringify(ing));
+  if (parsed.qty !== undefined) {
+    parsed.qty = Array.isArray(parsed.qty)
+      ? [parsed.qty[0] * scale, parsed.qty[1] * scale]
+      : parsed.qty * scale;
+  }
+  if (parsed.alt?.qty !== undefined) {
+    parsed.alt.qty = Array.isArray(parsed.alt.qty)
+      ? [parsed.alt.qty[0] * scale, parsed.alt.qty[1] * scale]
+      : parsed.alt.qty * scale;
+  }
+  return parsed;
+}
+
 export const combinedShoppingList = derived(
   [plannerStore, recipesStore, storeLayout],
   ([$planner, $recipes, $layoutId]) => {
@@ -110,33 +116,10 @@ export const combinedShoppingList = derived(
 
       if (rec) {
         rec.ingredients.forEach((ing) => {
-          let parsed: IngredientInput;
-          if (typeof ing === 'string') {
-            parsed = { item: ing };
-          } else {
-            parsed = JSON.parse(JSON.stringify(ing));
-          }
-
-          if (parsed.qty !== undefined) {
-            if (Array.isArray(parsed.qty)) {
-              parsed.qty = [
-                parsed.qty[0] * item.scale,
-                parsed.qty[1] * item.scale,
-              ];
-            } else {
-              parsed.qty = parsed.qty * item.scale;
-            }
-          }
-          if (parsed.alt?.qty !== undefined) {
-            if (Array.isArray(parsed.alt.qty)) {
-              parsed.alt.qty = [
-                parsed.alt.qty[0] * item.scale,
-                parsed.alt.qty[1] * item.scale,
-              ];
-            } else {
-              parsed.alt.qty = parsed.alt.qty * item.scale;
-            }
-          }
+          const parsed = scaleIngredient(
+            typeof ing === 'string' ? { item: ing } : ing,
+            item.scale,
+          );
           parsed.recipe = rec.title;
           ingredients.push(parsed);
         });
@@ -144,27 +127,7 @@ export const combinedShoppingList = derived(
 
       if (item.extraIngredients) {
         item.extraIngredients.forEach((ing) => {
-          const parsed: IngredientInput = JSON.parse(JSON.stringify(ing));
-          if (parsed.qty !== undefined) {
-            if (Array.isArray(parsed.qty)) {
-              parsed.qty = [
-                parsed.qty[0] * item.scale,
-                parsed.qty[1] * item.scale,
-              ];
-            } else {
-              parsed.qty = parsed.qty * item.scale;
-            }
-          }
-          if (parsed.alt?.qty !== undefined) {
-            if (Array.isArray(parsed.alt.qty)) {
-              parsed.alt.qty = [
-                parsed.alt.qty[0] * item.scale,
-                parsed.alt.qty[1] * item.scale,
-              ];
-            } else {
-              parsed.alt.qty = parsed.alt.qty * item.scale;
-            }
-          }
+          const parsed = scaleIngredient(ing, item.scale);
           parsed.recipe = item.customTitle || (rec ? rec.title : 'Custom Item');
           ingredients.push(parsed);
         });

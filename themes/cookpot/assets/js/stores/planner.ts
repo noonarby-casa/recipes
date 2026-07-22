@@ -4,22 +4,13 @@ import { recipesStore } from './recipes';
 import { settingsStore } from './settings';
 import { favoritesStore } from './favorites';
 import { filtersStore } from './filters';
+import { ls } from '../utils/storage';
+import { generateInstanceId } from '../utils/ids';
 
 const STORAGE_KEY = 'noonarby-meal-plan';
 
-function getLocalPlanFromStorage(): PlannedItem[] {
-  if (typeof localStorage === 'undefined') {
-    return [];
-  }
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch (e) {
-    console.error('Error loading plan from storage:', e);
-  }
-  return [];
+export function getLocalPlanFromStorage(): PlannedItem[] {
+  return ls.getJson<PlannedItem[]>(STORAGE_KEY) ?? [];
 }
 
 const initialPlan = getLocalPlanFromStorage();
@@ -37,38 +28,37 @@ const initialState: PlannerState = {
 
 const store = writable<PlannerState>(initialState);
 
+/**
+ * Applies a new plan to state, persisting it to localStorage unless we are in
+ * preview/conflict mode. Keeps `localPlan` in sync when not previewing.
+ */
+function commitPlan(
+  state: PlannerState,
+  nextPlan: PlannedItem[],
+): PlannerState {
+  const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
+  if (!state.isPreviewing) {
+    ls.setJson(STORAGE_KEY, nextPlan);
+  }
+  return { ...state, plan: nextPlan, localPlan: nextLocal };
+}
+
 export const plannerStore = {
   subscribe: store.subscribe,
   set: store.set,
   update: store.update,
 
   addRecipe(day: string, permalink: string, flashId?: string): string {
-    const instanceId =
-      flashId ||
-      `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const instanceId = flashId || generateInstanceId();
     store.update((state) => {
-      const newItem: PlannedItem = {
-        instanceId,
-        permalink,
-        scale: 1.0,
-        day,
-      };
-      const nextPlan = [...state.plan, newItem];
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-      return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
-      };
+      const newItem: PlannedItem = { instanceId, permalink, scale: 1.0, day };
+      return commitPlan(state, [...state.plan, newItem]);
     });
     return instanceId;
   },
 
   addCustomItem(day: string, title: string): string {
-    const instanceId = `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const instanceId = generateInstanceId();
     store.update((state) => {
       const newItem: PlannedItem = {
         instanceId,
@@ -76,16 +66,7 @@ export const plannerStore = {
         scale: 1.0,
         day,
       };
-      const nextPlan = [...state.plan, newItem];
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-      return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
-      };
+      return commitPlan(state, [...state.plan, newItem]);
     });
     return instanceId;
   },
@@ -96,18 +77,10 @@ export const plannerStore = {
       if (idx === -1) {
         return state;
       }
-
       const target = state.plan[idx];
       const nextPlan = state.plan.filter((p) => p.instanceId !== instanceId);
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-
       return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
+        ...commitPlan(state, nextPlan),
         lastRemovedRecipe: { ...target },
         lastRemovedIndex: idx,
       };
@@ -119,18 +92,10 @@ export const plannerStore = {
       if (state.lastRemovedRecipe === null || state.lastRemovedIndex === null) {
         return state;
       }
-
       const nextPlan = [...state.plan];
       nextPlan.splice(state.lastRemovedIndex, 0, state.lastRemovedRecipe);
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-
       return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
+        ...commitPlan(state, nextPlan),
         lastRemovedRecipe: null,
         lastRemovedIndex: null,
       };
@@ -150,15 +115,7 @@ export const plannerStore = {
       const nextPlan = state.plan.map((item) =>
         item.instanceId === instanceId ? { ...item, scale } : item,
       );
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-      return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
-      };
+      return commitPlan(state, nextPlan);
     });
   },
 
@@ -167,15 +124,7 @@ export const plannerStore = {
       const nextPlan = state.plan.map((item) =>
         item.instanceId === instanceId ? { ...item, extraIngredients } : item,
       );
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-      return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
-      };
+      return commitPlan(state, nextPlan);
     });
   },
 
@@ -184,45 +133,16 @@ export const plannerStore = {
       const nextPlan = state.plan.map((item) =>
         item.instanceId === instanceId ? { ...item, customTitle } : item,
       );
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-      return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
-      };
+      return commitPlan(state, nextPlan);
     });
   },
 
   reorderRecipes(nextPlan: PlannedItem[]) {
-    store.update((state) => {
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-      return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
-      };
-    });
+    store.update((state) => commitPlan(state, nextPlan));
   },
 
   clearPlan() {
-    store.update((state) => {
-      const nextPlan: PlannedItem[] = [];
-      const nextLocal = state.isPreviewing ? state.localPlan : nextPlan;
-      if (!state.isPreviewing) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-      }
-      return {
-        ...state,
-        plan: nextPlan,
-        localPlan: nextLocal,
-      };
-    });
+    store.update((state) => commitPlan(state, []));
   },
 
   setConflict(sharedPlan: PlannedItem[], localPlan: PlannedItem[]) {
@@ -255,7 +175,7 @@ export const plannerStore = {
 
   keepLocal() {
     store.update((state) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.localPlan));
+      ls.setJson(STORAGE_KEY, state.localPlan);
       return {
         ...state,
         plan: state.localPlan,
@@ -267,7 +187,7 @@ export const plannerStore = {
 
   loadShared() {
     store.update((state) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.sharedPlan));
+      ls.setJson(STORAGE_KEY, state.sharedPlan);
       return {
         ...state,
         plan: state.sharedPlan,
@@ -281,12 +201,9 @@ export const plannerStore = {
     store.update((state) => {
       const merged = [...state.localPlan];
       state.sharedPlan.forEach((item) => {
-        merged.push({
-          ...item,
-          instanceId: `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-        });
+        merged.push({ ...item, instanceId: generateInstanceId() });
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      ls.setJson(STORAGE_KEY, merged);
       return {
         ...state,
         plan: merged,
@@ -339,7 +256,7 @@ export const plannerStore = {
           const randomRec =
             candidates[Math.floor(Math.random() * candidates.length)];
           nextPlan.push({
-            instanceId: `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+            instanceId: generateInstanceId(),
             permalink: randomRec.permalink,
             scale: 1.0,
             day,
@@ -349,14 +266,7 @@ export const plannerStore = {
       });
 
       if (planChanged) {
-        if (!state.isPreviewing) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPlan));
-        }
-        return {
-          ...state,
-          plan: nextPlan,
-          localPlan: state.isPreviewing ? state.localPlan : nextPlan,
-        };
+        return commitPlan(state, nextPlan);
       }
 
       return state;

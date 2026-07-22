@@ -3,6 +3,7 @@
   import { timersStore } from '../stores/timers';
   import type { TimerState } from '../types';
   import { overlayStore } from '../stores/overlay';
+  import { formatTime } from '../utils/timer';
   import PlayIcon from './icons/PlayIcon.svelte';
   import PauseIcon from './icons/PauseIcon.svelte';
   import ResetIcon from './icons/ResetIcon.svelte';
@@ -39,22 +40,6 @@
       overlayStore.setHasDashboard(false);
     };
   });
-
-  function formatTime(seconds: number): string {
-    const isNegative = seconds < 0;
-    const absSeconds = Math.abs(seconds);
-    const hrs = Math.floor(absSeconds / 3600);
-    const mins = Math.floor((absSeconds % 3600) / 60);
-    const secs = absSeconds % 60;
-
-    let display = '';
-    if (hrs > 0) {
-      display += `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    } else {
-      display += `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
-    return isNegative ? `-${display}` : display;
-  }
 
   function handlePlayPause(t: TimerState) {
     timersStore.startTimer(t.recipeTitle, t.recipeUrl, t.timerIndex, t.durationLabel, t.minSeconds, t.maxSeconds);

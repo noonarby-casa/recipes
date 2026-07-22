@@ -12,6 +12,7 @@
     getSectionForCategory,
     getActiveStoreLayout,
   } from '../shopping-list/store-sections';
+  import { getIngredientKey } from '../stores/shopping';
 
   type Tab = 'recipe' | 'shopping';
   type CopyFormat = 'markdown' | 'google-keep';
@@ -58,10 +59,6 @@
   // Helpers
   // --------------------------------------------------------------------------
 
-  function getKey(isStaple: boolean, unit: string, item: string): string {
-    const stapleStr = isStaple ? 'staple' : 'buy';
-    return `${stapleStr}_${unit.trim().toLowerCase()}_${item.trim().toLowerCase().replace(/\s+/g, ' ')}`;
-  }
 
   function isChecked(key: string, isStaple: boolean): boolean {
     return checklistStates.has(key) ? (checklistStates.get(key) ?? false) : isStaple;
@@ -104,12 +101,12 @@
 
     const filteredBuy = combinedBuy.filter((item) => {
       const isStaple = item.staple === 'in-pantry';
-      const key = getKey(isStaple, item.unit, item.item);
+      const key = getIngredientKey(isStaple, item.unit, item.item);
       return !isChecked(key, isStaple);
     });
 
     const filteredOptional = optionalItems.filter((item) => {
-      const key = getKey(false, item.unit, item.item);
+      const key = getIngredientKey(false, item.unit, item.item);
       return !isChecked(key, false);
     });
 
@@ -263,7 +260,7 @@
   <ul class="shopping-buy-list compound-list">
     {#each computed.buyItems as item (item.item + item.unit)}
       {@const isStaple = item.staple === 'in-pantry'}
-      {@const key = getKey(isStaple, item.unit, item.item)}
+      {@const key = getIngredientKey(isStaple, item.unit, item.item)}
       {@const checked = isChecked(key, isStaple)}
       {@const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item)}
       {@const notesArr = item.note?.ingredientNotes ?? []}
@@ -310,7 +307,7 @@
   <h4 class="shopping-section-title">Optional</h4>
   <ul class="shopping-optional-list">
     {#each computed.optionalItems as item (item.item + item.unit)}
-      {@const key = getKey(false, item.unit, item.item)}
+      {@const key = getIngredientKey(false, item.unit, item.item)}
       {@const checked = isChecked(key, false)}
       {@const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item)}
       <li class="checklist-item" class:checked>

@@ -1,23 +1,15 @@
 import { writable } from 'svelte/store';
 import type { FontSizeOption, SettingsState } from '../types';
+import { ls } from '../utils/storage';
 
 const SETTINGS_KEY = 'noonarby-meal-plan-settings';
 const FONT_SIZE_KEY = 'recipe-instructions-font-size';
 
 function loadSettings(): SettingsState {
   let workWeekOnly = true;
-  if (typeof localStorage !== 'undefined') {
-    try {
-      const raw = localStorage.getItem(SETTINGS_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed.workWeekOnly !== undefined) {
-          workWeekOnly = !!parsed.workWeekOnly;
-        }
-      }
-    } catch (e) {
-      console.error('Error loading settings:', e);
-    }
+  const parsed = ls.getJson<{ workWeekOnly?: unknown }>(SETTINGS_KEY);
+  if (parsed?.workWeekOnly !== undefined) {
+    workWeekOnly = !!parsed.workWeekOnly;
   }
   return {
     activeTab: 'view',
@@ -28,16 +20,7 @@ function loadSettings(): SettingsState {
 export const settingsStore = writable<SettingsState>(loadSettings());
 
 settingsStore.subscribe((state) => {
-  if (typeof localStorage !== 'undefined') {
-    try {
-      const settings = {
-        workWeekOnly: state.workWeekOnly,
-      };
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-    } catch (e) {
-      console.error('Error saving settings:', e);
-    }
-  }
+  ls.setJson(SETTINGS_KEY, { workWeekOnly: state.workWeekOnly });
 });
 
 // ---------------------------------------------------------------------------
@@ -45,10 +28,7 @@ settingsStore.subscribe((state) => {
 // ---------------------------------------------------------------------------
 
 function loadFontSize(): FontSizeOption {
-  if (typeof localStorage === 'undefined') {
-    return 'default';
-  }
-  const saved = localStorage.getItem(FONT_SIZE_KEY);
+  const saved = ls.getString(FONT_SIZE_KEY);
   if (saved === 'smaller' || saved === 'larger') {
     return saved;
   }
@@ -58,9 +38,7 @@ function loadFontSize(): FontSizeOption {
 export const fontSizeStore = writable<FontSizeOption>(loadFontSize());
 
 fontSizeStore.subscribe((size) => {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(FONT_SIZE_KEY, size);
-  }
+  ls.setString(FONT_SIZE_KEY, size);
 });
 
 // ---------------------------------------------------------------------------

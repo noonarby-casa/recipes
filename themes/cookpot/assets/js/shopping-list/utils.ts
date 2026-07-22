@@ -308,14 +308,17 @@ export function convertQty(
   return qty;
 }
 
-export function isVolumeUnit(unit: string): boolean {
+function isUnitSystem(unit: string, system: 'volume' | 'weight'): boolean {
   const sing = getSingularUnit(unit);
-  return sing in UNIT_CONVERSIONS && UNIT_CONVERSIONS[sing].system === 'volume';
+  return sing in UNIT_CONVERSIONS && UNIT_CONVERSIONS[sing].system === system;
+}
+
+export function isVolumeUnit(unit: string): boolean {
+  return isUnitSystem(unit, 'volume');
 }
 
 export function isWeightUnit(unit: string): boolean {
-  const sing = getSingularUnit(unit);
-  return sing in UNIT_CONVERSIONS && UNIT_CONVERSIONS[sing].system === 'weight';
+  return isUnitSystem(unit, 'weight');
 }
 
 export function formatQtyValueWithUnit(qty: QtyValue, unit: string): string {

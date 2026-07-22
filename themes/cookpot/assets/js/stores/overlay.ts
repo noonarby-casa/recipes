@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store';
+import { ls } from '../utils/storage';
 
 interface OverlayState {
   isMinimized: boolean;
@@ -9,10 +10,7 @@ interface OverlayState {
 const MINIMIZED_KEY = 'cooking-dashboard-minimized';
 
 function getInitialMinimized(): boolean {
-  if (typeof localStorage !== 'undefined') {
-    return localStorage.getItem(MINIMIZED_KEY) === 'true';
-  }
-  return false;
+  return ls.getString(MINIMIZED_KEY) === 'true';
 }
 
 const store = writable<OverlayState>({
@@ -30,23 +28,17 @@ export const overlayStore = {
     store.update((s) => ({ ...s, hasDashboard: has }));
   },
   minimize() {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(MINIMIZED_KEY, 'true');
-    }
+    ls.setString(MINIMIZED_KEY, 'true');
     store.update((s) => ({ ...s, isMinimized: true }));
   },
   expand() {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(MINIMIZED_KEY, 'false');
-    }
+    ls.setString(MINIMIZED_KEY, 'false');
     store.update((s) => ({ ...s, isMinimized: false }));
   },
   toggle() {
     store.update((s) => {
       const next = !s.isMinimized;
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(MINIMIZED_KEY, String(next));
-      }
+      ls.setString(MINIMIZED_KEY, String(next));
       return { ...s, isMinimized: next };
     });
   },

@@ -1,22 +1,12 @@
 import { writable } from 'svelte/store';
+import { ls } from '../utils/storage';
 
 const LOCALSTORAGE_KEY = 'noonarby-favorite-recipes';
 
 function getFavoritesFromStorage(): string[] {
-  if (typeof localStorage === 'undefined') {
-    return [];
-  }
-  try {
-    const data = localStorage.getItem(LOCALSTORAGE_KEY);
-    if (!data) {
-      return [];
-    }
-    const parsed = JSON.parse(data);
-    if (Array.isArray(parsed)) {
-      return parsed.filter((item): item is string => typeof item === 'string');
-    }
-  } catch (err) {
-    console.error('Error parsing', LOCALSTORAGE_KEY, 'from localStorage:', err);
+  const parsed = ls.getJson<unknown[]>(LOCALSTORAGE_KEY);
+  if (Array.isArray(parsed)) {
+    return parsed.filter((item): item is string => typeof item === 'string');
   }
   return [];
 }
@@ -34,7 +24,7 @@ export const favoritesStore = {
     update((favs) => {
       if (!favs.includes(shortId)) {
         const next = [...favs, shortId];
-        localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(next));
+        ls.setJson(LOCALSTORAGE_KEY, next);
         document.dispatchEvent(
           new CustomEvent('favoritesChanged', {
             detail: { shortId, isFavorite: true },
@@ -52,7 +42,7 @@ export const favoritesStore = {
     update((favs) => {
       if (favs.includes(shortId)) {
         const next = favs.filter((id) => id !== shortId);
-        localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(next));
+        ls.setJson(LOCALSTORAGE_KEY, next);
         document.dispatchEvent(
           new CustomEvent('favoritesChanged', {
             detail: { shortId, isFavorite: false },
@@ -71,7 +61,7 @@ export const favoritesStore = {
     update((favs) => {
       if (favs.includes(shortId)) {
         const next = favs.filter((id) => id !== shortId);
-        localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(next));
+        ls.setJson(LOCALSTORAGE_KEY, next);
         isFav = false;
         document.dispatchEvent(
           new CustomEvent('favoritesChanged', {
@@ -81,7 +71,7 @@ export const favoritesStore = {
         return next;
       } else {
         const next = [...favs, shortId];
-        localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(next));
+        ls.setJson(LOCALSTORAGE_KEY, next);
         isFav = true;
         document.dispatchEvent(
           new CustomEvent('favoritesChanged', {

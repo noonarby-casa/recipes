@@ -5,6 +5,7 @@ import { recipesStore } from './recipes';
 import type { PlannedItem, Recipe } from '../types';
 import { formatCookingNumber } from '../units';
 import { parseRawUserInput } from '../simple-parser';
+import { generateInstanceId } from '../utils/ids';
 
 const DAY_CODES: Record<string, string> = {
   sun: '0',
@@ -232,7 +233,7 @@ export function parsePlanUrlParams(
         }
 
         newPlan.push({
-          instanceId: `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          instanceId: generateInstanceId(),
           permalink: permalink || undefined,
           scale,
           day,
@@ -268,7 +269,7 @@ export function parsePlanUrlParams(
           const permalink =
             code === 'custom' ? undefined : codeToPermalink(code, recipes);
           newPlan.push({
-            instanceId: `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+            instanceId: generateInstanceId(),
             permalink: permalink || undefined,
             scale: isNaN(scale) ? 1.0 : scale,
             day: day === 'supplemental' ? 'supplemental' : day,

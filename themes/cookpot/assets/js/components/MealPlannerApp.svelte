@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { recipesStore } from '../stores/recipes';
-  import { plannerStore } from '../stores/planner';
+  import { plannerStore, getLocalPlanFromStorage } from '../stores/planner';
   import { settingsStore } from '../stores/settings';
   import { favoritesStore } from '../stores/favorites';
   import { filtersStore } from '../stores/filters';
   import { shoppingCheckedStore, combinedShoppingList, getIngredientKey, isItemChecked } from '../stores/shopping';
   import { parsePlanUrlParams, planUrlQueryString } from '../stores/planUrlSync';
+  import { ls } from '../utils/storage';
   import type { PlannedItem, Recipe } from '../types';
   import CalendarGrid from './CalendarGrid.svelte';
   import ShoppingListColumn from './ShoppingListColumn.svelte';
@@ -39,19 +40,6 @@
   };
 
 
-
-  function getLocalPlanFromStorage(): PlannedItem[] {
-    if (typeof localStorage === 'undefined') {return [];}
-    try {
-      const raw = localStorage.getItem('noonarby-meal-plan');
-      if (raw) {
-        return JSON.parse(raw);
-      }
-    } catch (e) {
-      console.error('Error loading plan from storage:', e);
-    }
-    return [];
-  }
 
   function arePlansEqual(planA: PlannedItem[], planB: PlannedItem[]): boolean {
     if (planA.length !== planB.length) {return false;}
@@ -88,7 +76,7 @@
       const urlWorkWeekOnly = urlInfo.workWeekOnly;
       const urlActiveTab = urlInfo.activeTab;
 
-      const localPlanExists = !!localStorage.getItem('noonarby-meal-plan');
+      const localPlanExists = ls.has('noonarby-meal-plan');
       const localPlan = getLocalPlanFromStorage();
 
       const hasConflict =
@@ -144,7 +132,7 @@
         return { ...planned, scale: nextPortions / rec.servings };
       });
       if (!state.isPreviewing) {
-        localStorage.setItem('noonarby-meal-plan', JSON.stringify(nextPlan));
+        ls.setJson('noonarby-meal-plan', nextPlan);
       }
       return {
         ...state,
@@ -198,7 +186,7 @@
         p.instanceId === item.instanceId ? { ...p, permalink: randomRec.permalink } : p
       );
       if (!state.isPreviewing) {
-        localStorage.setItem('noonarby-meal-plan', JSON.stringify(nextPlan));
+        ls.setJson('noonarby-meal-plan', nextPlan);
       }
       return {
         ...state,
@@ -253,7 +241,17 @@
     });
   }
 
-  function getNotesString(item: any): string {
+  interface GroupedNote {
+    descriptor?: string;
+    altItem?: string;
+    recipes: string[];
+  }
+
+  /**
+   * Builds the note string for a shopping item.
+   * @param includeRecipes - when true, appends "for RecipeA, RecipeB" to each detail group.
+   */
+  function buildNotesString(item: any, includeRecipes: boolean): string {
     const parts: string[] = [];
     if (!item.note) {return '';}
 
@@ -261,27 +259,15 @@
     if (sizeNote) {parts.push(sizeNote);}
 
     const groups: Record<string, GroupedNote> = {};
-    interface GroupedNote {
-      descriptor?: string;
-      altItem?: string;
-      recipes: string[];
-    }
-
     (item.note.ingredientNotes || []).forEach((n: any) => {
       const desc = n.descriptor || '';
       const alt = n.altItem || '';
-      const recipe = n.recipe;
-
       const key = `${desc}|${alt}`;
       if (!groups[key]) {
-        groups[key] = {
-          descriptor: n.descriptor,
-          altItem: n.altItem,
-          recipes: [],
-        };
+        groups[key] = { descriptor: n.descriptor, altItem: n.altItem, recipes: [] };
       }
-      if (recipe && !groups[key].recipes.includes(recipe)) {
-        groups[key].recipes.push(recipe);
+      if (includeRecipes && n.recipe && !groups[key].recipes.includes(n.recipe)) {
+        groups[key].recipes.push(n.recipe);
       }
     });
 
@@ -290,11 +276,12 @@
       if (group.descriptor) {detailParts.push(group.descriptor);}
       if (group.altItem) {detailParts.push(`or ${group.altItem}`);}
       const detailText = detailParts.join(' ');
-
-      if (group.recipes.length > 0) {
-        parts.push(`${detailText} for ${group.recipes.join(', ')}`);
-      } else if (detailText) {
-        parts.push(detailText);
+      if (detailText || group.recipes.length > 0) {
+        const suffix = includeRecipes && group.recipes.length > 0
+          ? ` for ${group.recipes.join(', ')}`
+          : '';
+        if (detailText) {parts.push(`${detailText}${suffix}`);}
+        else if (suffix) {parts.push(suffix.trim());}
       }
     });
 
@@ -302,45 +289,13 @@
   }
 
   function formatItemNotes(item: any): string {
-    const notesStr = getNotesString(item);
-    return notesStr ? ` (${notesStr})` : '';
-  }
-
-  function getKeepNotesString(item: any): string {
-    const parts: string[] = [];
-    if (!item.note) {return '';}
-
-    const sizeNote = item.note.sizeNote;
-    if (sizeNote) {parts.push(sizeNote);}
-
-    const groups: Record<string, any> = {};
-    (item.note.ingredientNotes || []).forEach((n: any) => {
-      const desc = n.descriptor || '';
-      const alt = n.altItem || '';
-      const key = `${desc}|${alt}`;
-      if (!groups[key]) {
-        groups[key] = {
-          descriptor: n.descriptor,
-          altItem: n.altItem,
-        };
-      }
-    });
-
-    Object.values(groups).forEach((group) => {
-      const detailParts: string[] = [];
-      if (group.descriptor) {detailParts.push(group.descriptor);}
-      if (group.altItem) {detailParts.push(`or ${group.altItem}`);}
-      if (detailParts.length > 0) {
-        parts.push(detailParts.join(' '));
-      }
-    });
-
-    return parts.join('; ');
+    const s = buildNotesString(item, true);
+    return s ? ` (${s})` : '';
   }
 
   function formatKeepItemNotes(item: any): string {
-    const notesStr = getKeepNotesString(item);
-    return notesStr ? ` (${notesStr})` : '';
+    const s = buildNotesString(item, false);
+    return s ? ` (${s})` : '';
   }
 
   function handleCopyListChange(e: Event) {
@@ -462,12 +417,9 @@
           class="banner-tab {$plannerStore.previewMode === 'local' ? 'active btn-brand' : ''}"
           onclick={() => {
             plannerStore.showLocalPreview();
-            const rawSettings = localStorage.getItem('noonarby-meal-plan-settings');
-            if (rawSettings) {
-              const parsed = JSON.parse(rawSettings);
-              if (parsed.workWeekOnly !== undefined) {
-                settingsStore.update(s => ({ ...s, workWeekOnly: !!parsed.workWeekOnly }));
-              }
+            const storedSettings = ls.getJson<{ workWeekOnly?: unknown }>('noonarby-meal-plan-settings');
+            if (storedSettings?.workWeekOnly !== undefined) {
+              settingsStore.update(s => ({ ...s, workWeekOnly: !!storedSettings.workWeekOnly }));
             }
           }}
         >

@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { ls } from '../utils/storage';
 
 const FILTERS_KEY = 'noonarby-meal-plan-filters';
 
@@ -12,26 +13,19 @@ function loadFilters(): FiltersState {
   let searchQuery = '';
   let favoritesOnly = false;
 
-  if (typeof localStorage !== 'undefined') {
-    try {
-      const raw = localStorage.getItem(FILTERS_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed.includedTags) {
-          includedTags = parsed.includedTags;
-        }
-        if (parsed.excludedTags) {
-          excludedTags = parsed.excludedTags;
-        }
-        if (parsed.includedSources) {
-          includedSources = parsed.includedSources;
-        }
-        if (parsed.excludedSources) {
-          excludedSources = parsed.excludedSources;
-        }
-      }
-    } catch (e) {
-      console.error('Error loading filters from storage:', e);
+  const stored = ls.getJson<Record<string, unknown>>(FILTERS_KEY);
+  if (stored) {
+    if (stored.includedTags) {
+      includedTags = stored.includedTags as string[];
+    }
+    if (stored.excludedTags) {
+      excludedTags = stored.excludedTags as string[];
+    }
+    if (stored.includedSources) {
+      includedSources = stored.includedSources as string[];
+    }
+    if (stored.excludedSources) {
+      excludedSources = stored.excludedSources as string[];
     }
   }
 
@@ -85,17 +79,10 @@ function loadFilters(): FiltersState {
 export const filtersStore = writable<FiltersState>(loadFilters());
 
 filtersStore.subscribe((state) => {
-  if (typeof localStorage !== 'undefined') {
-    try {
-      const data = {
-        includedTags: state.includedTags,
-        excludedTags: state.excludedTags,
-        includedSources: state.includedSources,
-        excludedSources: state.excludedSources,
-      };
-      localStorage.setItem(FILTERS_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.error('Error saving filters to storage:', e);
-    }
-  }
+  ls.setJson(FILTERS_KEY, {
+    includedTags: state.includedTags,
+    excludedTags: state.excludedTags,
+    includedSources: state.includedSources,
+    excludedSources: state.excludedSources,
+  });
 });
