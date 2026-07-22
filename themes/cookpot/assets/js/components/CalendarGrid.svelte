@@ -97,6 +97,7 @@
       trashZone.style.display = 'none';
     }
   }
+  let isDragOverTrash = $state(false);
 </script>
 
 <div
@@ -168,9 +169,21 @@
   <div
     id="planner-trash-zone"
     class="planner-trash-zone"
-    ondragover={(e) => e.preventDefault()}
+    class:drag-over={isDragOverTrash}
+    ondragenter={(e) => {
+      e.preventDefault();
+      isDragOverTrash = true;
+    }}
+    ondragover={(e) => {
+      e.preventDefault();
+      isDragOverTrash = true;
+    }}
+    ondragleave={() => {
+      isDragOverTrash = false;
+    }}
     ondrop={(e) => {
       e.preventDefault();
+      isDragOverTrash = false;
       const draggedId = e.dataTransfer?.getData('text/plain');
       if (draggedId) {
         plannerStore.removeRecipe(draggedId);
@@ -189,10 +202,103 @@
 </div>
 
 <style>
-  .planner-trash-zone {
-    display: none;
+  .planned-recipes-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 1.5rem;
   }
-  .drag-wrapper {
-    display: contents;
+
+  .planned-recipes-grid.grid-5day {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .planned-recipes-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .planned-recipes-grid.grid-5day {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .planned-recipes-grid .supplemental-section {
+      grid-column: 3 / span 3;
+      margin-top: 0;
+    }
+
+    .planned-recipes-grid.grid-5day .supplemental-section {
+      grid-column: 1 / span 5;
+      margin-top: 0;
+    }
+  }
+
+  .supplemental-section {
+    background-color: var(--recipe-title-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    transition: all 0.2s ease;
+    width: 100%;
+  }
+
+  .supplemental-title {
+    border-bottom: 1px solid var(--border-ultra-subtle);
+    color: var(--text-title);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    padding-bottom: 0.4rem;
+  }
+
+  .supplemental-recipes-list {
+    box-sizing: border-box;
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.75rem;
+  }
+
+  :global(.supplemental-recipes-list .planned-recipe-item) {
+    flex: 0 0 160px;
+    margin: 0;
+  }
+
+  :global(.supplemental-recipes-list .empty-slot-box) {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 0 0 160px;
+    justify-content: center;
+    min-height: 120px;
+  }
+
+  .planner-trash-zone {
+    align-items: center;
+    background-color: rgba(255, 74, 74, 0.05);
+    border: 2px dashed #ff4a4a;
+    border-radius: 12px;
+    color: #ff4a4a;
+    display: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    gap: 0.6rem;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+  }
+
+  .planner-trash-zone.drag-over {
+    background-color: rgba(255, 74, 74, 0.15);
+    transform: scale(1.01);
   }
 </style>
+

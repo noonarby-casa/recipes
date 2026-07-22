@@ -8,7 +8,8 @@
   import { parseRawUserInput } from '../simple-parser';
   import { assembleIngredientText } from '../shopping-list/utils';
   import Modal from './Modal.svelte';
-  import HeartIcon from './icons/HeartIcon.svelte';
+  import PortionPicker from './PortionPicker.svelte';
+import HeartIcon from './icons/HeartIcon.svelte';
   import EditIcon from './icons/EditIcon.svelte';
 
   interface Props {
@@ -43,16 +44,6 @@
       inputValue = '';
     }
   });
-
-  function decPortions() {
-    const nextPortions = Math.max(1, portions - 1);
-    plannerStore.updateScale(item.instanceId, nextPortions / defaultServings);
-  }
-
-  function incPortions() {
-    const nextPortions = portions + 1;
-    plannerStore.updateScale(item.instanceId, nextPortions / defaultServings);
-  }
 
   function toggleFavorite() {
     if (rec && rec.shortId) {
@@ -127,7 +118,7 @@
 
     <div class="planner-modal-body scrollable-area" use:scrollable>
       {#if !rec}
-        <h4>Title</h4>
+        <h4 class="details-section-title">Title</h4>
         <input
           type="text"
           value={item.customTitle || ''}
@@ -136,13 +127,12 @@
         />
       {/if}
 
-      <h4>Portions</h4>
+      <h4 class="details-section-title">Portions</h4>
       <div class="portions-row">
-        <div class="portion-picker">
-          <button type="button" class="portion-btn" onclick={decPortions}>-</button>
-          <span class="portion-val">{portions}</span>
-          <button type="button" class="portion-btn" onclick={incPortions}>+</button>
-        </div>
+        <PortionPicker
+          value={portions}
+          onChange={(nextVal) => plannerStore.updateScale(item.instanceId, nextVal / defaultServings)}
+        />
 
         {#if rec && rec.shortId}
           <button
@@ -158,7 +148,7 @@
         {/if}
       </div>
 
-      <h4>Sides & Extra Ingredients</h4>
+      <h4 class="details-section-title">Sides & Extra Ingredients</h4>
       {#if extras.length === 0}
         <div class="no-extras">No Sides or extra ingredients added yet.</div>
       {:else}
@@ -219,19 +209,7 @@
   .details-modal-header h3 {
     margin: 0;
   }
-  .modal-close-btn {
-    margin: 0;
-    background: none;
-    border: none;
-    font-size: 1.25rem;
-    cursor: pointer;
-    color: var(--text-muted);
-  }
-  .planner-modal-body {
-    padding: 1.25rem 1.5rem;
-    overflow-y: auto;
-  }
-  h4 {
+  .details-section-title {
     margin: 0 0 0.5rem 0;
     font-size: 0.95rem;
     color: var(--text-title);
@@ -250,15 +228,6 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1.5rem;
-  }
-  .portion-picker {
-    display: inline-flex;
-  }
-  .portion-val {
-    min-width: 3rem;
-    text-align: center;
-    font-weight: bold;
-    line-height: 32px;
   }
   .no-extras {
     font-size: 0.85rem;

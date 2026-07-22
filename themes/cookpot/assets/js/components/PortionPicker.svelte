@@ -24,3 +24,6 @@
   <span class="portion-val">{value}</span>
   <button type="button" class="portion-btn inc-btn" onclick={inc}>+</button>
 </div>
+
+
+

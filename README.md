@@ -13,7 +13,13 @@ This is a **Hugo-based static website** dedicated to displaying recipes for the 
 - **Scripting Language:** [TypeScript](https://www.typescriptlang.org/) (transpiled natively by Hugo's built-in ESBuild pipeline)
 - **Web APIs:** Native browser Screen Wake Lock and Local Storage APIs for persistent options, theme choice, and screen wake control.
 - **Theme-wide Dark Mode:** Integrated CSS variable styling under `html.dark-mode` with localStorage persistence and native system preference matching.
+- **Style Organization & Scoping Rules:**
+  1. No styles exist for selectors which are not present in the site.
+  2. Styles applying only to a Svelte component live inside that component's `<style>` block.
+  3. Styles applying to Hugo templates or shared between Hugo and Svelte live in appropriately scoped CSS files under `themes/cookpot/assets/css/`.
+  4. There must be only one CSS rule for a particular selector combination (e.g. each class or selector combination has styles defined in only one location).
 - **Package Manager:** [pnpm](https://pnpm.io/) (for managing development tools like TypeScript linting/checking)
+
 - **Code Linters & Formatters:** [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) (configured to enforce Google TypeScript Style Guide compliance)
 - **Hosting:** Firebase Hosting (Project ID: `noonarby-casa-recipes`)
 - **CI/CD:** GitHub Actions for automated pull request previews and production deployment.

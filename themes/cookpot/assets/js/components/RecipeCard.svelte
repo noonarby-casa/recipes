@@ -276,63 +276,6 @@
 {/if}
 
 <style>
-  .recipe-card-unified {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  }
-  .recipe-card-unified:hover {
-    border-color: var(--noonblue-panel-hover-border);
-    box-shadow: 0 8px 25px rgba(0, 128, 216, 0.08);
-    transform: translateY(-2px);
-  }
-  .recipe-card-media-wrapper {
-    aspect-ratio: 1 / 1;
-    background-color: var(--image-bg);
-    height: auto;
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .recipe-card-image-link {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-  .recipe-card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transition: transform 0.4s ease;
-  }
-  .recipe-card-unified:hover .recipe-card-img {
-    transform: scale(1.05);
-  }
-  .recipe-favorite-badge {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    padding: 3px;
-    color: var(--heart-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 5;
-  }
-  html.dark-mode .recipe-favorite-badge {
-    background: rgba(30, 30, 30, 0.85);
-  }
   .recipe-card-controls {
     position: absolute;
     top: 6px;
@@ -341,33 +284,6 @@
     align-items: center;
     gap: 4px;
     z-index: 10;
-  }
-  .recipe-card-body {
-    display: flex;
-    flex-direction: column;
-    padding: 0.65rem 0.75rem;
-    flex-grow: 1;
-    gap: 0.35rem;
-  }
-  .recipe-card-title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    line-height: 1.3;
-    margin: 0;
-    color: var(--text-title);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .recipe-card-title a {
-    color: inherit;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  .recipe-card-title a:hover {
-    color: var(--noonblue);
   }
   .recipe-serving-text {
     color: var(--text-muted);
@@ -461,4 +377,206 @@
     line-height: 1;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
+
+  .planned-recipe-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    box-shadow: var(--btn-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .planned-recipe-item:hover {
+    border-color: var(--noonblue-border-light);
+  }
+
+  .planned-recipe-item.view-mode-card .recipe-card-body {
+    padding-bottom: 0.6rem;
+  }
+
+  .planned-recipe-item.dinner-slot-card {
+    border-color: var(--border-subtle);
+    border-width: 2.5px;
+  }
+
+  .planned-recipe-item.dinner-slot-card:hover {
+    border-color: var(--noonblue-border-light);
+  }
+
+  .planned-recipe-item.dragging {
+    border-color: var(--noonblue);
+    border-style: dashed;
+    opacity: 0.4;
+  }
+
+  .planned-recipe-item.drag-over {
+    position: relative;
+  }
+
+  .planned-recipe-item.drag-over::before {
+    background-color: var(--noonblue);
+    content: '';
+    height: 4px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 100;
+  }
+
+  .planned-recipe-item.new-addition {
+    animation: flashHighlight 1.2s ease-out;
+  }
+
+  @keyframes flashHighlight {
+    0% {
+      background-color: var(--noonblue-bg-hover);
+      border-color: var(--noonblue);
+      transform: scale(1.03);
+    }
+    100% {
+      background-color: var(--card-bg);
+      border-color: var(--border-subtle);
+      transform: scale(1);
+    }
+  }
+
+
+
+  .recipe-card-footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0.6rem 0.6rem 0.6rem;
+  }
+
+  .recipe-card-extra-ingredients {
+    margin-top: 0.5rem;
+    padding-top: 0.4rem;
+    border-top: 1px dashed var(--border-subtle);
+  }
+
+  .extra-ingredients-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .extra-ingredients-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .extra-ingredients-list li {
+    font-size: 0.72rem;
+    color: var(--text-body);
+    line-height: 1.35;
+    position: relative;
+    padding-left: 0.55rem;
+  }
+
+  .extra-ingredients-list li::before {
+    content: '•';
+    color: var(--noonblue);
+    position: absolute;
+    left: 0;
+  }
+
+  .browse-card {
+    align-items: center;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .browse-card:hover {
+    border-color: var(--noonblue-border-light);
+    box-shadow: var(--btn-shadow);
+  }
+
+  .browse-info {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+
+  .browse-img {
+    background-color: var(--image-bg);
+    border-radius: 4px;
+    flex-shrink: 0;
+    height: 38px;
+    object-fit: cover;
+    width: 38px;
+  }
+
+  .browse-title-wrapper {
+    min-width: 0;
+  }
+
+  .browse-title {
+    color: var(--text-color);
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .browse-badge {
+    background-color: rgba(0, 128, 216, 0.1);
+    border-radius: 3px;
+    color: var(--noonblue);
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-top: 0.1rem;
+    padding: 0.05rem 0.3rem;
+  }
+
+  .browse-add-btn {
+    align-items: center;
+    background-color: var(--noonblue-bg-light);
+    border: none;
+    border-radius: 50%;
+    color: var(--noonblue);
+    cursor: pointer;
+    display: inline-flex;
+    flex-shrink: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    height: 24px;
+    justify-content: center;
+    width: 24px;
+  }
+
+  .browse-card.planned {
+    background-color: var(--noonblue-bg-light);
+    border-color: var(--noonblue-border-light);
+  }
+
+  .browse-card.keyboard-focused {
+    background-color: var(--noonblue-bg-hover);
+    border-color: var(--noonblue);
+  }
 </style>
+
+

@@ -35,6 +35,16 @@
 
 <style>
   .planner-balance-stats {
+    background-color: var(--recipe-title-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    box-shadow: var(--btn-shadow);
+    color: var(--text-muted);
     display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+    text-align: center;
   }
 </style>
+

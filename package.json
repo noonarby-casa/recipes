@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "ci": "pnpm run build && pnpm run typecheck & p1=$! ; pnpm run lint & p2=$! ; pnpm run format & p3=$! ; pnpm run test & p4=$! ; wait $p1 && wait $p2 && wait $p3 && wait $p4",
+    "check:styles": "node scripts/check-style-rules.js",
+    "ci": "pnpm run build && pnpm run typecheck & p1=$! ; pnpm run lint & p2=$! ; pnpm run format & p3=$! ; pnpm run check:styles & p4=$! ; pnpm run test & p5=$! ; wait $p1 && wait $p2 && wait $p3 && wait $p4 && wait $p5",
     "fix": "pnpm run lint:fix && pnpm run format:fix",
     "clean": "node scripts/clean.js",
     "clean:all": "node scripts/clean.js --all"

@@ -152,7 +152,140 @@
 </div>
 
 <style>
-  .drag-wrapper {
-    display: contents;
+  .day-column {
+    background-color: var(--recipe-title-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 150px;
+    padding: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .day-column:hover {
+    border-color: var(--border-color);
+  }
+
+  .day-header {
+    align-items: baseline;
+    border-bottom: 1px solid var(--border-ultra-subtle);
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.4rem;
+  }
+
+  .day-title {
+    color: var(--text-title);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+
+  .day-time-badge {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .day-recipes-list {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 0.6rem;
+    min-height: 40px;
+  }
+
+  .empty-slot-box {
+    align-items: center;
+    background-color: transparent;
+    border: 1.5px dashed var(--btn-border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.6rem;
+    transition: all 0.2s ease;
+  }
+
+  .day-recipes-list .empty-slot-box {
+    height: 60px;
+    min-height: 60px;
+  }
+
+  .empty-slot-box:hover {
+    background-color: var(--noonblue-bg-light);
+    border-color: var(--noonblue);
+  }
+
+  .empty-slot-plus {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .empty-slot-box:hover .empty-slot-plus {
+    color: var(--noonblue);
+  }
+
+  .empty-slot-random {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.1rem;
+    justify-content: center;
+    min-height: 38px;
+    min-width: 38px;
+    padding: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .empty-slot-random:hover {
+    background-color: rgba(255, 145, 0, 0.15);
+    color: #ff9100;
+  }
+
+  .empty-slot-box.dinner-empty-slot {
+    border-color: var(--border-subtle);
+    border-width: 2.5px;
+  }
+
+  .empty-slot-box.dinner-empty-slot:hover {
+    border-color: var(--noonblue);
+  }
+
+  :global(.empty-slot-box.drag-over) {
+    background-color: var(--noonblue-bg-light);
+    border-color: var(--noonblue);
+  }
+
+  @media (max-width: 767px) {
+    .day-column {
+      min-height: auto;
+      padding: 0.75rem 1rem;
+    }
+
+    .day-recipes-list :global(.recipe-card-unified) {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .day-recipes-list :global(.recipe-card-title) {
+      font-size: 0.85rem;
+      line-height: 1.3;
+    }
   }
 </style>
+

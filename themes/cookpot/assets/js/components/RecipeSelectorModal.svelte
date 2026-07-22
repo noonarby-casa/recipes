@@ -222,15 +222,27 @@
   h3 {
     margin: 0;
   }
-  .modal-close-btn {
-    margin: 0;
-  }
   .header-sub {
     font-size: 0.85rem;
     color: var(--text-muted);
   }
   .modal-tags-notice {
     display: block;
+    padding: 0.75rem 1.5rem 0 1.5rem;
+    font-size: 0.85rem;
+    color: var(--noonblue);
+  }
+  .modal-search-wrapper {
+    padding: 1rem 1.5rem 0.5rem 1.5rem;
+  }
+  .modal-search-wrapper input {
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-body);
+    font-size: 0.85rem;
   }
   .planner-empty-state {
     margin-top: 1rem;
@@ -238,4 +250,24 @@
   .card-wrapper {
     display: contents;
   }
+  .planner-browse-shelf {
+    align-content: start;
+    display: grid;
+    flex-grow: 1;
+    gap: 0.65rem;
+    grid-auto-rows: min-content;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    height: auto;
+    min-height: 0;
+    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  @media (max-width: 767px) {
+    .planner-browse-shelf {
+      grid-template-columns: 1fr;
+      padding: 0.5rem 1rem 1rem 1rem;
+    }
+  }
 </style>
+
+

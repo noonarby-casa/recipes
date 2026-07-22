@@ -184,3 +184,11 @@ html.dark-mode .header-theme-toggle .theme-icon-dark {
     background: var(--scrollbar-thumb-hover);
   }
 }
+
+.hidden {
+  display: none !important;
+}
+
+.drag-wrapper {
+  display: contents;
+}

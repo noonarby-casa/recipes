@@ -188,7 +188,7 @@
         ✕ Clear All Filters
       </button>
     </div>
-    <h4>
+    <h4 class="filter-section-title">
       Filter by Tag
     </h4>
     <div class="planner-tag-filters tag-section-margin">
@@ -207,8 +207,8 @@
         </button>
       {/each}
     </div>
-    <hr class="shopping-divider" />
-    <h4>
+    <hr class="modal-divider" />
+    <h4 class="filter-section-title">
       Filter by Source
     </h4>
     <div class="planner-tag-filters">
@@ -231,10 +231,6 @@
 </Modal>
 
 <style>
-  .planner-modal-body {
-    padding: 1.25rem 1.5rem;
-  }
-
   .filter-header {
     margin-bottom: 1.25rem;
     display: flex;
@@ -248,23 +244,23 @@
     color: var(--text-muted);
   }
 
-  .planner-clear-btn {
-    font-size: 0.8rem;
-    padding: 0.35rem 0.75rem;
-    margin: 0;
-  }
-
-  h4 {
+  .filter-section-title {
     margin: 0 0 0.75rem 0;
     font-size: 0.95rem;
     color: var(--text-title);
+  }
+
+  .planner-tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .tag-section-margin {
     margin-bottom: 1.5rem;
   }
 
-  .shopping-divider {
+  .modal-divider {
     margin: 1.25rem 0;
     border: 0;
     border-top: 1px solid var(--border-subtle);

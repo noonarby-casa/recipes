@@ -292,18 +292,6 @@
     }
   }
 
-  :global(#cooking-dashboard),
-  .plan-back-btn {
-    transition:
-      opacity 0.2s ease-in-out,
-      transform 0.2s ease-in-out;
-  }
-
-  .overlay-container.is-minimized :global(#cooking-dashboard),
-  .overlay-container.is-minimized .plan-back-btn {
-    display: none !important;
-  }
-
   .overlay-container.is-minimized .minimized-fab {
     display: flex;
   }
@@ -311,22 +299,20 @@
   .fab-dashboard {
     order: 2;
   }
+
   .fab-back {
     order: 3;
   }
+
   :global(#cooking-dashboard) {
     order: 4;
-  }
-  .plan-back-btn {
-    order: 5;
+    transition:
+      opacity 0.2s ease-in-out,
+      transform 0.2s ease-in-out;
   }
 
   :global(.plan-toast-notification) {
     order: 10;
     pointer-events: auto;
-  }
-
-  .hidden {
-    display: none;
   }
 </style>

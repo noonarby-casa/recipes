@@ -16,23 +16,32 @@
   flex-grow: 1;
 }
 
-.primary-tags-wrapper .tag-filter-pill {
+.tag-filter-pill {
+  align-items: center;
   background: var(--tag-bg);
   border: 1px solid var(--border-ultra-subtle);
   border-radius: 20px;
   color: var(--tag-text);
   cursor: pointer;
+  display: inline-flex;
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: 500;
+  gap: 0.35rem;
   padding: 0.35rem 0.75rem;
   transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  user-select: none;
 }
 
-.primary-tags-wrapper .tag-filter-pill:hover {
+.tag-filter-pill:hover {
   background: var(--noonblue-btn-hover-bg);
   border-color: var(--noonblue-border-hover);
   color: var(--noonblue);
+}
+
+.tag-filter-pill.dimmed {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .tag-filter-pill.include {

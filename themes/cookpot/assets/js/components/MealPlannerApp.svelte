@@ -682,70 +682,215 @@
       <span>Removed <strong>{removedRecipeTitle}</strong> from {DAY_NAMES[$plannerStore.lastRemovedRecipe.day]}.</span>
       <button type="button" class="toast-undo-btn" onclick={() => plannerStore.undoRemove()}>Undo</button>
     </div>
-    <button type="button" class="toast-close-btn" aria-label="Dismiss toast" onclick={() => plannerStore.clearLastRemoved()}>✕</button>
+    <button type="button" class="icon-close-btn" aria-label="Dismiss toast" onclick={() => plannerStore.clearLastRemoved()}>✕</button>
   </div>
 {/if}
 
 <style>
-  #plan-conflict-banner {
+  .meal-planner-container {
     display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
+
+  .planner-mode-header {
+    align-items: center;
+    background: var(--font-panel-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    box-shadow: var(--btn-shadow);
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    margin-top: 1rem;
+    padding: 0.75rem 1.25rem;
+  }
+
   .planner-controls-toolbar {
+    align-items: center;
+    background: var(--font-panel-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    box-shadow: var(--btn-shadow);
     display: none;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1.25rem;
   }
+
   .planner-controls-toolbar.visible {
     display: flex;
   }
-  .plan-toast-notification {
+
+  .planner-top-actions {
+    align-items: center;
     display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
-  .dropdown-select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-color: var(--card-bg);
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230080d8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-position: right 0.75rem center;
-    background-repeat: no-repeat;
-    background-size: 0.85rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: var(--btn-shadow);
-    color: var(--text-color);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.85rem;
-    font-weight: 600;
-    padding: 0.45rem 2.2rem 0.45rem 0.9rem; /* space on the right for arrow */
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  .global-scaler-panel {
+    align-items: center;
+    background-color: var(--font-controls-bg);
+    border: 1px solid var(--border-ultra-subtle);
+    border-radius: 10px;
+    display: inline-flex;
+    gap: 0.75rem;
+    padding: 3px 0.75rem 3px 3px;
   }
 
-  .dropdown-select:hover {
+  .global-scaler-label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding-left: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .planner-banner {
+    align-items: center;
     background-color: var(--noonblue-bg-light);
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300518c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    border-color: var(--noonblue);
-    box-shadow: 0 4px 12px var(--noonblue-shadow-subtle);
+    border: 1px solid var(--noonblue-border-light);
+    border-radius: 12px;
+    box-shadow: var(--btn-shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .banner-compare-group {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .banner-tabs {
+    background-color: var(--font-controls-bg);
+    border: 1px solid var(--border-ultra-subtle);
+    border-radius: 8px;
+    display: flex;
+    padding: 2px;
+  }
+
+  .banner-tab {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--font-btn-text);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .banner-tab:hover {
     color: var(--noonblue);
   }
 
-  .dropdown-select:focus {
-    border-color: var(--noonblue);
-    box-shadow: 0 0 0 3px var(--noonblue-shadow);
-    outline: none;
+  .banner-actions {
+    display: flex;
+    gap: 0.5rem;
   }
 
-  .dropdown-select option {
+  .banner-btn {
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px var(--noonblue-shadow-subtle);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.4rem 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .banner-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .plan-toast-notification {
+    align-items: center;
+    animation: slideIn 0.3s ease;
     background-color: var(--card-bg);
-    color: var(--text-color);
+    border: 1px solid var(--noonblue-border-light);
+    border-left: 4px solid var(--noonblue);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    font-size: 0.85rem;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
   }
 
-  /* Dark Mode Dropdown Arrow Overrides */
-  :global(html.dark-mode) .dropdown-select {
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2360bbff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  :global(html.dark-mode) .dropdown-select:hover {
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2360bbff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  .plan-toast-notification .toast-body {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .plan-toast-notification .toast-undo-btn {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--noonblue);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+
+  .plan-toast-notification .toast-undo-btn:hover {
+    background-color: var(--border-ultra-subtle);
+    color: var(--noonblue);
+  }
+
+  #plan-conflict-banner {
+    display: flex;
+  }
+
+  @media (min-width: 768px) {
+    .meal-planner-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      grid-area: container;
+      height: 100%;
+      margin-top: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .planner-controls-toolbar {
+      gap: 0.75rem;
+      justify-content: center;
+    }
   }
 </style>
+
+

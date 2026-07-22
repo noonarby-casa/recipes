@@ -74,10 +74,6 @@
   transform: scale(1.03);
 }
 
-.font-btn {
-  flex: 1;
-}
-
 .instructions-column {
   font-size: var(--instructions-font-size, 1.2rem);
 }
@@ -627,29 +623,4 @@
     margin-top: 0.25rem;
     padding-top: 0.5rem;
   }
-}
-
-/* Floating Back Button (from meal planner) */
-.plan-back-btn {
-  align-items: center !important;
-  border-radius: 20px !important;
-  display: inline-flex !important;
-  font-size: 0.9rem;
-  font-weight: 600;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  text-decoration: none;
-  transition: all 0.2s ease !important;
-}
-
-.plan-back-btn:hover {
-  transform: translateY(-1px) !important;
-}
-
-.plan-back-btn svg {
-  stroke: #fff !important;
-}
-
-.plan-back-btn span {
-  color: #fff !important;
 }

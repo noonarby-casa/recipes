@@ -47,7 +47,7 @@
       <h3 class="store-modal-title">Store Layout</h3>
       <button
         type="button"
-        class="store-modal-close-btn"
+        class="icon-close-btn"
         aria-label="Close modal"
         onclick={close}
       >×</button>
@@ -119,22 +119,6 @@
     font-size: 1rem;
     font-weight: 700;
     margin: 0;
-  }
-
-  .store-modal-close-btn {
-    background: none;
-    border: none;
-    border-radius: 6px;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-    padding: 0.25rem 0.5rem;
-    transition: color 0.15s;
-  }
-
-  .store-modal-close-btn:hover {
-    color: var(--text-color);
   }
 
   .store-modal-body {

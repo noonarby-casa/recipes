@@ -86,7 +86,7 @@
       <button
         type="button"
         id="dashboard-close-all-btn"
-        class="dashboard-close-btn"
+        class="icon-close-btn"
         aria-label="Dismiss all timers"
         onclick={handleDismissAll}
       >
@@ -151,10 +151,6 @@
 {/if}
 
 <style>
-  .hidden {
-    display: none !important;
-  }
-
   .cooking-dashboard {
     background: var(--card-bg);
     border: 1px solid var(--border-subtle);
@@ -187,23 +183,6 @@
     font-size: 0.95rem;
     font-weight: 700;
     letter-spacing: -0.01em;
-  }
-
-  .dashboard-close-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 0.9rem;
-    padding: 0.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s ease;
-  }
-
-  .dashboard-close-btn:hover {
-    color: var(--text-color);
   }
 
   .dashboard-recipes-list {

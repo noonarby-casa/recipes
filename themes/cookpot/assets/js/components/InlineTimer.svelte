@@ -336,13 +336,13 @@
     box-shadow: none !important;
   }
 
-  :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-btn,
-  :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-reset {
+  :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-btn {
     color: var(--timer-paused-text) !important;
   }
 
   :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-reset {
     border-left-color: var(--timer-paused-border) !important;
+    color: var(--timer-paused-text) !important;
   }
 
   :global(.recipe-timer.has-started:not(.is-running)) .recipe-timer-btn:hover,

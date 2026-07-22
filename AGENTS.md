@@ -42,6 +42,15 @@ When building or modifying components in the hybrid Hugo + Svelte architecture, 
 - **Semantic Components & Utility Classes:** Define global styling rules and components (e.g. [compound-list.css](themes/cookpot/assets/css/components/compound-list.css)) inside Hugo's stylesheet bundle. Output identical class names (e.g., `compound-list`) in Svelte templates to inherit layout/style features without duplication.
 - **Selective Scoping:** Use Svelte's `:global()` modifier to style or react to Hugo-rendered parent states (e.g., `:global(html.dark-mode) .your-svelte-class`).
 
+### Style Organization & Scoping Rules
+
+All stylesheets and component styles in the project MUST adhere strictly to the following 4 scoping & uniqueness rules:
+
+1. **No Unused Styles:** No styles exist for selectors which are not present in the site (e.g. if a class name or id doesn't exist in both Hugo templates and Svelte components). Those unused selectors must be removed.
+2. **Svelte Component Scoping:** If a style selector only applies to a Svelte component, then the style must exist within the Svelte component's `<style>` block.
+3. **Shared & Hugo Layout CSS:** If a style exists in a Hugo template, or is shared between a Hugo template and a Svelte component, then the style lives in an appropriately scoped CSS file under [assets/css/](themes/cookpot/assets/css/).
+4. **Single Selector Rule Definition:** There must be only one CSS rule for a particular selector combination (e.g., each class or selector combination has styles defined in only one location across CSS and Svelte components).
+
 ---
 
 ## ⌨️ Implementation & Major Features

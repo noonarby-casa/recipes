@@ -317,9 +317,6 @@
     fill: currentColor;
     stroke: none;
   }
-  .search-results-info {
-    display: flex;
-  }
   .search-no-results-text {
     grid-column: 1 / -1;
     text-align: center;
