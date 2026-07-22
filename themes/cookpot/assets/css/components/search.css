@@ -92,16 +92,35 @@
 }
 
 .search-results-clear-link {
-  color: var(--noonblue);
+  align-items: center;
+  background-color: var(--card-bg);
+  border: 1px solid #b71c1c;
+  border-radius: 8px;
+  color: #b71c1c;
   cursor: pointer;
+  display: inline-flex;
+  font-size: 0.85rem;
   font-weight: 600;
-  text-decoration: none;
-  transition: color 0.2s;
+  justify-content: center;
+  padding: 0.45rem 0.9rem;
+  transition: all 0.2s ease;
 }
 
 .search-results-clear-link:hover {
-  color: var(--noonblue);
-  text-decoration: underline;
+  background-color: rgba(183, 28, 28, 0.08);
+  border-color: #a01818;
+  color: #a01818;
+}
+
+html.dark-mode .search-results-clear-link {
+  border-color: #ff9999;
+  color: #ff9999;
+}
+
+html.dark-mode .search-results-clear-link:hover {
+  background-color: rgba(255, 153, 153, 0.1);
+  border-color: #ffb3b3;
+  color: #ffb3b3;
 }
 
 .search-no-results {
