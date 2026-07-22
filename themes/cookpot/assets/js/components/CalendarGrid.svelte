@@ -266,12 +266,12 @@
     padding-bottom: 0.75rem;
   }
 
-  :global(.supplemental-recipes-list .planned-recipe-item) {
+  .supplemental-recipes-list :global(.planned-recipe-item) {
     flex: 0 0 160px;
     margin: 0;
   }
 
-  :global(.supplemental-recipes-list .empty-slot-box) {
+  .supplemental-recipes-list .empty-slot-box {
     align-items: center;
     align-self: stretch;
     display: flex;
