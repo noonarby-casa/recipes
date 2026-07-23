@@ -135,7 +135,7 @@
 
       {#if showFavorite && isFav}
         <div class="recipe-favorite-badge" title="Favorited recipe">
-          <HeartIcon fill="currentColor" color="none" size={13} />
+          <HeartIcon fill="currentColor" color="none" size={36} class="heart-icon-badge" />
         </div>
       {/if}
 

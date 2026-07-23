@@ -283,19 +283,49 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  padding: 3px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  padding: 0;
   color: var(--heart-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
   z-index: 5;
+  transition: opacity 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
 html.dark-mode .recipe-favorite-badge {
-  background: rgba(30, 30, 30, 0.85);
+  background: none;
+  border: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
+}
+
+.recipe-favorite-badge .heart-icon-badge,
+.recipe-favorite-badge svg {
+  fill: var(--heart-color);
+  stroke: var(--heart-color);
+  stroke-width: 1;
+  width: 36px;
+  height: 36px;
+  display: block;
+  margin: 0;
+}
+
+.recipe-list-image-container .recipe-favorite-badge {
+  top: 6px;
+  right: 6px;
+  width: 36px;
+  height: 36px;
+}
+
+.recipe-list-image-container .recipe-favorite-badge .heart-icon-badge,
+.recipe-list-image-container .recipe-favorite-badge svg {
+  width: 36px;
+  height: 36px;
 }
 
 .recipe-card-body {

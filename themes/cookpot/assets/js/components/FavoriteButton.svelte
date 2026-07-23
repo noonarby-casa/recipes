@@ -100,52 +100,6 @@
     display: flex;
   }
 
-  :global(.recipe-favorite-badge) {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    pointer-events: none;
-    z-index: 5;
-    transition: opacity 0.2s ease;
-  }
-
-  :global(html.dark-mode) :global(.recipe-favorite-badge) {
-    background-color: rgba(30, 30, 30, 0.85);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  :global(.recipe-favorite-badge .heart-icon-badge) {
-    fill: var(--heart-color);
-    stroke: var(--heart-color);
-    stroke-width: 1;
-    width: 12px;
-    height: 12px;
-    display: block;
-  }
-
-  :global(.recipe-list-image-container .recipe-favorite-badge) {
-    top: 6px;
-    right: 6px;
-    width: 26px;
-    height: 26px;
-  }
-
-  :global(.recipe-list-image-container .recipe-favorite-badge .heart-icon-badge) {
-    width: 14px;
-    height: 14px;
-  }
-
   :global(.recipe-scale-panel) {
     position: relative;
   }
