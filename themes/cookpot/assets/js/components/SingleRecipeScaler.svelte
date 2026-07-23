@@ -1,7 +1,8 @@
 <script lang="ts">
-  import {onMount} from 'svelte';
-  import {formatRecipeIngredientHTML} from '../units';
-  import {recipeScaleStore} from '../stores/settings';
+  import { onMount } from 'svelte';
+  import { formatRecipeIngredientHTML } from '../units';
+  import { recipeScaleStore } from '../stores/settings';
+  import { plannerStore } from '../stores/planner';
   import FavoriteButton from './FavoriteButton.svelte';
 
   interface Props {
@@ -11,11 +12,23 @@
     shortId?: string;
   }
 
+  const WEEKDAYS = [
+    { key: 'mon', label: 'M', full: 'Monday' },
+    { key: 'tue', label: 'T', full: 'Tuesday' },
+    { key: 'wed', label: 'W', full: 'Wednesday' },
+    { key: 'thu', label: 'T', full: 'Thursday' },
+    { key: 'fri', label: 'F', full: 'Friday' },
+    { key: 'sat', label: 'S', full: 'Saturday' },
+    { key: 'sun', label: 'S', full: 'Sunday' },
+  ] as const;
+
   let { baseServings, shortId }: Props = $props();
 
   let portions = $state(baseServings);
+  let currentPermalink = $state('');
 
   onMount(() => {
+    currentPermalink = window.location.pathname;
     const urlParams = new URLSearchParams(window.location.search);
     const servingsParam = urlParams.get('servings');
     if (servingsParam) {
@@ -31,9 +44,38 @@
     scaleIngredientsInDOM(scale);
     recipeScaleStore.set(scale);
     document.dispatchEvent(
-      new CustomEvent('recipe:scale', {detail: {factor: scale}}),
+      new CustomEvent('recipe:scale', { detail: { factor: scale } }),
     );
   });
+
+  function isScheduledOn(dayKey: string): boolean {
+    if (!currentPermalink) {
+      return false;
+    }
+    return $plannerStore.plan.some(
+      (item) => item.permalink === currentPermalink && item.day === dayKey,
+    );
+  }
+
+  function toggleDay(dayKey: string) {
+    if (!currentPermalink) {
+      return;
+    }
+    const existing = $plannerStore.plan.find(
+      (item) => item.permalink === currentPermalink && item.day === dayKey,
+    );
+    if (existing) {
+      plannerStore.removeRecipe(existing.instanceId);
+    } else {
+      plannerStore.addRecipe(dayKey, currentPermalink);
+    }
+  }
+
+  let hasAnyPlan = $derived(
+    currentPermalink
+      ? $plannerStore.plan.some((item) => item.permalink === currentPermalink)
+      : false,
+  );
 
   function scaleIngredientsInDOM(scale: number) {
     const ingredients = document.querySelectorAll('.recipe-ingredient');
@@ -89,7 +131,7 @@
         desc,
         prep,
         alt,
-        optional
+        optional,
       );
     });
   }
@@ -103,19 +145,61 @@
   }
 </script>
 
-<div class="recipe-scale-panel">
-  {#if shortId}
-    <FavoriteButton {shortId} />
-  {/if}
-  <div class="scale-header">
-    <span class="scale-label">Servings</span>
-  </div>
-  <div class="scale-controls">
-    <div class="portion-picker">
-      <button type="button" class="portion-btn dec-btn" id="recipe-dec-btn" onclick={dec}>−</button>
-      <span class="portion-val" id="recipe-serving-count">{portions}</span>
-      <button type="button" class="portion-btn inc-btn" id="recipe-inc-btn" onclick={inc}>+</button>
+<div class="recipe-controls-panel">
+  <!-- Row 1: Servings Scaler & Favorite Button -->
+  <div class="recipe-scale-panel">
+    {#if shortId}
+      <FavoriteButton {shortId} />
+    {/if}
+    <div class="scale-header">
+      <span class="scale-label">Servings</span>
     </div>
-    <span class="scale-subtitle">(Original: {baseServings})</span>
+    <div class="scale-controls">
+      <div class="portion-picker">
+        <button
+          type="button"
+          class="portion-btn dec-btn"
+          id="recipe-dec-btn"
+          onclick={dec}>−</button
+        >
+        <span class="portion-val" id="recipe-serving-count">{portions}</span>
+        <button
+          type="button"
+          class="portion-btn inc-btn"
+          id="recipe-inc-btn"
+          onclick={inc}>+</button
+        >
+      </div>
+      <span class="scale-subtitle">(Original: {baseServings})</span>
+    </div>
+  </div>
+
+  <!-- Row 2: Full-width Weekday Meal Plan Row -->
+  <div class="recipe-meal-plan-row">
+    <span class="meal-plan-row-label">Plan:</span>
+    <div class="weekday-pill-group">
+      {#each WEEKDAYS as day}
+        {@const active = isScheduledOn(day.key)}
+        <button
+          type="button"
+          class="weekday-pill"
+          class:active
+          onclick={() => toggleDay(day.key)}
+          title={active
+            ? `Scheduled for ${day.full} (Click to remove)`
+            : `Add to ${day.full}`}
+          aria-label={active
+            ? `Scheduled for ${day.full}`
+            : `Add to ${day.full}`}
+        >
+          {day.label}
+        </button>
+      {/each}
+    </div>
+    {#if hasAnyPlan}
+      <a href="/plan/" class="view-plan-link" title="Open Meal Planner">
+        View Plan →
+      </a>
+    {/if}
   </div>
 </div>

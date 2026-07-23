@@ -3,6 +3,8 @@
   import { recipesStore } from '../stores/recipes';
   import { favoritesStore } from '../stores/favorites';
   import { filtersStore } from '../stores/filters';
+  import { plannerStore } from '../stores/planner';
+  import { ls } from '../utils/storage';
   import RecipeCard from './RecipeCard.svelte';
   import FiltersModal from './FiltersModal.svelte';
   import { PRIMARY_TAGS } from '../constants';
@@ -14,6 +16,13 @@
   let hasHydrated = $state(false);
   let isFiltersOpen = $state(false);
   let displayCount = $state(24);
+  let bannerDismissed = $state(ls.getString('noonarby-planner-banner-dismissed') === 'true');
+  let showPlannerBanner = $derived(!bannerDismissed && $plannerStore.plan.length === 0);
+
+  function dismissPlannerBanner() {
+    bannerDismissed = true;
+    ls.setString('noonarby-planner-banner-dismissed', 'true');
+  }
 
   let searchResults = $derived.by(() => {
     let list = $recipesStore;
@@ -233,6 +242,28 @@
 </script>
 
 {#if hasHydrated}
+  {#if showPlannerBanner}
+    <div class="planner-callout-banner">
+      <div class="planner-callout-content">
+        <span class="planner-callout-icon">🗓️</span>
+        <div class="planner-callout-text">
+          <strong>Plan your weekly meals:</strong> Schedule recipes for the week and generate an automatic shopping list.
+        </div>
+      </div>
+      <div class="planner-callout-actions">
+        <a href="/plan/" class="planner-callout-btn">Open Meal Planner →</a>
+        <button
+          type="button"
+          class="planner-callout-close"
+          onclick={dismissPlannerBanner}
+          aria-label="Dismiss meal planner announcement"
+        >
+          <XIcon size={16} strokeWidth={2.5} />
+        </button>
+      </div>
+    </div>
+  {/if}
+
   <div class="recipe-search-container">
     <div class="recipe-search-box">
       <SearchIcon size={18} strokeWidth={2.5} class="search-icon" />
@@ -323,5 +354,72 @@
     padding: 4rem 1.5rem;
     color: var(--text-muted);
     font-size: 1.05rem;
+  }
+
+  .planner-callout-banner {
+    align-items: center;
+    background-color: var(--noonblue-bg-light);
+    border: 1px solid var(--noonblue-border-light);
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .planner-callout-content {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .planner-callout-icon {
+    font-size: 1.25rem;
+  }
+
+  .planner-callout-text {
+    color: var(--text-color);
+    font-size: 0.9rem;
+  }
+
+  .planner-callout-actions {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.5rem;
+  }
+
+  .planner-callout-btn {
+    background-color: var(--noonblue);
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.4rem 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .planner-callout-btn:hover {
+    background-color: var(--noonblue-hover);
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .planner-callout-close {
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    padding: 0.35rem;
+    transition: all 0.2s ease;
+  }
+
+  .planner-callout-close:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: var(--text-color);
   }
 </style>

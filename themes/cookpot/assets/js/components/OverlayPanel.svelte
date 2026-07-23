@@ -6,12 +6,10 @@
   import PlusIcon from './icons/PlusIcon.svelte';
   import MinusIcon from './icons/MinusIcon.svelte';
   import ClockIcon from './icons/ClockIcon.svelte';
-  import ArrowLeftIcon from './icons/ArrowLeftIcon.svelte';
 
   const overlayState = $derived($overlayStore);
 
   let dashboardFabEl = $state<HTMLButtonElement | null>(null);
-  let backFabEl = $state<HTMLButtonElement | null>(null);
 
   onMount(() => {
     timersStore.syncWithStorage();
@@ -31,8 +29,6 @@
     if (minimized) {
       if (overlayState.hasDashboard && dashboardFabEl) {
         dashboardFabEl.focus();
-      } else if (overlayState.backHref && backFabEl) {
-        backFabEl.focus();
       }
     } else {
       const db = document.getElementById('cooking-dashboard');
@@ -114,27 +110,6 @@
       >
         <ClockIcon size={20} strokeWidth={2.5} showTopButton={true} />
       </button>
-    {/if}
-
-    {#if overlayState.backHref}
-      <button
-        bind:this={backFabEl}
-        type="button"
-        class="minimized-fab fab-back"
-        aria-label="Back to Meal Plan"
-        data-tooltip="Back to Meal Plan"
-        onclick={() => { window.location.href = overlayState.backHref!; }}
-      >
-        <ArrowLeftIcon size={20} strokeWidth={2.5} />
-      </button>
-      <a
-        href={overlayState.backHref}
-        class="plan-back-btn btn btn-brand"
-        class:hidden={overlayState.isMinimized}
-      >
-        <ArrowLeftIcon size={16} strokeWidth={2.5} />
-        <span>Back to Meal Plan</span>
-      </a>
     {/if}
 
     <TimersManager />
@@ -298,35 +273,6 @@
 
   .fab-dashboard {
     order: 2;
-  }
-
-  .fab-back {
-    order: 3;
-  }
-
-  .plan-back-btn {
-    align-items: center;
-    border-radius: 20px;
-    display: inline-flex;
-    font-size: 0.9rem;
-    font-weight: 600;
-    gap: 0.5rem;
-    order: 3;
-    padding: 0.6rem 1.2rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-
-  .plan-back-btn:hover {
-    transform: translateY(-1px);
-  }
-
-  .plan-back-btn :global(svg) {
-    stroke: #fff;
-  }
-
-  .plan-back-btn span {
-    color: #fff;
   }
 
   :global(#cooking-dashboard) {

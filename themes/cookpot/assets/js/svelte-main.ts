@@ -6,7 +6,6 @@ import HomepageSearchApp from './components/HomepageSearchApp.svelte';
 import SingleRecipeScaler from './components/SingleRecipeScaler.svelte';
 import OverlayPanel from './components/OverlayPanel.svelte';
 import RecipeSidesInjector from './components/RecipeSidesInjector.svelte';
-import PlanBackButton from './components/PlanBackButton.svelte';
 import InlineTimer from './components/InlineTimer.svelte';
 import ToggleGroup from './components/ToggleGroup.svelte';
 import FontSizeController from './components/FontSizeController.svelte';
@@ -68,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Overlay panel for displaying content in the bottom left of the site
   mountAppToTarget(OverlayPanel, 'overlay-panel-mount');
   mountAppToTarget(RecipeSidesInjector, 'recipe-sides-mount');
-  mountAppToTarget(PlanBackButton, 'recipe-plan-back-mount');
 
   // Font-size controller — single-recipe pages only (no-ops elsewhere)
   mountAppToTarget(FontSizeController, 'font-size-controller-mount');

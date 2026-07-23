@@ -3,7 +3,6 @@ import { ls } from '../utils/storage';
 
 interface OverlayState {
   isMinimized: boolean;
-  backHref: string | null;
   hasDashboard: boolean;
 }
 
@@ -15,15 +14,11 @@ function getInitialMinimized(): boolean {
 
 const store = writable<OverlayState>({
   isMinimized: getInitialMinimized(),
-  backHref: null,
   hasDashboard: false,
 });
 
 export const overlayStore = {
   subscribe: store.subscribe,
-  setBackHref(href: string | null) {
-    store.update((s) => ({ ...s, backHref: href }));
-  },
   setHasDashboard(has: boolean) {
     store.update((s) => ({ ...s, hasDashboard: has }));
   },
@@ -45,7 +40,4 @@ export const overlayStore = {
 };
 
 /** True when the overlay has any content to display. */
-export const overlayVisible = derived(
-  store,
-  ($s) => $s.hasDashboard || $s.backHref !== null,
-);
+export const overlayVisible = derived(store, ($s) => $s.hasDashboard);

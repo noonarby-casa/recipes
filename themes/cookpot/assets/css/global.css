@@ -129,6 +129,28 @@ a:hover {
   color: var(--noonblue);
 }
 
+.header-plan-link {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  color: var(--text-color);
+  display: inline-flex;
+  font-size: 0.85rem;
+  font-weight: 600;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.header-plan-link:hover {
+  background-color: var(--noonblue-bg-light);
+  border-color: var(--noonblue);
+  color: var(--noonblue);
+  text-decoration: none;
+}
+
 .header-search-toggle svg,
 .header-random-recipe svg,
 .header-theme-toggle svg,
