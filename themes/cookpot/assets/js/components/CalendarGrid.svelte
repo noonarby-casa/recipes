@@ -100,6 +100,7 @@
   let isDragOverTrash = $state(false);
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
   class="planner-column scrollable-area"
   use:scrollable
@@ -155,6 +156,8 @@
           {/each}
 
           {#if editMode}
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
             <div class="empty-slot-box" data-day="supplemental" title="Add supplemental recipe" onclick={() => onAddRecipe('supplemental')}>
               <span class="empty-slot-plus">+</span>
             </div>

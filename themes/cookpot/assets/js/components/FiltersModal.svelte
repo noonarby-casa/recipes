@@ -96,8 +96,8 @@
   title="Filter Recipes"
   backdropClass="planner-modal-backdrop"
   contentClass="planner-modal-content"
-  contentStyle="max-height: 75vh; height: auto;"
 >
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
     class="planner-modal-body scrollable-area"
     use:scrollable

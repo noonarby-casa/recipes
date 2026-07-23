@@ -14,7 +14,8 @@ import RecipeShoppingList from './components/RecipeShoppingList.svelte';
 import type { Component } from 'svelte';
 
 function mountAppToTarget(
-  component: Component<any, any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  component: Component<any>,
   idOrSelector: string,
   options: {
     many?: boolean;

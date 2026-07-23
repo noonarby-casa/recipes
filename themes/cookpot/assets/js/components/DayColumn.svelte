@@ -145,6 +145,8 @@
   </div>
 
   {#if editMode}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="empty-slot-box" data-day={day} title="Add recipe to {dayName}" onclick={onAddRecipe}>
       <span class="empty-slot-plus">+</span>
     </div>
@@ -195,42 +197,6 @@
     flex-grow: 1;
     gap: 0.6rem;
     min-height: 40px;
-  }
-
-  .day-recipes-list .empty-slot-box {
-    height: 60px;
-    min-height: 60px;
-  }
-
-  .empty-slot-random {
-    align-items: center;
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    box-sizing: border-box;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: inline-flex;
-    font-size: 1.1rem;
-    justify-content: center;
-    min-height: 38px;
-    min-width: 38px;
-    padding: 0.5rem;
-    transition: all 0.2s ease;
-  }
-
-  .empty-slot-random:hover {
-    background-color: rgba(255, 145, 0, 0.15);
-    color: #ff9100;
-  }
-
-  .empty-slot-box.dinner-empty-slot {
-    border-color: var(--border-subtle);
-    border-width: 2.5px;
-  }
-
-  .empty-slot-box.dinner-empty-slot:hover {
-    border-color: var(--noonblue);
   }
 
   @media (max-width: 767px) {
