@@ -164,16 +164,19 @@
 
 <style>
   :global(.recipe-timer) {
-    align-items: stretch;
+    align-items: center;
     border: 1px solid transparent;
     border-radius: 20px;
     box-sizing: border-box;
     display: inline-flex;
-    margin: 0 0.35rem;
+    font-size: 0.9em;
+    line-height: 1.2;
+    margin: 0 0.3rem;
+    padding: 0 !important;
     overflow: hidden;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
-    vertical-align: middle;
+    vertical-align: -0.15em;
   }
 
   :global(.recipe-timer:hover) {
@@ -193,11 +196,12 @@
     cursor: pointer;
     display: inline-flex;
     font-family: inherit;
-    font-size: 0.95em;
+    font-size: inherit;
     font-weight: 600;
-    gap: 0.45rem;
+    gap: 0.35rem;
+    line-height: 1.2;
     outline: none;
-    padding: 0.35rem 0.85rem;
+    padding: 0.15rem 0.6rem;
     transition: background-color 0.2s ease;
     flex-grow: 1;
     justify-content: center;
@@ -215,13 +219,15 @@
     color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
     display: none; /* Hidden by default */
-    font-size: 0.95rem;
+    font-size: inherit;
     justify-content: center;
+    line-height: 1.2;
     outline: none;
+    padding: 0.15rem 0.4rem;
     transition:
       background-color 0.2s ease,
       color 0.2s ease;
-    width: 36px; /* Generous touch target for tablets */
+    width: 28px; /* Generous touch target for tablets */
   }
 
   .recipe-timer-reset:hover {
