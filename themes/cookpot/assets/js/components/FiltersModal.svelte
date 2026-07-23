@@ -23,82 +23,107 @@
     Array.from(new Set(recipes.map((r) => r.recipeSource || 'Noonarby'))).sort()
   );
 
-  let matchesForTags = $derived(
-    recipes.filter((r) => {
-      if ($filtersStore.searchQuery) {
-        const query = $filtersStore.searchQuery.toLowerCase();
-        const matchesTitle = r.title.toLowerCase().includes(query);
-        const matchesSummary = r.summary && r.summary.toLowerCase().includes(query);
-        const matchesSource = r.recipeSource && r.recipeSource.toLowerCase().includes(query);
-        const matchesTags = r.tags && r.tags.some((t) => t.toLowerCase().includes(query));
-        const matchesIngredients = r.ingredients && r.ingredients.some((ing) => {
-          const item = typeof ing === 'string' ? ing : ing.item;
-          return item.toLowerCase().includes(query);
-        });
-        if (!matchesTitle && !matchesSummary && !matchesSource && !matchesTags && !matchesIngredients) {
-          return false;
-        }
-      }
-      if ($filtersStore.favoritesOnly && (!r.shortId || !$favoritesStore.includes(r.shortId))) {
-        return false;
-      }
-      if ($filtersStore.includedSources.length > 0 && !($filtersStore.includedSources.includes(r.recipeSource || 'Noonarby'))) {
-        return false;
-      }
-      if ($filtersStore.excludedSources.includes(r.recipeSource || 'Noonarby')) {
-        return false;
-      }
-      return true;
-    })
-  );
-
-  let matchesForSources = $derived(
-    recipes.filter((r) => {
-      if ($filtersStore.searchQuery) {
-        const query = $filtersStore.searchQuery.toLowerCase();
-        const matchesTitle = r.title.toLowerCase().includes(query);
-        const matchesSummary = r.summary && r.summary.toLowerCase().includes(query);
-        const matchesSource = r.recipeSource && r.recipeSource.toLowerCase().includes(query);
-        const matchesTags = r.tags && r.tags.some((t) => t.toLowerCase().includes(query));
-        const matchesIngredients = r.ingredients && r.ingredients.some((ing) => {
-          const item = typeof ing === 'string' ? ing : ing.item;
-          return item.toLowerCase().includes(query);
-        });
-        if (!matchesTitle && !matchesSummary && !matchesSource && !matchesTags && !matchesIngredients) {
-          return false;
-        }
-      }
-      if ($filtersStore.favoritesOnly && (!r.shortId || !$favoritesStore.includes(r.shortId))) {
-        return false;
-      }
-      if ($filtersStore.includedTags.length > 0 && !($filtersStore.includedTags.some(t => r.tags?.includes(t)))) {
-        return false;
-      }
-      if ($filtersStore.excludedTags.some(t => r.tags?.includes(t))) {
-        return false;
-      }
-      return true;
-    })
-  );
+  function hasTag(rTags: string[] | undefined, tag: string): boolean {
+    if (!rTags || rTags.length === 0) {
+      return false;
+    }
+    const normalizedTag = tag.trim().toLowerCase();
+    return rTags.some((t) => t.trim().toLowerCase() === normalizedTag);
+  }
 
   let tagTallies = $derived.by(() => {
     const tallies: Record<string, number> = {};
-    matchesForTags.forEach((r) => {
-      if (r.tags) {
-        r.tags.forEach((tag) => {
-          tallies[tag] = (tallies[tag] || 0) + 1;
+    const { searchQuery, favoritesOnly, includedTags, excludedTags, includedSources, excludedSources } = $filtersStore;
+    const favs = $favoritesStore;
+
+    recipes.forEach((r) => {
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesTitle = r.title.toLowerCase().includes(query);
+        const matchesSummary = r.summary && r.summary.toLowerCase().includes(query);
+        const matchesSource = r.recipeSource && r.recipeSource.toLowerCase().includes(query);
+        const matchesTags = r.tags && r.tags.some((t) => t.toLowerCase().includes(query));
+        const matchesIngredients = r.ingredients && r.ingredients.some((ing) => {
+          const item = typeof ing === 'string' ? ing : ing.item;
+          return item.toLowerCase().includes(query);
         });
+        if (!matchesTitle && !matchesSummary && !matchesSource && !matchesTags && !matchesIngredients) {
+          return;
+        }
       }
+
+      if (favoritesOnly && (!r.shortId || !favs.includes(r.shortId))) {
+        return;
+      }
+
+      const rSrc = r.recipeSource || 'Noonarby';
+      if (includedSources.length > 0 && !includedSources.includes(rSrc)) {
+        return;
+      }
+      if (excludedSources.includes(rSrc)) {
+        return;
+      }
+
+      uniqueTags.forEach((tag) => {
+        if (!hasTag(r.tags, tag)) {
+          return;
+        }
+        const otherInc = includedTags.filter((t) => t.trim().toLowerCase() !== tag.trim().toLowerCase());
+        if (otherInc.length > 0 && !otherInc.every((t) => hasTag(r.tags, t))) {
+          return;
+        }
+        const otherExc = excludedTags.filter((t) => t.trim().toLowerCase() !== tag.trim().toLowerCase());
+        if (otherExc.length > 0 && otherExc.some((t) => hasTag(r.tags, t))) {
+          return;
+        }
+        tallies[tag] = (tallies[tag] || 0) + 1;
+      });
     });
+
     return tallies;
   });
 
   let sourceTallies = $derived.by(() => {
     const tallies: Record<string, number> = {};
-    matchesForSources.forEach((r) => {
-      const src = r.recipeSource || 'Noonarby';
-      tallies[src] = (tallies[src] || 0) + 1;
+    const { searchQuery, favoritesOnly, includedTags, excludedTags, excludedSources } = $filtersStore;
+    const favs = $favoritesStore;
+
+    recipes.forEach((r) => {
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesTitle = r.title.toLowerCase().includes(query);
+        const matchesSummary = r.summary && r.summary.toLowerCase().includes(query);
+        const matchesSource = r.recipeSource && r.recipeSource.toLowerCase().includes(query);
+        const matchesTags = r.tags && r.tags.some((t) => t.toLowerCase().includes(query));
+        const matchesIngredients = r.ingredients && r.ingredients.some((ing) => {
+          const item = typeof ing === 'string' ? ing : ing.item;
+          return item.toLowerCase().includes(query);
+        });
+        if (!matchesTitle && !matchesSummary && !matchesSource && !matchesTags && !matchesIngredients) {
+          return;
+        }
+      }
+
+      if (favoritesOnly && (!r.shortId || !favs.includes(r.shortId))) {
+        return;
+      }
+
+      if (includedTags.length > 0 && !includedTags.every((t) => hasTag(r.tags, t))) {
+        return;
+      }
+      if (excludedTags.length > 0 && excludedTags.some((t) => hasTag(r.tags, t))) {
+        return;
+      }
+
+      const rSrc = r.recipeSource || 'Noonarby';
+      const otherExcSources = excludedSources.filter((s) => s !== rSrc);
+      if (otherExcSources.includes(rSrc)) {
+        return;
+      }
+
+      tallies[rSrc] = (tallies[rSrc] || 0) + 1;
     });
+
     return tallies;
   });
 
