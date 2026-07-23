@@ -23,19 +23,32 @@ import HeartIcon from './icons/HeartIcon.svelte';
 
   let { isOpen, item, onClose }: Props = $props();
 
+  let currentItem = $derived(
+    $plannerStore.plan.find((p) => p.instanceId === item.instanceId) || item
+  );
   let recipes = $derived($recipesStore);
-  let rec = $derived(item.permalink ? recipes.find((r) => r.permalink === item.permalink) : undefined);
-  let title = $derived(rec ? rec.title : item.customTitle || 'Custom Item');
+  let rec = $derived(
+    currentItem.permalink
+      ? recipes.find((r) => r.permalink === currentItem.permalink)
+      : undefined
+  );
+  let title = $derived(
+    rec ? rec.title : currentItem.customTitle || 'Custom Item'
+  );
   let defaultServings = $derived(rec ? rec.servings : 4);
-  let portions = $derived(Math.round(item.scale * defaultServings));
-  let isFav = $derived(rec && rec.shortId ? $favoritesStore.includes(rec.shortId) : false);
+  let portions = $derived(Math.round(currentItem.scale * defaultServings));
+  let isFav = $derived(
+    rec && rec.shortId ? $favoritesStore.includes(rec.shortId) : false
+  );
 
-  let extras = $derived(item.extraIngredients || []);
+  let extras = $derived(currentItem.extraIngredients || []);
 
   let editingIndex = $state<number | null>(null);
   let inputValue = $state('');
 
-  let parsedExtra = $derived(inputValue.trim() ? parseRawUserInput(inputValue.trim()) : null);
+  let parsedExtra = $derived(
+    inputValue.trim() ? parseRawUserInput(inputValue.trim()) : null
+  );
 
   $effect(() => {
     if (editingIndex !== null && extras[editingIndex]) {
@@ -61,13 +74,18 @@ import HeartIcon from './icons/HeartIcon.svelte';
       } else {
         nextExtras[editingIndex] = parsed;
       }
-      plannerStore.updateExtraIngredients(item.instanceId, nextExtras);
+      plannerStore.updateExtraIngredients(currentItem.instanceId, nextExtras);
       editingIndex = null;
     } else {
-      if (!text) {return;}
+      if (!text) {
+        return;
+      }
       const parsed = parseRawUserInput(text);
       if (parsed.item) {
-        plannerStore.updateExtraIngredients(item.instanceId, [...extras, parsed]);
+        plannerStore.updateExtraIngredients(currentItem.instanceId, [
+          ...extras,
+          parsed,
+        ]);
         inputValue = '';
       }
     }
@@ -83,7 +101,7 @@ import HeartIcon from './icons/HeartIcon.svelte';
 
   function handleRemoveExtra(idx: number) {
     const nextExtras = extras.filter((_, i) => i !== idx);
-    plannerStore.updateExtraIngredients(item.instanceId, nextExtras);
+    plannerStore.updateExtraIngredients(currentItem.instanceId, nextExtras);
     if (editingIndex === idx) {
       editingIndex = null;
     }
@@ -121,8 +139,8 @@ import HeartIcon from './icons/HeartIcon.svelte';
         <h4 class="details-section-title">Title</h4>
         <input
           type="text"
-          value={item.customTitle || ''}
-          onchange={(e) => plannerStore.updateCustomTitle(item.instanceId, e.currentTarget.value)}
+          value={currentItem.customTitle || ''}
+          onchange={(e) => plannerStore.updateCustomTitle(currentItem.instanceId, e.currentTarget.value)}
           class="title-input"
         />
       {/if}
@@ -131,7 +149,7 @@ import HeartIcon from './icons/HeartIcon.svelte';
       <div class="portions-row">
         <PortionPicker
           value={portions}
-          onChange={(nextVal) => plannerStore.updateScale(item.instanceId, nextVal / defaultServings)}
+          onChange={(nextVal) => plannerStore.updateScale(currentItem.instanceId, nextVal / defaultServings)}
         />
 
         {#if rec && rec.shortId}
