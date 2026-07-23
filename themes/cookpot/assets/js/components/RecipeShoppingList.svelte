@@ -12,6 +12,7 @@
     getSectionForCategory,
     getActiveStoreLayout,
   } from '../shopping-list/store-sections';
+  import { formatShoppingItemNotes } from '../shopping-list/utils';
   import { getIngredientKey } from '../stores/shopping';
 
   type Tab = 'recipe' | 'shopping';
@@ -71,14 +72,7 @@
   }
 
   function formatNotes(item: ShoppingItem): string {
-    if (!item.note) {return '';}
-    const parts: string[] = [];
-    if (item.note.sizeNote) {parts.push(item.note.sizeNote);}
-    const descs = [...new Set(item.note.ingredientNotes.map((n) => n.descriptor).filter(Boolean))];
-    const alts = [...new Set(item.note.ingredientNotes.map((n) => n.altItem).filter(Boolean))];
-    if (descs.length) {parts.push(descs.join(', '));}
-    if (alts.length) {parts.push(`or ${alts.join(' or ')}`);}
-    return parts.length ? ` (${parts.join('; ')})` : '';
+    return formatShoppingItemNotes(item, false);
   }
 
   // --------------------------------------------------------------------------

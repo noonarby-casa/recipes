@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import type { PlannedItem, PlannerState } from '../types';
+import type { IngredientInput, PlannedItem, PlannerState } from '../types';
 import { recipesStore } from './recipes';
 import { settingsStore } from './settings';
 import { favoritesStore } from './favorites';
@@ -119,7 +119,10 @@ export const plannerStore = {
     });
   },
 
-  updateExtraIngredients(instanceId: string, extraIngredients: any[]) {
+  updateExtraIngredients(
+    instanceId: string,
+    extraIngredients: IngredientInput[],
+  ) {
     store.update((state) => {
       const nextPlan = state.plan.map((item) =>
         item.instanceId === instanceId ? { ...item, extraIngredients } : item,

@@ -17,17 +17,10 @@
     onChange: (id: string) => void;
   }
 
-  let { options, selectedId: initialSelectedId, onChange }: Props = $props();
-  // eslint-disable-next-line svelte/prefer-writable-derived
-  let selectedId = $state(initialSelectedId);
+  let { options, selectedId, onChange }: Props = $props();
   let rootElement = $state<HTMLElement>();
 
-  $effect(() => {
-    selectedId = initialSelectedId;
-  });
-
   function handleSelect(id: string) {
-    selectedId = id;
     onChange(id);
     if (rootElement) {
       rootElement.dispatchEvent(

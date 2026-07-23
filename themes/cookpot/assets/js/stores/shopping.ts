@@ -5,6 +5,7 @@ import type { IngredientInput } from '../types';
 import { processShoppingList } from '../shopping-list/pipeline';
 import {
   getActiveStoreLayoutId,
+  getSectionForCategory,
   STORE_LAYOUTS,
 } from '../shopping-list/store-sections';
 import { ls } from '../utils/storage';
@@ -141,20 +142,9 @@ export const combinedShoppingList = derived(
       activeLayout,
     );
 
-    const getSection = (category: string) => {
-      const section = activeLayout.sections.find((s) =>
-        s.categories.includes(category),
-      );
-      return (
-        section ||
-        activeLayout.sections.find((s) => s.id === 'other') ||
-        activeLayout.sections[activeLayout.sections.length - 1]
-      );
-    };
-
     const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {
-      const secA = getSection(a.category);
-      const secB = getSection(b.category);
+      const secA = getSectionForCategory(a.category, activeLayout);
+      const secB = getSectionForCategory(b.category, activeLayout);
       if (secA.order !== secB.order) {
         return secA.order - secB.order;
       }

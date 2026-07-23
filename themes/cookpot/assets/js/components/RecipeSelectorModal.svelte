@@ -1,6 +1,6 @@
 <script lang="ts">
   import { recipesStore } from '../stores/recipes';
-  import { filtersStore } from '../stores/filters';
+  import { filtersStore, filterRecipes } from '../stores/filters';
   import { favoritesStore } from '../stores/favorites';
   import { plannerStore } from '../stores/planner';
   import { scrollable } from '../actions/scrollable';
@@ -28,39 +28,9 @@
 
   let recipes = $derived($recipesStore);
 
-
-
-
-
-  let filteredRecipes = $derived.by(() => {
-    let pool = recipes;
-
-    if ($filtersStore.favoritesOnly) {
-      pool = pool.filter((r) => r.shortId && $favoritesStore.includes(r.shortId));
-    }
-    if ($filtersStore.includedTags.length > 0) {
-      pool = pool.filter((r) => r.tags && $filtersStore.includedTags.every(t => r.tags?.includes(t)));
-    }
-    if ($filtersStore.excludedTags.length > 0) {
-      pool = pool.filter((r) => !r.tags || !$filtersStore.excludedTags.some(t => r.tags?.includes(t)));
-    }
-    if ($filtersStore.includedSources.length > 0) {
-      pool = pool.filter((r) => r.recipeSource && $filtersStore.includedSources.includes(r.recipeSource));
-    }
-    if ($filtersStore.excludedSources.length > 0) {
-      pool = pool.filter((r) => !r.recipeSource || !$filtersStore.excludedSources.includes(r.recipeSource));
-    }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      pool = pool.filter(
-        (r) =>
-          r.title.toLowerCase().includes(q) ||
-          (r.tags && r.tags.some((t) => t.toLowerCase().includes(q)))
-      );
-    }
-    return pool;
-  });
+  let filteredRecipes = $derived(
+    filterRecipes(recipes, $filtersStore, $favoritesStore, searchQuery)
+  );
 
   let filtersNotice = $derived.by(() => {
     const activeFilters: string[] = [];

@@ -345,3 +345,95 @@ export function formatQtyValueWithUnit(qty: QtyValue, unit: string): string {
     return `${qtyStr} ${displayUnit}`.replace(/\s+/g, ' ').trim();
   }
 }
+
+export interface GroupedNote {
+  descriptor?: string;
+  altItem?: string;
+  recipes: string[];
+}
+
+export function getGroupedNotes(item: import('../types').ShoppingItem): {
+  sizeNote?: string;
+  details: GroupedNote[];
+  fallbackRecipes: string[];
+} {
+  const details: GroupedNote[] = [];
+  const fallbackRecipes: string[] = [];
+
+  if (!item.note) {
+    return { details, fallbackRecipes };
+  }
+
+  const sizeNote = item.note.sizeNote;
+  const groups: Record<string, GroupedNote> = {};
+
+  (item.note.ingredientNotes || []).forEach((n) => {
+    const desc = n.descriptor || '';
+    const alt = n.altItem || '';
+    const recipe = n.recipe;
+
+    if (!desc && !alt) {
+      if (recipe && !fallbackRecipes.includes(recipe)) {
+        fallbackRecipes.push(recipe);
+      }
+    } else {
+      const key = `${desc}|${alt}`;
+      if (!groups[key]) {
+        groups[key] = {
+          descriptor: n.descriptor,
+          altItem: n.altItem,
+          recipes: [],
+        };
+      }
+      if (recipe && !groups[key].recipes.includes(recipe)) {
+        groups[key].recipes.push(recipe);
+      }
+    }
+  });
+
+  return {
+    sizeNote,
+    details: Object.values(groups),
+    fallbackRecipes,
+  };
+}
+
+export function formatShoppingItemNotes(
+  item: import('../types').ShoppingItem,
+  includeRecipes = true,
+): string {
+  const { sizeNote, details, fallbackRecipes } = getGroupedNotes(item);
+  const parts: string[] = [];
+
+  if (sizeNote) {
+    parts.push(sizeNote);
+  }
+
+  details.forEach((group) => {
+    const detailParts: string[] = [];
+    if (group.descriptor) {
+      detailParts.push(group.descriptor);
+    }
+    if (group.altItem) {
+      detailParts.push(`or ${group.altItem}`);
+    }
+    const detailText = detailParts.join(' ');
+    if (detailText || group.recipes.length > 0) {
+      const suffix =
+        includeRecipes && group.recipes.length > 0
+          ? ` for ${group.recipes.join(', ')}`
+          : '';
+      if (detailText) {
+        parts.push(`${detailText}${suffix}`);
+      } else if (suffix) {
+        parts.push(suffix.trim());
+      }
+    }
+  });
+
+  if (includeRecipes && fallbackRecipes.length > 0 && details.length === 0) {
+    parts.push(`for ${fallbackRecipes.join(', ')}`);
+  }
+
+  return parts.length ? ` (${parts.join('; ')})` : '';
+}

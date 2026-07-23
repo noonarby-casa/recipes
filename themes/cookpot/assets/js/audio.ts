@@ -29,35 +29,6 @@ export function stopAudio(): void {
   }
 }
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-function playTone(
-  freq: number,
-  startTime: number,
-  duration: number,
-  type: OscillatorType = 'sine',
-  maxVolume: number = 0.15,
-): void {
-  if (!audioCtx) {
-    return;
-  }
-
-  const oscNode = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-
-  oscNode.type = type;
-  oscNode.frequency.setValueAtTime(freq, startTime);
-
-  gainNode.gain.setValueAtTime(0, startTime);
-  gainNode.gain.linearRampToValueAtTime(maxVolume, startTime + 0.015);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-
-  oscNode.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-
-  oscNode.start(startTime);
-  oscNode.stop(startTime + duration);
-}
-
 export function playLowerBoundChime(): void {
   initAudio();
   if (!audioCtx) {

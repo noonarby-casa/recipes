@@ -2,7 +2,7 @@
   import { onMount, tick } from 'svelte';
   import { recipesStore } from '../stores/recipes';
   import { favoritesStore } from '../stores/favorites';
-  import { filtersStore } from '../stores/filters';
+  import { filtersStore, filterRecipes } from '../stores/filters';
   import { plannerStore } from '../stores/planner';
   import { ls } from '../utils/storage';
   import RecipeCard from './RecipeCard.svelte';
@@ -24,68 +24,9 @@
     ls.setString('noonarby-planner-banner-dismissed', 'true');
   }
 
-  let searchResults = $derived.by(() => {
-    let list = $recipesStore;
-    const q = $filtersStore.searchQuery.trim().toLowerCase();
-    const favs = $favoritesStore;
-
-    if ($filtersStore.favoritesOnly) {
-      list = list.filter(r => r.shortId && favs.includes(r.shortId));
-    }
-
-    if (q) {
-      list = list.filter(r => {
-        const titleMatch = r.title.toLowerCase().includes(q);
-        const sourceMatch = r.recipeSource && r.recipeSource.toLowerCase().includes(q);
-        const tagsMatch = r.tags && r.tags.some(t => t.toLowerCase().includes(q));
-        const ingMatch = r.ingredients && r.ingredients.some(ing => {
-          const name = typeof ing === 'string' ? ing : ing.item;
-          return name.toLowerCase().includes(q);
-        });
-        return titleMatch || sourceMatch || tagsMatch || ingMatch;
-      });
-    }
-
-    if ($filtersStore.includedTags.length > 0) {
-      list = list.filter(r => {
-        const rTags = new Set((r.tags || []).map(t => t.trim().toLowerCase()));
-        for (const tag of $filtersStore.includedTags) {
-          if (!rTags.has(tag.trim().toLowerCase())) {return false;}
-        }
-        return true;
-      });
-    }
-
-    if ($filtersStore.excludedTags.length > 0) {
-      list = list.filter(r => {
-        const rTags = new Set((r.tags || []).map(t => t.trim().toLowerCase()));
-        for (const tag of $filtersStore.excludedTags) {
-          if (rTags.has(tag.trim().toLowerCase())) {return false;}
-        }
-        return true;
-      });
-    }
-
-    if ($filtersStore.includedSources.length > 0) {
-      list = list.filter(r => {
-        const rSrc = (r.recipeSource || '').trim().toLowerCase();
-        let match = false;
-        for (const src of $filtersStore.includedSources) {
-          if (rSrc === src.trim().toLowerCase()) {match = true;}
-        }
-        return match;
-      });
-    }
-
-    if ($filtersStore.excludedSources.length > 0) {
-      list = list.filter(r => {
-        const rSrc = (r.recipeSource || '').trim().toLowerCase();
-        return !$filtersStore.excludedSources.includes(rSrc);
-      });
-    }
-
-    return list;
-  });
+  let searchResults = $derived(
+    filterRecipes($recipesStore, $filtersStore, $favoritesStore)
+  );
 
   let paginatedResults = $derived(searchResults.slice(0, displayCount));
 

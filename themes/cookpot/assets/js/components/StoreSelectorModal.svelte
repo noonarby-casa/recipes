@@ -38,22 +38,10 @@
 <Modal
   {isOpen}
   onClose={close}
-  backdropClass="store-modal-backdrop"
-  contentClass="store-modal-content"
-  ariaLabel="Store Layout"
+  title="Store Layout"
+  backdropClass="planner-modal-backdrop"
+  contentClass="planner-modal-content"
 >
-  {#snippet header()}
-    <div class="store-modal-header">
-      <h3 class="store-modal-title">Store Layout</h3>
-      <button
-        type="button"
-        class="icon-close-btn"
-        aria-label="Close modal"
-        onclick={close}
-      >×</button>
-    </div>
-  {/snippet}
-
   <div class="store-modal-body">
     <span class="store-selector-label">Choose your layout route:</span>
     <div class="store-layout-options">
@@ -73,58 +61,11 @@
 </Modal>
 
 <style>
-  :global(.store-modal-backdrop) {
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    left: 0;
-    position: fixed;
-    right: 0;
-    top: 0;
-    z-index: 1000;
-  }
-
-  :global(.store-modal-content) {
-    animation: modalFadeIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
-    padding: 1.5rem;
-    width: 90%;
-  }
-
-  @keyframes modalFadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9) translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-
-  .store-modal-header {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-
-  .store-modal-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin: 0;
-  }
-
   .store-modal-body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
   }
 
   .store-selector-label {

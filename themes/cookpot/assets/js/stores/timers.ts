@@ -63,7 +63,7 @@ function createTimersStore() {
     now: Date.now(),
   });
 
-  let tickIntervalId: any = null;
+  let tickIntervalId: ReturnType<typeof setInterval> | null = null;
   let wakeLock: WakeLockSentinel | null = null;
   let lastRunningKeys = new Set<string>();
 

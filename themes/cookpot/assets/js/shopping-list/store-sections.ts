@@ -522,15 +522,20 @@ export function getActiveStoreLayout(): StoreLayout {
   return STORE_LAYOUTS.find((l) => l.id === activeId) || STORE_LAYOUTS[0];
 }
 
-export function getSectionForCategory(category: string): StoreSection {
-  const layout = getActiveStoreLayout();
-  const section = layout.sections.find((s) => s.categories.includes(category));
+export function getSectionForCategory(
+  category: string,
+  layout?: StoreLayout,
+): StoreSection {
+  const activeLayout = layout || getActiveStoreLayout();
+  const section = activeLayout.sections.find((s) =>
+    s.categories.includes(category),
+  );
   if (section) {
     return section;
   }
   return (
-    layout.sections.find((s) => s.id === 'other') ||
-    layout.sections[layout.sections.length - 1]
+    activeLayout.sections.find((s) => s.id === 'other') ||
+    activeLayout.sections[activeLayout.sections.length - 1]
   );
 }
 

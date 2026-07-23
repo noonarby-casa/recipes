@@ -3,6 +3,7 @@
   import { formatRecipeIngredientHTML } from '../units';
   import { recipeScaleStore } from '../stores/settings';
   import { plannerStore } from '../stores/planner';
+  import PortionPicker from './PortionPicker.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
 
   interface Props {
@@ -24,10 +25,11 @@
 
   let { baseServings, shortId }: Props = $props();
 
-  let portions = $state(baseServings);
+  let portions = $state(0);
   let currentPermalink = $state('');
 
   onMount(() => {
+    portions = baseServings;
     currentPermalink = window.location.pathname;
     const urlParams = new URLSearchParams(window.location.search);
     const servingsParam = urlParams.get('servings');
@@ -135,14 +137,6 @@
       );
     });
   }
-
-  function dec() {
-    portions = Math.max(1, portions - 1);
-  }
-
-  function inc() {
-    portions = portions + 1;
-  }
 </script>
 
 <div class="recipe-controls-panel">
@@ -155,21 +149,7 @@
       <span class="scale-label">Servings</span>
     </div>
     <div class="scale-controls">
-      <div class="portion-picker">
-        <button
-          type="button"
-          class="portion-btn dec-btn"
-          id="recipe-dec-btn"
-          onclick={dec}>−</button
-        >
-        <span class="portion-val" id="recipe-serving-count">{portions}</span>
-        <button
-          type="button"
-          class="portion-btn inc-btn"
-          id="recipe-inc-btn"
-          onclick={inc}>+</button
-        >
-      </div>
+      <PortionPicker value={portions} onChange={(v) => (portions = v)} />
       <span class="scale-subtitle">(Original: {baseServings})</span>
     </div>
   </div>

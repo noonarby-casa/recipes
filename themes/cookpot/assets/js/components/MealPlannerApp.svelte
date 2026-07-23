@@ -8,7 +8,8 @@
   import { shoppingCheckedStore, combinedShoppingList, getIngredientKey, isItemChecked } from '../stores/shopping';
   import { parsePlanUrlParams, planUrlQueryString } from '../stores/planUrlSync';
   import { ls } from '../utils/storage';
-  import type { PlannedItem, Recipe } from '../types';
+  import type { PlannedItem, Recipe, ShoppingItem } from '../types';
+  import { formatShoppingItemNotes } from '../shopping-list/utils';
   import CalendarGrid from './CalendarGrid.svelte';
   import ShoppingListColumn from './ShoppingListColumn.svelte';
   import FiltersModal from './FiltersModal.svelte';
@@ -241,61 +242,12 @@
     });
   }
 
-  interface GroupedNote {
-    descriptor?: string;
-    altItem?: string;
-    recipes: string[];
+  function formatItemNotes(item: ShoppingItem): string {
+    return formatShoppingItemNotes(item, true);
   }
 
-  /**
-   * Builds the note string for a shopping item.
-   * @param includeRecipes - when true, appends "for RecipeA, RecipeB" to each detail group.
-   */
-  function buildNotesString(item: any, includeRecipes: boolean): string {
-    const parts: string[] = [];
-    if (!item.note) {return '';}
-
-    const sizeNote = item.note.sizeNote;
-    if (sizeNote) {parts.push(sizeNote);}
-
-    const groups: Record<string, GroupedNote> = {};
-    (item.note.ingredientNotes || []).forEach((n: any) => {
-      const desc = n.descriptor || '';
-      const alt = n.altItem || '';
-      const key = `${desc}|${alt}`;
-      if (!groups[key]) {
-        groups[key] = { descriptor: n.descriptor, altItem: n.altItem, recipes: [] };
-      }
-      if (includeRecipes && n.recipe && !groups[key].recipes.includes(n.recipe)) {
-        groups[key].recipes.push(n.recipe);
-      }
-    });
-
-    Object.values(groups).forEach((group) => {
-      const detailParts: string[] = [];
-      if (group.descriptor) {detailParts.push(group.descriptor);}
-      if (group.altItem) {detailParts.push(`or ${group.altItem}`);}
-      const detailText = detailParts.join(' ');
-      if (detailText || group.recipes.length > 0) {
-        const suffix = includeRecipes && group.recipes.length > 0
-          ? ` for ${group.recipes.join(', ')}`
-          : '';
-        if (detailText) {parts.push(`${detailText}${suffix}`);}
-        else if (suffix) {parts.push(suffix.trim());}
-      }
-    });
-
-    return parts.join('; ');
-  }
-
-  function formatItemNotes(item: any): string {
-    const s = buildNotesString(item, true);
-    return s ? ` (${s})` : '';
-  }
-
-  function formatKeepItemNotes(item: any): string {
-    const s = buildNotesString(item, false);
-    return s ? ` (${s})` : '';
+  function formatKeepItemNotes(item: ShoppingItem): string {
+    return formatShoppingItemNotes(item, false);
   }
 
   function handleCopyListChange(e: Event) {
@@ -469,7 +421,7 @@
         { id: 'shop', label: `Shopping List` + (shoppingCount > 0 ? ` (${shoppingCount})` : ''), idAttr: 'mode-shop-btn' }
       ]}
       selectedId={$settingsStore.activeTab}
-      onChange={(id) => settingsStore.update(s => ({ ...s, activeTab: id as any }))}
+      onChange={(id) => settingsStore.update(s => ({ ...s, activeTab: id as 'edit' | 'view' | 'shop' }))}
     />
   </div>
 </div>

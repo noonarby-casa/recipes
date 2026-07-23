@@ -3,70 +3,9 @@
   import { formatItemQuantity } from '../units';
   import { scrollable } from '../actions/scrollable';
   import type { ShoppingItem } from '../types';
-  import { STORE_LAYOUTS } from '../shopping-list/store-sections';
+  import { STORE_LAYOUTS, getSectionForCategory } from '../shopping-list/store-sections';
+  import { getGroupedNotes } from '../shopping-list/utils';
   import { storeLayout } from '../stores/shopping';
-
-  interface GroupedNote {
-    descriptor?: string;
-    altItem?: string;
-    recipes: string[];
-  }
-
-  function getGroupedNotes(item: ShoppingItem): {
-    sizeNote?: string;
-    details: GroupedNote[];
-    fallbackRecipes: string[];
-  } {
-    const details: GroupedNote[] = [];
-    const fallbackRecipes: string[] = [];
-
-    if (!item.note) {
-      return { details, fallbackRecipes };
-    }
-
-    const sizeNote = item.note.sizeNote;
-    const groups: Record<string, GroupedNote> = {};
-
-    (item.note.ingredientNotes || []).forEach((n) => {
-      const desc = n.descriptor || '';
-      const alt = n.altItem || '';
-      const recipe = n.recipe;
-
-      if (!desc && !alt) {
-        if (recipe && !fallbackRecipes.includes(recipe)) {
-          fallbackRecipes.push(recipe);
-        }
-      } else {
-        const key = `${desc}|${alt}`;
-        if (!groups[key]) {
-          groups[key] = {
-            descriptor: n.descriptor,
-            altItem: n.altItem,
-            recipes: [],
-          };
-        }
-        if (recipe && !groups[key].recipes.includes(recipe)) {
-          groups[key].recipes.push(recipe);
-        }
-      }
-    });
-
-    return {
-      sizeNote,
-      details: Object.values(groups),
-      fallbackRecipes,
-    };
-  }
-
-  function getSection(category: string, layoutId: string) {
-    const activeLayout = STORE_LAYOUTS.find((l) => l.id === layoutId) || STORE_LAYOUTS[0];
-    const section = activeLayout.sections.find((s) => s.categories.includes(category));
-    return (
-      section ||
-      activeLayout.sections.find((s) => s.id === 'other') ||
-      activeLayout.sections[activeLayout.sections.length - 1]
-    );
-  }
 
   let items = $derived($combinedShoppingList.combinedBuyItems);
   let optionalItems = $derived($combinedShoppingList.optionalItems);
@@ -75,9 +14,10 @@
     const sections: { id: string; name: string; items: ShoppingItem[] }[] = [];
     let currentSectionId = '';
     let currentSection: typeof sections[0] | null = null;
+    const activeLayout = STORE_LAYOUTS.find((l) => l.id === $storeLayout) || STORE_LAYOUTS[0];
 
     items.forEach((item) => {
-      const section = getSection(item.category, $storeLayout);
+      const section = getSectionForCategory(item.category, activeLayout);
       if (section.id !== currentSectionId) {
         currentSectionId = section.id;
         currentSection = { id: section.id, name: section.name, items: [] };

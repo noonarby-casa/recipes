@@ -1,6 +1,6 @@
 <script lang="ts">
   import { recipesStore } from '../stores/recipes';
-  import { filtersStore } from '../stores/filters';
+  import { filtersStore, calculateTagTallies, calculateSourceTallies } from '../stores/filters';
   import { favoritesStore } from '../stores/favorites';
   import { scrollable } from '../actions/scrollable';
   import Modal from './Modal.svelte';
@@ -23,109 +23,13 @@
     Array.from(new Set(recipes.map((r) => r.recipeSource || 'Noonarby'))).sort()
   );
 
-  function hasTag(rTags: string[] | undefined, tag: string): boolean {
-    if (!rTags || rTags.length === 0) {
-      return false;
-    }
-    const normalizedTag = tag.trim().toLowerCase();
-    return rTags.some((t) => t.trim().toLowerCase() === normalizedTag);
-  }
+  let tagTallies = $derived(
+    calculateTagTallies(recipes, uniqueTags, $filtersStore, $favoritesStore)
+  );
 
-  let tagTallies = $derived.by(() => {
-    const tallies: Record<string, number> = {};
-    const { searchQuery, favoritesOnly, includedTags, excludedTags, includedSources, excludedSources } = $filtersStore;
-    const favs = $favoritesStore;
-
-    recipes.forEach((r) => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesTitle = r.title.toLowerCase().includes(query);
-        const matchesSummary = r.summary && r.summary.toLowerCase().includes(query);
-        const matchesSource = r.recipeSource && r.recipeSource.toLowerCase().includes(query);
-        const matchesTags = r.tags && r.tags.some((t) => t.toLowerCase().includes(query));
-        const matchesIngredients = r.ingredients && r.ingredients.some((ing) => {
-          const item = typeof ing === 'string' ? ing : ing.item;
-          return item.toLowerCase().includes(query);
-        });
-        if (!matchesTitle && !matchesSummary && !matchesSource && !matchesTags && !matchesIngredients) {
-          return;
-        }
-      }
-
-      if (favoritesOnly && (!r.shortId || !favs.includes(r.shortId))) {
-        return;
-      }
-
-      const rSrc = r.recipeSource || 'Noonarby';
-      if (includedSources.length > 0 && !includedSources.includes(rSrc)) {
-        return;
-      }
-      if (excludedSources.includes(rSrc)) {
-        return;
-      }
-
-      uniqueTags.forEach((tag) => {
-        if (!hasTag(r.tags, tag)) {
-          return;
-        }
-        const otherInc = includedTags.filter((t) => t.trim().toLowerCase() !== tag.trim().toLowerCase());
-        if (otherInc.length > 0 && !otherInc.every((t) => hasTag(r.tags, t))) {
-          return;
-        }
-        const otherExc = excludedTags.filter((t) => t.trim().toLowerCase() !== tag.trim().toLowerCase());
-        if (otherExc.length > 0 && otherExc.some((t) => hasTag(r.tags, t))) {
-          return;
-        }
-        tallies[tag] = (tallies[tag] || 0) + 1;
-      });
-    });
-
-    return tallies;
-  });
-
-  let sourceTallies = $derived.by(() => {
-    const tallies: Record<string, number> = {};
-    const { searchQuery, favoritesOnly, includedTags, excludedTags, excludedSources } = $filtersStore;
-    const favs = $favoritesStore;
-
-    recipes.forEach((r) => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesTitle = r.title.toLowerCase().includes(query);
-        const matchesSummary = r.summary && r.summary.toLowerCase().includes(query);
-        const matchesSource = r.recipeSource && r.recipeSource.toLowerCase().includes(query);
-        const matchesTags = r.tags && r.tags.some((t) => t.toLowerCase().includes(query));
-        const matchesIngredients = r.ingredients && r.ingredients.some((ing) => {
-          const item = typeof ing === 'string' ? ing : ing.item;
-          return item.toLowerCase().includes(query);
-        });
-        if (!matchesTitle && !matchesSummary && !matchesSource && !matchesTags && !matchesIngredients) {
-          return;
-        }
-      }
-
-      if (favoritesOnly && (!r.shortId || !favs.includes(r.shortId))) {
-        return;
-      }
-
-      if (includedTags.length > 0 && !includedTags.every((t) => hasTag(r.tags, t))) {
-        return;
-      }
-      if (excludedTags.length > 0 && excludedTags.some((t) => hasTag(r.tags, t))) {
-        return;
-      }
-
-      const rSrc = r.recipeSource || 'Noonarby';
-      const otherExcSources = excludedSources.filter((s) => s !== rSrc);
-      if (otherExcSources.includes(rSrc)) {
-        return;
-      }
-
-      tallies[rSrc] = (tallies[rSrc] || 0) + 1;
-    });
-
-    return tallies;
-  });
+  let sourceTallies = $derived(
+    calculateSourceTallies(recipes, $filtersStore, $favoritesStore)
+  );
 
   function toggleTag(tag: string) {
     filtersStore.update((state) => {
