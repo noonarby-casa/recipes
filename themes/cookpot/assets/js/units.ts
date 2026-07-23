@@ -452,3 +452,13 @@ export function formatRecipeIngredientHTML(
 
   return mainText;
 }
+
+export function formatAbbreviatedTime(timeStr: string): string {
+  if (!timeStr) {
+    return '';
+  }
+  return timeStr
+    .replace(/\s*(minutes|minute|mins|min)\b/gi, 'm')
+    .replace(/\s*(hours|hour|hrs|hr)\b/gi, 'h')
+    .replace(/\s*(seconds|second|secs|sec)\b/gi, 's');
+}

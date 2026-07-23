@@ -120,7 +120,8 @@
               {{- range $index, $element := .Params.times -}}
                 {{- if $index -}}{{ " + " }}{{- end -}}
                 {{- .step | title }}
-                {{ .time -}}
+                {{ $t := .time | replaceRE `\s*(minutes|minute|mins|min)\b` "m" | replaceRE `\s*(hours|hour|hrs|hr)\b` "h" | replaceRE `\s*(seconds|second|secs|sec)\b` "s" }}
+                {{- $t -}}
               {{- end -}}
             </span>
           </div>

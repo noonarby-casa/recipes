@@ -3,7 +3,7 @@
   import { recipesStore } from '../stores/recipes';
   import { plannerStore } from '../stores/planner';
   import { favoritesStore } from '../stores/favorites';
-  import { formatItemQuantity } from '../units';
+  import { formatItemQuantity, formatAbbreviatedTime } from '../units';
   import PortionPicker from './PortionPicker.svelte';
   import HeartIcon from './icons/HeartIcon.svelte';
   import CalendarIcon from './icons/CalendarIcon.svelte';
@@ -170,7 +170,7 @@
                 <span>
                   {#each rec.times as t, index}
                     {#if index > 0}{' + '}{/if}
-                    {t.step.charAt(0).toUpperCase() + t.step.slice(1)} {t.time}
+                    {t.step.charAt(0).toUpperCase() + t.step.slice(1)} {formatAbbreviatedTime(t.time)}
                   {/each}
                 </span>
               </div>

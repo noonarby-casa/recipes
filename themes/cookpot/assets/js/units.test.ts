@@ -6,6 +6,7 @@ import {
   singularizeWord,
   formatItemQuantity,
   formatRecipeIngredientHTML,
+  formatAbbreviatedTime,
 } from './units';
 
 describe('getAdaptiveUnit', () => {
@@ -268,5 +269,17 @@ describe('formatRecipeIngredientHTML', () => {
     ).toBe(
       '<span class="recipe-quantity" data-base-qty="4" data-unit="">4</span> summer squashes, sliced (<span class="recipe-quantity" data-base-qty="7-8" data-unit="ounce">7-8 ounces</span>)',
     );
+  });
+});
+
+describe('formatAbbreviatedTime', () => {
+  test('abbreviates minutes, hours, and seconds', () => {
+    expect(formatAbbreviatedTime('10 min')).toBe('10m');
+    expect(formatAbbreviatedTime('15 minutes')).toBe('15m');
+    expect(formatAbbreviatedTime('6 hours')).toBe('6h');
+    expect(formatAbbreviatedTime('1 hour')).toBe('1h');
+    expect(formatAbbreviatedTime('8-10 minutes')).toBe('8-10m');
+    expect(formatAbbreviatedTime('30 sec')).toBe('30s');
+    expect(formatAbbreviatedTime('')).toBe('');
   });
 });
