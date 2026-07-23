@@ -304,6 +304,31 @@
     order: 3;
   }
 
+  .plan-back-btn {
+    align-items: center;
+    border-radius: 20px;
+    display: inline-flex;
+    font-size: 0.9rem;
+    font-weight: 600;
+    gap: 0.5rem;
+    order: 3;
+    padding: 0.6rem 1.2rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .plan-back-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .plan-back-btn :global(svg) {
+    stroke: #fff;
+  }
+
+  .plan-back-btn span {
+    color: #fff;
+  }
+
   :global(#cooking-dashboard) {
     order: 4;
     transition:

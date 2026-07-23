@@ -101,31 +101,6 @@ html.dark-mode .planner-clear-btn:hover {
   color: #ffb3b3;
 }
 
-/* Floating Back Button (from meal planner) */
-.plan-back-btn {
-  align-items: center;
-  border-radius: 20px;
-  display: inline-flex;
-  font-size: 0.9rem;
-  font-weight: 600;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.plan-back-btn:hover {
-  transform: translateY(-1px);
-}
-
-.plan-back-btn svg {
-  stroke: #fff;
-}
-
-.plan-back-btn span {
-  color: #fff;
-}
-
 /* Shared Icon Close Button */
 .icon-close-btn {
   align-items: center;
