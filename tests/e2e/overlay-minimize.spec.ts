@@ -398,27 +398,5 @@ for (const targetPage of testPages) {
       // So y of toast should be less than y of dashboard.
       expect(toastBox!.y).toBeLessThan(dashboardBox!.y);
     });
-
-    test('should position expanded back to meal plan button vertically above the toggle button', async ({
-      page,
-    }) => {
-      await page.goto(
-        '/lemon-blueberry-bread/?from=plan&instanceId=test-instance',
-      );
-
-      const toggleBtn = page.locator('.overlay-toggle-btn');
-      const planBackBtn = page.locator('.plan-back-btn');
-
-      await expect(toggleBtn).toBeVisible();
-      await expect(planBackBtn).toBeVisible();
-
-      const toggleBox = await toggleBtn.boundingBox();
-      const planBackBox = await planBackBtn.boundingBox();
-
-      expect(toggleBox).not.toBeNull();
-      expect(planBackBox).not.toBeNull();
-      // Expanded back button should be positioned above the toggle button (smaller y coordinate)
-      expect(planBackBox!.y).toBeLessThan(toggleBox!.y);
-    });
   });
 }

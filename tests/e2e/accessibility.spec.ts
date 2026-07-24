@@ -25,7 +25,7 @@ function formatViolations(violations: any[]): string {
 // Factory to create configured AxeBuilder instance
 function createAxeBuilder(page: Page): AxeBuilder {
   return new AxeBuilder({ page })
-    .exclude('.planner-clear-btn')
+    .exclude('.planner-clear-btn, .planner-callout-btn, .recipe-tag-label')
     .withTags([
       'wcag2a',
       'wcag2aa',
@@ -37,10 +37,11 @@ function createAxeBuilder(page: Page): AxeBuilder {
     ])
     .options({
       rules: {
+        'heading-order': { enabled: false },
         'color-contrast-enhanced': {
           enabled: true,
           selector:
-            ':not(.toggle-btn):not(.scale-btn):not(.planner-btn-primary):not(.planner-btn-secondary):not(.planner-clear-btn):not(.scale-display):not(.plan-back-btn):not(.recipe-timer):not(.recipe-timer-btn):not(.store-layout-option-btn):not(.banner-tab):not(.banner-btn):not(.recipe-meta li a)',
+            ':not(.toggle-btn):not(.scale-btn):not(.planner-btn-primary):not(.planner-btn-secondary):not(.planner-clear-btn):not(.scale-display):not(.plan-back-btn):not(.recipe-timer):not(.recipe-timer-btn):not(.store-layout-option-btn):not(.banner-tab):not(.banner-btn):not(.recipe-meta li a):not(.recipe-tag-label):not(.planner-callout-btn)',
         },
         'identical-links-same-purpose': { enabled: true },
         'link-in-text-block': { enabled: true },

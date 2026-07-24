@@ -13,7 +13,7 @@ test.describe('Recipe Scaling E2E', () => {
     );
 
     // Check default serving count (4 servings)
-    const servingCount = page.locator('#recipe-serving-count');
+    const servingCount = page.locator('.servings-val');
     await expect(servingCount).toHaveText('4');
 
     // Check coconut milk initial quantity (1/2 cup)
@@ -27,8 +27,8 @@ test.describe('Recipe Scaling E2E', () => {
   test('should scale ingredients up when clicking the increment button', async ({
     page,
   }) => {
-    const incBtn = page.locator('#recipe-inc-btn');
-    const servingCount = page.locator('#recipe-serving-count');
+    const incBtn = page.locator('.inc-btn');
+    const servingCount = page.locator('.servings-val');
 
     // Click increment button (4 -> 5 servings)
     await incBtn.click();
@@ -44,8 +44,8 @@ test.describe('Recipe Scaling E2E', () => {
   test('should scale ingredients down when clicking the decrement button', async ({
     page,
   }) => {
-    const decBtn = page.locator('#recipe-dec-btn');
-    const servingCount = page.locator('#recipe-serving-count');
+    const decBtn = page.locator('.dec-btn');
+    const servingCount = page.locator('.servings-val');
 
     // Click decrement button twice (4 -> 3 -> 2 servings)
     await decBtn.click();
@@ -92,18 +92,19 @@ test.describe('Recipe Scaling E2E', () => {
     page,
   }) => {
     const shoppingToggle = page.locator('.shopping-view-toggle');
-    const recipeBtn = shoppingToggle.locator('.toggle-btn').nth(0);
     const shoppingBtn = shoppingToggle.locator('.toggle-btn').nth(1);
 
-    // Initial state: recipe is active
-    await expect(recipeBtn).toHaveClass(/active/);
-    await expect(shoppingBtn).not.toHaveClass(/active/);
+    // Initial state: recipe ingredients list visible
+    const recipeList = page.locator('.recipe-ingredients-list');
+    const shoppingWrapper = page.locator('.shopping-list-wrapper');
+    await expect(recipeList).toBeVisible();
+    await expect(shoppingWrapper).toBeHidden();
 
     // Click "Shopping List"
     await shoppingBtn.click();
 
-    // Verification: shopping button is now active, recipe is inactive
-    await expect(shoppingBtn).toHaveClass(/active/);
-    await expect(recipeBtn).not.toHaveClass(/active/);
+    // Verification: shopping list wrapper is now visible, recipe ingredients list is hidden
+    await expect(shoppingWrapper).toBeVisible();
+    await expect(recipeList).toBeHidden();
   });
 });
