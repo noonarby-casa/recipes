@@ -12,15 +12,15 @@
     getSectionForCategory,
     getActiveStoreLayout,
   } from '../shopping-list/store-sections';
-  import { formatShoppingItemNotes } from '../shopping-list/utils';
   import { getIngredientKey } from '../stores/shopping';
 
+  import ExportModal from './ExportModal.svelte';
+  import type { ExportItem } from '../shopping-list/export-formatter';
+
   type Tab = 'recipe' | 'shopping';
-  type CopyFormat = 'markdown' | 'google-keep';
 
   let activeTab = $state<Tab>('recipe');
-  let copySuccess = $state(false);
-  let copyFormat = $state('');
+  let showExportModal = $state(false);
 
   // Checklist state persists within the session
   const checklistStates = new SvelteMap<string, boolean>();
@@ -35,6 +35,26 @@
   }
 
   let computed = $state<ComputedList>({buyItems: [], optionalItems: []});
+
+  let exportItems = $derived<ExportItem[]>([
+    ...computed.buyItems.map((item) => {
+      const isStaple = item.staple === 'in-pantry';
+      const key = getIngredientKey(isStaple, item.unit, item.item);
+      return {
+        ...item,
+        isChecked: isChecked(key, isStaple),
+        isOptional: false,
+      };
+    }),
+    ...computed.optionalItems.map((item) => {
+      const key = getIngredientKey(false, item.unit, item.item);
+      return {
+        ...item,
+        isChecked: isChecked(key, false),
+        isOptional: true,
+      };
+    }),
+  ]);
 
   function recompute(scale: number) {
     const elements = document.querySelectorAll<HTMLElement>('.recipe-ingredient');
@@ -69,100 +89,6 @@
     checklistStates.set(key, checked);
     // Force reactivity by reassigning computed (items re-render)
     computed = {...computed};
-  }
-
-  function formatNotes(item: ShoppingItem): string {
-    return formatShoppingItemNotes(item, false);
-  }
-
-  // --------------------------------------------------------------------------
-  // Clipboard
-  // --------------------------------------------------------------------------
-
-  async function copyToClipboard(format: CopyFormat) {
-    const scale = $recipeScaleStore;
-    const elements = document.querySelectorAll<HTMLElement>('.recipe-ingredient');
-    const ingredients = extractIngredientsFromDOM(scale, elements);
-    const activeLayout = getActiveStoreLayout();
-    const {buyItems, stapleItems, optionalItems} = processShoppingList(ingredients, activeLayout);
-
-    const combinedBuy = [...buyItems, ...stapleItems].sort((a, b) => {
-      const secA = getSectionForCategory(a.category);
-      const secB = getSectionForCategory(b.category);
-      if (secA.order !== secB.order) {return secA.order - secB.order;}
-      return a.item.localeCompare(b.item);
-    });
-
-    const filteredBuy = combinedBuy.filter((item) => {
-      const isStaple = item.staple === 'in-pantry';
-      const key = getIngredientKey(isStaple, item.unit, item.item);
-      return !isChecked(key, isStaple);
-    });
-
-    const filteredOptional = optionalItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.item);
-      return !isChecked(key, false);
-    });
-
-    const recipeTitle =
-      document.querySelector('.recipe-title-bar h1')?.textContent || 'Recipe';
-
-    let text: string;
-
-    if (format === 'google-keep') {
-      const lines = [
-        ...filteredBuy.map((item) => {
-          const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item);
-          return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${formatNotes(item)}`;
-        }),
-        ...filteredOptional.map((item) => {
-          const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item);
-          return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${formatNotes(item)} (optional)`;
-        }),
-      ];
-      text = lines.join('\n');
-    } else {
-      text = `## SHOPPING LIST: ${recipeTitle}\n`;
-      if (filteredBuy.length) {
-        text += '\n### Need to Buy\n';
-        let currentSectionId = '';
-        for (const item of filteredBuy) {
-          const section = getSectionForCategory(item.category);
-          if (section.id !== currentSectionId) {
-            currentSectionId = section.id;
-            text += `\n[ ${section.name} ]\n`;
-          }
-          const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item);
-          text += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${formatNotes(item)}\n`;
-        }
-      }
-      if (filteredOptional.length) {
-        text += '\n### Optional\n';
-        for (const item of filteredOptional) {
-          const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item);
-          text += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${formatNotes(item)}\n`;
-        }
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(text);
-      copySuccess = true;
-      setTimeout(() => {
-        copySuccess = false;
-        copyFormat = '';
-      }, 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  }
-
-  function handleCopySelect(e: Event) {
-    const select = e.currentTarget as HTMLSelectElement;
-    const format = select.value as CopyFormat;
-    if (format === 'markdown' || format === 'google-keep') {
-      copyToClipboard(format);
-    }
   }
 
   // --------------------------------------------------------------------------
@@ -210,7 +136,7 @@
     const onViewToggle = (e: Event) => {
       const val = (e as CustomEvent<{value: string}>).detail?.value;
       if (val === 'recipe' || val === 'shopping') {
-        activeTab = val;
+        activeTab = val as Tab;
         tick().then(applyTabVisibility);
       }
     };
@@ -233,21 +159,22 @@
   We render the shopping list content reactively.
 -->
 <div class="shopping-actions">
-  <select
+  <button
+    type="button"
     id="btn-copy-shopping-list"
-    class="dropdown-select"
-    class:success={copySuccess}
-    aria-label="Copy shopping list options"
-    value={copyFormat}
-    onchange={handleCopySelect}
+    class="btn btn-secondary btn-export-list"
+    onclick={() => (showExportModal = true)}
   >
-    <option value="" disabled selected hidden>
-      {copySuccess ? 'Copied!' : 'Copy Unchecked'}
-    </option>
-    <option value="markdown">Markdown</option>
-    <option value="google-keep">Google Keep</option>
-  </select>
+    Export List...
+  </button>
 </div>
+
+<ExportModal
+  isOpen={showExportModal}
+  onClose={() => (showExportModal = false)}
+  title={typeof document !== 'undefined' ? (document.querySelector('.recipe-title-bar h1')?.textContent || 'Recipe') : 'Recipe'}
+  items={exportItems}
+/>
 
 <div class="shopping-section buy-section" style:display={computed.buyItems.length ? 'block' : 'none'}>
   <h4 class="shopping-section-title">Need to Buy</h4>

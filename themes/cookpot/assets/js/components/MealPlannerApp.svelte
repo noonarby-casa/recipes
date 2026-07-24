@@ -8,26 +8,46 @@
   import { shoppingCheckedStore, combinedShoppingList, getIngredientKey, isItemChecked } from '../stores/shopping';
   import { parsePlanUrlParams, planUrlQueryString } from '../stores/planUrlSync';
   import { ls } from '../utils/storage';
-  import type { PlannedItem, Recipe, ShoppingItem } from '../types';
-  import { formatShoppingItemNotes } from '../shopping-list/utils';
+  import type { PlannedItem, Recipe } from '../types';
   import CalendarGrid from './CalendarGrid.svelte';
   import ShoppingListColumn from './ShoppingListColumn.svelte';
   import FiltersModal from './FiltersModal.svelte';
   import RecipeSelectorModal from './RecipeSelectorModal.svelte';
   import PlannedRecipeDetailsModal from './PlannedRecipeDetailsModal.svelte';
-  import { formatItemQuantity } from '../units';
-  import { STORE_LAYOUTS } from '../shopping-list/store-sections';
   import ToggleGroup from './ToggleGroup.svelte';
   import SearchIcon from './icons/SearchIcon.svelte';
   import DiceIcon from './icons/DiceIcon.svelte';
 
+  import ExportModal from './ExportModal.svelte';
+  import type { ExportItem } from '../shopping-list/export-formatter';
+
   let isFiltersModalOpen = $state(false);
+  let isExportModalOpen = $state(false);
   let activeAddDay = $state<string | null>(null);
   let detailsItem = $state<PlannedItem | null>(null);
 
-  let copyListLabel = $state('Copy Unchecked');
   let copyMenuLabel = $state('Copy Menu');
   let unsubscribeUrlSync: (() => void) | null = null;
+
+  let combinedExportItems = $derived<ExportItem[]>([
+    ...$combinedShoppingList.combinedBuyItems.map((item) => {
+      const isStaple = item.staple === 'in-pantry';
+      const key = getIngredientKey(isStaple, item.unit, item.item);
+      return {
+        ...item,
+        isChecked: isItemChecked(key, isStaple, $shoppingCheckedStore),
+        isOptional: false,
+      };
+    }),
+    ...$combinedShoppingList.optionalItems.map((item) => {
+      const key = getIngredientKey(false, item.unit, item.item);
+      return {
+        ...item,
+        isChecked: isItemChecked(key, false, $shoppingCheckedStore),
+        isOptional: true,
+      };
+    }),
+  ]);
 
   const DAY_NAMES: Record<string, string> = {
     sun: 'Sunday',
@@ -242,89 +262,6 @@
     });
   }
 
-  function formatItemNotes(item: ShoppingItem): string {
-    return formatShoppingItemNotes(item, true);
-  }
-
-  function formatKeepItemNotes(item: ShoppingItem): string {
-    return formatShoppingItemNotes(item, false);
-  }
-
-  function handleCopyListChange(e: Event) {
-    const select = e.currentTarget as HTMLSelectElement;
-    const format = select.value as 'markdown' | 'google-keep';
-    if (!format) {return;}
-
-    const { buyItems, optionalItems, stapleItems } = $combinedShoppingList;
-    const getSection = (category: string) => {
-      const activeLayout = STORE_LAYOUTS[0]; // use default standard layout for formatting sections
-      const section = activeLayout.sections.find((s) => s.categories.includes(category));
-      return section || activeLayout.sections[activeLayout.sections.length - 1];
-    };
-
-    const combinedBuy = [...buyItems, ...stapleItems].sort((a, b) => {
-      const secA = getSection(a.category);
-      const secB = getSection(b.category);
-      if (secA.order !== secB.order) {return secA.order - secB.order;}
-      return a.item.localeCompare(b.item);
-    });
-
-    const filteredBuy = combinedBuy.filter((item) => {
-      const isStaple = item.staple === 'in-pantry';
-      const key = getIngredientKey(isStaple, item.unit, item.item);
-      return !isItemChecked(key, isStaple, $shoppingCheckedStore);
-    });
-
-    const filteredOptional = optionalItems.filter((item) => {
-      const key = getIngredientKey(false, item.unit, item.item);
-      return !isItemChecked(key, false, $shoppingCheckedStore);
-    });
-
-    let clipboardText = '';
-    if (format === 'google-keep') {
-      const buyLines = filteredBuy.map((item) => {
-        const { qtyStr, itemStr } = formatItemQuantity(item.qty, item.unit, item.item);
-        const notesStr = formatKeepItemNotes(item);
-        return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}`;
-      });
-      const optionalLines = filteredOptional.map((item) => {
-        const { qtyStr, itemStr } = formatItemQuantity(item.qty, item.unit, item.item);
-        const notesStr = formatKeepItemNotes(item);
-        return `${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr} (optional)`;
-      });
-      clipboardText = [...buyLines, ...optionalLines].join('\n');
-    } else {
-      clipboardText = '## Combined Shopping List\n';
-      if (filteredBuy.length > 0) {
-        let currentSectionId = '';
-        filteredBuy.forEach((item) => {
-          const section = getSection(item.category);
-          if (section.id !== currentSectionId) {
-            currentSectionId = section.id;
-            clipboardText += `\n[ ${section.name} ]\n`;
-          }
-          const { qtyStr, itemStr } = formatItemQuantity(item.qty, item.unit, item.item);
-          const notesStr = formatItemNotes(item);
-          clipboardText += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
-        });
-      }
-      if (filteredOptional.length > 0) {
-        clipboardText += '\n### Optional\n';
-        filteredOptional.forEach((item) => {
-          const { qtyStr, itemStr } = formatItemQuantity(item.qty, item.unit, item.item);
-          const notesStr = formatItemNotes(item);
-          clipboardText += `- [ ] ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${notesStr}\n`;
-        });
-      }
-    }
-
-    navigator.clipboard.writeText(clipboardText).then(() => {
-      copyListLabel = 'Copied!';
-      select.value = '';
-      setTimeout(() => (copyListLabel = 'Copy Unchecked'), 2000);
-    });
-  }
-
   function handleGenerateDinnerPlan() {
     const planChanged = plannerStore.generateDinnerPlan();
     if (!planChanged) {
@@ -513,16 +450,14 @@
   id="toolbar-shop"
 >
   <div class="planner-top-actions">
-    <select
+    <button
+      type="button"
       id="btn-copy-combined-list"
-      class="dropdown-select"
-      aria-label="Copy shopping list options"
-      onchange={handleCopyListChange}
+      class="btn btn-secondary"
+      onclick={() => (isExportModalOpen = true)}
     >
-      <option value="" disabled selected hidden>{copyListLabel}</option>
-      <option value="markdown">Markdown</option>
-      <option value="google-keep">Google Keep</option>
-    </select>
+      Export List...
+    </button>
     <button
       type="button"
       id="btn-copy-menu-text"
@@ -561,6 +496,12 @@
 
 <!-- 7. Modals & Dialogs -->
 <FiltersModal isOpen={isFiltersModalOpen} onClose={() => isFiltersModalOpen = false} />
+<ExportModal
+  isOpen={isExportModalOpen}
+  onClose={() => (isExportModalOpen = false)}
+  title="Combined Shopping List"
+  items={combinedExportItems}
+/>
 
 {#if activeAddDay}
   <RecipeSelectorModal
