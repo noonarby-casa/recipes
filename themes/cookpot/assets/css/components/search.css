@@ -5,6 +5,56 @@
   width: 100%;
 }
 
+.recipe-search-row {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.recipe-search-row .recipe-search-box {
+  flex: 1;
+}
+
+.recipe-surprise-btn {
+  align-items: center;
+  background-color: var(--noonblue-bg-light);
+  border: 1.5px solid var(--noonblue-border-light);
+  border-radius: 12px;
+  color: var(--noonblue);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  white-space: nowrap;
+}
+
+.recipe-surprise-btn:hover {
+  background-color: var(--noonblue-bg-hover);
+  border-color: var(--noonblue);
+  color: var(--noonblue);
+  text-decoration: none;
+}
+
+.recipe-surprise-btn svg {
+  display: block;
+}
+
+@media (max-width: 599px) {
+  .recipe-surprise-btn span {
+    display: none;
+  }
+
+  .recipe-surprise-btn {
+    padding: 0.65rem;
+  }
+}
+
 .recipe-search-box {
   align-items: center;
   background: var(--btn-bg);

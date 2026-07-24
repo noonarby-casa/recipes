@@ -29,7 +29,13 @@ export function stopAudio(): void {
   }
 }
 
+import { get } from 'svelte/store';
+import { timerMutedStore } from './stores/settings';
+
 export function playLowerBoundChime(): void {
+  if (get(timerMutedStore)) {
+    return;
+  }
   initAudio();
   if (!audioCtx) {
     return;
@@ -109,6 +115,9 @@ function playBellTone(
 }
 
 export function playUpperBoundChime(): void {
+  if (get(timerMutedStore)) {
+    return;
+  }
   initAudio();
   if (!audioCtx) {
     return;

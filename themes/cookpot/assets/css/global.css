@@ -105,10 +105,14 @@ a:hover {
   gap: 1rem;
 }
 
-.header-search-toggle,
-.header-random-recipe,
-.header-theme-toggle,
-.header-store-btn {
+@media (max-width: 599px) {
+  .header-right {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.header-settings-toggle {
   align-items: center;
   background: transparent;
   border: none;
@@ -121,15 +125,13 @@ a:hover {
   transition: all 0.2s ease;
 }
 
-.header-search-toggle:hover,
-.header-random-recipe:hover,
-.header-theme-toggle:hover,
-.header-store-btn:hover {
+.header-settings-toggle:hover {
   background-color: var(--noonblue-bg-light);
   color: var(--noonblue);
 }
 
-.header-plan-link {
+.header-plan-link,
+.header-search-toggle {
   align-items: center;
   background: transparent;
   border: 1px solid var(--border-subtle);
@@ -144,35 +146,18 @@ a:hover {
   transition: all 0.2s ease;
 }
 
-.header-plan-link:hover {
+.header-plan-link:hover,
+.header-search-toggle:hover {
   background-color: var(--noonblue-bg-light);
   border-color: var(--noonblue);
   color: var(--noonblue);
   text-decoration: none;
 }
 
+.header-plan-link svg,
 .header-search-toggle svg,
-.header-random-recipe svg,
-.header-theme-toggle svg,
-.header-store-btn svg {
+.header-settings-toggle svg {
   display: block;
-}
-
-/* Theme Icon Toggling */
-.header-theme-toggle .theme-icon-light {
-  display: none;
-}
-
-.header-theme-toggle .theme-icon-dark {
-  display: block;
-}
-
-html.dark-mode .header-theme-toggle .theme-icon-light {
-  display: block;
-}
-
-html.dark-mode .header-theme-toggle .theme-icon-dark {
-  display: none;
 }
 
 /* Custom Scrollbars */

@@ -9,7 +9,7 @@ import RecipeSidesInjector from './components/RecipeSidesInjector.svelte';
 import InlineTimer from './components/InlineTimer.svelte';
 import ToggleGroup from './components/ToggleGroup.svelte';
 import FontSizeController from './components/FontSizeController.svelte';
-import StoreSelectorModal from './components/StoreSelectorModal.svelte';
+import SettingsModal from './components/SettingsModal.svelte';
 import RecipeShoppingList from './components/RecipeShoppingList.svelte';
 import type { Component } from 'svelte';
 
@@ -72,8 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Font-size controller — single-recipe pages only (no-ops elsewhere)
   mountAppToTarget(FontSizeController, 'font-size-controller-mount');
 
-  // Store-selector modal — replaces imperative store-selector.ts + modal.ts
-  mountAppToTarget(StoreSelectorModal, 'store-selector-modal-mount');
+  // Settings modal — combines theme, text-size, store-layout, and timer-sound controls
+  mountAppToTarget(SettingsModal, 'settings-modal-mount');
 
   // Recipe shopping list — replaces imperative shopping-list.ts
   mountAppToTarget(RecipeShoppingList, 'recipe-shopping-list-mount');

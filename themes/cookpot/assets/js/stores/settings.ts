@@ -46,3 +46,19 @@ fontSizeStore.subscribe((size) => {
 // ---------------------------------------------------------------------------
 
 export const recipeScaleStore = writable<number>(1.0);
+
+// ---------------------------------------------------------------------------
+// Timer sound muted preference
+// ---------------------------------------------------------------------------
+
+const TIMER_MUTED_KEY = 'timer-sound-muted';
+
+function loadTimerMuted(): boolean {
+  return ls.getString(TIMER_MUTED_KEY) === 'true';
+}
+
+export const timerMutedStore = writable<boolean>(loadTimerMuted());
+
+timerMutedStore.subscribe((muted) => {
+  ls.setString(TIMER_MUTED_KEY, String(muted));
+});

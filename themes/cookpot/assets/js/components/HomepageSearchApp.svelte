@@ -196,6 +196,16 @@
       };
     });
   }
+
+  function handleSurpriseMe() {
+    const list = searchResults.length > 0 ? searchResults : $recipesStore;
+    if (!list || list.length === 0) {
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * list.length);
+    const targetUrl = list[randomIndex].permalink;
+    window.location.href = targetUrl;
+  }
 </script>
 
 {#if showPlannerBanner}
@@ -231,28 +241,40 @@
 {#if hasHydrated}
 
   <div class="recipe-search-container">
-    <div class="recipe-search-box">
-      <SearchIcon size={18} strokeWidth={2.5} class="search-icon" />
-      <input
-        type="search"
-        id="recipe-search-input-hydrated"
-        class="recipe-search-input"
-        value={$filtersStore.searchQuery}
-        oninput={(e) => filtersStore.update(f => ({ ...f, searchQuery: e.currentTarget.value }))}
-        placeholder="Search recipes by title, ingredients, source, or tags..."
-        autocomplete="off"
-        aria-label="Search recipes"
-      />
-      {#if $filtersStore.searchQuery}
-        <button
-          type="button"
-          class="search-clear-btn"
-          aria-label="Clear search"
-          onclick={() => filtersStore.update(f => ({ ...f, searchQuery: '' }))}
-        >
-          <XIcon size={16} strokeWidth={2.5} />
-        </button>
-      {/if}
+    <div class="recipe-search-row">
+      <div class="recipe-search-box">
+        <SearchIcon size={18} strokeWidth={2.5} class="search-icon" />
+        <input
+          type="search"
+          id="recipe-search-input-hydrated"
+          class="recipe-search-input"
+          value={$filtersStore.searchQuery}
+          oninput={(e) => filtersStore.update(f => ({ ...f, searchQuery: e.currentTarget.value }))}
+          placeholder="Search recipes by title, ingredients, source, or tags..."
+          autocomplete="off"
+          aria-label="Search recipes"
+        />
+        {#if $filtersStore.searchQuery}
+          <button
+            type="button"
+            class="search-clear-btn"
+            aria-label="Clear search"
+            onclick={() => filtersStore.update(f => ({ ...f, searchQuery: '' }))}
+          >
+            <XIcon size={16} strokeWidth={2.5} />
+          </button>
+        {/if}
+      </div>
+      <button
+        type="button"
+        class="recipe-surprise-btn"
+        aria-label="Surprise me with a random recipe"
+        title="Surprise me with a random recipe"
+        onclick={handleSurpriseMe}
+      >
+        <DiceIcon size={16} strokeWidth={2.5} />
+        <span>Surprise Me</span>
+      </button>
     </div>
     <div class="homepage-tags-bar">
       <div class="primary-tags-wrapper">
