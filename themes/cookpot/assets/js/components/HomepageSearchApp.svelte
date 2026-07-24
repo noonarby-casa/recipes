@@ -12,16 +12,32 @@
   import XIcon from './icons/XIcon.svelte';
   import HeartIcon from './icons/HeartIcon.svelte';
   import FilterIcon from './icons/FilterIcon.svelte';
+  import DiceIcon from './icons/DiceIcon.svelte';
 
   let hasHydrated = $state(false);
   let isFiltersOpen = $state(false);
   let displayCount = $state(24);
   let bannerDismissed = $state(ls.getString('noonarby-planner-banner-dismissed') === 'true');
-  let showPlannerBanner = $derived(!bannerDismissed && $plannerStore.plan.length === 0);
+  let showPlannerBanner = $derived.by(() => {
+    if ($plannerStore.plan.length > 0) {
+      return false;
+    }
+    const isDismissedInStorage = ls.getString('noonarby-planner-banner-dismissed') === 'true';
+    if (!isDismissedInStorage && bannerDismissed) {
+      bannerDismissed = false;
+    }
+    return !bannerDismissed && !isDismissedInStorage;
+  });
 
   function dismissPlannerBanner() {
     bannerDismissed = true;
     ls.setString('noonarby-planner-banner-dismissed', 'true');
+  }
+
+  async function handleGeneratePlan() {
+    await hydrate();
+    plannerStore.generateDinnerPlan();
+    window.location.href = '/plan/';
   }
 
   let searchResults = $derived(
@@ -182,28 +198,37 @@
   }
 </script>
 
-{#if hasHydrated}
-  {#if showPlannerBanner}
-    <div class="planner-callout-banner">
-      <div class="planner-callout-content">
-        <span class="planner-callout-icon">🗓️</span>
-        <div class="planner-callout-text">
-          <strong>Plan your weekly meals:</strong> Schedule recipes for the week and generate an automatic shopping list.
-        </div>
-      </div>
-      <div class="planner-callout-actions">
-        <a href="/plan/" class="planner-callout-btn">Open Meal Planner →</a>
-        <button
-          type="button"
-          class="planner-callout-close"
-          onclick={dismissPlannerBanner}
-          aria-label="Dismiss meal planner announcement"
-        >
-          <XIcon size={16} strokeWidth={2.5} />
-        </button>
+{#if showPlannerBanner}
+  <div class="planner-callout-banner">
+    <div class="planner-callout-content">
+      <span class="planner-callout-icon">🗓️</span>
+      <div class="planner-callout-text">
+        <strong>Plan your weekly meals:</strong> Schedule recipes for the week and generate an automatic shopping list.
       </div>
     </div>
-  {/if}
+    <div class="planner-callout-actions">
+      <button
+        type="button"
+        class="planner-callout-btn"
+        onclick={handleGeneratePlan}
+      >
+        <DiceIcon size={14} strokeWidth={2.5} />
+        Generate Plan
+      </button>
+      <a href="/plan/" class="planner-callout-btn-secondary">Open Planner →</a>
+      <button
+        type="button"
+        class="planner-callout-close"
+        onclick={dismissPlannerBanner}
+        aria-label="Dismiss meal planner announcement"
+      >
+        <XIcon size={16} strokeWidth={2.5} />
+      </button>
+    </div>
+  </div>
+{/if}
+
+{#if hasHydrated}
 
   <div class="recipe-search-container">
     <div class="recipe-search-box">
@@ -332,11 +357,17 @@
   }
 
   .planner-callout-btn {
+    align-items: center;
     background-color: var(--noonblue);
+    border: none;
     border-radius: 6px;
     color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: inherit;
     font-size: 0.85rem;
     font-weight: 700;
+    gap: 0.35rem;
     padding: 0.4rem 0.8rem;
     text-decoration: none;
     transition: all 0.2s ease;
@@ -345,6 +376,28 @@
   .planner-callout-btn:hover {
     background-color: var(--noonblue-hover);
     color: #ffffff;
+    text-decoration: none;
+  }
+
+  .planner-callout-btn-secondary {
+    align-items: center;
+    background-color: transparent;
+    border: 1px solid var(--noonblue-border-light);
+    border-radius: 6px;
+    color: var(--noonblue);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .planner-callout-btn-secondary:hover {
+    background-color: var(--noonblue-bg-hover);
+    color: var(--noonblue);
     text-decoration: none;
   }
 

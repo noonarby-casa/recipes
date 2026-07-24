@@ -79,6 +79,9 @@ export const plannerStore = {
       }
       const target = state.plan[idx];
       const nextPlan = state.plan.filter((p) => p.instanceId !== instanceId);
+      if (nextPlan.length === 0) {
+        ls.remove('noonarby-planner-banner-dismissed');
+      }
       return {
         ...commitPlan(state, nextPlan),
         lastRemovedRecipe: { ...target },
@@ -145,6 +148,7 @@ export const plannerStore = {
   },
 
   clearPlan() {
+    ls.remove('noonarby-planner-banner-dismissed');
     store.update((state) => commitPlan(state, []));
   },
 
