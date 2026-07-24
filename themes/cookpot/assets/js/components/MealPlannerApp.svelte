@@ -362,7 +362,7 @@
             : ''}"
           onclick={() => {
             plannerStore.showLocalPreview();
-            const storedSettings = ls.getJson('noonarby-meal-plan-settings');
+            const storedSettings = ls.getJson<{ workWeekOnly?: boolean }>('noonarby-meal-plan-settings');
             if (storedSettings?.workWeekOnly !== undefined) {
               settingsStore.update((s) => ({
                 ...s,

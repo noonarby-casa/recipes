@@ -194,9 +194,7 @@
   .day-recipes-list {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
     gap: 0.6rem;
-    min-height: 40px;
   }
 
   @media (min-width: 768px) {
