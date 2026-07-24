@@ -199,6 +199,18 @@
     min-height: 40px;
   }
 
+  @media (min-width: 768px) {
+    .day-column[data-day="supplemental"] .day-recipes-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .day-column[data-day="supplemental"] :global(.empty-slot-box) {
+      max-width: 180px;
+    }
+  }
+
   @media (max-width: 767px) {
     .day-column {
       min-height: auto;

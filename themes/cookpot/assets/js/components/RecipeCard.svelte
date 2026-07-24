@@ -103,10 +103,24 @@
     class="recipe-card-unified {variant}-card {editMode ? 'edit-mode' : 'view-mode'}"
     data-instance-id={item?.instanceId}
   >
-    <!-- Vertical Top Half: Recipe Image & Icons -->
-    <div class="recipe-card-media-wrapper">
-      {#if permalinkUrl}
-        <a href={permalinkUrl} class="recipe-card-image-link">
+    <div class="recipe-card-header">
+      <!-- Vertical Top Half: Recipe Image & Icons -->
+      <div class="recipe-card-media-wrapper">
+        {#if permalinkUrl}
+          <a href={permalinkUrl} class="recipe-card-image-link">
+            <img
+              src={imgUrl}
+              {srcset}
+              sizes="(max-width: 599px) 180px, 260px"
+              alt={title}
+              class="recipe-card-img"
+              loading="lazy"
+              onerror={(e) => {
+                (e.currentTarget as HTMLImageElement).src = '/icon-600.png';
+              }}
+            />
+          </a>
+        {:else}
           <img
             src={imgUrl}
             {srcset}
@@ -118,34 +132,19 @@
               (e.currentTarget as HTMLImageElement).src = '/icon-600.png';
             }}
           />
-        </a>
-      {:else}
-        <img
-          src={imgUrl}
-          {srcset}
-          sizes="(max-width: 599px) 180px, 260px"
-          alt={title}
-          class="recipe-card-img"
-          loading="lazy"
-          onerror={(e) => {
-            (e.currentTarget as HTMLImageElement).src = '/icon-600.png';
-          }}
-        />
-      {/if}
+        {/if}
 
-      {#if showFavorite && isFav}
-        <div class="recipe-favorite-badge" title="Favorited recipe">
-          <HeartIcon fill="currentColor" color="none" size={36} class="heart-icon-badge" />
-        </div>
-      {/if}
+        {#if showFavorite && isFav}
+          <div class="recipe-favorite-badge" title="Favorited recipe">
+            <HeartIcon fill="currentColor" color="none" size={36} class="heart-icon-badge" />
+          </div>
+        {/if}
 
-      {#if variant === 'planner' && editMode}
-        <div class="recipe-drag-handle" title="Drag to reorder">⠿</div>
-      {/if}
-    </div>
+        {#if variant === 'planner' && editMode}
+          <div class="recipe-drag-handle" title="Drag to reorder">⠿</div>
+        {/if}
+      </div>
 
-    <!-- Vertical Bottom Half: Title and Mode Details -->
-    <div class="recipe-card-body">
       <h3 class="recipe-card-title">
         {#if permalinkUrl}
           <a href={permalinkUrl}>{title}</a>
@@ -153,6 +152,10 @@
           {title}
         {/if}
       </h3>
+    </div>
+
+    <!-- Vertical Bottom Half: Mode Details -->
+    <div class="recipe-card-body">
 
       {#if variant === 'standard'}
         <!-- Standard Mode Details (Date, Times, Source, Tags) -->
@@ -308,6 +311,32 @@
     justify-content: center;
     gap: 0.4rem;
     width: 100%;
+  }
+  @media (max-width: 767px) {
+    .planner-edit-controls-stacked {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.1rem;
+    }
+    .portion-picker-row {
+      width: auto;
+      justify-content: flex-start;
+    }
+    .planner-action-btns {
+      width: auto;
+      justify-content: flex-end;
+    }
+    .recipe-drag-handle {
+      top: 4px;
+      left: 4px;
+      min-width: 22px;
+      min-height: 22px;
+      font-size: 0.75rem;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
   }
   .recipe-control-btn {
     align-items: center;
