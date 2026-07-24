@@ -147,10 +147,10 @@
     plannerStore.update((state) => {
       const nextPlan = state.plan.map((planned) => {
         const rec = planned.permalink ? recipes.find((r) => r.permalink === planned.permalink) : undefined;
-        if (!rec) {return planned;}
-        const currentPortions = Math.round(planned.scale * rec.servings);
+        const defaultServings = rec ? rec.servings : 4;
+        const currentPortions = Math.round(planned.scale * defaultServings);
         const nextPortions = Math.max(1, currentPortions + offset);
-        return { ...planned, scale: nextPortions / rec.servings };
+        return { ...planned, scale: nextPortions / defaultServings };
       });
       if (!state.isPreviewing) {
         ls.setJson('noonarby-meal-plan', nextPlan);
@@ -382,22 +382,22 @@
 
   <div class="global-scaler-panel" id="global-scaler-panel">
     <span class="global-scaler-label">Adjust Servings</span>
-    <div class="portion-picker">
+    <div class="servings-picker">
       <button
         type="button"
-        class="portion-btn"
+        class="servings-btn"
         id="global-dec-btn"
-        title="Scale down all recipe portions by 1"
+        title="Scale down all recipe servings by 1"
         onclick={() => adjustGlobalPortions(-1)}
       >
         -
       </button>
-      <span class="portion-val" id="global-scaler-indicator">{$plannerStore.plan.length > 0 ? 'Portions' : '—'}</span>
+      <span class="servings-val" id="global-scaler-indicator">{$plannerStore.plan.length > 0 ? 'Servings' : '—'}</span>
       <button
         type="button"
-        class="portion-btn"
+        class="servings-btn"
         id="global-inc-btn"
-        title="Scale up all recipe portions by 1"
+        title="Scale up all recipe servings by 1"
         onclick={() => adjustGlobalPortions(1)}
       >
         +

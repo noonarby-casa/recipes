@@ -85,7 +85,7 @@ export const planUrlQueryString = derived(
         return;
       }
 
-      let code = 'custom';
+      let code = 'c';
       let defaultServings = 4;
       if (rec) {
         code = permalinkToCode(item.permalink!, $recipes);
@@ -124,6 +124,7 @@ export const planUrlQueryString = derived(
         const parts: string[] = [idx.toString()];
         const title = isCustom ? item.customTitle || 'Custom Item' : '';
         parts.push(sanitize(title));
+        parts.push(isCustom ? item.icon || 'utensils' : '');
 
         if (extraIngredients && hasExtra) {
           extraIngredients.forEach((ing) => {
@@ -220,8 +221,10 @@ export function parsePlanUrlParams(
           portions = parseInt(rest.slice(digitIndex), 10);
         }
 
-        const permalink =
-          code === 'custom' ? undefined : codeToPermalink(code, recipes);
+        const isCustomCode = code === 'c' || code === 'custom';
+        const permalink = isCustomCode
+          ? undefined
+          : codeToPermalink(code, recipes);
         const rec = permalink
           ? recipes.find((r) => r.permalink === permalink)
           : undefined;
@@ -266,8 +269,10 @@ export function parsePlanUrlParams(
             scale = parseFloat(parts[1]) || 1.0;
           }
 
-          const permalink =
-            code === 'custom' ? undefined : codeToPermalink(code, recipes);
+          const isCustomCode = code === 'c' || code === 'custom';
+          const permalink = isCustomCode
+            ? undefined
+            : codeToPermalink(code, recipes);
           newPlan.push({
             instanceId: generateInstanceId(),
             permalink: permalink || undefined,
@@ -286,6 +291,26 @@ export function parsePlanUrlParams(
       if (decodedStr) {
         const entrySeparator = '~';
         const fieldSeparator = '|';
+        const KNOWN_ICONS = new Set([
+          'utensils',
+          'chef-hat',
+          'book',
+          'pizza',
+          'bowl',
+          'bbq',
+          'drink',
+          'dessert',
+          'salad',
+          'sandwich',
+          'breakfast',
+          'pasta',
+          'seafood',
+          'tacos',
+          'bread',
+          'snack',
+          'coffee',
+          'rice',
+        ]);
 
         const entries = decodedStr.split(entrySeparator);
         entries.forEach((entry) => {
@@ -304,7 +329,19 @@ export function parsePlanUrlParams(
           }
 
           const title = parts[1] || undefined;
-          const extra = parts.slice(2);
+          let icon: string | undefined = undefined;
+          let rawExtras: string[] = [];
+
+          if (parts.length > 2) {
+            if (KNOWN_ICONS.has(parts[2])) {
+              icon = parts[2];
+              rawExtras = parts.slice(3);
+            } else if (parts[2] === '') {
+              rawExtras = parts.slice(3);
+            } else {
+              rawExtras = parts.slice(2);
+            }
+          }
 
           const planItem = newPlan[idx];
           if (planItem) {
@@ -312,8 +349,11 @@ export function parsePlanUrlParams(
               planItem.customTitle = title;
               planItem.permalink = undefined;
             }
-            if (extra.length > 0) {
-              planItem.extraIngredients = extra.map((textStr: string) =>
+            if (icon) {
+              planItem.icon = icon;
+            }
+            if (rawExtras.length > 0) {
+              planItem.extraIngredients = rawExtras.map((textStr: string) =>
                 parseRawUserInput(textStr),
               );
             }

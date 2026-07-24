@@ -4,7 +4,7 @@
   import { plannerStore } from '../stores/planner';
   import { favoritesStore } from '../stores/favorites';
   import { formatItemQuantity, formatAbbreviatedTime } from '../units';
-  import PortionPicker from './PortionPicker.svelte';
+  import ServingsPicker from './ServingsPicker.svelte';
   import HeartIcon from './icons/HeartIcon.svelte';
   import CalendarIcon from './icons/CalendarIcon.svelte';
   import ClockIcon from './icons/ClockIcon.svelte';
@@ -58,6 +58,9 @@
   let rec = $derived(
     recipe || (item?.permalink ? recipes.find((r) => r.permalink === item.permalink) : undefined)
   );
+
+  let iconKey = $derived(item?.icon || 'utensils');
+  let customImgUrl = $derived(`/icons/custom-${iconKey}.webp`);
 
   let title = $derived(rec ? rec.title : item?.customTitle || 'Custom Item');
   let shortId = $derived(rec?.shortId || recipe?.shortId);
@@ -120,6 +123,16 @@
               }}
             />
           </a>
+        {:else if !rec}
+          <img
+            src={customImgUrl}
+            alt={title}
+            class="recipe-card-img"
+            loading="lazy"
+            onerror={(e) => {
+              (e.currentTarget as HTMLImageElement).src = '/icons/custom-utensils.webp';
+            }}
+          />
         {:else}
           <img
             src={imgUrl}
@@ -132,6 +145,10 @@
               (e.currentTarget as HTMLImageElement).src = '/icon-600.png';
             }}
           />
+        {/if}
+
+        {#if !rec}
+          <div class="recipe-custom-badge" title="Custom Recipe">Custom</div>
         {/if}
 
         {#if showFavorite && isFav}
@@ -205,8 +222,8 @@
         <!-- Planner Mode Details (Servings / Controls & Extra Sides) -->
         {#if editMode}
           <div class="planner-edit-controls-stacked">
-            <div class="portion-picker-row">
-              <PortionPicker value={portions} onChange={handlePortionChange} />
+            <div class="servings-picker-row">
+              <ServingsPicker value={portions} onChange={handlePortionChange} />
             </div>
             <div class="planner-action-btns">
               {#if onSwap}
@@ -230,7 +247,7 @@
 
         {#if extras.length > 0}
           <div class="recipe-card-extra-ingredients">
-            <span class="extra-ingredients-label">Sides</span>
+            <span class="extra-ingredients-label">Ingredients & Sides</span>
             <ul class="extra-ingredients-list">
               {#each extras as ing}
                 {@const qtyVal = ing.qty !== undefined ? (Array.isArray(ing.qty) ? ing.qty[0] : ing.qty) : null}
@@ -300,7 +317,7 @@
     width: 100%;
     margin-top: 0.2rem;
   }
-  .portion-picker-row {
+  .servings-picker-row {
     display: flex;
     justify-content: center;
     width: 100%;
@@ -605,6 +622,23 @@
   .browse-card.keyboard-focused {
     background-color: var(--noonblue-bg-hover);
     border-color: var(--noonblue);
+  }
+
+
+
+  .recipe-custom-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--noonblue);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    z-index: 2;
   }
 </style>
 

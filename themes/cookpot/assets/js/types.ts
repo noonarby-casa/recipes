@@ -21,6 +21,7 @@ export interface PlannedItem {
   instanceId: string;
   permalink?: string;
   customTitle?: string;
+  icon?: string;
   scale: number;
   day: string; // 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', or 'supplemental'
   extraIngredients?: IngredientInput[];

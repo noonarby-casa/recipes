@@ -3,8 +3,8 @@
   import { formatRecipeIngredientHTML } from '../units';
   import { recipeScaleStore } from '../stores/settings';
   import { plannerStore } from '../stores/planner';
-  import PortionPicker from './PortionPicker.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
+  import ServingsPicker from './ServingsPicker.svelte';
 
   interface Props {
     /** The default number of servings/portions for the recipe. */
@@ -149,7 +149,7 @@
       <span class="scale-label">Servings</span>
     </div>
     <div class="scale-controls">
-      <PortionPicker value={portions} onChange={(v) => (portions = v)} />
+      <ServingsPicker value={portions} onChange={(v) => (portions = v)} />
       <span class="scale-subtitle">(Original: {baseServings})</span>
     </div>
   </div>

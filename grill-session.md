@@ -1,29 +1,69 @@
-# Grill Session: Reorganizing Header Icons into Settings Menu
+# Grill Session: Adapting Recipe Selector Modal for Custom Recipes / Ingredients
 
 ## Closed Decisions
 
-- **Meal Planner Placement:** Top-level primary pill button in header bar (`[ 🗓️ Meal Planner ]`).
-- **Random Recipe Placement:** Placed on the homepage search area, as a button element positioned directly to the right of the search input field (`[ 🔍 Search input... ] [ 🎲 Surprise Me ]`).
-- **Settings Trigger UI:** Top-level ⚙️ icon in header right that opens a unified **Settings Modal**.
-- **Settings Modal Contents:**
-  1. **Theme / Appearance:** 3-way toggle (`Light` | `Dark` | `System`) using a horizontal `ToggleGroup`.
-  2. **Recipe Text Size:** 3-way toggle (`Smaller` | `Default` | `Larger`) synced with `fontSizeStore` (also kept on single recipe pages).
-  3. **Store Layout Selection:** Vertical `ToggleGroup` with layout options and descriptions.
-  4. **Timer Sound Alerts:** 2-way toggle (`Sound On` | `Muted`) controlling Web Audio chime playback.
-- **Mobile Header Responsiveness:** Keep the full `[ 🗓️ Meal Planner ]` pill text visible on mobile screens; allow `.header-right` section to wrap cleanly below the site title/logo as a short, single row.
-- **Data Handling & Storage Reset:** Explicitly omitted from the Settings Modal for now (deferred for separate dedicated design).
+### Q1. Modal Architecture & Mobile Switcher
 
-## Technical & UX Edge Case Handling
+- **Question:** How should the recipe selector modal structure its layout for browsing recipes vs. entering custom recipes/ingredients?
+- **Decision:** Mirror `ExportModal.svelte` with a 2-column grid on desktop (Browse Recipes left, Custom Entry right) and a segmented `ToggleGroup` tab switcher on mobile ("Browse Recipes" vs. "Custom Entry").
+- **Details:**
+  - Desktop (≥768px): Dual column view allows side-by-side search/browse and custom creation without switching tabs.
+  - Mobile (<768px): Top segmented control toggles `browse` vs `custom` pane using `.mobile-hidden` rules matching Export Modal styling.
 
-- **System Theme Sync & FOCU (Flash of Unstyled Content):**
-  - Inline head script (`head.html`) checks `theme === 'dark'`, `theme === 'light'`, or `theme === 'system'` (fallback to `matchMedia('(prefers-color-scheme: dark)')`) _before page renders_ to prevent light/dark flash on reload.
-  - Active `matchMedia('change')` listener dynamically toggles `.dark-mode` on `<html>` in real-time when OS mode changes while in `System` setting.
-- **Static Hugo HTML Fallbacks:**
-  - `header.html` renders static HTML `<button id="header-settings-btn">` gear icon.
-  - `search.html` renders static HTML `<a id="static-surprise-btn">` surprise button next to search box so non-JS/pre-hydration works immediately.
-- **Keyboard Navigation & Accessibility:**
-  - `Escape` key closes `SettingsModal.svelte`.
-  - Focus trap inside modal prevents keyboard navigation from dropping into page background while modal is open.
-- **Search Button Dual Behavior:**
-  - On Homepage: Clicking 🔍 focuses homepage search input directly.
-  - On Recipe Page / Planner: Clicking 🔍 navigates to `/?search=focus`.
+### Q2. Custom Entry Input Granularity & Form Fields
+
+- **Question:** What input fields and interaction pattern should the custom dish panel feature in the selector modal?
+- **Decision:** Dish title input + Icon Selector & Base Servings Picker row + interactive item-by-item sides/ingredients builder.
+- **Details:**
+  - Title Input: Required text field for custom dish name.
+  - Icon & Servings Row: Side-by-side `IconPicker.svelte` + Base Servings `PortionPicker` (defaulting to 4 servings).
+  - Sides Builder: Modular `IngredientsEditor.svelte` component with single-line input, "Add" button, live parsed breakdown preview (`Qty`, `Unit`, `Item`, `Prep`), and removable item chips/list.
+  - Reuses `parseRawUserInput` from `simple-parser.ts` to convert inputs to `IngredientInput[]`.
+
+### Q3. Persistence & Reusability Scope
+
+- **Question:** Should custom recipes/ingredients created in the modal be saved strictly to the active meal plan, or saved locally for reuse across future plans?
+- **Decision:** Plan-Bound Entries (matching sides & current storage architecture).
+- **Details:**
+  - Stored directly in `localStorage['noonarby-meal-plan']` via `plannerStore`.
+  - Clearing the meal plan or removing the item removes the custom item.
+
+### Q4. URL Encoding & Storage Sync Specification
+
+- **Question:** How should custom recipes be represented in `p` and `x` URL parameters and `localStorage`?
+- **Decision:** Compact `c` code in `p` parameter + Base64Url payload in `x` parameter.
+- **Details:**
+  - `p` Parameter: Uses `c` shortId (e.g. `1.5c` for Friday custom dish). Backward-compatible with legacy `custom` code.
+  - `x` Parameter: Base64Url payload containing `<index>|<customTitle>|<icon>|<ingredients...>` to preserve unconstrained titles, icon selection, and item breakdown.
+  - `localStorage`: Stores `PlannedItem` with `customTitle`, `icon`, and `extraIngredients` array.
+
+### Q5. Post-Selection Editing & Card Presentation
+
+- **Question:** How should custom recipes be rendered on the planner grid and edited after selection?
+- **Decision:** Identical card layout to catalog recipes in `RecipeCard.svelte` + full editing in `PlannedRecipeDetailsModal.svelte`.
+- **Details:**
+  - Uses `RecipeCard` with same grid bounds, portion picker, edit details, swap, and remove buttons.
+  - Displays a clean "Custom" pill badge overlay on the card.
+  - Clicking opens `PlannedRecipeDetailsModal.svelte` to edit title, portions, sides, or icon.
+
+### Q6. Custom Recipe Image Placeholder & Icon Picker
+
+- **Question:** What replaces the recipe image header for custom dishes?
+- **Decision:** Stylized SVG gradient header with user-selectable food icon (defaulting to Utensils / Chef Hat).
+- **Details:**
+  - Icon Picker in `RecipeSelectorModal` and `PlannedRecipeDetailsModal` allowing selection between food icons (e.g. Utensils, Chef Hat, Recipe Book, Pizza, Bowl, BBQ).
+  - Default icon: `utensils`.
+  - Icon key stored on `PlannedItem.icon` and synced in `x` URL parameter.
+
+### Q7. Meal Plan Interactions & Global Portion Scaling
+
+- **Question:** How do custom recipes interact with meal plan features (portion scaling, conflict detection, auto-generation, shopping list)?
+- **Decision:** Full integration across all meal plan features.
+- **Details:**
+  - Global Portion Scaler: Custom items assume a base of 4 servings, allowing global `+` / `-` portion buttons in `MealPlannerApp.svelte` to scale custom item portions and ingredient quantities proportionally.
+  - Shopping List: Ingredients from custom items are automatically aggregated, scaled, and attributed to `item.customTitle` in `stores/shopping.ts`.
+  - Conflict Resolution & Auto-Planner: Handled natively via existing `arePlansEqual` check and day-slot detection in `plannerStore`.
+
+## Open Questions
+
+_(All design decisions resolved!)_

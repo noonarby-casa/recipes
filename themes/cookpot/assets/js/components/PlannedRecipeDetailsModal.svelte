@@ -3,14 +3,12 @@
   import { favoritesStore } from '../stores/favorites';
   import { plannerStore } from '../stores/planner';
   import { scrollable } from '../actions/scrollable';
-  import type { PlannedItem } from '../types';
-  import { formatItemQuantity } from '../units';
-  import { parseRawUserInput } from '../simple-parser';
-  import { assembleIngredientText } from '../shopping-list/utils';
+  import type { PlannedItem, IngredientInput } from '../types';
   import Modal from './Modal.svelte';
-  import PortionPicker from './PortionPicker.svelte';
-import HeartIcon from './icons/HeartIcon.svelte';
-  import EditIcon from './icons/EditIcon.svelte';
+  import ServingsPicker from './ServingsPicker.svelte';
+  import HeartIcon from './icons/HeartIcon.svelte';
+  import IconPicker from './IconPicker.svelte';
+  import IngredientsEditor from './IngredientsEditor.svelte';
 
   interface Props {
     /** Whether the details editor modal is open and visible. */
@@ -43,80 +41,14 @@ import HeartIcon from './icons/HeartIcon.svelte';
 
   let extras = $derived(currentItem.extraIngredients || []);
 
-  let editingIndex = $state<number | null>(null);
-  let inputValue = $state('');
-
-  let parsedExtra = $derived(
-    inputValue.trim() ? parseRawUserInput(inputValue.trim()) : null
-  );
-
-  $effect(() => {
-    if (editingIndex !== null && extras[editingIndex]) {
-      inputValue = assembleIngredientText(extras[editingIndex], true);
-    } else {
-      inputValue = '';
-    }
-  });
-
   function toggleFavorite() {
     if (rec && rec.shortId) {
       favoritesStore.toggle(rec.shortId);
     }
   }
 
-  function handleSaveExtra() {
-    const text = inputValue.trim();
-    if (editingIndex !== null) {
-      const parsed = text ? parseRawUserInput(text) : null;
-      const nextExtras = [...extras];
-      if (!parsed || !parsed.item) {
-        nextExtras.splice(editingIndex, 1);
-      } else {
-        nextExtras[editingIndex] = parsed;
-      }
-      plannerStore.updateExtraIngredients(currentItem.instanceId, nextExtras);
-      editingIndex = null;
-    } else {
-      if (!text) {
-        return;
-      }
-      const parsed = parseRawUserInput(text);
-      if (parsed.item) {
-        plannerStore.updateExtraIngredients(currentItem.instanceId, [
-          ...extras,
-          parsed,
-        ]);
-        inputValue = '';
-      }
-    }
-  }
-
-  function handleCancelEdit() {
-    editingIndex = null;
-  }
-
-  function handleEditExtra(idx: number) {
-    editingIndex = idx;
-  }
-
-  function handleRemoveExtra(idx: number) {
-    const nextExtras = extras.filter((_, i) => i !== idx);
-    plannerStore.updateExtraIngredients(currentItem.instanceId, nextExtras);
-    if (editingIndex === idx) {
-      editingIndex = null;
-    }
-  }
-
-  function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSaveExtra();
-    } else if (e.key === 'Escape') {
-      if (editingIndex !== null) {
-        editingIndex = null;
-        e.stopPropagation();
-      }
-    }
+  function handleIngredientsChange(next: IngredientInput[]) {
+    plannerStore.updateExtraIngredients(currentItem.instanceId, next);
   }
 </script>
 
@@ -134,20 +66,37 @@ import HeartIcon from './icons/HeartIcon.svelte';
     </div>
   {/snippet}
 
-    <div class="planner-modal-body scrollable-area" use:scrollable>
-      {#if !rec}
-        <h4 class="details-section-title">Title</h4>
-        <input
-          type="text"
-          value={currentItem.customTitle || ''}
-          onchange={(e) => plannerStore.updateCustomTitle(currentItem.instanceId, e.currentTarget.value)}
-          class="title-input"
-        />
-      {/if}
+  <div class="planner-modal-body scrollable-area" use:scrollable>
+    {#if !rec}
+      <h4 class="details-section-title">Title</h4>
+      <input
+        type="text"
+        value={currentItem.customTitle || ''}
+        onchange={(e) => plannerStore.updateCustomTitle(currentItem.instanceId, e.currentTarget.value)}
+        class="title-input"
+      />
 
-      <h4 class="details-section-title">Portions</h4>
+      <div class="details-inline-row">
+        <div class="details-inline-group">
+          <h4 class="details-section-title">Icon</h4>
+          <IconPicker
+            selectedIcon={currentItem.icon || 'utensils'}
+            onChange={(nextIcon) => plannerStore.updateIcon(currentItem.instanceId, nextIcon)}
+          />
+        </div>
+
+        <div class="details-inline-group">
+          <h4 class="details-section-title">Servings</h4>
+          <ServingsPicker
+            value={portions}
+            onChange={(nextVal) => plannerStore.updateScale(currentItem.instanceId, nextVal / defaultServings)}
+          />
+        </div>
+      </div>
+    {:else}
+      <h4 class="details-section-title">Servings</h4>
       <div class="portions-row">
-        <PortionPicker
+        <ServingsPicker
           value={portions}
           onChange={(nextVal) => plannerStore.updateScale(currentItem.instanceId, nextVal / defaultServings)}
         />
@@ -158,66 +107,21 @@ import HeartIcon from './icons/HeartIcon.svelte';
             class="recipe-favorite-btn {isFav ? 'is-favorite' : ''}"
             onclick={toggleFavorite}
             aria-label="Favorite recipe"
-            aria-pressed={isFav ? 'true' : 'false'}
-            title="Favorite recipe"
+            title={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <HeartIcon class="heart-icon" />
+            <HeartIcon fill={isFav ? 'var(--heart-color)' : 'none'} size={22} color={isFav ? 'var(--heart-color)' : 'var(--text-muted)'} />
           </button>
         {/if}
       </div>
+    {/if}
 
-      <h4 class="details-section-title">Sides & Extra Ingredients</h4>
-      {#if extras.length === 0}
-        <div class="no-extras">No Sides or extra ingredients added yet.</div>
-      {:else}
-        <ul class="extras-list">
-          {#each extras as ing, idx}
-            {@const qtyVal = ing.qty !== undefined ? (Array.isArray(ing.qty) ? ing.qty[0] : ing.qty) : null}
-            {@const formatted = formatItemQuantity(qtyVal, ing.unit || '', ing.item, true)}
-            {@const descStr = ing.desc ? ing.desc + ' ' : ''}
-            {@const fullItem = `${descStr}${formatted.itemStr}${ing.prep ? `, ${ing.prep}` : ''}`}
-            {@const isEditing = editingIndex === idx}
-            <li class="extras-item" class:editing={isEditing}>
-              <span>{formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{fullItem}</span>
-              <div class="extras-actions">
-                <button type="button" onclick={() => handleEditExtra(idx)} title="Edit side" class="action-btn edit-btn">
-                  <EditIcon size={14} strokeWidth={2.5} />
-                </button>
-                <button type="button" onclick={() => handleRemoveExtra(idx)} class="action-btn remove-btn">✕</button>
-              </div>
-            </li>
-          {/each}
-        </ul>
-      {/if}
-
-      <div class="controls-row">
-        <input
-          type="text"
-          bind:value={inputValue}
-          onkeydown={handleKeydown}
-          placeholder={editingIndex !== null ? 'Edit side...' : 'e.g. 1 can chickpeas'}
-          class="extra-input"
-        />
-        <button type="button" onclick={handleSaveExtra} class="btn btn-brand save-btn">
-          {editingIndex !== null ? 'Save' : 'Add'}
-        </button>
-        {#if editingIndex !== null}
-          <button type="button" onclick={handleCancelEdit} class="btn btn-secondary cancel-btn">
-            Cancel
-          </button>
-        {/if}
-      </div>
-
-      {#if parsedExtra && parsedExtra.item}
-        <div id="extra-preview-container" class="preview-container">
-          <div><strong>Qty:</strong> <span class="preview-val">{parsedExtra.qty !== undefined ? parsedExtra.qty.toString() : '—'}</span></div>
-          <div><strong>Unit:</strong> <span class="preview-val">{parsedExtra.unit || '—'}</span></div>
-          <div><strong>Desc:</strong> <span class="preview-val">{parsedExtra.desc || '—'}</span></div>
-          <div><strong>Item:</strong> <span class="preview-val">{parsedExtra.item || '—'}</span></div>
-          <div><strong>Prep:</strong> <span class="preview-val">{parsedExtra.prep || '—'}</span></div>
-        </div>
-      {/if}
-    </div>
+    <IngredientsEditor
+      ingredients={extras}
+      onChange={handleIngredientsChange}
+      title="Ingredients & Sides"
+      emptyLabel="No ingredients or sides added yet."
+    />
+  </div>
 </Modal>
 
 <style>
@@ -237,98 +141,29 @@ import HeartIcon from './icons/HeartIcon.svelte';
     padding: 0.5rem;
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
-    background: var(--bg-card);
+    background-color: var(--card-bg);
     color: var(--text-body);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .details-inline-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .details-inline-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .details-inline-group .details-section-title {
+    margin-bottom: 0;
   }
   .portions-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1.5rem;
-  }
-  .no-extras {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-  }
-  .extras-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1rem 0;
-  }
-  .extras-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-  .extras-item.editing {
-    background: var(--font-controls-bg);
-    border-radius: 4px;
-  }
-  .extras-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-  .action-btn {
-    background: none;
-    border: none;
-    color: var(--noonblue);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-  .edit-btn {
-    padding: 0.25rem;
-  }
-  .remove-btn {
-    font-weight: bold;
-    padding: 0.25rem 0.5rem;
-    font-size: 1rem;
-    line-height: 1;
-  }
-  .controls-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .extra-input {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    background: var(--bg-card);
-    color: var(--text-body);
-  }
-  .save-btn {
-    padding: 0.5rem 1rem;
-    margin: 0;
-  }
-  .cancel-btn {
-    padding: 0.5rem 1rem;
-    margin: 0;
-    background: var(--font-controls-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    color: var(--text-body);
-    cursor: pointer;
-  }
-  .preview-container {
-    display: flex;
-    font-size: 0.8rem;
-    background: var(--font-controls-bg);
-    border: 1px dashed var(--border-subtle);
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-  .preview-val {
-    color: var(--noonblue);
-    font-family: monospace;
   }
 </style>

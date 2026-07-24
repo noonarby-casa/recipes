@@ -143,6 +143,15 @@ export const plannerStore = {
     });
   },
 
+  updateIcon(instanceId: string, icon: string) {
+    store.update((state) => {
+      const nextPlan = state.plan.map((item) =>
+        item.instanceId === instanceId ? { ...item, icon } : item,
+      );
+      return commitPlan(state, nextPlan);
+    });
+  },
+
   reorderRecipes(nextPlan: PlannedItem[]) {
     store.update((state) => commitPlan(state, nextPlan));
   },
