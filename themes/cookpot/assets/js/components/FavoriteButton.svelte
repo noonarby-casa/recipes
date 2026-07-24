@@ -100,21 +100,9 @@
     display: flex;
   }
 
-  :global(.recipe-scale-panel) {
-    position: relative;
-  }
-
   :global(.recipe-scale-panel .recipe-favorite-btn) {
-    position: absolute;
-    top: 1rem;
-    right: 1.25rem;
-    z-index: 10;
-  }
-
-  @media (min-width: 768px) {
-    :global(.recipe-scale-panel .recipe-favorite-btn) {
-      position: static;
-      margin-left: auto;
-    }
+    margin-left: auto;
+    order: 99;
+    position: static;
   }
 </style>

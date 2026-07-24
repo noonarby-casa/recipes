@@ -178,7 +178,8 @@
     </div>
     {#if hasAnyPlan}
       <a href="/plan/" class="view-plan-link" title="Open Meal Planner">
-        View Plan →
+        <span class="view-plan-full">View Plan →</span>
+        <span class="view-plan-short">Plan →</span>
       </a>
     {/if}
   </div>
