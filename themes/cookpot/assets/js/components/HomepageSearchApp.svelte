@@ -230,15 +230,15 @@
       {/if}
     </div>
     <div class="homepage-tags-bar">
-      <button
-        type="button"
-        class="tag-filter-pill favorites-pill {$filtersStore.favoritesOnly ? 'include' : ''}"
-        onclick={() => filtersStore.update(f => ({ ...f, favoritesOnly: !f.favoritesOnly }))}
-      >
-        <HeartIcon size={11} fill="currentColor" color="none" class="heart-icon-badge" />
-        <span>Favorites</span>
-      </button>
       <div class="primary-tags-wrapper">
+        <button
+          type="button"
+          class="tag-filter-pill favorites-pill {$filtersStore.favoritesOnly ? 'include' : ''}"
+          onclick={() => filtersStore.update(f => ({ ...f, favoritesOnly: !f.favoritesOnly }))}
+        >
+          <HeartIcon size={11} fill="currentColor" color="none" class="heart-icon-badge" />
+          <span>Favorites</span>
+        </button>
         {#each PRIMARY_TAGS as tag (tag)}
           {@const isInc = $filtersStore.includedTags.includes(tag)}
           {@const isExc = $filtersStore.excludedTags.includes(tag)}
