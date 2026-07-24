@@ -5,8 +5,16 @@
   import { settingsStore } from '../stores/settings';
   import { favoritesStore } from '../stores/favorites';
   import { filtersStore } from '../stores/filters';
-  import { shoppingCheckedStore, combinedShoppingList, getIngredientKey, isItemChecked } from '../stores/shopping';
-  import { parsePlanUrlParams, planUrlQueryString } from '../stores/planUrlSync';
+  import {
+    shoppingCheckedStore,
+    combinedShoppingList,
+    getIngredientKey,
+    isItemChecked,
+  } from '../stores/shopping';
+  import {
+    parsePlanUrlParams,
+    planUrlQueryString,
+  } from '../stores/planUrlSync';
   import { ls } from '../utils/storage';
   import type { PlannedItem, Recipe } from '../types';
   import CalendarGrid from './CalendarGrid.svelte';
@@ -15,7 +23,7 @@
   import RecipeSelectorModal from './RecipeSelectorModal.svelte';
   import PlannedRecipeDetailsModal from './PlannedRecipeDetailsModal.svelte';
   import ToggleGroup from './ToggleGroup.svelte';
-  import SearchIcon from './icons/SearchIcon.svelte';
+  import FilterIcon from './icons/FilterIcon.svelte';
   import DiceIcon from './icons/DiceIcon.svelte';
 
   import ExportModal from './ExportModal.svelte';
@@ -57,28 +65,44 @@
     thu: 'Thursday',
     fri: 'Friday',
     sat: 'Saturday',
-    supplemental: 'Anytime / Supplemental'
+    supplemental: 'Anytime / Supplemental',
   };
 
-
-
   function arePlansEqual(planA: PlannedItem[], planB: PlannedItem[]): boolean {
-    if (planA.length !== planB.length) {return false;}
+    if (planA.length !== planB.length) {
+      return false;
+    }
     for (let i = 0; i < planA.length; i++) {
       const a = planA[i];
       const b = planB[i];
-      if (a.permalink !== b.permalink) {return false;}
-      if (a.customTitle !== b.customTitle) {return false;}
-      if (a.day !== b.day) {return false;}
-      if (Math.abs(a.scale - b.scale) > 0.001) {return false;}
-      
+      if (a.permalink !== b.permalink) {
+        return false;
+      }
+      if (a.customTitle !== b.customTitle) {
+        return false;
+      }
+      if (a.day !== b.day) {
+        return false;
+      }
+      if (Math.abs(a.scale - b.scale) > 0.001) {
+        return false;
+      }
+
       const extraA = a.extraIngredients || [];
       const extraB = b.extraIngredients || [];
-      if (extraA.length !== extraB.length) {return false;}
+      if (extraA.length !== extraB.length) {
+        return false;
+      }
       for (let j = 0; j < extraA.length; j++) {
-        if (extraA[j].item !== extraB[j].item) {return false;}
-        if (extraA[j].qty !== extraB[j].qty) {return false;}
-        if (extraA[j].unit !== extraB[j].unit) {return false;}
+        if (extraA[j].item !== extraB[j].item) {
+          return false;
+        }
+        if (extraA[j].qty !== extraB[j].qty) {
+          return false;
+        }
+        if (extraA[j].unit !== extraB[j].unit) {
+          return false;
+        }
       }
     }
     return true;
@@ -88,7 +112,9 @@
     document.body.classList.add('meal-planner-layout');
     try {
       const res = await fetch('/index.json');
-      if (!res.ok) {throw new Error('Failed to fetch recipes index');}
+      if (!res.ok) {
+        throw new Error('Failed to fetch recipes index');
+      }
       const data: Recipe[] = await res.json();
       recipesStore.set(data);
 
@@ -103,11 +129,16 @@
       const hasConflict =
         urlInfo.hasValidParams &&
         localPlanExists &&
-        (urlWorkWeekOnly !== $settingsStore.workWeekOnly || !arePlansEqual(urlPlan, localPlan));
+        (urlWorkWeekOnly !== $settingsStore.workWeekOnly ||
+          !arePlansEqual(urlPlan, localPlan));
 
       if (hasConflict) {
         plannerStore.setConflict(urlPlan, localPlan);
-        settingsStore.update((s) => ({ ...s, workWeekOnly: urlWorkWeekOnly, activeTab: 'view' }));
+        settingsStore.update((s) => ({
+          ...s,
+          workWeekOnly: urlWorkWeekOnly,
+          activeTab: 'view',
+        }));
       } else {
         if (urlInfo.hasValidParams) {
           plannerStore.reorderRecipes(urlPlan);
@@ -146,7 +177,9 @@
     const recipes = $recipesStore;
     plannerStore.update((state) => {
       const nextPlan = state.plan.map((planned) => {
-        const rec = planned.permalink ? recipes.find((r) => r.permalink === planned.permalink) : undefined;
+        const rec = planned.permalink
+          ? recipes.find((r) => r.permalink === planned.permalink)
+          : undefined;
         const defaultServings = rec ? rec.servings : 4;
         const currentPortions = Math.round(planned.scale * defaultServings);
         const nextPortions = Math.max(1, currentPortions + offset);
@@ -176,10 +209,13 @@
 
   function handleSwapRecipeClick(item: PlannedItem) {
     const recipes = $recipesStore;
-    if (recipes.length === 0) {return;}
+    if (recipes.length === 0) {
+      return;
+    }
 
     const dayMeals = $plannerStore.plan.filter((p) => p.day === item.day);
-    const isDinnerSlot = item.day !== 'supplemental' && dayMeals.indexOf(item) === 0;
+    const isDinnerSlot =
+      item.day !== 'supplemental' && dayMeals.indexOf(item) === 0;
 
     const filters = $filtersStore;
     const favs = $favoritesStore;
@@ -189,10 +225,14 @@
       pool = pool.filter((r) => r.shortId && favs.includes(r.shortId));
     }
     if (isDinnerSlot) {
-      pool = pool.filter((r) => r.tags && r.tags.some((t) => t.toLowerCase() === 'dinner'));
+      pool = pool.filter(
+        (r) => r.tags && r.tags.some((t) => t.toLowerCase() === 'dinner'),
+      );
     }
 
-    const plannedPermalinks = new Set($plannerStore.plan.map((p) => p.permalink));
+    const plannedPermalinks = new Set(
+      $plannerStore.plan.map((p) => p.permalink),
+    );
     let candidates = pool.filter((r) => !plannedPermalinks.has(r.permalink));
     if (candidates.length === 0) {
       candidates = pool.filter((r) => r.permalink !== item.permalink);
@@ -204,7 +244,9 @@
     const randomRec = candidates[Math.floor(Math.random() * candidates.length)];
     plannerStore.update((state) => {
       const nextPlan = state.plan.map((p) =>
-        p.instanceId === item.instanceId ? { ...p, permalink: randomRec.permalink } : p
+        p.instanceId === item.instanceId
+          ? { ...p, permalink: randomRec.permalink }
+          : p,
       );
       if (!state.isPreviewing) {
         ls.setJson('noonarby-meal-plan', nextPlan);
@@ -234,7 +276,9 @@
   }
 
   function copyMenuTextToClipboard() {
-    if ($plannerStore.plan.length === 0) {return;}
+    if ($plannerStore.plan.length === 0) {
+      return;
+    }
 
     const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
     const activeDays = $settingsStore.workWeekOnly ? DAYS.slice(0, 5) : DAYS;
@@ -247,7 +291,9 @@
         text += '  - No meals planned\n';
       } else {
         dayRecipes.forEach((dm) => {
-          const rec = dm.permalink ? $recipesStore.find((r) => r.permalink === dm.permalink) : undefined;
+          const rec = dm.permalink
+            ? $recipesStore.find((r) => r.permalink === dm.permalink)
+            : undefined;
           const title = rec ? rec.title : dm.customTitle || 'Custom Item';
           const servings = rec ? rec.servings : 4;
           const portions = Math.round(dm.scale * servings);
@@ -267,16 +313,22 @@
     if (!planChanged) {
       // display warning toast if favorites filter is active but no favorites exist
       if ($filtersStore.favoritesOnly) {
-        alert('No dinner recipes have been favorited yet. Add some favorites to generate a dinner plan.');
+        alert(
+          'No dinner recipes have been favorited yet. Add some favorites to generate a dinner plan.',
+        );
       }
     }
   }
 
   let shoppingCount = $derived($plannerStore.plan.length);
   let removedRecipeTitle = $derived.by(() => {
-    if (!$plannerStore.lastRemovedRecipe) {return '';}
+    if (!$plannerStore.lastRemovedRecipe) {
+      return '';
+    }
     const item = $plannerStore.lastRemovedRecipe;
-    const rec = item.permalink ? $recipesStore.find((r) => r.permalink === item.permalink) : undefined;
+    const rec = item.permalink
+      ? $recipesStore.find((r) => r.permalink === item.permalink)
+      : undefined;
     return rec ? rec.title : item.customTitle || 'Recipe';
   });
 </script>
@@ -290,12 +342,14 @@
         <button
           type="button"
           id="btn-compare-shared"
-          class="banner-tab {$plannerStore.previewMode === 'shared' ? 'active btn-brand' : ''}"
+          class="banner-tab {$plannerStore.previewMode === 'shared'
+            ? 'active btn-brand'
+            : ''}"
           onclick={() => {
             plannerStore.showSharedPreview();
             const params = new URLSearchParams(window.location.search);
             const wVal = params.get('w') || params.get('week');
-            settingsStore.update(s => ({ ...s, workWeekOnly: wVal !== '7' }));
+            settingsStore.update((s) => ({ ...s, workWeekOnly: wVal !== '7' }));
           }}
         >
           View Shared Plan
@@ -303,12 +357,17 @@
         <button
           type="button"
           id="btn-compare-local"
-          class="banner-tab {$plannerStore.previewMode === 'local' ? 'active btn-brand' : ''}"
+          class="banner-tab {$plannerStore.previewMode === 'local'
+            ? 'active btn-brand'
+            : ''}"
           onclick={() => {
             plannerStore.showLocalPreview();
-            const storedSettings = ls.getJson<{ workWeekOnly?: unknown }>('noonarby-meal-plan-settings');
+            const storedSettings = ls.getJson('noonarby-meal-plan-settings');
             if (storedSettings?.workWeekOnly !== undefined) {
-              settingsStore.update(s => ({ ...s, workWeekOnly: !!storedSettings.workWeekOnly }));
+              settingsStore.update((s) => ({
+                ...s,
+                workWeekOnly: !!storedSettings.workWeekOnly,
+              }));
             }
           }}
         >
@@ -355,10 +414,19 @@
       options={[
         { id: 'edit', label: 'Edit Plan', idAttr: 'mode-edit-btn' },
         { id: 'view', label: 'View Plan', idAttr: 'mode-view-btn' },
-        { id: 'shop', label: `Shopping List` + (shoppingCount > 0 ? ` (${shoppingCount})` : ''), idAttr: 'mode-shop-btn' }
+        {
+          id: 'shop',
+          label:
+            `Shopping List` + (shoppingCount > 0 ? ` (${shoppingCount})` : ''),
+          idAttr: 'mode-shop-btn',
+        },
       ]}
       selectedId={$settingsStore.activeTab}
-      onChange={(id) => settingsStore.update(s => ({ ...s, activeTab: id as 'edit' | 'view' | 'shop' }))}
+      onChange={(id) =>
+        settingsStore.update((s) => ({
+          ...s,
+          activeTab: id as 'edit' | 'view' | 'shop',
+        }))}
     />
   </div>
 </div>
@@ -373,10 +441,11 @@
     <ToggleGroup
       options={[
         { id: '7day', label: '7-Day Week', idAttr: 'week-7day-btn' },
-        { id: '5day', label: '5-Day Week', idAttr: 'week-5day-btn' }
+        { id: '5day', label: '5-Day Week', idAttr: 'week-5day-btn' },
       ]}
       selectedId={$settingsStore.workWeekOnly ? '5day' : '7day'}
-      onChange={(id) => settingsStore.update(s => ({ ...s, workWeekOnly: id === '5day' }))}
+      onChange={(id) =>
+        settingsStore.update((s) => ({ ...s, workWeekOnly: id === '5day' }))}
     />
   </div>
 
@@ -392,7 +461,9 @@
       >
         -
       </button>
-      <span class="servings-val" id="global-scaler-indicator">{$plannerStore.plan.length > 0 ? 'Servings' : '—'}</span>
+      <span class="servings-val" id="global-scaler-indicator"
+        >{$plannerStore.plan.length > 0 ? 'Servings' : '—'}</span
+      >
       <button
         type="button"
         class="servings-btn"
@@ -410,9 +481,9 @@
       type="button"
       id="btn-toggle-filters"
       class="btn btn-secondary"
-      onclick={() => isFiltersModalOpen = true}
+      onclick={() => (isFiltersModalOpen = true)}
     >
-      <SearchIcon size={14} strokeWidth={2.5} />
+      <FilterIcon size={14} strokeWidth={2.5} />
       Filters
     </button>
     <button
@@ -424,7 +495,12 @@
       <DiceIcon size={14} strokeWidth={2.5} />
       Generate Dinner Plan
     </button>
-    <button type="button" id="btn-clear-plan" class="planner-clear-btn" onclick={() => plannerStore.clearPlan()}>
+    <button
+      type="button"
+      id="btn-clear-plan"
+      class="planner-clear-btn"
+      onclick={() => plannerStore.clearPlan()}
+    >
       Clear Plan
     </button>
   </div>
@@ -437,7 +513,12 @@
   id="toolbar-view"
 >
   <div class="planner-top-actions">
-    <button type="button" id="btn-share-plan" class="btn btn-secondary" onclick={sharePlanUrl}>
+    <button
+      type="button"
+      id="btn-share-plan"
+      class="btn btn-secondary"
+      onclick={sharePlanUrl}
+    >
       Share Plan
     </button>
   </div>
@@ -495,7 +576,10 @@
 </div>
 
 <!-- 7. Modals & Dialogs -->
-<FiltersModal isOpen={isFiltersModalOpen} onClose={() => isFiltersModalOpen = false} />
+<FiltersModal
+  isOpen={isFiltersModalOpen}
+  onClose={() => (isFiltersModalOpen = false)}
+/>
 <ExportModal
   isOpen={isExportModalOpen}
   onClose={() => (isExportModalOpen = false)}
@@ -507,7 +591,7 @@
   <RecipeSelectorModal
     isOpen={!!activeAddDay}
     day={activeAddDay}
-    onClose={() => activeAddDay = null}
+    onClose={() => (activeAddDay = null)}
     onSelect={handleRecipeSelected}
   />
 {/if}
@@ -516,7 +600,7 @@
   <PlannedRecipeDetailsModal
     isOpen={!!detailsItem}
     item={detailsItem}
-    onClose={() => detailsItem = null}
+    onClose={() => (detailsItem = null)}
   />
 {/if}
 
@@ -524,10 +608,23 @@
 {#if $plannerStore.lastRemovedRecipe}
   <div class="plan-toast-notification">
     <div class="toast-body">
-      <span>Removed <strong>{removedRecipeTitle}</strong> from {DAY_NAMES[$plannerStore.lastRemovedRecipe.day]}.</span>
-      <button type="button" class="toast-undo-btn" onclick={() => plannerStore.undoRemove()}>Undo</button>
+      <span
+        >Removed <strong>{removedRecipeTitle}</strong> from {DAY_NAMES[
+          $plannerStore.lastRemovedRecipe.day
+        ]}.</span
+      >
+      <button
+        type="button"
+        class="toast-undo-btn"
+        onclick={() => plannerStore.undoRemove()}>Undo</button
+      >
     </div>
-    <button type="button" class="icon-close-btn" aria-label="Dismiss toast" onclick={() => plannerStore.clearLastRemoved()}>✕</button>
+    <button
+      type="button"
+      class="icon-close-btn"
+      aria-label="Dismiss toast"
+      onclick={() => plannerStore.clearLastRemoved()}>✕</button
+    >
   </div>
 {/if}
 
@@ -737,5 +834,3 @@
     }
   }
 </style>
-
-

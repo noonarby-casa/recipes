@@ -5,7 +5,7 @@
   import TimersManager from './TimersManager.svelte';
   import PlusIcon from './icons/PlusIcon.svelte';
   import MinusIcon from './icons/MinusIcon.svelte';
-  import ClockIcon from './icons/ClockIcon.svelte';
+  import TimerIcon from './icons/TimerIcon.svelte';
 
   const overlayState = $derived($overlayStore);
 
@@ -18,7 +18,9 @@
   $effect(() => {
     if (typeof window !== 'undefined') {
       const recipeUrl = window.location.pathname;
-      const dashboardTimers = $timersStore.list.filter((t) => t.recipeUrl !== recipeUrl);
+      const dashboardTimers = $timersStore.list.filter(
+        (t) => t.recipeUrl !== recipeUrl,
+      );
       overlayStore.setHasDashboard(dashboardTimers.length > 0);
     }
   });
@@ -81,11 +83,17 @@
 <svelte:window onkeydown={handleKeyDown} />
 
 {#if $overlayVisible}
-  <div id="overlay-container" class="overlay-container" class:is-minimized={overlayState.isMinimized}>
+  <div
+    id="overlay-container"
+    class="overlay-container"
+    class:is-minimized={overlayState.isMinimized}
+  >
     <button
       type="button"
       class="overlay-toggle-btn"
-      aria-label={overlayState.isMinimized ? 'Expand overlay' : 'Minimize overlay'}
+      aria-label={overlayState.isMinimized
+        ? 'Expand overlay'
+        : 'Minimize overlay'}
       aria-expanded={!overlayState.isMinimized}
       onclick={() => overlayStore.toggle()}
     >
@@ -108,7 +116,7 @@
         data-tooltip="Restore Cooking Dashboard"
         onclick={() => overlayStore.expand()}
       >
-        <ClockIcon size={20} strokeWidth={2.5} showTopButton={true} />
+        <TimerIcon size={20} strokeWidth={2.5} />
       </button>
     {/if}
 

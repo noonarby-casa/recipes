@@ -17,7 +17,7 @@
     color = 'currentColor',
     strokeWidth = 2,
     fill = 'none',
-    class: className = ''
+    class: className = '',
   }: Props = $props();
 </script>
 
@@ -28,10 +28,10 @@
   height={size}
   stroke={color}
   stroke-width={strokeWidth}
-  fill={fill}
+  {fill}
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <rect x="6" y="4" width="4" height="16"></rect>
-  <rect x="14" y="4" width="4" height="16"></rect>
+  <rect x="14" y="3" width="5" height="18" rx="1" />
+  <rect x="5" y="3" width="5" height="18" rx="1" />
 </svg>

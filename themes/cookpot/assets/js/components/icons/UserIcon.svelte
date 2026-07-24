@@ -17,7 +17,7 @@
     color = 'currentColor',
     strokeWidth = 2,
     fill = 'none',
-    class: className = ''
+    class: className = '',
   }: Props = $props();
 </script>
 
@@ -28,10 +28,10 @@
   height={size}
   stroke={color}
   stroke-width={strokeWidth}
-  fill={fill}
+  {fill}
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-  <circle cx="12" cy="7" r="4"></circle>
+  <circle cx="12" cy="8" r="5" />
+  <path d="M20 21a8 8 0 0 0-16 0" />
 </svg>

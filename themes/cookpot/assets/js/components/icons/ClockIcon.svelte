@@ -8,8 +8,6 @@
     strokeWidth?: number;
     /** The fill color. Default is 'none'. */
     fill?: string;
-    /** Whether to show the top watch button/line (pocket watch style). Default is false. */
-    showTopButton?: boolean;
     /** CSS class names. */
     class?: string;
   }
@@ -19,8 +17,7 @@
     color = 'currentColor',
     strokeWidth = 2,
     fill = 'none',
-    showTopButton = false,
-    class: className = ''
+    class: className = '',
   }: Props = $props();
 </script>
 
@@ -31,13 +28,10 @@
   height={size}
   stroke={color}
   stroke-width={strokeWidth}
-  fill={fill}
+  {fill}
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <circle cx="12" cy="12" r="10"></circle>
-  <polyline points="12 6 12 12 16 14"></polyline>
-  {#if showTopButton}
-    <line x1="12" y1="2" x2="12" y2="4"></line>
-  {/if}
+  <circle cx="12" cy="12" r="10" />
+  <path d="M12 6v6l4 2" />
 </svg>
