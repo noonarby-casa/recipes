@@ -1,6 +1,15 @@
 import { formatCookingNumber, pluralizeWord } from '../units';
-import type { QtyValue, IngredientInput, ItemRule } from '../types';
-import { UNIT_CONVERSIONS, PLURAL_TO_SINGULAR } from '../constants';
+import type {
+  QtyValue,
+  IngredientInput,
+  ItemRule,
+  UnitCategory,
+} from '../types';
+import {
+  UNIT_CONVERSIONS,
+  PLURAL_TO_SINGULAR,
+  UNIT_LOOKUP,
+} from '../constants';
 
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.
@@ -242,12 +251,20 @@ export function getConversionFactor(
 
   // Check item-specific equivalences first
   if (rule?.unitEquivalences) {
-    const fromEqKey = Object.keys(rule.unitEquivalences).find(
-      (k) => getSingularUnit(k) === fromSing,
-    );
-    const toEqKey = Object.keys(rule.unitEquivalences).find(
-      (k) => getSingularUnit(k) === toSing,
-    );
+    const fromEqKey =
+      Object.keys(rule.unitEquivalences).find(
+        (k) => k.toLowerCase().trim() === fromUnit.toLowerCase().trim(),
+      ) ||
+      Object.keys(rule.unitEquivalences).find(
+        (k) => getSingularUnit(k) === fromSing,
+      );
+    const toEqKey =
+      Object.keys(rule.unitEquivalences).find(
+        (k) => k.toLowerCase().trim() === toUnit.toLowerCase().trim(),
+      ) ||
+      Object.keys(rule.unitEquivalences).find(
+        (k) => getSingularUnit(k) === toSing,
+      );
     const fromEq = fromEqKey ? rule.unitEquivalences[fromEqKey] : undefined;
     const toEq = toEqKey ? rule.unitEquivalences[toEqKey] : undefined;
 
@@ -319,6 +336,43 @@ export function isVolumeUnit(unit: string): boolean {
 
 export function isWeightUnit(unit: string): boolean {
   return isUnitSystem(unit, 'weight');
+}
+
+export function getUnitCategory(unit: string, rule?: ItemRule): UnitCategory {
+  if (!unit) {
+    return 'COUNTABLE';
+  }
+  const sing = getSingularUnit(unit);
+  const def = UNIT_LOOKUP[sing.toLowerCase()];
+  if (def) {
+    return def.category;
+  }
+  if (rule?.unitEquivalences) {
+    const eqKey = Object.keys(rule.unitEquivalences).find(
+      (k) => getSingularUnit(k) === sing,
+    );
+    if (eqKey) {
+      const eq = rule.unitEquivalences[eqKey];
+      if (eq) {
+        const baseCategory = getUnitCategory(eq.base, rule);
+        if (baseCategory !== 'COUNTABLE') {
+          return 'PACKAGE';
+        }
+      }
+    }
+  }
+  const lowerUnit = unit.toLowerCase();
+  if (
+    lowerUnit.includes('can') ||
+    lowerUnit.includes('box') ||
+    lowerUnit.includes('jar') ||
+    lowerUnit.includes('package') ||
+    lowerUnit.includes('bottle') ||
+    lowerUnit.includes('bag')
+  ) {
+    return 'PACKAGE';
+  }
+  return 'COUNTABLE';
 }
 
 export function formatQtyValueWithUnit(qty: QtyValue, unit: string): string {

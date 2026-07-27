@@ -3,6 +3,7 @@ import {
   PLURAL_TO_SINGULAR,
   PLURAL_BY_DEFAULT_ITEMS,
 } from './constants';
+import { ITEM_RULES } from './shopping-list/rules';
 
 /**
  * Returns the plural or singular form of a unit based on the quantity.
@@ -255,17 +256,21 @@ export function formatItemQuantity(
   unit: string,
   item: string,
   disablePluralization?: boolean,
+  rule?: import('./types').ItemRule,
 ): { qtyStr: string; itemStr: string } {
+  const itemRule =
+    rule || ITEM_RULES.find((r) => r.items.includes(item.toLowerCase().trim()));
   let displayUnit = unit.trim();
   let displayItem = item.trim();
   const shouldPluralize = !disablePluralization && qty !== null && qty > 1;
 
   if (displayUnit) {
     const isSubstring =
-      displayItem.toLowerCase().includes(displayUnit.toLowerCase()) ||
-      singularizeWord(displayItem)
-        .toLowerCase()
-        .includes(singularizeWord(displayUnit).toLowerCase());
+      displayUnit !== '' &&
+      (displayItem.toLowerCase().includes(displayUnit.toLowerCase()) ||
+        singularizeWord(displayItem)
+          .toLowerCase()
+          .includes(singularizeWord(displayUnit).toLowerCase()));
     if (isSubstring) {
       if (shouldPluralize) {
         displayItem = pluralizeWord(displayItem);
@@ -278,7 +283,16 @@ export function formatItemQuantity(
 
   if (isSizeOnlyUnit(displayUnit)) {
     // Rule 1: Countable item with no unit or size modifier
-    if (shouldPluralize) {
+    const lowerItem = displayItem.toLowerCase();
+    const isCollection =
+      itemRule?.pluralByDefault ??
+      (PLURAL_BY_DEFAULT_ITEMS.has(lowerItem) ||
+        PLURAL_BY_DEFAULT_ITEMS.has(pluralizeWord(lowerItem)) ||
+        PLURAL_BY_DEFAULT_ITEMS.has(singularizeWord(lowerItem)));
+
+    if (isCollection) {
+      displayItem = pluralizeWord(displayItem);
+    } else if (shouldPluralize) {
       displayItem = pluralizeWord(displayItem);
     } else if (qty !== null && qty <= 1) {
       displayItem = singularizeWord(displayItem);
@@ -292,9 +306,10 @@ export function formatItemQuantity(
     // Rule 2 & 3: Collection items vs Mass nouns
     const lowerItem = displayItem.toLowerCase();
     const isCollection =
-      PLURAL_BY_DEFAULT_ITEMS.has(lowerItem) ||
-      PLURAL_BY_DEFAULT_ITEMS.has(pluralizeWord(lowerItem)) ||
-      PLURAL_BY_DEFAULT_ITEMS.has(singularizeWord(lowerItem));
+      itemRule?.pluralByDefault ??
+      (PLURAL_BY_DEFAULT_ITEMS.has(lowerItem) ||
+        PLURAL_BY_DEFAULT_ITEMS.has(pluralizeWord(lowerItem)) ||
+        PLURAL_BY_DEFAULT_ITEMS.has(singularizeWord(lowerItem)));
 
     if (isCollection) {
       displayItem = pluralizeWord(displayItem);

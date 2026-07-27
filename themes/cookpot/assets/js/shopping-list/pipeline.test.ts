@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { processShoppingList } from './pipeline';
 import type { IngredientInput, StoreLayout } from '../types';
-import { getSectionForCategory } from './store-sections';
+import { getSectionForCategory, STORE_LAYOUTS } from './store-sections';
 
 const mockGnocchiLayout: StoreLayout = {
   id: 'test-layout',
@@ -137,7 +137,9 @@ describe('processShoppingList', () => {
     expect(onion?.note?.sizeNote).toBeUndefined();
 
     // 5. Kosher salt -> identified as pantry staple
-    const salt = result.stapleItems.find((i) => i.item === 'kosher salt');
+    const salt = result.stapleItems.find(
+      (i) => i.item === 'salt' || i.item === 'kosher salt',
+    );
     expect(salt).toBeDefined();
 
     // 6. Baby spinach -> 1 8 oz bag (with sizeNote "3 oz needed")
@@ -146,5 +148,52 @@ describe('processShoppingList', () => {
     expect(spinach?.qty).toBe(1);
     expect(spinach?.unit).toBe('8 oz bag');
     expect(spinach?.note?.sizeNote).toBe('3 oz needed');
+  });
+
+  test('combining Indian Butter Chickpeas and Bolognese yields 2 onions and 2 (15 oz) cans tomato sauce', () => {
+    const ingredients: IngredientInput[] = [
+      // Indian Butter Chickpeas ingredients
+      {
+        qty: 1.5,
+        unit: 'cup',
+        item: 'onion',
+        prep: 'finely chopped',
+        alt: { qty: 1, unit: 'large' },
+        recipe: 'Indian Butter Chickpeas',
+      },
+      {
+        qty: 1,
+        unit: 'can (15-ounce)',
+        item: 'tomato sauce',
+        recipe: 'Indian Butter Chickpeas',
+      },
+      // Spicy Creamy Weeknight Bolognese ingredients
+      {
+        qty: 1,
+        unit: 'large',
+        item: 'onion',
+        prep: 'finely chopped',
+        recipe: 'Spicy Creamy Weeknight Bolognese',
+      },
+      {
+        qty: 1,
+        unit: 'can (15 ounces)',
+        item: 'tomato sauce',
+        recipe: 'Spicy Creamy Weeknight Bolognese',
+      },
+    ];
+
+    const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
+
+    // Case 1: 1.5 cups onion (alt: 1 large) + 1 large onion = 2 large onions
+    const onion = result.buyItems.find((i) => i.item === 'onion');
+    expect(onion).toBeDefined();
+    expect(onion?.qty).toBe(2);
+
+    // Case 2: 1 can (15-ounce) + 1 can (15 ounces) tomato sauce = 2 cans (15 oz) tomato sauce
+    const tomatoSauce = result.buyItems.find((i) => i.item === 'tomato sauce');
+    expect(tomatoSauce).toBeDefined();
+    expect(tomatoSauce?.qty).toBe(2);
+    expect(tomatoSauce?.unit).toBe('cans (15 oz)');
   });
 });

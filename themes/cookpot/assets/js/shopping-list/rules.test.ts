@@ -220,8 +220,10 @@ describe('Static configuration and recipe database tests', () => {
         ).toBe(true);
 
         // Find associated rule if any
-        const associatedRule = ITEM_RULES.find((rule) =>
-          rule.items.some((i) => i.toLowerCase().trim() === lowerItem),
+        const associatedRule = ITEM_RULES.find(
+          (rule) =>
+            rule.items.some((i) => i.toLowerCase().trim() === lowerItem) ||
+            rule.canonicalName?.toLowerCase().trim() === lowerItem,
         );
 
         // 2. Unit check: must be universal or defined in unitEquivalences

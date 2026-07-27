@@ -1,26 +1,242 @@
+import type { UnitDefinition } from './types';
+
+export const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
+  // Volume (base: teaspoon)
+  {
+    singular: 'teaspoon',
+    plural: 'teaspoons',
+    category: 'VOLUME',
+    base: 'teaspoon',
+    factor: 1,
+    aliases: ['tsp'],
+  },
+  {
+    singular: 'tablespoon',
+    plural: 'tablespoons',
+    category: 'VOLUME',
+    base: 'teaspoon',
+    factor: 3,
+    aliases: ['tbsp', 'tbs'],
+  },
+  {
+    singular: 'ounce',
+    plural: 'ounces',
+    category: 'VOLUME',
+    base: 'teaspoon',
+    factor: 6,
+    aliases: ['oz', 'fl oz', 'fl. oz'],
+  },
+  {
+    singular: 'cup',
+    plural: 'cups',
+    category: 'VOLUME',
+    base: 'teaspoon',
+    factor: 48,
+  },
+  {
+    singular: 'ml',
+    plural: 'ml',
+    category: 'VOLUME',
+    base: 'teaspoon',
+    factor: 0.202884,
+  },
+  {
+    singular: 'pint',
+    plural: 'pints',
+    category: 'VOLUME',
+    base: 'teaspoon',
+    factor: 96,
+  },
+  {
+    singular: 'quart',
+    plural: 'quarts',
+    category: 'VOLUME',
+    base: 'teaspoon',
+    factor: 192,
+  },
+  {
+    singular: 'gallon',
+    plural: 'gallons',
+    category: 'VOLUME',
+    base: 'teaspoon',
+    factor: 768,
+  },
+
+  // Weight (base: ounce)
+  {
+    singular: 'gram',
+    plural: 'grams',
+    category: 'WEIGHT',
+    base: 'ounce',
+    factor: 0.03527,
+    aliases: ['g'],
+  },
+  {
+    singular: 'pound',
+    plural: 'pounds',
+    category: 'WEIGHT',
+    base: 'ounce',
+    factor: 16,
+    aliases: ['lb', 'lbs'],
+  },
+
+  // Package Units
+  { singular: 'can', plural: 'cans', category: 'PACKAGE' },
+  { singular: 'box', plural: 'boxes', category: 'PACKAGE' },
+  { singular: 'jar', plural: 'jars', category: 'PACKAGE' },
+  { singular: 'bottle', plural: 'bottles', category: 'PACKAGE' },
+  { singular: 'package', plural: 'packages', category: 'PACKAGE' },
+  { singular: 'bag', plural: 'bags', category: 'PACKAGE' },
+  { singular: 'container', plural: 'containers', category: 'PACKAGE' },
+  {
+    singular: 'half-pint (8 oz)',
+    plural: 'half-pints (8 oz)',
+    category: 'PACKAGE',
+  },
+  { singular: 'pint (16 oz)', plural: 'pints (16 oz)', category: 'PACKAGE' },
+  {
+    singular: 'pint (16 fl oz)',
+    plural: 'pints (16 fl oz)',
+    category: 'PACKAGE',
+  },
+  { singular: 'quart (32 oz)', plural: 'quarts (32 oz)', category: 'PACKAGE' },
+  {
+    singular: 'quart (32 fl oz)',
+    plural: 'quarts (32 fl oz)',
+    category: 'PACKAGE',
+  },
+
+  // Countable Units & Size Modifiers
+  {
+    singular: 'clove',
+    plural: 'cloves',
+    category: 'COUNTABLE',
+    aliases: ['garlic clove'],
+  },
+  {
+    singular: 'head',
+    plural: 'heads',
+    category: 'COUNTABLE',
+    aliases: ['bulb'],
+  },
+  { singular: 'root', plural: 'roots', category: 'COUNTABLE' },
+  { singular: 'bundle', plural: 'bundles', category: 'COUNTABLE' },
+  { singular: 'stick', plural: 'sticks', category: 'COUNTABLE' },
+  { singular: 'small', plural: 'small', category: 'COUNTABLE' },
+  {
+    singular: 'large',
+    plural: 'large',
+    category: 'COUNTABLE',
+    aliases: ['large clove'],
+  },
+  { singular: 'medium', plural: 'medium', category: 'COUNTABLE' },
+  { singular: 'lemon', plural: 'lemons', category: 'COUNTABLE' },
+  { singular: 'lime', plural: 'limes', category: 'COUNTABLE' },
+  { singular: 'egg', plural: 'eggs', category: 'COUNTABLE' },
+  { singular: 'egg yolk', plural: 'egg yolks', category: 'COUNTABLE' },
+  { singular: 'scallion', plural: 'scallions', category: 'COUNTABLE' },
+  { singular: 'leaf', plural: 'leaves', category: 'COUNTABLE' },
+  { singular: 'half', plural: 'halves', category: 'COUNTABLE' },
+  { singular: 'carrot', plural: 'carrots', category: 'COUNTABLE' },
+  { singular: 'potato', plural: 'potatoes', category: 'COUNTABLE' },
+  { singular: 'tomato', plural: 'tomatoes', category: 'COUNTABLE' },
+  { singular: 'pepper', plural: 'peppers', category: 'COUNTABLE' },
+  { singular: 'bell pepper', plural: 'bell peppers', category: 'COUNTABLE' },
+  { singular: 'shallot', plural: 'shallots', category: 'COUNTABLE' },
+  { singular: 'mushroom', plural: 'mushrooms', category: 'COUNTABLE' },
+  {
+    singular: 'chicken thigh',
+    plural: 'chicken thighs',
+    category: 'COUNTABLE',
+  },
+  {
+    singular: 'chicken breast',
+    plural: 'chicken breasts',
+    category: 'COUNTABLE',
+  },
+  { singular: 'sprig', plural: 'sprigs', category: 'COUNTABLE' },
+  { singular: 'stalk', plural: 'stalks', category: 'COUNTABLE' },
+  { singular: 'rib', plural: 'ribs', category: 'COUNTABLE' },
+  { singular: 'tortilla', plural: 'tortillas', category: 'COUNTABLE' },
+  { singular: 'avocado', plural: 'avocados', category: 'COUNTABLE' },
+  { singular: 'cucumber', plural: 'cucumbers', category: 'COUNTABLE' },
+  {
+    singular: 'chili',
+    plural: 'chilis',
+    category: 'COUNTABLE',
+    aliases: ['chilli'],
+  },
+  {
+    singular: 'green onion',
+    plural: 'green onions',
+    category: 'COUNTABLE',
+    aliases: ['spring onion'],
+  },
+  { singular: 'bunch', plural: 'bunches', category: 'COUNTABLE' },
+  { singular: 'strip', plural: 'strips', category: 'COUNTABLE' },
+  { singular: 'ear', plural: 'ears', category: 'COUNTABLE' },
+  { singular: 'loaf', plural: 'loaves', category: 'COUNTABLE' },
+  { singular: 'slice', plural: 'slices', category: 'COUNTABLE' },
+  { singular: 'olive', plural: 'olives', category: 'COUNTABLE' },
+  { singular: 'almond', plural: 'almonds', category: 'COUNTABLE' },
+  { singular: 'seed', plural: 'seeds', category: 'COUNTABLE' },
+  { singular: 'blueberry', plural: 'blueberries', category: 'COUNTABLE' },
+  { singular: 'raspberry', plural: 'raspberries', category: 'COUNTABLE' },
+  { singular: 'berry', plural: 'berries', category: 'COUNTABLE' },
+  { singular: 'beet', plural: 'beets', category: 'COUNTABLE' },
+  { singular: 'banana', plural: 'bananas', category: 'COUNTABLE' },
+  {
+    singular: 'poblano pepper',
+    plural: 'poblano peppers',
+    category: 'COUNTABLE',
+  },
+  {
+    singular: 'crescent roll',
+    plural: 'crescent rolls',
+    category: 'COUNTABLE',
+  },
+  { singular: 'weenie', plural: 'weenies', category: 'COUNTABLE' },
+  { singular: 'noodle', plural: 'noodles', category: 'COUNTABLE' },
+  { singular: 'flake', plural: 'flakes', category: 'COUNTABLE' },
+  { singular: 'pickle', plural: 'pickles', category: 'COUNTABLE' },
+  {
+    singular: 'coconut amino',
+    plural: 'coconut aminos',
+    category: 'COUNTABLE',
+  },
+  { singular: 'onion', plural: 'onions', category: 'COUNTABLE' },
+];
+
+export const UNIT_LOOKUP: Record<string, UnitDefinition> = Object.fromEntries(
+  UNIT_DEFINITIONS.flatMap((u) => [
+    [u.singular.toLowerCase(), u],
+    [u.plural.toLowerCase(), u],
+    ...(u.aliases?.map((alias) => [alias.toLowerCase(), u]) || []),
+  ]),
+);
+
 export const UNIT_CONVERSIONS: Record<
   string,
   { system: string; base: string; factor: number }
-> = {
-  // Volume (base: teaspoon)
-  teaspoon: { system: 'volume', base: 'teaspoon', factor: 1 },
-  tsp: { system: 'volume', base: 'teaspoon', factor: 1 },
-  tablespoon: { system: 'volume', base: 'teaspoon', factor: 3 },
-  tbsp: { system: 'volume', base: 'teaspoon', factor: 3 },
-  ounce: { system: 'volume', base: 'teaspoon', factor: 6 },
-  oz: { system: 'volume', base: 'teaspoon', factor: 6 },
-  cup: { system: 'volume', base: 'teaspoon', factor: 48 },
-  ml: { system: 'volume', base: 'teaspoon', factor: 0.202884 },
-  pint: { system: 'volume', base: 'teaspoon', factor: 96 },
-  quart: { system: 'volume', base: 'teaspoon', factor: 192 },
-  gallon: { system: 'volume', base: 'teaspoon', factor: 768 },
-
-  // Weight (base: ounce)
-  gram: { system: 'weight', base: 'ounce', factor: 0.03527 },
-  g: { system: 'weight', base: 'ounce', factor: 0.03527 },
-  pound: { system: 'weight', base: 'ounce', factor: 16 },
-  lb: { system: 'weight', base: 'ounce', factor: 16 },
-};
+> = Object.fromEntries(
+  UNIT_DEFINITIONS.filter(
+    (u) =>
+      (u.category === 'VOLUME' || u.category === 'WEIGHT') &&
+      u.base &&
+      u.factor,
+  ).flatMap((u) => {
+    const entry = {
+      system: u.category.toLowerCase(),
+      base: u.base!,
+      factor: u.factor!,
+    };
+    return [
+      [u.singular, entry],
+      [u.plural, entry],
+      ...(u.aliases?.map((alias) => [alias, entry]) || []),
+    ];
+  }),
+);
 
 export const PRIMARY_TAGS: readonly string[] = [
   'breakfast',
@@ -42,87 +258,12 @@ export const BREAKDOWN_CATEGORIES: readonly string[] = [
   'salad',
 ];
 
-export const SINGULAR_TO_PLURAL: Record<string, string> = {
-  ounce: 'ounces',
-  pound: 'pounds',
-  cup: 'cups',
-  teaspoon: 'teaspoons',
-  tablespoon: 'tablespoons',
-  clove: 'cloves',
-  can: 'cans',
-  gram: 'grams',
-  small: 'small',
-  large: 'large',
-  medium: 'medium',
-  lemon: 'lemons',
-  lime: 'limes',
-  head: 'heads',
-  root: 'roots',
-  bundle: 'bundles',
-  bottle: 'bottles',
-  jar: 'jars',
-  box: 'boxes',
-  package: 'packages',
-  container: 'containers',
-  onion: 'onions',
-  stick: 'sticks',
-  'quart (32 fl oz)': 'quarts (32 fl oz)',
-  'quart (32 oz)': 'quarts (32 oz)',
-  'pint (16 fl oz)': 'pints (16 fl oz)',
-  'pint (16 oz)': 'pints (16 oz)',
-  'half-pint (8 oz)': 'half-pints (8 oz)',
-  egg: 'eggs',
-  'egg yolk': 'egg yolks',
-  scallion: 'scallions',
-  lb: 'lbs',
-  bulb: 'bulbs',
-  leaf: 'leaves',
-  half: 'halves',
-  carrot: 'carrots',
-  potato: 'potatoes',
-  tomato: 'tomatoes',
-  pepper: 'peppers',
-  'bell pepper': 'bell peppers',
-  shallot: 'shallots',
-  mushroom: 'mushrooms',
-  'chicken thigh': 'chicken thighs',
-  'chicken breast': 'chicken breasts',
-  sprig: 'sprigs',
-  stalk: 'stalks',
-  rib: 'ribs',
-  tortilla: 'tortillas',
-  avocado: 'avocados',
-  cucumber: 'cucumbers',
-  chili: 'chilis',
-  chilli: 'chillis',
-  'green onion': 'green onions',
-  'spring onion': 'spring onions',
-  'garlic clove': 'garlic cloves',
-  bunch: 'bunches',
-  strip: 'strips',
-  ear: 'ears',
-  loaf: 'loaves',
-  slice: 'slices',
-  bag: 'bags',
-  olive: 'olives',
-  almond: 'almonds',
-  seed: 'seeds',
-  blueberry: 'blueberries',
-  raspberry: 'raspberries',
-  berry: 'berries',
-  beet: 'beets',
-  banana: 'bananas',
-  'poblano pepper': 'poblano peppers',
-  'crescent roll': 'crescent rolls',
-  weenie: 'weenies',
-  noodle: 'noodles',
-  flake: 'flakes',
-  pickle: 'pickles',
-  'coconut amino': 'coconut aminos',
-};
+export const SINGULAR_TO_PLURAL: Record<string, string> = Object.fromEntries(
+  UNIT_DEFINITIONS.flatMap((u) => [[u.singular, u.plural]]),
+);
 
 export const PLURAL_TO_SINGULAR: Record<string, string> = Object.fromEntries(
-  Object.entries(SINGULAR_TO_PLURAL).map(([sing, plur]) => [plur, sing]),
+  UNIT_DEFINITIONS.flatMap((u) => [[u.plural, u.singular]]),
 );
 
 export const PLURAL_BY_DEFAULT_ITEMS: Set<string> = new Set([

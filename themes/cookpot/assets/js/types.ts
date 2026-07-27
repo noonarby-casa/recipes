@@ -110,12 +110,27 @@ export interface ShoppingItem {
   note?: ShoppingItemNote;
 }
 
+export type UnitCategory = 'VOLUME' | 'WEIGHT' | 'PACKAGE' | 'COUNTABLE';
+
+export interface UnitDefinition {
+  singular: string;
+  plural: string;
+  category: UnitCategory;
+  base?: string;
+  factor?: number;
+  aliases?: string[];
+}
+
 // An ItemRule matches an ingredient to a shopping item.
 export interface ItemRule {
   // Exact item name(s) this rule applies to.
   items: string[];
   // Canonical display name if items under this rule should be merged into a single name.
   canonicalName?: string;
+  // Whether items under this rule are pantry staples.
+  staple?: boolean;
+  // Whether this item is a collection item that stays plural when measured by container/volume units.
+  pluralByDefault?: boolean;
   // Item-specific unit conversions. Helps map between the amounts specified in
   // a recipe and the amounts you can purchase in a store.
   unitEquivalences?: Record<string, { base: string; factor: number }>;

@@ -65,6 +65,7 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
       'crushed tomato',
       'diced tomato',
       'canned tomato',
+      'canned tomatoes',
       'fire roasted tomato',
     ],
   },

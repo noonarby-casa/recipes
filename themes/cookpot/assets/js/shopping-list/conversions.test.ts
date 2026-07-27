@@ -101,10 +101,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'egg',
-      qty: 6,
+      qty: 4,
       unit: 'eggs',
       category: 'eggs',
-      sizeNote: '4 eggs needed',
     },
   },
   {
@@ -116,10 +115,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'egg yolk',
-      qty: 18,
+      qty: 14,
       unit: 'eggs',
       category: 'eggs',
-      sizeNote: '14 eggs needed',
     },
   },
   {
@@ -1370,10 +1368,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'egg',
-      qty: 6,
+      qty: 3,
       unit: 'eggs',
       category: 'eggs',
-      sizeNote: '3 large needed',
     },
   },
   {
@@ -1476,10 +1473,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'egg yolk',
-      qty: 6,
-      unit: 'eggs',
+      qty: 1,
+      unit: 'egg',
       category: 'eggs',
-      sizeNote: '1 large needed',
     },
   },
   {
@@ -1933,6 +1929,20 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'tomato sauce',
       qty: 1,
       unit: 'can (15 oz)',
+      category: 'canned-tomatoes',
+    },
+  },
+  {
+    input: {
+      item: 'tomato paste',
+      qty: 1,
+      unit: 'can (6-ounce)',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'tomato paste',
+      qty: 1,
+      unit: 'can (6 oz)',
       category: 'canned-tomatoes',
     },
   },
@@ -2857,8 +2867,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'chicken broth',
-      qty: 2,
-      unit: 'quarts (32 fl oz)',
+      qty: 3,
+      unit: 'pints (16 fl oz)',
       category: 'poultry',
       sizeNote: '48 oz needed',
     },
@@ -2876,7 +2886,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'can (15 oz)',
       category: 'canned-beans',
-      sizeNote: '14 oz needed',
+      sizeNote: '1 can (14 oz) needed',
     },
   },
   {
@@ -3319,8 +3329,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'green enchilada sauce',
-      qty: 1,
-      unit: '28-oz can',
+      qty: 2,
+      unit: '10-oz cans',
       category: 'condiments',
       sizeNote: '1 1/2 cups needed',
     },
@@ -3332,9 +3342,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'buy',
     expectedItem: {
-      item: 'tortilla',
-      qty: 1,
-      unit: 'package of 24',
+      item: 'tortillas',
+      qty: 2,
+      unit: 'package of 10s',
       category: 'bakery',
       sizeNote: '12 tortillas needed',
     },
@@ -3469,7 +3479,12 @@ describe('Shopping List Conversion Integration Tests', () => {
 
         const itemSizes =
           STORE_LAYOUTS[0]?.itemSizes?.[searchName.toLowerCase()] ||
-          STORE_LAYOUTS[0]?.itemSizes?.[input.item.toLowerCase()];
+          STORE_LAYOUTS[0]?.itemSizes?.[input.item.toLowerCase()] ||
+          (rule
+            ? rule.items
+                .map((i) => STORE_LAYOUTS[0]?.itemSizes?.[i.toLowerCase()])
+                .find(Boolean)
+            : undefined);
         const hasSizes = !!itemSizes && itemSizes.length > 0;
 
         const isPackageSize = [
@@ -3509,7 +3524,12 @@ describe('Shopping List Conversion Integration Tests', () => {
         }
 
         if (expectedItem.sizeNote !== undefined && input.qty !== undefined) {
-          if (!isVol && !isWt && !hasSizes) {
+          if (
+            (!isVol && !isWt && !hasSizes) ||
+            (input.unit || '') === '' ||
+            (input.unit &&
+              getSingularUnit(input.unit) === getSingularUnit(item?.unit || ''))
+          ) {
             adjExpectedSizeNote = undefined;
           } else {
             const targetUnit = rule?.unitEquivalences

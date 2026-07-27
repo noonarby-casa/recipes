@@ -94,6 +94,7 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['lemon juice'],
     canonicalName: 'lemon juice',
+    staple: true,
     unitEquivalences: {
       'bottle (16 fl oz)': { base: 'ounce', factor: 16 },
       bottle: { base: 'ounce', factor: 16 },
@@ -116,6 +117,7 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['lime juice'],
     canonicalName: 'lime juice',
+    staple: true,
     unitEquivalences: {
       'bottle (16 fl oz)': { base: 'ounce', factor: 16 },
       bottle: { base: 'ounce', factor: 16 },
@@ -157,6 +159,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 8. Ginger
   {
     items: ['ginger'],
+    canonicalName: 'ginger',
     unitEquivalences: {
       root: { base: 'tablespoon', factor: 3 },
     },
@@ -165,6 +168,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 9. Onion
   {
     items: ['onion', 'yellow onion', 'white onion', 'red onion', 'sweet onion'],
+    canonicalName: 'onion',
     unitEquivalences: {
       cup: { base: 'onion', factor: 1 },
     },
@@ -173,6 +177,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 10. Coconut Milk
   {
     items: ['coconut milk', 'canned coconut milk'],
+    canonicalName: 'coconut milk',
     unitEquivalences: {
       'can (13.5 oz)': { base: 'ounce', factor: 13.5 },
       'can (400 ml)': { base: 'ounce', factor: 13.53 },
@@ -183,6 +188,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 11. Cabbage
   {
     items: ['cabbage', 'red cabbage', 'green cabbage'],
+    canonicalName: 'cabbage',
     unitEquivalences: {
       cup: { base: 'head', factor: 0.125 }, // 1 cup ≈ 1/8 head
     },
@@ -191,6 +197,8 @@ export const ITEM_RULES: ItemRule[] = [
   // 12. Scallions
   {
     items: ['scallion', 'spring onion', 'green onion'],
+    canonicalName: 'scallion',
+    pluralByDefault: true,
     unitEquivalences: {
       bundle: { base: 'cup', factor: 2 }, // 1 bundle ≈ 2 cups chopped
     },
@@ -212,6 +220,7 @@ export const ITEM_RULES: ItemRule[] = [
       'rigatoni',
       'orzo pasta',
     ],
+    canonicalName: 'pasta',
     unitEquivalences: {
       'box (16 oz)': { base: 'ounce', factor: 16 },
       pound: { base: 'ounce', factor: 16 },
@@ -223,11 +232,14 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: [
       'chickpea',
+      'chickpeas',
       'black bean',
       'kidney bean',
       'cannellini bean',
       'pinto bean',
     ],
+    canonicalName: 'chickpeas',
+    pluralByDefault: true,
     unitEquivalences: {
       'can (14 oz)': { base: 'ounce', factor: 14 },
       'can (15 oz)': { base: 'ounce', factor: 15 },
@@ -238,15 +250,44 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 15. Tomatoes
+  // 15a. Tomato Sauce
+  {
+    items: ['tomato sauce'],
+    canonicalName: 'tomato sauce',
+    unitEquivalences: {
+      'can (8 oz)': { base: 'ounce', factor: 8 },
+      'can (15 oz)': { base: 'ounce', factor: 15 },
+      'can (28 oz)': { base: 'ounce', factor: 28 },
+      can: { base: 'ounce', factor: 15 },
+      pound: { base: 'ounce', factor: 16 },
+      lb: { base: 'ounce', factor: 16 },
+    },
+  },
+
+  // 15b. Tomato Paste
+  {
+    items: ['tomato paste'],
+    canonicalName: 'tomato paste',
+    unitEquivalences: {
+      'can (6 oz)': { base: 'ounce', factor: 6 },
+      can: { base: 'ounce', factor: 6 },
+      tablespoon: { base: 'ounce', factor: 0.5 },
+      tbsp: { base: 'ounce', factor: 0.5 },
+    },
+  },
+
+  // 15c. Canned Tomatoes
   {
     items: [
+      'canned tomatoes',
       'fire roasted tomato',
       'crushed tomato',
       'diced tomato',
-      'tomato sauce',
-      'tomato paste',
+      'canned tomato',
+      'stewed tomato',
     ],
+    canonicalName: 'canned tomatoes',
+    pluralByDefault: true,
     unitEquivalences: {
       'can (15 oz)': { base: 'ounce', factor: 15 },
       'can (28 oz)': { base: 'ounce', factor: 28 },
@@ -260,6 +301,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 16. Roasted Red Peppers
   {
     items: ['jarred roasted red pepper', 'roasted red pepper'],
+    canonicalName: 'jarred roasted red pepper',
     unitEquivalences: {
       '8-oz jar': { base: 'ounce', factor: 8 },
       jar: { base: 'ounce', factor: 8 },
@@ -272,6 +314,7 @@ export const ITEM_RULES: ItemRule[] = [
   // 17. Potato Gnocchi
   {
     items: ['potato gnocchi', 'gnocchi'],
+    canonicalName: 'potato gnocchi',
     unitEquivalences: {
       '17.5-oz package': { base: 'ounce', factor: 17.5 },
       package: { base: 'ounce', factor: 17.5 },
@@ -317,6 +360,7 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['chocolate chips', 'chocolate chip'],
     canonicalName: 'chocolate chips',
+    pluralByDefault: true,
     unitEquivalences: {
       '12-oz bag': { base: 'ounce', factor: 12 },
       bag: { base: 'ounce', factor: 12 },
@@ -329,6 +373,7 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['tortilla', 'tortillas'],
     canonicalName: 'tortilla',
+    pluralByDefault: true,
     unitEquivalences: {
       'package of 10': { base: 'tortilla', factor: 10 },
       'package of 24': { base: 'tortilla', factor: 24 },
@@ -376,6 +421,30 @@ export const ITEM_RULES: ItemRule[] = [
   {
     items: ['jalapeño', 'jalapeno', 'jalapeño slices', 'jalapeno slices'],
     canonicalName: 'jalapeño',
+    pluralByDefault: true,
     defaultQty: 1,
+  },
+
+  // 27. Staples
+  {
+    items: ['salt', 'kosher salt', 'sea salt', 'table salt'],
+    staple: true,
+  },
+  {
+    items: [
+      'black pepper',
+      'pepper',
+      'ground black pepper',
+      'crushed red pepper',
+    ],
+    staple: true,
+  },
+  {
+    items: ['olive oil', 'extra virgin olive oil'],
+    staple: true,
+  },
+  {
+    items: ['vegetable oil', 'canola oil', 'cooking spray'],
+    staple: true,
   },
 ];

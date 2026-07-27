@@ -6,6 +6,8 @@ import {
   isVolumeUnit,
   isWeightUnit,
   formatQtyValueWithUnit,
+  getSingularUnit,
+  getUnitCategory,
 } from './utils';
 import {
   getSectionForCategory,
@@ -27,7 +29,10 @@ function getRuleForItem(itemName: string): ItemRule | undefined {
   return ITEM_RULES.find((rule) => rule.items.includes(lower));
 }
 
-function isStaple(itemName: string): boolean {
+function isStaple(itemName: string, rule?: ItemRule): boolean {
+  if (rule?.staple !== undefined) {
+    return rule.staple;
+  }
   const lower = itemName.toLowerCase().trim();
   if (STAPLE_ITEMS.has(lower)) {
     return true;
@@ -86,6 +91,13 @@ function determineTargetUnit(units: string[], rule?: ItemRule): string {
         return firstEq.base;
       }
     }
+  }
+
+  // Q2: Direct Package Addition when normalized units match!
+  const normalizedSingulars = uniqueUnits.map((u) => getSingularUnit(u));
+  const uniqueSingulars = Array.from(new Set(normalizedSingulars));
+  if (uniqueSingulars.length === 1 && uniqueSingulars[0] !== '') {
+    return uniqueSingulars[0];
   }
 
   if (uniqueUnits.length === 1) {
@@ -235,7 +247,20 @@ export function processShoppingList(
       } else {
         const unit = ing.unit || '';
         let converted: QtyValue;
-        if (unit === targetUnit) {
+        // Q1: Preferred alt.qty if ing.alt specifies a count matching targetUnit
+        const targetCategory = getUnitCategory(targetUnit, rule);
+        if (
+          ing.alt?.qty !== undefined &&
+          ing.alt.unit &&
+          (getSingularUnit(ing.alt.unit) === getSingularUnit(targetUnit) ||
+            (targetCategory === 'COUNTABLE' &&
+              getUnitCategory(ing.alt.unit, rule) === 'COUNTABLE'))
+        ) {
+          converted = ing.alt.qty;
+        } else if (
+          unit === targetUnit ||
+          getSingularUnit(unit) === getSingularUnit(targetUnit)
+        ) {
           converted = ing.qty;
         } else {
           converted = convertQtyValue(ing.qty, unit, targetUnit, rule);
@@ -254,36 +279,70 @@ export function processShoppingList(
     let sizeNote: string | undefined = undefined;
 
     const canonicalName = rule?.canonicalName || group.name;
-    const sizeLookupKey =
-      rule && rule.items.length > 0 ? rule.items[0] : canonicalName;
     const itemSizes =
-      layout?.itemSizes?.[sizeLookupKey.toLowerCase()] ||
-      layout?.itemSizes?.[group.key];
+      layout?.itemSizes?.[group.name.toLowerCase()] ||
+      layout?.itemSizes?.[group.key] ||
+      (rule
+        ? rule.items
+            .map((i) => layout?.itemSizes?.[i.toLowerCase()])
+            .find(Boolean)
+        : undefined);
 
     let matched = false;
     const originalQty = totalQty;
     const originalUnit = targetUnit;
 
     if (finalQty !== null && itemSizes && itemSizes.length > 0) {
-      for (const [limit, sizeUnit] of itemSizes) {
-        const factor = getConversionFactor(sizeUnit, finalUnit, rule);
-        if (factor > 0) {
-          const sizeInBase = limit * factor;
-          if (sizeInBase >= finalQty) {
-            finalQty = limit;
-            finalUnit = sizeUnit;
-            matched = true;
-            break;
+      // Q2: If targetUnit is already an explicit package size in itemSizes, preserve it directly!
+      const targetUnitSingular = getSingularUnit(targetUnit);
+      const isAlreadyExactPackage = itemSizes.some(
+        ([_, sizeUnit]) => getSingularUnit(sizeUnit) === targetUnitSingular,
+      );
+
+      if (isAlreadyExactPackage) {
+        matched = true;
+      } else {
+        // Q3: 3-Tier Minimal-Waste Package Matcher
+        interface PackageCandidate {
+          count: number;
+          sizeUnit: string;
+          sizeInBase: number;
+          totalPurchased: number;
+          waste: number;
+        }
+        const candidates: PackageCandidate[] = [];
+
+        for (const [limit, sizeUnit] of itemSizes) {
+          const factor = getConversionFactor(sizeUnit, finalUnit, rule);
+          if (factor > 0) {
+            const sizeInBase = limit * factor;
+            const count = Math.ceil(finalQty / sizeInBase);
+            const totalPurchased = count * sizeInBase;
+            const waste = totalPurchased - finalQty;
+            candidates.push({
+              count,
+              sizeUnit,
+              sizeInBase,
+              totalPurchased,
+              waste,
+            });
           }
         }
-      }
-      if (!matched) {
-        const largest = itemSizes[itemSizes.length - 1];
-        const factor = getConversionFactor(largest[1], finalUnit, rule);
-        if (factor > 0) {
-          const sizeInBase = largest[0] * factor;
-          finalQty = Math.ceil(finalQty / sizeInBase) * largest[0];
-          finalUnit = largest[1];
+
+        if (candidates.length > 0) {
+          candidates.sort((a, b) => {
+            if (Math.abs(a.waste - b.waste) > 0.001) {
+              return a.waste - b.waste;
+            }
+            if (a.count !== b.count) {
+              return a.count - b.count;
+            }
+            return b.sizeInBase - a.sizeInBase;
+          });
+
+          const best = candidates[0];
+          finalQty = best.count;
+          finalUnit = best.sizeUnit;
           matched = true;
         }
       }
@@ -292,7 +351,12 @@ export function processShoppingList(
     if (finalQty !== null) {
       if (matched) {
         finalQty = Math.ceil(finalQty);
-        sizeNote = `${formatQtyValueWithUnit(originalQty!, originalUnit)} needed`;
+        if (
+          !getSingularUnit(originalUnit) ||
+          getSingularUnit(originalUnit) !== getSingularUnit(finalUnit)
+        ) {
+          sizeNote = `${formatQtyValueWithUnit(originalQty!, originalUnit)} needed`;
+        }
       } else {
         if (isVolumeUnit(finalUnit)) {
           sizeNote = `${formatQtyValueWithUnit(totalQty!, finalUnit)} needed`;
@@ -308,7 +372,7 @@ export function processShoppingList(
     }
 
     const category = classifyItemToCategory(group.name);
-    const itemIsStaple = isStaple(group.key);
+    const itemIsStaple = isStaple(group.key, rule);
     const stapleState: 'in-pantry' | undefined = itemIsStaple
       ? 'in-pantry'
       : undefined;
@@ -325,7 +389,7 @@ export function processShoppingList(
     const shopItem: ShoppingItem = {
       qty: finalQty,
       unit: finalUnitPlural,
-      item: group.name,
+      item: canonicalName,
       category,
       staple: stapleState,
       note,
