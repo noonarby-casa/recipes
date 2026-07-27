@@ -1,4 +1,5 @@
 import type { UnitDefinition } from './types';
+import { ITEM_RULES } from './shopping-list/rules';
 
 export const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
   // Volume (base: teaspoon)
@@ -107,12 +108,7 @@ export const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
   },
 
   // Countable Units & Size Modifiers
-  {
-    singular: 'clove',
-    plural: 'cloves',
-    category: 'COUNTABLE',
-    aliases: ['garlic clove'],
-  },
+  { singular: 'clove', plural: 'cloves', category: 'COUNTABLE' },
   {
     singular: 'head',
     plural: 'heads',
@@ -123,88 +119,20 @@ export const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
   { singular: 'bundle', plural: 'bundles', category: 'COUNTABLE' },
   { singular: 'stick', plural: 'sticks', category: 'COUNTABLE' },
   { singular: 'small', plural: 'small', category: 'COUNTABLE' },
-  {
-    singular: 'large',
-    plural: 'large',
-    category: 'COUNTABLE',
-    aliases: ['large clove'],
-  },
+  { singular: 'large', plural: 'large', category: 'COUNTABLE' },
   { singular: 'medium', plural: 'medium', category: 'COUNTABLE' },
-  { singular: 'lemon', plural: 'lemons', category: 'COUNTABLE' },
-  { singular: 'lime', plural: 'limes', category: 'COUNTABLE' },
-  { singular: 'egg', plural: 'eggs', category: 'COUNTABLE' },
-  { singular: 'egg yolk', plural: 'egg yolks', category: 'COUNTABLE' },
-  { singular: 'scallion', plural: 'scallions', category: 'COUNTABLE' },
   { singular: 'leaf', plural: 'leaves', category: 'COUNTABLE' },
   { singular: 'half', plural: 'halves', category: 'COUNTABLE' },
-  { singular: 'carrot', plural: 'carrots', category: 'COUNTABLE' },
-  { singular: 'potato', plural: 'potatoes', category: 'COUNTABLE' },
-  { singular: 'tomato', plural: 'tomatoes', category: 'COUNTABLE' },
-  { singular: 'pepper', plural: 'peppers', category: 'COUNTABLE' },
-  { singular: 'bell pepper', plural: 'bell peppers', category: 'COUNTABLE' },
-  { singular: 'shallot', plural: 'shallots', category: 'COUNTABLE' },
-  { singular: 'mushroom', plural: 'mushrooms', category: 'COUNTABLE' },
-  {
-    singular: 'chicken thigh',
-    plural: 'chicken thighs',
-    category: 'COUNTABLE',
-  },
-  {
-    singular: 'chicken breast',
-    plural: 'chicken breasts',
-    category: 'COUNTABLE',
-  },
   { singular: 'sprig', plural: 'sprigs', category: 'COUNTABLE' },
   { singular: 'stalk', plural: 'stalks', category: 'COUNTABLE' },
   { singular: 'rib', plural: 'ribs', category: 'COUNTABLE' },
-  { singular: 'tortilla', plural: 'tortillas', category: 'COUNTABLE' },
-  { singular: 'avocado', plural: 'avocados', category: 'COUNTABLE' },
-  { singular: 'cucumber', plural: 'cucumbers', category: 'COUNTABLE' },
-  {
-    singular: 'chili',
-    plural: 'chilis',
-    category: 'COUNTABLE',
-    aliases: ['chilli'],
-  },
-  {
-    singular: 'green onion',
-    plural: 'green onions',
-    category: 'COUNTABLE',
-    aliases: ['spring onion'],
-  },
   { singular: 'bunch', plural: 'bunches', category: 'COUNTABLE' },
   { singular: 'strip', plural: 'strips', category: 'COUNTABLE' },
   { singular: 'ear', plural: 'ears', category: 'COUNTABLE' },
   { singular: 'loaf', plural: 'loaves', category: 'COUNTABLE' },
   { singular: 'slice', plural: 'slices', category: 'COUNTABLE' },
-  { singular: 'olive', plural: 'olives', category: 'COUNTABLE' },
-  { singular: 'almond', plural: 'almonds', category: 'COUNTABLE' },
-  { singular: 'seed', plural: 'seeds', category: 'COUNTABLE' },
-  { singular: 'blueberry', plural: 'blueberries', category: 'COUNTABLE' },
-  { singular: 'raspberry', plural: 'raspberries', category: 'COUNTABLE' },
-  { singular: 'berry', plural: 'berries', category: 'COUNTABLE' },
-  { singular: 'beet', plural: 'beets', category: 'COUNTABLE' },
-  { singular: 'banana', plural: 'bananas', category: 'COUNTABLE' },
-  {
-    singular: 'poblano pepper',
-    plural: 'poblano peppers',
-    category: 'COUNTABLE',
-  },
-  {
-    singular: 'crescent roll',
-    plural: 'crescent rolls',
-    category: 'COUNTABLE',
-  },
-  { singular: 'weenie', plural: 'weenies', category: 'COUNTABLE' },
-  { singular: 'noodle', plural: 'noodles', category: 'COUNTABLE' },
-  { singular: 'flake', plural: 'flakes', category: 'COUNTABLE' },
-  { singular: 'pickle', plural: 'pickles', category: 'COUNTABLE' },
-  {
-    singular: 'coconut amino',
-    plural: 'coconut aminos',
-    category: 'COUNTABLE',
-  },
-  { singular: 'onion', plural: 'onions', category: 'COUNTABLE' },
+  { singular: 'piece', plural: 'pieces', category: 'COUNTABLE' },
+  { singular: 'wedge', plural: 'wedges', category: 'COUNTABLE' },
 ];
 
 export const UNIT_LOOKUP: Record<string, UnitDefinition> = Object.fromEntries(
@@ -258,93 +186,52 @@ export const BREAKDOWN_CATEGORIES: readonly string[] = [
   'salad',
 ];
 
-export const SINGULAR_TO_PLURAL: Record<string, string> = Object.fromEntries(
-  UNIT_DEFINITIONS.flatMap((u) => [[u.singular, u.plural]]),
+// Derive item singular/plural entries from ITEM_RULES
+const itemSingularPluralEntries: [string, string][] = ITEM_RULES.flatMap(
+  (r) => {
+    const entries: [string, string][] = [];
+    r.items.forEach((item) => {
+      if (typeof item !== 'string') {
+        item.aliases?.forEach((alias) => {
+          entries.push([alias.toLowerCase(), item.plural.toLowerCase()]);
+        });
+        entries.push([item.singular.toLowerCase(), item.plural.toLowerCase()]);
+      }
+    });
+    return entries;
+  },
 );
+
+const unitSingularPluralEntries: [string, string][] = UNIT_DEFINITIONS.flatMap(
+  (u): [string, string][] => [
+    ...(u.aliases?.map((alias): [string, string] => [
+      alias.toLowerCase(),
+      u.plural.toLowerCase(),
+    ]) || []),
+    [u.singular.toLowerCase(), u.plural.toLowerCase()],
+  ],
+);
+
+export const SINGULAR_TO_PLURAL: Record<string, string> = Object.fromEntries([
+  ...unitSingularPluralEntries,
+  ...itemSingularPluralEntries,
+]);
 
 export const PLURAL_TO_SINGULAR: Record<string, string> = Object.fromEntries(
-  UNIT_DEFINITIONS.flatMap((u) => [[u.plural, u.singular]]),
+  Object.entries(SINGULAR_TO_PLURAL).map(([sing, plur]) => [plur, sing]),
 );
 
-export const PLURAL_BY_DEFAULT_ITEMS: Set<string> = new Set([
-  'bean',
-  'beans',
-  'black bean',
-  'black beans',
-  'refried bean',
-  'refried beans',
-  'kidney bean',
-  'kidney beans',
-  'chickpea',
-  'chickpeas',
-  'cherry tomato',
-  'cherry tomatoes',
-  'grape tomato',
-  'grape tomatoes',
-  'tomato',
-  'tomatoes',
-  'kalamata olive',
-  'kalamata olives',
-  'olive',
-  'olives',
-  'basil leaf',
-  'basil leaves',
-  'mint leaf',
-  'mint leaves',
-  'leaf',
-  'leaves',
-  'almond',
-  'almonds',
-  'sesame seed',
-  'sesame seeds',
-  'chia seed',
-  'chia seeds',
-  'seed',
-  'seeds',
-  'chocolate chip',
-  'chocolate chips',
-  'chip',
-  'chips',
-  'berry',
-  'berries',
-  'blueberry',
-  'blueberries',
-  'raspberry',
-  'raspberries',
-  'mixed berry',
-  'mixed berries',
-  'beet',
-  'beets',
-  'green onion',
-  'green onions',
-  'spring onion',
-  'spring onions',
-  'scallion',
-  'scallions',
-  'onion',
-  'onions',
-  'jalapeño',
-  'jalapeños',
-  'poblano pepper',
-  'poblano peppers',
-  'pepper',
-  'peppers',
-  'crescent roll',
-  'crescent rolls',
-  'cocktail weenie',
-  'cocktail weenies',
-  'ramen noodle',
-  'ramen noodles',
-  'noodle',
-  'noodles',
-  'red pepper flake',
-  'red pepper flakes',
-  'flake',
-  'flakes',
-  'bread-and-butter pickle',
-  'bread-and-butter pickles',
-  'pickle',
-  'pickles',
-  'coconut amino',
-  'coconut aminos',
-]);
+export const PLURAL_BY_DEFAULT_ITEMS: Set<string> = new Set(
+  ITEM_RULES.filter((r) => r.pluralByDefault).flatMap((r) => [
+    r.canonicalName.toLowerCase(),
+    ...r.items.flatMap((item) =>
+      typeof item === 'string'
+        ? [item.toLowerCase()]
+        : [
+            item.singular.toLowerCase(),
+            item.plural.toLowerCase(),
+            ...(item.aliases?.map((a) => a.toLowerCase()) || []),
+          ],
+    ),
+  ]),
+);

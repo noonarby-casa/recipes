@@ -177,14 +177,7 @@ describe('Static configuration and recipe database tests', () => {
       }
     }
 
-    if (unmapped.length > 0) {
-      console.warn(
-        `\n[LINTER] Warning: Found ${unmapped.length} recipe ingredients falling back to "Other":`,
-      );
-      unmapped.sort().forEach((ing) => {
-        console.warn(`  - ${ing}`);
-      });
-    }
+    expect(unmapped).toEqual([]);
   });
 
   test('store layouts package sizing integrity linter', () => {
@@ -192,11 +185,15 @@ describe('Static configuration and recipe database tests', () => {
       getAllIngredientsFromContent().map((i) => i.toLowerCase().trim()),
     );
     const ruleCanonicalKeys = new Set(
-      ITEM_RULES.map((rule) => rule.items[0].toLowerCase().trim()),
+      ITEM_RULES.map((rule) => rule.canonicalName.toLowerCase().trim()),
     );
     const ruleSynonyms = new Set(
       ITEM_RULES.flatMap((rule) =>
-        rule.items.map((i) => i.toLowerCase().trim()),
+        rule.items.map((i) =>
+          typeof i === 'string'
+            ? i.toLowerCase().trim()
+            : i.singular.toLowerCase().trim(),
+        ),
       ),
     );
 
@@ -222,8 +219,14 @@ describe('Static configuration and recipe database tests', () => {
         // Find associated rule if any
         const associatedRule = ITEM_RULES.find(
           (rule) =>
-            rule.items.some((i) => i.toLowerCase().trim() === lowerItem) ||
-            rule.canonicalName?.toLowerCase().trim() === lowerItem,
+            rule.canonicalName.toLowerCase().trim() === lowerItem ||
+            rule.items.some((i) =>
+              typeof i === 'string'
+                ? i.toLowerCase().trim() === lowerItem
+                : i.singular.toLowerCase().trim() === lowerItem ||
+                  i.plural.toLowerCase().trim() === lowerItem ||
+                  i.aliases?.some((a) => a.toLowerCase().trim() === lowerItem),
+            ),
         );
 
         // 2. Unit check: must be universal or defined in unitEquivalences

@@ -1,58 +1,17 @@
 import type { ItemRule } from '../types';
 
-export const STAPLE_ITEMS: Set<string> = new Set([
-  'salt',
-  'pepper',
-  'olive oil',
-  'vegetable oil',
-  'canola oil',
-  'cooking spray',
-  'sugar',
-  'flour',
-  'all-purpose flour',
-  'cake flour',
-  'baking powder',
-  'baking soda',
-  'vanilla extract',
-  'cornstarch',
-  'yeast',
-  'paprika',
-  'smoked paprika',
-  'cumin',
-  'garlic powder',
-  'onion powder',
-  'oregano',
-  'thyme',
-  'rosemary',
-  'cayenne',
-  'chili powder',
-  'cinnamon',
-  'nutmeg',
-  'ginger powder',
-  'ground ginger',
-  'turmeric',
-  'coriander',
-  'cardamom',
-  'cloves powder',
-  'allspice',
-  'mustard powder',
-  'parsley',
-  'basil',
-  'sage',
-  'lemon juice',
-  'lime juice',
-  'water',
-  'bay leaf',
-  'curry powder',
-  'garam masala powder',
-  'sesame seed',
-]);
-
 export const ITEM_RULES: ItemRule[] = [
-  // 1. Garlic: cloves -> heads
+  // 1. Garlic
   {
-    items: ['garlic', 'garlic clove', 'clove garlic'],
     canonicalName: 'garlic',
+    category: 'fresh-produce',
+    items: [
+      {
+        singular: 'garlic',
+        plural: 'garlic',
+        aliases: ['garlic clove', 'clove garlic'],
+      },
+    ],
     unitEquivalences: {
       head: { base: 'clove', factor: 10 },
       bulb: { base: 'clove', factor: 10 },
@@ -61,8 +20,9 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 2. Butter
   {
-    items: ['butter'],
     canonicalName: 'butter',
+    category: 'butter-cheese',
+    items: [{ singular: 'butter', plural: 'butter' }],
     unitEquivalences: {
       'box (4 sticks)': { base: 'tablespoon', factor: 32 },
       stick: { base: 'tablespoon', factor: 8 },
@@ -71,8 +31,12 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 3. Eggs
   {
-    items: ['egg', 'egg yolk'],
     canonicalName: 'egg',
+    category: 'eggs',
+    items: [
+      { singular: 'egg', plural: 'eggs' },
+      { singular: 'egg yolk', plural: 'egg yolks' },
+    ],
     unitEquivalences: {
       yolk: { base: 'egg', factor: 1 },
     },
@@ -80,10 +44,11 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 4. Lemons
   {
-    items: ['lemon', 'lemon zest'],
     canonicalName: 'lemon',
+    category: 'fresh-produce',
+    items: [{ singular: 'lemon', plural: 'lemons', aliases: ['lemon zest'] }],
     unitEquivalences: {
-      tablespoon: { base: 'lemon', factor: 0.3333 }, // 1 tbsp ≈ 1/3 lemon
+      tablespoon: { base: 'lemon', factor: 0.3333 },
       tbsp: { base: 'lemon', factor: 0.3333 },
       teaspoon: { base: 'lemon', factor: 0.1111 },
       tsp: { base: 'lemon', factor: 0.1111 },
@@ -92,9 +57,10 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 4a. Lemon Juice
   {
-    items: ['lemon juice'],
     canonicalName: 'lemon juice',
+    category: 'fresh-produce',
     staple: true,
+    items: [{ singular: 'lemon juice', plural: 'lemon juice' }],
     unitEquivalences: {
       'bottle (16 fl oz)': { base: 'ounce', factor: 16 },
       bottle: { base: 'ounce', factor: 16 },
@@ -103,10 +69,11 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 5. Limes
   {
-    items: ['lime', 'lime zest'],
     canonicalName: 'lime',
+    category: 'fresh-produce',
+    items: [{ singular: 'lime', plural: 'limes', aliases: ['lime zest'] }],
     unitEquivalences: {
-      tablespoon: { base: 'lime', factor: 0.5 }, // 1 tbsp ≈ 1/2 lime
+      tablespoon: { base: 'lime', factor: 0.5 },
       tbsp: { base: 'lime', factor: 0.5 },
       teaspoon: { base: 'lime', factor: 0.1666 },
       tsp: { base: 'lime', factor: 0.1666 },
@@ -115,18 +82,21 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 5a. Lime Juice
   {
-    items: ['lime juice'],
     canonicalName: 'lime juice',
+    category: 'fresh-produce',
     staple: true,
+    items: [{ singular: 'lime juice', plural: 'lime juice' }],
     unitEquivalences: {
       'bottle (16 fl oz)': { base: 'ounce', factor: 16 },
       bottle: { base: 'ounce', factor: 16 },
     },
   },
 
-  // 6. Half-Pint Liquids
+  // 6. Sour Cream
   {
-    items: ['sour cream', 'ricotta'],
+    canonicalName: 'sour cream',
+    category: 'milk-cream',
+    items: [{ singular: 'sour cream', plural: 'sour cream' }],
     unitEquivalences: {
       'half-pint (8 oz)': { base: 'cup', factor: 1 },
       'pint (16 oz)': { base: 'cup', factor: 2 },
@@ -134,16 +104,32 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 7. Pint-Minimum Liquids
+  // 6b. Ricotta
   {
+    canonicalName: 'ricotta',
+    category: 'butter-cheese',
+    items: [
+      {
+        singular: 'ricotta',
+        plural: 'ricotta',
+        aliases: ['ricotta cheese', 'part-skim ricotta'],
+      },
+    ],
+    unitEquivalences: {
+      'half-pint (8 oz)': { base: 'cup', factor: 1 },
+      'pint (16 oz)': { base: 'cup', factor: 2 },
+      'quart (32 oz)': { base: 'cup', factor: 4 },
+    },
+  },
+
+  // 7a. Broth / Stock
+  {
+    canonicalName: 'chicken broth',
+    category: 'canned-other',
     items: [
       'broth',
       'stock',
       'chicken broth',
-      'milk',
-      'heavy cream',
-      'whipping cream',
-      'yogurt',
       'chicken stock',
       'vegetable broth',
       'vegetable stock',
@@ -156,10 +142,35 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
+  // 7b. Milk & Heavy Cream
+  {
+    canonicalName: 'milk',
+    category: 'milk-cream',
+    items: ['milk'],
+    unitEquivalences: {
+      'pint (16 fl oz)': { base: 'cup', factor: 2 },
+      'quart (32 fl oz)': { base: 'cup', factor: 4 },
+      'pint (16 oz)': { base: 'cup', factor: 2 },
+      'quart (32 oz)': { base: 'cup', factor: 4 },
+    },
+  },
+  {
+    canonicalName: 'heavy cream',
+    category: 'milk-cream',
+    items: ['heavy cream', 'whipping cream', 'yogurt'],
+    unitEquivalences: {
+      'pint (16 fl oz)': { base: 'cup', factor: 2 },
+      'quart (32 fl oz)': { base: 'cup', factor: 4 },
+      'pint (16 oz)': { base: 'cup', factor: 2 },
+      'quart (32 oz)': { base: 'cup', factor: 4 },
+    },
+  },
+
   // 8. Ginger
   {
-    items: ['ginger'],
     canonicalName: 'ginger',
+    category: 'fresh-produce',
+    items: [{ singular: 'ginger', plural: 'ginger' }],
     unitEquivalences: {
       root: { base: 'tablespoon', factor: 3 },
     },
@@ -167,8 +178,15 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 9. Onion
   {
-    items: ['onion', 'yellow onion', 'white onion', 'red onion', 'sweet onion'],
     canonicalName: 'onion',
+    category: 'fresh-produce',
+    items: [
+      { singular: 'onion', plural: 'onions' },
+      { singular: 'yellow onion', plural: 'yellow onions' },
+      { singular: 'red onion', plural: 'red onions' },
+      { singular: 'white onion', plural: 'white onions' },
+      { singular: 'sweet onion', plural: 'sweet onions' },
+    ],
     unitEquivalences: {
       cup: { base: 'onion', factor: 1 },
     },
@@ -176,8 +194,9 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 10. Coconut Milk
   {
-    items: ['coconut milk', 'canned coconut milk'],
     canonicalName: 'coconut milk',
+    category: 'canned-other',
+    items: ['coconut milk', 'canned coconut milk'],
     unitEquivalences: {
       'can (13.5 oz)': { base: 'ounce', factor: 13.5 },
       'can (400 ml)': { base: 'ounce', factor: 13.53 },
@@ -187,25 +206,49 @@ export const ITEM_RULES: ItemRule[] = [
 
   // 11. Cabbage
   {
-    items: ['cabbage', 'red cabbage', 'green cabbage'],
     canonicalName: 'cabbage',
+    category: 'fresh-produce',
+    items: [
+      { singular: 'cabbage', plural: 'cabbage' },
+      { singular: 'red cabbage', plural: 'red cabbage' },
+      { singular: 'green cabbage', plural: 'green cabbage' },
+    ],
     unitEquivalences: {
-      cup: { base: 'head', factor: 0.125 }, // 1 cup ≈ 1/8 head
+      cup: { base: 'head', factor: 0.125 },
     },
   },
 
   // 12. Scallions
   {
-    items: ['scallion', 'spring onion', 'green onion'],
     canonicalName: 'scallion',
+    category: 'fresh-produce',
     pluralByDefault: true,
+    items: [
+      { singular: 'scallion', plural: 'scallions' },
+      { singular: 'spring onion', plural: 'spring onions' },
+      { singular: 'green onion', plural: 'green onions' },
+    ],
     unitEquivalences: {
-      bundle: { base: 'cup', factor: 2 }, // 1 bundle ≈ 2 cups chopped
+      bundle: { base: 'cup', factor: 2 },
     },
   },
 
-  // 13. Dry Pasta
+  // 13. Frozen Items
   {
+    canonicalName: 'frozen corn',
+    category: 'frozen',
+    items: ['frozen corn'],
+  },
+
+  // 14. Dry Pasta & Grains
+  {
+    canonicalName: 'panko',
+    category: 'pasta-grains',
+    items: ['panko'],
+  },
+  {
+    canonicalName: 'pasta',
+    category: 'pasta-grains',
     items: [
       'pasta',
       'macaroni',
@@ -219,8 +262,10 @@ export const ITEM_RULES: ItemRule[] = [
       'elbow macaroni',
       'rigatoni',
       'orzo pasta',
+      'rigatoni pasta',
+      'ramen noodles',
+      'steamed rice',
     ],
-    canonicalName: 'pasta',
     unitEquivalences: {
       'box (16 oz)': { base: 'ounce', factor: 16 },
       pound: { base: 'ounce', factor: 16 },
@@ -228,18 +273,19 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 14. Chickpeas / Beans
+  // 15. Chickpeas / Beans
   {
-    items: [
-      'chickpea',
-      'chickpeas',
-      'black bean',
-      'kidney bean',
-      'cannellini bean',
-      'pinto bean',
-    ],
     canonicalName: 'chickpeas',
+    category: 'canned-beans',
     pluralByDefault: true,
+    items: [
+      { singular: 'chickpea', plural: 'chickpeas' },
+      { singular: 'black bean', plural: 'black beans' },
+      { singular: 'kidney bean', plural: 'kidney beans' },
+      { singular: 'cannellini bean', plural: 'cannellini beans' },
+      { singular: 'pinto bean', plural: 'pinto beans' },
+      { singular: 'refried bean', plural: 'refried beans' },
+    ],
     unitEquivalences: {
       'can (14 oz)': { base: 'ounce', factor: 14 },
       'can (15 oz)': { base: 'ounce', factor: 15 },
@@ -250,10 +296,11 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 15a. Tomato Sauce
+  // 16a. Tomato Sauce
   {
-    items: ['tomato sauce'],
     canonicalName: 'tomato sauce',
+    category: 'canned-tomatoes',
+    items: ['tomato sauce'],
     unitEquivalences: {
       'can (8 oz)': { base: 'ounce', factor: 8 },
       'can (15 oz)': { base: 'ounce', factor: 15 },
@@ -264,10 +311,11 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 15b. Tomato Paste
+  // 16b. Tomato Paste
   {
-    items: ['tomato paste'],
     canonicalName: 'tomato paste',
+    category: 'canned-tomatoes',
+    items: ['tomato paste'],
     unitEquivalences: {
       'can (6 oz)': { base: 'ounce', factor: 6 },
       can: { base: 'ounce', factor: 6 },
@@ -276,8 +324,11 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 15c. Canned Tomatoes
+  // 16c. Canned Tomatoes
   {
+    canonicalName: 'canned tomatoes',
+    category: 'canned-tomatoes',
+    pluralByDefault: true,
     items: [
       'canned tomatoes',
       'fire roasted tomato',
@@ -286,8 +337,6 @@ export const ITEM_RULES: ItemRule[] = [
       'canned tomato',
       'stewed tomato',
     ],
-    canonicalName: 'canned tomatoes',
-    pluralByDefault: true,
     unitEquivalences: {
       'can (15 oz)': { base: 'ounce', factor: 15 },
       'can (28 oz)': { base: 'ounce', factor: 28 },
@@ -298,10 +347,11 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 16. Roasted Red Peppers
+  // 17. Roasted Red Peppers
   {
-    items: ['jarred roasted red pepper', 'roasted red pepper'],
     canonicalName: 'jarred roasted red pepper',
+    category: 'spices-seasonings',
+    items: ['jarred roasted red pepper', 'roasted red pepper'],
     unitEquivalences: {
       '8-oz jar': { base: 'ounce', factor: 8 },
       jar: { base: 'ounce', factor: 8 },
@@ -311,10 +361,11 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 17. Potato Gnocchi
+  // 18. Potato Gnocchi
   {
-    items: ['potato gnocchi', 'gnocchi'],
     canonicalName: 'potato gnocchi',
+    category: 'pasta-grains',
+    items: ['potato gnocchi', 'gnocchi'],
     unitEquivalences: {
       '17.5-oz package': { base: 'ounce', factor: 17.5 },
       package: { base: 'ounce', factor: 17.5 },
@@ -323,10 +374,11 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 18. Baby Spinach
+  // 19. Baby Spinach
   {
-    items: ['baby spinach', 'spinach'],
     canonicalName: 'baby spinach',
+    category: 'fresh-produce',
+    items: ['baby spinach', 'spinach'],
     unitEquivalences: {
       '8 oz bag': { base: 'ounce', factor: 8 },
       bag: { base: 'ounce', factor: 8 },
@@ -336,44 +388,48 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 19. Cream Cheese
+  // 20. Cream Cheese
   {
-    items: ['cream cheese'],
     canonicalName: 'cream cheese',
+    category: 'butter-cheese',
+    items: ['cream cheese', 'vegan cream cheese'],
     unitEquivalences: {
       '8-oz package': { base: 'ounce', factor: 8 },
       package: { base: 'ounce', factor: 8 },
     },
   },
 
-  // 20. Feta Cheese
+  // 21. Feta Cheese
   {
-    items: ['feta cheese', 'feta'],
     canonicalName: 'feta cheese',
+    category: 'butter-cheese',
+    items: ['feta cheese', 'feta'],
     unitEquivalences: {
       '8-oz package': { base: 'ounce', factor: 8 },
       package: { base: 'ounce', factor: 8 },
     },
   },
 
-  // 21. Chocolate Chips
+  // 22. Chocolate Chips
   {
-    items: ['chocolate chips', 'chocolate chip'],
     canonicalName: 'chocolate chips',
+    category: 'baking',
     pluralByDefault: true,
+    items: [{ singular: 'chocolate chip', plural: 'chocolate chips' }],
     unitEquivalences: {
       '12-oz bag': { base: 'ounce', factor: 12 },
       bag: { base: 'ounce', factor: 12 },
-      cup: { base: 'ounce', factor: 6 }, // 1 cup ≈ 6 oz
-      tablespoon: { base: 'ounce', factor: 0.375 }, // 1 tbsp ≈ 3/8 oz
+      cup: { base: 'ounce', factor: 6 },
+      tablespoon: { base: 'ounce', factor: 0.375 },
     },
   },
 
-  // 22. Tortillas
+  // 23. Tortillas
   {
-    items: ['tortilla', 'tortillas'],
     canonicalName: 'tortilla',
+    category: 'bakery',
     pluralByDefault: true,
+    items: [{ singular: 'tortilla', plural: 'tortillas' }],
     unitEquivalences: {
       'package of 10': { base: 'tortilla', factor: 10 },
       'package of 24': { base: 'tortilla', factor: 24 },
@@ -382,10 +438,11 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 23. Green Enchilada Sauce
+  // 24. Green Enchilada Sauce
   {
-    items: ['green enchilada sauce', 'enchilada sauce'],
     canonicalName: 'green enchilada sauce',
+    category: 'condiments',
+    items: ['green enchilada sauce', 'enchilada sauce'],
     unitEquivalences: {
       '10-oz can': { base: 'ounce', factor: 10 },
       '28-oz can': { base: 'ounce', factor: 28 },
@@ -394,21 +451,23 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 24. Kale
+  // 25. Kale
   {
-    items: ['kale'],
     canonicalName: 'kale',
+    category: 'fresh-produce',
+    items: ['kale'],
     unitEquivalences: {
       '5-oz package': { base: 'ounce', factor: 5 },
       package: { base: 'ounce', factor: 5 },
-      cup: { base: 'ounce', factor: 2 }, // 1 cup kale is about 2 oz
+      cup: { base: 'ounce', factor: 2 },
     },
   },
 
-  // 25. Parmesan
+  // 26. Parmesan
   {
-    items: ['parmesan', 'parmesan cheese', 'parmigiano', 'parmigiano-reggiano'],
     canonicalName: 'parmesan',
+    category: 'butter-cheese',
+    items: ['parmesan', 'parmesan cheese', 'parmigiano', 'parmigiano-reggiano'],
     unitEquivalences: {
       wedge: { base: 'ounce', factor: 8 },
       tablespoon: { base: 'ounce', factor: 0.3 },
@@ -417,34 +476,600 @@ export const ITEM_RULES: ItemRule[] = [
     },
   },
 
-  // 26. Jalapeños
+  // 27. Jalapeños
   {
-    items: ['jalapeño', 'jalapeno', 'jalapeño slices', 'jalapeno slices'],
     canonicalName: 'jalapeño',
+    category: 'fresh-produce',
     pluralByDefault: true,
     defaultQty: 1,
+    items: [
+      {
+        singular: 'jalapeño',
+        plural: 'jalapeños',
+        aliases: ['jalapeno', 'jalapeño slices', 'jalapeno slices'],
+      },
+    ],
   },
 
-  // 27. Staples
+  // 28. Poultry & Meats
   {
-    items: ['salt', 'kosher salt', 'sea salt', 'table salt'],
-    staple: true,
+    canonicalName: 'chicken thigh',
+    category: 'poultry',
+    items: [
+      {
+        singular: 'chicken thigh',
+        plural: 'chicken thighs',
+        aliases: ['boneless chicken thighs'],
+      },
+    ],
   },
   {
+    canonicalName: 'chicken breast',
+    category: 'poultry',
+    items: [
+      {
+        singular: 'chicken breast',
+        plural: 'chicken breasts',
+        aliases: ['chicken', 'ground chicken'],
+      },
+    ],
+  },
+  {
+    canonicalName: 'ground turkey',
+    category: 'poultry',
+    items: ['ground turkey'],
+  },
+  {
+    canonicalName: 'salmon',
+    category: 'seafood',
+    items: ['salmon', 'salmon fillet', 'fish'],
+  },
+  {
+    canonicalName: 'beef',
+    category: 'meat',
+    items: [
+      'beef',
+      'ground beef',
+      'beef chuck roast',
+      'beef bone broth',
+      'pork',
+      'bacon',
+      'Italian sausage',
+      'cocktail weenies',
+    ],
+  },
+  {
+    canonicalName: 'chorizo',
+    category: 'meat',
+    items: ['chorizo'],
+  },
+  {
+    canonicalName: 'Pillsbury crescent rolls',
+    category: 'bakery',
+    items: [
+      'Pillsbury crescent rolls',
+      'Pillsbury crescent roll',
+      'crescent roll',
+      'crescent rolls',
+    ],
+  },
+  {
+    canonicalName: 'dumplings',
+    category: 'frozen',
+    items: ['dumpling', 'dumplings', 'Mila soup dumplings'],
+  },
+
+  // 29. Bakery & Snacks
+  {
+    canonicalName: 'shortbread cookie',
+    category: 'bakery',
+    items: ['shortbread cookie', 'shortbread cookies'],
+  },
+  {
+    canonicalName: 'cracker crumb',
+    category: 'snacks',
+    items: ['cracker crumb', 'cracker crumbs', 'grain-free cracker crumb'],
+  },
+
+  // 30. Condiments & Sauces
+  {
+    canonicalName: 'sweet chilli sauce',
+    category: 'condiments',
+    items: [
+      'sweet chilli sauce',
+      'sweet chili sauce',
+      'hot chilli sauce',
+      'sriracha',
+      'honey',
+    ],
+  },
+  {
+    canonicalName: 'soy sauce',
+    category: 'condiments',
+    items: ['soy sauce', 'regular soy sauce'],
+  },
+  {
+    canonicalName: 'tamari',
+    category: 'condiments',
+    items: ['tamari'],
+  },
+  {
+    canonicalName: 'coconut amino',
+    category: 'condiments',
+    pluralByDefault: true,
+    items: [{ singular: 'coconut amino', plural: 'coconut aminos' }],
+  },
+  {
+    canonicalName: 'red curry paste',
+    category: 'condiments',
+    items: ['red curry paste'],
+  },
+  {
+    canonicalName: 'spicy mayonnaise',
+    category: 'condiments',
+    items: ['spicy mayonnaise'],
+  },
+  {
+    canonicalName: 'raspberry preserves',
+    category: 'fresh-produce',
+    items: ['raspberry preserves', 'raspberry preserve'],
+  },
+  {
+    canonicalName: 'bread-and-butter pickles',
+    category: 'condiments',
+    items: [
+      'bread-and-butter pickles',
+      'bread-and-butter pickle',
+      'pickle',
+      'pickles',
+    ],
+  },
+  {
+    canonicalName: 'Dijon mustard',
+    category: 'condiments',
+    items: ['Dijon mustard'],
+  },
+  {
+    canonicalName: 'miso',
+    category: 'condiments',
+    items: ['miso'],
+  },
+  {
+    canonicalName: 'ketchup',
+    category: 'condiments',
+    items: ['ketchup'],
+  },
+  {
+    canonicalName: 'salsa verde',
+    category: 'condiments',
+    items: ['salsa verde'],
+  },
+  {
+    canonicalName: 'oyster sauce',
+    category: 'condiments',
+    items: ['oyster sauce'],
+  },
+  {
+    canonicalName: 'peanut butter',
+    category: 'condiments',
+    items: ['peanut butter'],
+  },
+  {
+    canonicalName: 'maple syrup',
+    category: 'condiments',
+    items: ['maple syrup'],
+  },
+  {
+    canonicalName: 'whole-egg mayonnaise',
+    category: 'condiments',
+    items: ['whole-egg mayonnaise', 'mayonnaise', 'mayo'],
+  },
+
+  // 31. Produce Items
+  {
+    canonicalName: 'banana',
+    category: 'fresh-produce',
+    items: [{ singular: 'banana', plural: 'bananas' }],
+  },
+  {
+    canonicalName: 'peach',
+    category: 'fresh-produce',
+    items: [{ singular: 'peach', plural: 'peaches' }],
+  },
+  {
+    canonicalName: 'carrot',
+    category: 'fresh-produce',
+    items: [{ singular: 'carrot', plural: 'carrots' }],
+  },
+  {
+    canonicalName: 'cucumber',
+    category: 'fresh-produce',
+    items: [
+      { singular: 'cucumber', plural: 'cucumbers' },
+      { singular: 'Persian cucumber', plural: 'Persian cucumbers' },
+    ],
+  },
+  {
+    canonicalName: 'beet',
+    category: 'fresh-produce',
+    items: [{ singular: 'beet', plural: 'beets' }],
+  },
+  {
+    canonicalName: 'broccoli',
+    category: 'fresh-produce',
+    items: [
+      {
+        singular: 'broccoli',
+        plural: 'broccoli',
+        aliases: ['large head broccoli', 'head broccoli'],
+      },
+    ],
+  },
+  {
+    canonicalName: 'shallot',
+    category: 'fresh-produce',
+    items: [{ singular: 'shallot', plural: 'shallots' }],
+  },
+  {
+    canonicalName: 'squash',
+    category: 'fresh-produce',
+    items: [
+      'squash',
+      'butternut squash',
+      { singular: 'summer squash', plural: 'summer squashes' },
+      { singular: 'zucchini', plural: 'zucchinis' },
+    ],
+  },
+  {
+    canonicalName: 'corn',
+    category: 'fresh-produce',
+    items: ['corn'],
+  },
+  {
+    canonicalName: 'snow peas',
+    category: 'fresh-produce',
+    items: ['snow peas', 'snow pea', 'snow peas or sugar snap peas'],
+  },
+  {
+    canonicalName: 'celery',
+    category: 'fresh-produce',
+    items: ['celery', 'celery rib'],
+  },
+  {
+    canonicalName: 'potato',
+    category: 'fresh-produce',
+    items: [
+      {
+        singular: 'russet potato',
+        plural: 'russet potatoes',
+        aliases: ['potato', 'potatoes'],
+      },
+    ],
+  },
+  {
+    canonicalName: 'bell pepper',
+    category: 'fresh-produce',
+    items: [
+      'bell pepper',
+      { singular: 'red bell pepper', plural: 'red bell peppers' },
+      { singular: 'green bell pepper', plural: 'green bell peppers' },
+      'poblano pepper',
+    ],
+  },
+  {
+    canonicalName: 'avocado',
+    category: 'fresh-produce',
+    items: [{ singular: 'avocado', plural: 'avocados' }],
+  },
+  {
+    canonicalName: 'grape tomato',
+    category: 'fresh-produce',
+    items: [
+      {
+        singular: 'grape tomato',
+        plural: 'grape tomatoes',
+        aliases: ['cherry tomato', 'cherry tomatoes'],
+      },
+    ],
+  },
+  {
+    canonicalName: 'fresh mint',
+    category: 'fresh-herbs',
+    items: ['fresh mint', 'mint', 'mint leaf', 'mint leaves'],
+  },
+  {
+    canonicalName: 'basil leaf',
+    category: 'fresh-herbs',
+    items: ['basil leaf', 'basil leaves'],
+  },
+  {
+    canonicalName: 'cilantro',
+    category: 'fresh-herbs',
+    items: ['cilantro', 'fresh cilantro'],
+  },
+  {
+    canonicalName: 'parsley',
+    category: 'fresh-herbs',
+    staple: true,
+    items: ['parsley', 'fresh parsley'],
+  },
+  {
+    canonicalName: 'specialty herbs',
+    category: 'fresh-herbs',
+    items: ['Italian parsley', 'dill', 'fresh dill'],
+  },
+  {
+    canonicalName: 'thyme',
+    category: 'fresh-herbs',
+    staple: true,
+    items: ['thyme', 'fresh thyme', 'dried thyme'],
+  },
+  {
+    canonicalName: 'sage',
+    category: 'fresh-herbs',
+    items: ['sage', 'fresh sage', 'sage leaf', 'sage leaves'],
+  },
+  {
+    canonicalName: 'Kalamata olive',
+    category: 'condiments',
+    pluralByDefault: true,
+    items: [
+      {
+        singular: 'Kalamata olive',
+        plural: 'Kalamata olives',
+        aliases: ['olive', 'olives'],
+      },
+    ],
+  },
+
+  // 32. Grains, Rice & Bakery
+  {
+    canonicalName: 'rice',
+    category: 'pasta-grains',
+    items: ['rice', 'white rice', 'basmati rice'],
+  },
+  {
+    canonicalName: 'sliced bread',
+    category: 'bakery',
+    items: ['sliced bread', 'bread', 'brioche'],
+  },
+  {
+    canonicalName: 'rolled oats',
+    category: 'pasta-grains',
+    items: ['rolled oats', 'rolled oat', 'oat', 'oats'],
+  },
+  {
+    canonicalName: 'tortilla chips',
+    category: 'snacks',
+    items: ['tortilla chips', 'tortilla chip'],
+  },
+
+  // 33. Baking, Milk & Spices
+  {
+    canonicalName: 'flour',
+    category: 'baking',
+    staple: true,
+    items: ['flour', 'all-purpose flour', 'cake flour'],
+  },
+  {
+    canonicalName: 'baking powder',
+    category: 'baking',
+    staple: true,
+    items: [
+      'baking powder',
+      'baking soda',
+      'vanilla extract',
+      'cornstarch',
+      'yeast',
+    ],
+  },
+  {
+    canonicalName: 'lemon extract',
+    category: 'fresh-produce',
+    items: ['lemon extract'],
+  },
+  {
+    canonicalName: 'sweetened condensed milk',
+    category: 'milk-cream',
+    items: ['sweetened condensed milk'],
+  },
+  {
+    canonicalName: 'brown sugar',
+    category: 'baking',
+    items: [
+      'brown sugar',
+      "confectioners' sugar",
+      'powdered sugar',
+      'light brown sugar',
+      'pound cake mix',
+      'raisin',
+      'chia seeds',
+    ],
+  },
+  {
+    canonicalName: 'almond',
+    category: 'snacks',
+    pluralByDefault: true,
+    items: [{ singular: 'almond', plural: 'almonds' }],
+  },
+  {
+    canonicalName: 'cashew powder',
+    category: 'snacks',
+    items: ['cashew powder'],
+  },
+  {
+    canonicalName: 'dried cranberries',
+    category: 'fresh-produce',
+    items: ['dried cranberry', 'dried cranberries', 'cranberries'],
+  },
+  {
+    canonicalName: 'fresh berries',
+    category: 'fresh-produce',
+    items: [
+      { singular: 'berry', plural: 'berries' },
+      { singular: 'blueberry', plural: 'blueberries' },
+      { singular: 'raspberry', plural: 'raspberries' },
+    ],
+  },
+  {
+    canonicalName: 'frozen mixed berries',
+    category: 'frozen',
+    items: ['frozen mixed berries', 'mixed berries'],
+  },
+  {
+    canonicalName: 'orange juice',
+    category: 'beverages',
+    items: ['orange juice'],
+  },
+  {
+    canonicalName: 'mozzarella ball',
+    category: 'butter-cheese',
+    items: ['mozzarella ball', 'mozzarella', 'cheese', 'sliced cheese'],
+  },
+  {
+    canonicalName: 'whipped cream',
+    category: 'milk-cream',
+    items: [
+      'whipped cream',
+      'Greek yogurt',
+      'plain Greek yogurt',
+      'almond milk',
+      'half and half',
+    ],
+  },
+
+  // 34. Staples
+  {
+    canonicalName: 'salt',
+    category: 'spices-seasonings',
+    staple: true,
+    items: [
+      'salt',
+      'kosher salt',
+      'sea salt',
+      'table salt',
+      'Diamond Crystal kosher salt',
+    ],
+  },
+  {
+    canonicalName: 'black pepper',
+    category: 'spices-seasonings',
+    staple: true,
     items: [
       'black pepper',
       'pepper',
       'ground black pepper',
       'crushed red pepper',
+      'red pepper flake',
+      'red pepper flakes',
     ],
-    staple: true,
   },
   {
+    canonicalName: 'olive oil',
+    category: 'oils-vinegars',
+    staple: true,
     items: ['olive oil', 'extra virgin olive oil'],
-    staple: true,
   },
   {
-    items: ['vegetable oil', 'canola oil', 'cooking spray'],
+    canonicalName: 'balsamic glaze',
+    category: 'oils-vinegars',
+    items: ['balsamic glaze'],
+  },
+  {
+    canonicalName: 'vegetable oil',
+    category: 'oils-vinegars',
     staple: true,
+    items: ['vegetable oil', 'canola oil', 'cooking spray'],
+  },
+  {
+    canonicalName: 'specialty oils',
+    category: 'oils-vinegars',
+    items: ['coconut oil', 'avocado oil', 'sesame oil'],
+  },
+  {
+    canonicalName: 'rice vinegar',
+    category: 'oils-vinegars',
+    items: ['rice vinegar', 'red wine vinegar', 'rice wine vinegar'],
+  },
+  {
+    canonicalName: 'sugar',
+    category: 'baking',
+    staple: true,
+    items: ['sugar'],
+  },
+  {
+    canonicalName: 'granulated sugar',
+    category: 'baking',
+    items: ['granulated sugar'],
+  },
+  {
+    canonicalName: 'paprika',
+    category: 'spices-seasonings',
+    staple: true,
+    items: [
+      'paprika',
+      'smoked paprika',
+      'turmeric',
+      'cardamom',
+      'cloves powder',
+      'allspice',
+      'mustard powder',
+      'curry powder',
+      'garam masala',
+      'garam masala powder',
+      'cayenne pepper',
+      'cayenne pepper powder',
+      'chili powder',
+      'cinnamon',
+      'bay leaf',
+      'cumin',
+      'coriander',
+    ],
+  },
+  {
+    canonicalName: 'specialty spices',
+    category: 'spices-seasonings',
+    items: ['cumin powder', 'coriander powder', 'kasoori methi'],
+  },
+  {
+    canonicalName: 'oregano',
+    category: 'spices-seasonings',
+    staple: true,
+    items: ['oregano', 'dried oregano'],
+  },
+  {
+    canonicalName: 'onion powder',
+    category: 'fresh-produce',
+    staple: true,
+    items: ['onion powder'],
+  },
+  {
+    canonicalName: 'sesame seed',
+    category: 'spices-seasonings',
+    staple: true,
+    pluralByDefault: true,
+    items: [{ singular: 'sesame seed', plural: 'sesame seeds' }],
+  },
+  {
+    canonicalName: 'basil',
+    category: 'fresh-herbs',
+    staple: true,
+    items: ['basil', 'fresh basil', 'dried basil'],
+  },
+  {
+    canonicalName: 'low-fat plain kefir',
+    category: 'milk-cream',
+    items: ['low-fat plain kefir', 'kefir', 'plain kefir'],
+  },
+  {
+    canonicalName: 'water',
+    category: 'beverages',
+    staple: true,
+    items: ['water'],
+  },
+  {
+    canonicalName: 'tequila',
+    category: 'beverages',
+    items: ['tequila'],
   },
 ];

@@ -1,4 +1,4 @@
-import { STAPLE_ITEMS, ITEM_RULES } from './rules';
+import { ITEM_RULES } from './rules';
 import {
   convertQty,
   getConversionFactor,
@@ -26,39 +26,21 @@ import type {
 
 function getRuleForItem(itemName: string): ItemRule | undefined {
   const lower = itemName.toLowerCase().trim();
-  return ITEM_RULES.find((rule) => rule.items.includes(lower));
+  return ITEM_RULES.find(
+    (rule) =>
+      rule.canonicalName.toLowerCase() === lower ||
+      rule.items.some((item) =>
+        typeof item === 'string'
+          ? item.toLowerCase() === lower
+          : item.singular.toLowerCase() === lower ||
+            item.plural.toLowerCase() === lower ||
+            item.aliases?.some((a) => a.toLowerCase() === lower),
+      ),
+  );
 }
 
 function isStaple(itemName: string, rule?: ItemRule): boolean {
-  if (rule?.staple !== undefined) {
-    return rule.staple;
-  }
-  const lower = itemName.toLowerCase().trim();
-  if (STAPLE_ITEMS.has(lower)) {
-    return true;
-  }
-  if (lower.endsWith(' salt') || lower === 'salt') {
-    const nonStapleSalts = ['pork', 'cod'];
-    if (!nonStapleSalts.some((ns) => lower.includes(ns))) {
-      return true;
-    }
-  }
-  if (lower.includes('pepper')) {
-    const staplePeppers = [
-      'black',
-      'white',
-      'cayenne',
-      'lemon',
-      'sichuan',
-      'crushed',
-      'flake',
-      'flakes',
-    ];
-    if (staplePeppers.some((sp) => lower.includes(sp)) || lower === 'pepper') {
-      return true;
-    }
-  }
-  return false;
+  return rule?.staple === true;
 }
 
 function getItemCanonicalInfo(itemName: string): { key: string; name: string } {
@@ -280,11 +262,16 @@ export function processShoppingList(
 
     const canonicalName = rule?.canonicalName || group.name;
     const itemSizes =
+      layout?.itemSizes?.[canonicalName.toLowerCase()] ||
       layout?.itemSizes?.[group.name.toLowerCase()] ||
       layout?.itemSizes?.[group.key] ||
       (rule
         ? rule.items
-            .map((i) => layout?.itemSizes?.[i.toLowerCase()])
+            .map((i) =>
+              typeof i === 'string'
+                ? layout?.itemSizes?.[i.toLowerCase()]
+                : layout?.itemSizes?.[i.singular.toLowerCase()],
+            )
             .find(Boolean)
         : undefined);
 

@@ -1,4 +1,3 @@
-import { singularizeWord } from '../units';
 import usGrocerySizes from '../../data/stores/us-grocery.json';
 import type { StoreLayout, StoreSection } from '../types';
 
@@ -348,17 +347,40 @@ export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] = [
   },
 ];
 
+import { ITEM_RULES } from './rules';
+import { singularizeWord, pluralizeWord } from '../units';
+
 export function classifyItemToCategory(itemName: string): string {
   const lower = itemName.toLowerCase().trim();
-  const singular = singularizeWord(lower);
-  for (const group of CATEGORY_KEYWORDS) {
-    for (const kw of group.keywords) {
-      const escaped = kw.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
-      const regex = new RegExp(`\\b${escaped}\\b`, 'i');
-      if (regex.test(lower) || regex.test(singular)) {
-        return group.category;
-      }
-    }
+  const sing = singularizeWord(lower);
+  const plur = pluralizeWord(lower);
+
+  const rule = ITEM_RULES.find(
+    (r) =>
+      r.canonicalName.toLowerCase() === lower ||
+      r.canonicalName.toLowerCase() === sing ||
+      r.items.some((item) => {
+        if (typeof item === 'string') {
+          const itemLower = item.toLowerCase();
+          return (
+            itemLower === lower || itemLower === sing || itemLower === plur
+          );
+        }
+        const s = item.singular.toLowerCase();
+        const p = item.plural.toLowerCase();
+        return (
+          s === lower ||
+          p === lower ||
+          s === sing ||
+          p === plur ||
+          item.aliases?.some(
+            (a) => a.toLowerCase() === lower || a.toLowerCase() === sing,
+          )
+        );
+      }),
+  );
+  if (rule) {
+    return rule.category;
   }
   return 'other';
 }

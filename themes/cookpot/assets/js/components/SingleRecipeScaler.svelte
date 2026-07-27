@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { formatRecipeIngredientHTML } from '../units';
+  import { ITEM_RULES } from '../shopping-list/rules';
   import { recipeScaleStore } from '../stores/settings';
   import { plannerStore } from '../stores/planner';
   import FavoriteButton from './FavoriteButton.svelte';
@@ -135,6 +136,27 @@
         alt,
         optional,
       );
+
+      const isDev = Boolean(
+        (import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV,
+      );
+      if (isDev) {
+        const lowerItem = item.toLowerCase().trim();
+        const hasRule = ITEM_RULES.some(
+          (r) =>
+            r.canonicalName.toLowerCase() === lowerItem ||
+            r.items.some((i) =>
+              typeof i === 'string'
+                ? i.toLowerCase() === lowerItem
+                : i.singular.toLowerCase() === lowerItem ||
+                  i.plural.toLowerCase() === lowerItem ||
+                  i.aliases?.some((a) => a.toLowerCase() === lowerItem),
+            ),
+        );
+        if (!hasRule) {
+          el.innerHTML += `<span class="dev-warning-badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border-radius: 4px; padding: 2px 6px; font-size: 0.75rem; margin-left: 6px; font-weight: 600;">⚠️ Unruled item</span>`;
+        }
+      }
     });
   }
 </script>

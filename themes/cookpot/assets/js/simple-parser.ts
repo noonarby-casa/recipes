@@ -1,4 +1,5 @@
 import type { ParsedQty } from './types';
+import { UNIT_LOOKUP } from './constants';
 
 export function parseSimpleQty(text: string): ParsedQty {
   text = text.trim();
@@ -141,60 +142,8 @@ export function parseRawUserInput(text: string): {
   const words = remainder.split(/\s+/);
   const firstWord = words[0].toLowerCase();
 
-  const unitList = [
-    'can',
-    'cans',
-    'g',
-    'gram',
-    'grams',
-    'lb',
-    'lbs',
-    'pound',
-    'pounds',
-    'oz',
-    'ounce',
-    'ounces',
-    'cup',
-    'cups',
-    'tbsp',
-    'tablespoon',
-    'tablespoons',
-    'tsp',
-    'teaspoon',
-    'teaspoons',
-    'clove',
-    'cloves',
-    'head',
-    'heads',
-    'package',
-    'packages',
-    'box',
-    'boxes',
-    'container',
-    'containers',
-    'jar',
-    'jars',
-    'bottle',
-    'bottles',
-    'bag',
-    'bags',
-    'stick',
-    'sticks',
-    'slice',
-    'slices',
-    'piece',
-    'pieces',
-    'bunch',
-    'bunches',
-  ];
-
-  const matchedUnit = unitList.find(
-    (u) =>
-      firstWord === u ||
-      firstWord.startsWith(u + '(') ||
-      firstWord.endsWith(')'),
-  );
-  if (matchedUnit && words.length > 1) {
+  const isKnownUnit = Boolean(UNIT_LOOKUP[firstWord]);
+  if (isKnownUnit && words.length > 1) {
     const unit = words[0];
     const itemRemainder = words.slice(1).join(' ');
     const details = parseItemDetails(itemRemainder);

@@ -3,7 +3,15 @@ import {
   PLURAL_TO_SINGULAR,
   PLURAL_BY_DEFAULT_ITEMS,
 } from './constants';
+import { getCanonicalName } from './shopping-list/validator';
 import { ITEM_RULES } from './shopping-list/rules';
+
+function applyMatchCase(original: string, target: string): string {
+  if (original && original[0] === original[0].toUpperCase()) {
+    return target.charAt(0).toUpperCase() + target.slice(1);
+  }
+  return target;
+}
 
 /**
  * Returns the plural or singular form of a unit based on the quantity.
@@ -123,7 +131,7 @@ export function formatCookingNumber(val: number): string {
 }
 
 /**
- * Pluralizes a word (either a unit or an item) leveraging SINGULAR_TO_PLURAL and fallback rules.
+ * Pluralizes a word (either a unit or an item) leveraging SINGULAR_TO_PLURAL registry lookups.
  */
 export function pluralizeWord(word: string): string {
   if (!word) {
@@ -162,33 +170,26 @@ export function pluralizeWord(word: string): string {
     return prefix + base;
   }
   if (SINGULAR_TO_PLURAL[lower]) {
-    return prefix + SINGULAR_TO_PLURAL[lower];
+    return prefix + applyMatchCase(base, SINGULAR_TO_PLURAL[lower]);
   }
-  if (
-    lower.endsWith('y') &&
-    !lower.endsWith('ay') &&
-    !lower.endsWith('ey') &&
-    !lower.endsWith('oy') &&
-    !lower.endsWith('uy')
-  ) {
-    return prefix + base.slice(0, -1) + 'ies';
+  if (base.includes(' ')) {
+    const lastSpace = base.lastIndexOf(' ');
+    const firstPart = base.substring(0, lastSpace + 1);
+    const lastWord = base.substring(lastSpace + 1);
+    const lowerLast = lastWord.toLowerCase();
+    if (SINGULAR_TO_PLURAL[lowerLast]) {
+      return (
+        prefix +
+        firstPart +
+        applyMatchCase(lastWord, SINGULAR_TO_PLURAL[lowerLast])
+      );
+    }
   }
-  if (
-    lower.endsWith('ch') ||
-    lower.endsWith('sh') ||
-    lower.endsWith('x') ||
-    lower.endsWith('z')
-  ) {
-    return prefix + base + 'es';
-  }
-  if (lower.endsWith('s')) {
-    return prefix + base;
-  }
-  return prefix + base + 's';
+  return prefix + base;
 }
 
 /**
- * Singularizes a word leveraging PLURAL_TO_SINGULAR and fallback rules.
+ * Singularizes a word leveraging PLURAL_TO_SINGULAR registry lookups.
  */
 export function singularizeWord(word: string): string {
   if (!word) {
@@ -227,23 +228,20 @@ export function singularizeWord(word: string): string {
     return prefix + base;
   }
   if (PLURAL_TO_SINGULAR[lower]) {
-    return prefix + PLURAL_TO_SINGULAR[lower];
+    return prefix + applyMatchCase(base, PLURAL_TO_SINGULAR[lower]);
   }
-  if (lower.endsWith('ies')) {
-    return prefix + base.slice(0, -3) + 'y';
-  }
-  if (lower.endsWith('es')) {
-    if (
-      lower.endsWith('ches') ||
-      lower.endsWith('shes') ||
-      lower.endsWith('xes') ||
-      lower.endsWith('zes')
-    ) {
-      return prefix + base.slice(0, -2);
+  if (base.includes(' ')) {
+    const lastSpace = base.lastIndexOf(' ');
+    const firstPart = base.substring(0, lastSpace + 1);
+    const lastWord = base.substring(lastSpace + 1);
+    const lowerLast = lastWord.toLowerCase();
+    if (PLURAL_TO_SINGULAR[lowerLast]) {
+      return (
+        prefix +
+        firstPart +
+        applyMatchCase(lastWord, PLURAL_TO_SINGULAR[lowerLast])
+      );
     }
-  }
-  if (lower.endsWith('s') && !lower.endsWith('ss')) {
-    return prefix + base.slice(0, -1);
   }
   return prefix + base;
 }
@@ -258,8 +256,12 @@ export function formatItemQuantity(
   disablePluralization?: boolean,
   rule?: import('./types').ItemRule,
 ): { qtyStr: string; itemStr: string } {
+  const canonical = getCanonicalName(item);
   const itemRule =
-    rule || ITEM_RULES.find((r) => r.items.includes(item.toLowerCase().trim()));
+    rule ||
+    (canonical
+      ? ITEM_RULES.find((r) => r.canonicalName === canonical)
+      : undefined);
   let displayUnit = unit.trim();
   let displayItem = item.trim();
   const shouldPluralize = !disablePluralization && qty !== null && qty > 1;

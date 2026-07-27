@@ -11,20 +11,28 @@
     [1, "pint (16 oz)"],
     [1, "quart (32 oz)"]
   ],
-  "broth": [
+  "ricotta": [
+    [1, "half-pint (8 oz)"],
+    [1, "pint (16 oz)"],
+    [1, "quart (32 oz)"]
+  ],
+  "chicken broth": [
     [1, "pint (16 fl oz)"],
     [1, "quart (32 fl oz)"]
+  ],
+  "milk": [
+    [1, "pint (16 oz)"],
+    [1, "quart (32 oz)"]
+  ],
+  "heavy cream": [
+    [1, "pint (16 oz)"],
+    [1, "quart (32 oz)"]
   ],
   "ginger": [[1, "root"]],
   "coconut milk": [[1, "can (13.5 oz)"]],
   "scallion": [[1, "bundle"]],
   "pasta": [[1, "box (16 oz)"]],
-  "chickpea": [[1, "can (15 oz)"]],
   "chickpeas": [[1, "can (15 oz)"]],
-  "fire roasted tomato": [
-    [1, "can (15 oz)"],
-    [1, "can (28 oz)"]
-  ],
   "canned tomatoes": [
     [1, "can (15 oz)"],
     [1, "can (28 oz)"]

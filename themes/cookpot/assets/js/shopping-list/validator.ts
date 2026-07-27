@@ -174,10 +174,20 @@ function validateUnitField(
   return errors;
 }
 
-function getCanonicalName(itemName: string): string {
+export function getCanonicalName(itemName: string): string {
   const lower = itemName.toLowerCase().trim();
-  const rule = ITEM_RULES.find((r) => r.items.includes(lower));
-  return rule && rule.items.length > 0 ? rule.items[0] : lower;
+  const rule = ITEM_RULES.find(
+    (r) =>
+      r.canonicalName.toLowerCase() === lower ||
+      r.items.some((i) =>
+        typeof i === 'string'
+          ? i.toLowerCase() === lower
+          : i.singular.toLowerCase() === lower ||
+            i.plural.toLowerCase() === lower ||
+            i.aliases?.some((a) => a.toLowerCase() === lower),
+      ),
+  );
+  return rule ? rule.canonicalName : lower;
 }
 
 export function validateIngredient(ing: IngredientInput): ValidationError[] {

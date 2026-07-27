@@ -9,7 +9,9 @@ declare const __dirname: string;
 import { processShoppingList } from './pipeline';
 import type { IngredientInput, ShoppingItem } from '../types';
 import { ITEM_RULES } from './rules';
+import { getCanonicalName } from './validator';
 import { STORE_LAYOUTS } from './store-sections';
+import { UNIT_LOOKUP } from '../constants';
 import {
   isVolumeUnit,
   isWeightUnit,
@@ -17,6 +19,7 @@ import {
   convertQty,
   getSingularUnit,
 } from './utils';
+import { singularizeWord, pluralizeWord, isSizeOnlyUnit } from '../units';
 
 interface IngredientTestCase {
   input: IngredientInput;
@@ -133,7 +136,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       unit: 'bottle (16 fl oz)',
       category: 'fresh-produce',
       staple: 'in-pantry',
-      sizeNote: '1.5 oz needed',
+      sizeNote: '1 1/2 oz needed',
     },
   },
   {
@@ -177,7 +180,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'heavy cream',
       qty: 1,
-      unit: 'quart (32 fl oz)',
+      unit: 'quart (32 oz)',
       category: 'milk-cream',
       sizeNote: '24 oz needed',
     },
@@ -507,7 +510,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'rice vinegar',
       qty: 6,
       unit: 'tablespoons',
-      category: 'pasta-grains',
+      category: 'oils-vinegars',
     },
   },
   {
@@ -521,7 +524,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'whole-egg mayonnaise',
       qty: 1,
       unit: 'cup',
-      category: 'eggs',
+      category: 'condiments',
     },
   },
   {
@@ -594,7 +597,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       unit: 'bottle (16 fl oz)',
       category: 'fresh-produce',
       staple: 'in-pantry',
-      sizeNote: '0.5 oz needed',
+      sizeNote: '1/2 oz needed',
     },
   },
   {
@@ -823,7 +826,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'lemon',
       qty: 1,
-      unit: 'lemon',
+      unit: '',
       category: 'fresh-produce',
     },
   },
@@ -831,8 +834,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     input: {
       item: 'parmesan',
       qty: 3,
-      unit: 'ounce',
-      prep: 'grated',
+      unit: 'tablespoon',
     },
     expectedList: 'buy',
     expectedItem: {
@@ -840,7 +842,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'wedge',
       category: 'butter-cheese',
-      sizeNote: '3 oz needed',
+      sizeNote: '3 tbsp needed',
     },
   },
   {
@@ -866,8 +868,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'rigatoni pasta',
-      qty: 2,
-      unit: 'cups',
+      qty: 1,
+      unit: 'box (16 oz)',
       category: 'pasta-grains',
     },
   },
@@ -1414,7 +1416,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'milk',
       qty: 1,
-      unit: 'pint (16 fl oz)',
+      unit: 'pint (16 oz)',
       category: 'milk-cream',
       sizeNote: '6 oz needed',
     },
@@ -1459,7 +1461,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'heavy cream',
       qty: 1,
-      unit: 'pint (16 fl oz)',
+      unit: 'pint (16 oz)',
       category: 'milk-cream',
       sizeNote: '12 oz needed',
     },
@@ -2073,7 +2075,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       unit: 'bottle (16 fl oz)',
       category: 'fresh-produce',
       staple: 'in-pantry',
-      sizeNote: '1.5 oz needed',
+      sizeNote: '1 1/2 oz needed',
     },
   },
   {
@@ -2504,7 +2506,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'rice wine vinegar',
       qty: 1.34,
       unit: 'tablespoons',
-      category: 'pasta-grains',
+      category: 'oils-vinegars',
     },
   },
   {
@@ -2869,7 +2871,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'chicken broth',
       qty: 3,
       unit: 'pints (16 fl oz)',
-      category: 'poultry',
+      category: 'canned-other',
       sizeNote: '48 oz needed',
     },
   },
@@ -2914,7 +2916,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'tortilla chip',
       qty: null,
       unit: '',
-      category: 'bakery',
+      category: 'snacks',
     },
   },
   {
@@ -2997,7 +2999,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'lime',
       qty: 1,
-      unit: 'lime',
+      unit: '',
       category: 'fresh-produce',
     },
   },
@@ -3315,7 +3317,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'refried beans',
       qty: 1,
-      unit: 'can',
+      unit: 'can (15 oz)',
       category: 'canned-beans',
     },
   },
@@ -3344,7 +3346,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'tortillas',
       qty: 2,
-      unit: 'package of 10s',
+      unit: 'package of 10',
       category: 'bakery',
       sizeNote: '12 tortillas needed',
     },
@@ -3373,8 +3375,49 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'vegan cream cheese',
       qty: 1,
-      unit: 'cup',
+      unit: '8-oz package',
       category: 'butter-cheese',
+    },
+  },
+  {
+    input: {
+      item: 'ricotta',
+      qty: 1,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'ricotta',
+      qty: 1,
+      unit: 'half-pint (8 oz)',
+      category: 'butter-cheese',
+    },
+  },
+  {
+    input: {
+      item: 'salmon',
+      qty: 1,
+      unit: 'pound',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'salmon',
+      qty: 1,
+      unit: 'pound',
+      category: 'seafood',
+    },
+  },
+  {
+    input: {
+      item: 'peach',
+      qty: 1,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'peach',
+      qty: 1,
+      unit: '',
+      category: 'fresh-produce',
     },
   },
 ];
@@ -3438,10 +3481,9 @@ describe('Shopping List Conversion Integration Tests', () => {
       test(testName, () => {
         const result = processShoppingList([input], STORE_LAYOUTS[0]);
 
-        const rule = ITEM_RULES.find((r) =>
-          r.items.includes(input.item.toLowerCase().trim()),
-        );
-        const searchName = rule?.canonicalName || input.item;
+        const canonicalName = getCanonicalName(input.item);
+        const searchName = canonicalName || input.item;
+        const rule = ITEM_RULES.find((r) => r.canonicalName === searchName);
 
         let list: ShoppingItem[];
         if (expectedList === 'buy') {
@@ -3481,8 +3523,13 @@ describe('Shopping List Conversion Integration Tests', () => {
           STORE_LAYOUTS[0]?.itemSizes?.[searchName.toLowerCase()] ||
           STORE_LAYOUTS[0]?.itemSizes?.[input.item.toLowerCase()] ||
           (rule
-            ? rule.items
-                .map((i) => STORE_LAYOUTS[0]?.itemSizes?.[i.toLowerCase()])
+            ? STORE_LAYOUTS[0]?.itemSizes?.[rule.canonicalName.toLowerCase()] ||
+              rule.items
+                .map((i) =>
+                  typeof i === 'string'
+                    ? STORE_LAYOUTS[0]?.itemSizes?.[i.toLowerCase()]
+                    : STORE_LAYOUTS[0]?.itemSizes?.[i.singular.toLowerCase()],
+                )
                 .find(Boolean)
             : undefined);
         const hasSizes = !!itemSizes && itemSizes.length > 0;
@@ -3603,11 +3650,29 @@ describe('Shopping List Conversion Integration Tests', () => {
     const unexercisedRules: string[] = [];
 
     for (const rule of ITEM_RULES) {
-      const isExercised = INGREDIENT_TEST_CASES.some((tc) =>
-        rule.items.includes(tc.input.item.toLowerCase().trim()),
-      );
+      const isExercised = INGREDIENT_TEST_CASES.some((tc) => {
+        const lowerInput = tc.input.item.toLowerCase().trim();
+        const singInput = singularizeWord(lowerInput);
+        const plurInput = pluralizeWord(lowerInput);
+
+        const checkMatch = (val: string) => {
+          const v = val.toLowerCase().trim();
+          return v === lowerInput || v === singInput || v === plurInput;
+        };
+
+        return (
+          checkMatch(rule.canonicalName) ||
+          rule.items.some((i) =>
+            typeof i === 'string'
+              ? checkMatch(i)
+              : checkMatch(i.singular) ||
+                checkMatch(i.plural) ||
+                i.aliases?.some((a) => checkMatch(a)),
+          )
+        );
+      });
       if (!isExercised) {
-        unexercisedRules.push(rule.items.join(', '));
+        unexercisedRules.push(rule.canonicalName);
       }
     }
 
@@ -3628,5 +3693,36 @@ describe('Shopping List Conversion Integration Tests', () => {
     }
 
     expect(uncoveredIngredients).toEqual([]);
+  });
+
+  test('every unit referenced across all recipes and test cases is registered in UNIT_DEFINITIONS', () => {
+    const unmappedUnits: string[] = [];
+
+    for (const tc of INGREDIENT_TEST_CASES) {
+      if (tc.input.unit && tc.input.unit.trim().length > 0) {
+        const u = tc.input.unit.trim().toLowerCase();
+        const singularUnit = getSingularUnit(u).toLowerCase();
+        const isPackageOrCount =
+          isSizeOnlyUnit(u) ||
+          u.includes('can') ||
+          u.includes('box') ||
+          u.includes('bottle') ||
+          u.includes('package') ||
+          u.includes('jar') ||
+          u.includes('bag') ||
+          u.includes('container') ||
+          u.includes('head') ||
+          u === 'egg';
+        if (
+          !UNIT_LOOKUP[singularUnit] &&
+          !UNIT_LOOKUP[u] &&
+          !isPackageOrCount
+        ) {
+          unmappedUnits.push(`${tc.input.item}: "${tc.input.unit}"`);
+        }
+      }
+    }
+
+    expect(unmappedUnits).toEqual([]);
   });
 });

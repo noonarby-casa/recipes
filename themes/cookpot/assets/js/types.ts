@@ -112,6 +112,37 @@ export interface ShoppingItem {
 
 export type UnitCategory = 'VOLUME' | 'WEIGHT' | 'PACKAGE' | 'COUNTABLE';
 
+export type ItemCategory =
+  | 'fresh-produce'
+  | 'fresh-herbs'
+  | 'tofu-tempeh'
+  | 'poultry'
+  | 'meat'
+  | 'seafood'
+  | 'milk-cream'
+  | 'butter-cheese'
+  | 'eggs'
+  | 'deli'
+  | 'bakery'
+  | 'frozen'
+  | 'pasta-grains'
+  | 'canned-tomatoes'
+  | 'canned-beans'
+  | 'canned-other'
+  | 'condiments'
+  | 'baking'
+  | 'oils-vinegars'
+  | 'spices-seasonings'
+  | 'snacks'
+  | 'beverages'
+  | 'other';
+
+export interface ItemForm {
+  singular: string;
+  plural: string;
+  aliases?: string[];
+}
+
 export interface UnitDefinition {
   singular: string;
   plural: string;
@@ -123,10 +154,12 @@ export interface UnitDefinition {
 
 // An ItemRule matches an ingredient to a shopping item.
 export interface ItemRule {
-  // Exact item name(s) this rule applies to.
-  items: string[];
-  // Canonical display name if items under this rule should be merged into a single name.
-  canonicalName?: string;
+  // Canonical display name for items under this rule.
+  canonicalName: string;
+  // Store category for this item.
+  category: ItemCategory;
+  // Exact item names, plurals, and aliases matching this rule.
+  items: (string | ItemForm)[];
   // Whether items under this rule are pantry staples.
   staple?: boolean;
   // Whether this item is a collection item that stays plural when measured by container/volume units.

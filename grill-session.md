@@ -1,86 +1,87 @@
-# Grill Session: Combining Recipe Ingredients in Meal Plan Shopping List
-
-## Context & Root Cause Findings
-
-1. **Case 1 (3 Onions):**
-   - _Indian Butter Chickpeas_ specifies `1.5 cups onion` (with `alt: 1 large`).
-   - _Spicy Creamy Weeknight Bolognese_ specifies `1 large onion`.
-   - The shopping list rule for onion maps `1 cup = 1 onion`.
-   - The pipeline ignores `alt` for primary quantification, converting `1.5 cups` -> `1.5 onions`.
-   - Combined total: `1.5 + 1 = 2.5 onions`.
-   - Countable item logic applies `Math.ceil(2.5)`, rounding up to **3 onions**.
-
-2. **Case 2 (2 x 28 oz Cans of Tomato Sauce):**
-   - _Indian Butter Chickpeas_ specifies `1 can (15-ounce) tomato sauce` (15 oz).
-   - _Spicy Creamy Weeknight Bolognese_ specifies `1 can (15 ounces) tomato sauce` (15 oz).
-   - Combined total needed: **30 oz**.
-   - `tomato sauce` matches Rule 15, inheriting size lookup for `"fire roasted tomato"` with sizes `[15 oz, 28 oz]` from `us-grocery.json`.
-   - Because 30 oz exceeds the largest package (28 oz), the current matching logic defaults to buying multiples of the largest package: `Math.ceil(30 / 28) = 2` cans of 28 oz (56 oz total, 26 oz over-purchase).
+# Grill Session: Removing Fallbacks & Ensuring Definition Completeness
 
 ## Closed Decisions
 
-### Q1. Alternate Unit (`alt`) Preference for Countable Ingredients
+### Q1. Fallback Removal Policy in `units.ts`
 
-- **Question:** How should the shopping list pipeline determine the canonical quantity when an ingredient specifies both volume and an alternate count (`alt`)?
-- **Decision:** Option A — If an ingredient includes an `alt` structure whose unit matches the target item unit or count-based unit (e.g. `"large"`), prefer `ing.alt.qty` over converting `ing.qty` via `unitEquivalences`.
+- **Question:** Should `pluralizeWord` and `singularizeWord` strictly rely on explicit lookup entries from `UNIT_DEFINITIONS` and `ITEM_RULES`, completely eliminating generic English regex/heuristic rules (such as `+ 's'`, `endsWith('y') -> 'ies'`), and returning the original word untouched if unmapped?
+- **Decision:** Strict Registry Lookup with Passthrough.
 - **Details:**
-  - For Butter Chickpeas (`1.5 cups onion`, `alt: 1 large`), `ing.alt.qty` (1) is used instead of converting 1.5 cups via 1 cup = 1 onion.
-  - Combined result: 1 large (from alt) + 1 large (Bolognese) = **2 large onions**.
+  - Remove English heuristic rules (`+ 's'`, `ies`, `es`) from `units.ts`.
+  - If a word is not in `SINGULAR_TO_PLURAL` or `PLURAL_TO_SINGULAR` (derived from `UNIT_DEFINITIONS` and `ITEM_RULES`), return the input string untouched without guessing.
 
-### Q2. Direct Package Unit Arithmetic for Identical Container Units
+### Q2. Store Categorization Single Source of Truth & Category Enum
 
-- **Question:** How should the shopping list pipeline aggregate items when all recipes specify the same explicit package unit (e.g. `can (15-ounce)` and `can (15 ounces)`)?
-- **Decision:** Option A — Direct Package Addition when Normalized Units Match.
+- **Question:** Should store category assignment (`fresh-produce`, `dairy`, `spices-seasonings`, etc.) be consolidated directly onto `ItemRule` as an explicit enum property, replacing the fuzzy `CATEGORY_KEYWORDS` array and regex loops?
+- **Decision:** Consolidate `category` onto `ItemRule` using an `ItemCategory` Enum.
 - **Details:**
-  - Normalize units using `getSingularUnit()` (`can (15-ounce)` and `can (15 ounces)` both become `can (15 oz)`).
-  - If all ingredients for an item share the same normalized container unit, retain that unit as `targetUnit`, bypass base unit conversion to `ounce`, and directly sum quantities ($1 + 1 = 2$).
-  - Bypass store package size lookup/matching for matched container units.
-  - Result for Case 2: **2 cans (15 oz) of tomato sauce**.
+  - Define `ItemCategory` as a TypeScript `enum` (or `const` array/union) representing all valid item categories.
+  - Add `category: ItemCategory` as a required field on `ItemRule`, removing `CATEGORY_KEYWORDS` and dynamic regex matching from `store-sections.ts`.
+  - Add automated test assertions verifying:
+    1. Every item rule in `ITEM_RULES` specifies a valid `ItemCategory`.
+    2. Every `StoreLayout` section configuration defines a mapping location for 100% of defined `ItemCategory` values.
 
-### Q3. Minimal-Waste Package Matcher Algorithm for Heterogeneous Units
+### Q3. Automated Completeness Verification in `conversions.test.ts`
 
-- **Question:** How should the pipeline evaluate package sizes when converting ingredients with different units (e.g. `15 oz` + `8 oz` = `23 oz`) to base units?
-- **Decision:** Option A — 3-Tier Minimal-Waste Candidate Scorer.
+- **Question:** How should automated completeness verification be implemented to ensure that every `item` and `unit` referenced across all recipe files in `content/` is defined in `UNIT_DEFINITIONS` and `ITEM_RULES`?
+- **Decision:** Extend existing static coverage assertions in `conversions.test.ts`.
 - **Details:**
-  - **Tier 1:** Minimize waste ($\text{purchased} - \text{needed}$).
-  - **Tier 2:** Minimize container count.
-  - **Tier 3:** Prefer uniform single-size package multiples over mixed packages when waste difference is zero.
+  - `conversions.test.ts` already contains tests asserting 100% recipe ingredient coverage and 100% `ITEM_RULES` coverage against `INGREDIENT_TEST_CASES`.
+  - Update `INGREDIENT_TEST_CASES` to validate that `category` matches `ItemRule.category` using the `ItemCategory` enum.
+  - Add a test assertion in `conversions.test.ts` verifying that 100% of units referenced in recipes and test cases exist in `UNIT_DEFINITIONS` / `UNIT_LOOKUP`.
 
-### Q4. Rule Data Quality & Rule Splitting
+### Q4. Production vs. Development Runtime Handling & Compiler-Stripped Dev Badges
 
-- **Question:** How should multi-item rules (like Rule 15 grouping `fire roasted tomato`, `tomato sauce`, and `tomato paste`) handle distinct store package sizes?
-- **Decision:** Split generic rules into specific rules with explicit `canonicalName` values and corresponding entries in `us-grocery.json`.
+- **Question:** How should production vs development handle unregistered items & units at runtime?
+- **Decision:** Compiler-Stripped Dev-Mode Visual Warning Badges with Safe String Passthrough.
 - **Details:**
-  - Split Rule 15 into separate rules for `tomato sauce`, `tomato paste`, and `canned tomatoes`.
-  - Add explicit package size entries in `us-grocery.json` for `tomato sauce` (`[8 oz, 15 oz, 28 oz]`) and `tomato paste` (`[6 oz]`).
+  - In local development (`import.meta.env.DEV`), render inline visual badges (`⚠️ Unruled item`) on affected ingredients in `SingleRecipeScaler.svelte` and `ShoppingListColumn.svelte`.
+  - In production builds (`import.meta.env.PROD`), Vite's tree-shaker evaluates `import.meta.env.DEV` as `false` and performs dead-code elimination, completely stripping warning logic and templates from `meal-planner.js`.
+  - CI (`pnpm run ci` / `conversions.test.ts`) blocks any deployment containing un-ruled ingredients or un-registered units.
 
-### Q5. Onion Volume-to-Count Fallback (without `alt`)
+### Q5. Scope Separation & Structured `ItemForm[]` Alias Schema
 
-- **Question:** Is `1 cup = 1 onion` acceptable as a rule fallback when an ingredient does not supply an `alt` field?
-- **Decision:** Option A — Keep `1 cup = 1 onion` as fallback rule equivalence.
-
-### Q6 & Q7. Single-Source `UnitDefinition` Registry with Derived Index Maps
-
-- **Question:** How should `singular`, `plural`, `aliases`, and `category` be structured, and how should index maps (`SINGULAR_TO_PLURAL`, `PLURAL_TO_SINGULAR`) be maintained?
-- **Decision:** Define a master `UNIT_DEFINITIONS: UnitDefinition[]` list in `constants.ts` and auto-derive index maps (`SINGULAR_TO_PLURAL`, `PLURAL_TO_SINGULAR`, `UNIT_LOOKUP`) at module load time.
+- **Question:** How should `UNIT_DEFINITIONS` and `ITEM_RULES` be scoped, structured, and how should aliases be handled?
+- **Decision:** Strict Separation of Concerns with Structured `ItemForm[]` Nesting.
 - **Details:**
-  - `UnitDefinition` contains `{ singular, plural, category, base?, factor?, aliases? }`.
-  - `SINGULAR_TO_PLURAL` and `PLURAL_TO_SINGULAR` are automatically built from `UNIT_DEFINITIONS`, maintaining 100% backwards compatibility with existing UI formatting code.
-  - `UNIT_LOOKUP` indexes definitions by singular, plural, and alias keys for $O(1)$ unit category checks (`UNIT_LOOKUP[unit].category`).
+  - `UNIT_DEFINITIONS`: Scoped strictly to measurement units (`volume`, `weight`), package/container units (`can`, `box`, `jar`), counting terms (`clove`, `head`, `bunch`), and size modifiers (`large`, `medium`). Unit abbreviations (`tbsp`, `oz`, `g`) are registered in unit `aliases`.
+  - `ITEM_RULES`: Scoped strictly to food ingredients. `items` uses a structured `ItemForm[]` array where each element specifies `{ singular, plural, aliases? }` (e.g. `{ singular: 'yellow onion', plural: 'yellow onions' }`).
+  - `canonicalName` defines the merged display name on shopping lists.
+  - No automatic cross-synthesis between units and items. Unit normalization occurs first via `UNIT_DEFINITIONS`, followed by item matching via `ITEM_RULES`.
+  - `SINGULAR_TO_PLURAL` and `PLURAL_TO_SINGULAR` index maps are auto-populated at module load time by combining both registries.
 
-### Q8. Item-Level `pluralByDefault` in `ItemRule`
+### Q6. Integration of `simple-parser.ts` with Central Registries
 
-- **Question:** Where should `pluralByDefault` be configured for collection items (like `chickpeas`, `black beans`, `olives`)?
-- **Decision:** Add `pluralByDefault?: boolean` directly to the `ItemRule` interface in `types.ts` and configure it per item rule in `rules.ts`.
-
-### Q9. Pantry Staples in `ItemRule` (`staple?: boolean`)
-
-- **Question:** Should `isStaple` also be consolidated onto `ItemRule`?
-- **Decision:** Yes — Add `staple?: boolean` to `ItemRule` interface in `types.ts` and configure it on item rules in `rules.ts`.
+- **Question:** How should `simple-parser.ts` integrate with `ITEM_RULES` and `UNIT_DEFINITIONS`?
+- **Decision:** Eliminate hardcoded `unitList` and drive parsing directly from `UNIT_LOOKUP` and `ITEM_RULES`.
 - **Details:**
-  - Replaces fragile string parsing in `isStaple()` (`lower.endsWith(' salt')`, `lower.includes('pepper')`) with `rule?.staple === true`.
-  - `STAPLE_ITEMS` set in `rules.ts` remains as a secondary fallback for un-ruled items.
+  - Delete hardcoded `unitList` string array in `parseRawUserInput()`.
+  - Use `UNIT_LOOKUP` (derived from `UNIT_DEFINITIONS`) to identify valid units from raw text input.
+  - Match remaining item text against `ITEM_RULES` (checking `singular`, `plural`, and `aliases` across `ItemForm[]`).
+
+### Q7. Elimination of Substring Heuristics in `isStaple()`
+
+- **Question:** How should pantry staple detection in `pipeline.ts` be simplified?
+- **Decision:** Replace heuristic fallback chain with explicit `rule.staple === true` on `ItemRule`.
+- **Details:**
+  - Delete `STAPLE_ITEMS` set and all string substring checks (`endsWith(' salt')`, `includes('pepper')`, `nonStapleSalts`, `staplePeppers`).
+  - `isStaple(itemName, rule)` evaluates strictly to `rule?.staple === true`.
+
+### Q8. Direct Canonical Key Lookup for Package Sizes (`us-grocery.json`)
+
+- **Question:** How should package size lookup in `pipeline.ts` locate store sizes without searching multiple key variations?
+- **Decision:** Index `us-grocery.json` strictly by `ItemRule.canonicalName`.
+- **Details:**
+  - Eliminate 3-step fallback search (`group.name` -> `group.key` -> `rule.items.map(...)`).
+  - Lookup retrieves sizes via single direct fetch: `layout.itemSizes[rule.canonicalName]`.
+
+### Q9. Elimination of Silent Category Fallback to `'other'`
+
+- **Question:** Should items be allowed to silently fall back to category `'other'`?
+- **Decision:** Eliminate silent fallback to `'other'` for all recipe ingredients.
+- **Details:**
+  - With `category: ItemCategory` required on every `ItemRule` (Q2) and 100% CI recipe item coverage enforced in `conversions.test.ts` (Q3), every ingredient in existing recipes resolves to a valid `ItemCategory`.
 
 ## Open Questions
 
-_(All decision branches resolved)_
+_(All design decisions resolved!)_
