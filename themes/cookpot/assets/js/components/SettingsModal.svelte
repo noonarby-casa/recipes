@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import Modal from './Modal.svelte';
   import ToggleGroup, { type Option } from './ToggleGroup.svelte';
+  import StorePicker from './StorePicker.svelte';
   import {
     getThemePreference,
     setThemePreference,
@@ -150,12 +151,10 @@
             Reorder shopping list items to match your supermarket route.
           </span>
         </div>
-        <ToggleGroup
+        <StorePicker
           options={storeLayoutOptions}
           selectedId={activeStoreId}
           onChange={handleStoreLayoutChange}
-          orientation="vertical"
-          fullWidth={true}
         />
       </div>
     </section>
