@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { recipesStore } from '../stores/recipes';
-  import { filtersStore, filterRecipes } from '../stores/filters';
-  import { favoritesStore } from '../stores/favorites';
-  import { plannerStore } from '../stores/planner';
-  import { scrollable } from '../actions/scrollable';
-  import type { IngredientInput } from '../types';
+  import { recipesStore } from '../../stores/recipes';
+  import { filtersStore, filterRecipes } from '../../stores/filters';
+  import { favoritesStore } from '../../stores/favorites';
+  import { plannerStore } from '../../stores/planner';
+  import { scrollable } from '../../actions/scrollable';
+  import type { IngredientInput } from '../../types';
   import RecipeCard from './RecipeCard.svelte';
-  import Modal from './Modal.svelte';
-  import ToggleGroup, { type Option } from './ToggleGroup.svelte';
+  import Modal from '../primitives/Modal.svelte';
+  import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
+  import EmptyState from '../primitives/EmptyState.svelte';
   import ServingsPicker from './ServingsPicker.svelte';
   import IconPicker from './IconPicker.svelte';
   import IngredientsEditor from './IngredientsEditor.svelte';
@@ -214,9 +215,11 @@
           aria-label="Available Recipes Shelf"
         >
           {#if filteredRecipes.length === 0}
-            <div class="planner-empty-state">
-              {searchQuery.trim() ? 'No matching recipes found' : 'No recipes found'}
-            </div>
+            <EmptyState
+              title={searchQuery.trim() ? 'No matching recipes found' : 'No recipes found'}
+              icon="🔍"
+              class="planner-empty-state-component"
+            />
           {:else}
             {#each filteredRecipes as r, idx}
               {@const isPlanned = plannedPermalinks.has(r.permalink)}
@@ -426,7 +429,7 @@
     color: var(--text-body);
     font-size: 0.85rem;
   }
-  .planner-empty-state {
+  :global(.planner-empty-state-component) {
     margin-top: 1rem;
   }
   .card-wrapper {

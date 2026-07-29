@@ -1,7 +1,7 @@
 <script lang="ts">
-  import ToggleGroup, { type Option } from './ToggleGroup.svelte';
-  import ShoppingCartIcon from './icons/ShoppingCartIcon.svelte';
-  import XIcon from './icons/XIcon.svelte';
+  import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
+  import ShoppingCartIcon from '../primitives/icons/ShoppingCartIcon.svelte';
+  import XIcon from '../primitives/icons/XIcon.svelte';
 
   interface Props {
     selectedId: string;

@@ -1,21 +1,21 @@
 <script lang="ts">
   import {onMount, tick} from 'svelte';
   import {SvelteMap} from 'svelte/reactivity';
-  import {recipeScaleStore} from '../stores/settings';
-  import {formatItemQuantity} from '../units';
+  import {recipeScaleStore} from '../../stores/settings';
+  import {formatItemQuantity} from '../../units';
   import {
     processShoppingList,
     extractIngredientsFromDOM,
-  } from '../shopping-list/pipeline';
-  import type {ShoppingItem} from '../types';
+  } from '../../shopping-list/pipeline';
+  import type {ShoppingItem} from '../../types';
   import {
     getSectionForCategory,
     getActiveStoreLayout,
-  } from '../shopping-list/store-sections';
-  import { getIngredientKey } from '../stores/shopping';
+  } from '../../shopping-list/store-sections';
+  import { getIngredientKey } from '../../stores/shopping';
 
   import ExportModal from './ExportModal.svelte';
-  import type { ExportItem } from '../shopping-list/export-formatter';
+  import type { ExportItem } from '../../shopping-list/export-formatter';
 
   type Tab = 'recipe' | 'shopping';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { favoritesStore } from '../stores/favorites';
-  import HeartIcon from './icons/HeartIcon.svelte';
+  import { favoritesStore } from '../../stores/favorites';
+  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
 
   interface Props {
     /** The unique short ID of the recipe. Used to check if it's in the favorites store and to toggle favorites state. */

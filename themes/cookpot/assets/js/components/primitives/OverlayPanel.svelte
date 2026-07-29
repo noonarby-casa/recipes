@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { overlayStore, overlayVisible } from '../stores/overlay';
-  import { timersStore } from '../stores/timers';
-  import TimersManager from './TimersManager.svelte';
+  import { overlayStore, overlayVisible } from '../../stores/overlay';
+  import { timersStore } from '../../stores/timers';
+  import TimersManager from '../apps/TimersManager.svelte';
   import PlusIcon from './icons/PlusIcon.svelte';
   import MinusIcon from './icons/MinusIcon.svelte';
   import TimerIcon from './icons/TimerIcon.svelte';

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { plannerStore } from '../stores/planner';
-  import { formatItemQuantity } from '../units';
+  import { plannerStore } from '../../stores/planner';
+  import { formatItemQuantity } from '../../units';
 
   const urlParams = new URLSearchParams(window.location.search);
   const fromPlan = urlParams.get('from') === 'plan';

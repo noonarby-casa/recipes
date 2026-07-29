@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { formatRecipeIngredientHTML } from '../units';
-  import { ITEM_RULES } from '../shopping-list/rules';
-  import { recipeScaleStore } from '../stores/settings';
-  import { plannerStore } from '../stores/planner';
-  import FavoriteButton from './FavoriteButton.svelte';
-  import ServingsPicker from './ServingsPicker.svelte';
+  import { formatRecipeIngredientHTML } from '../../units';
+  import { ITEM_RULES } from '../../shopping-list/rules';
+  import { recipeScaleStore } from '../../stores/settings';
+  import { plannerStore } from '../../stores/planner';
+  import FavoriteButton from '../domain/FavoriteButton.svelte';
+  import ServingsPicker from '../domain/ServingsPicker.svelte';
 
   interface Props {
     /** The default number of servings/portions for the recipe. */

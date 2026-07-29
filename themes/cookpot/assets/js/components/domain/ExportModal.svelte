@@ -1,13 +1,13 @@
 <script lang="ts">
-  import Modal from './Modal.svelte';
-  import ToggleGroup, { type Option } from './ToggleGroup.svelte';
+  import Modal from '../primitives/Modal.svelte';
+  import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
   import {
     formatShoppingListExport,
     filterExportItems,
     type ExportItem,
     type ExportFormat,
     type ItemFilter,
-  } from '../shopping-list/export-formatter';
+  } from '../../shopping-list/export-formatter';
 
   interface Props {
     isOpen: boolean;

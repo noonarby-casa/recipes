@@ -1,24 +1,24 @@
 <script lang="ts">
-  import UtensilsIcon from './icons/UtensilsIcon.svelte';
-  import ChefHatIcon from './icons/ChefHatIcon.svelte';
-  import BookIcon from './icons/BookIcon.svelte';
-  import PizzaIcon from './icons/PizzaIcon.svelte';
-  import BowlIcon from './icons/BowlIcon.svelte';
-  import BbqIcon from './icons/BbqIcon.svelte';
-  import DrinkIcon from './icons/DrinkIcon.svelte';
-  import DessertIcon from './icons/DessertIcon.svelte';
-  import SaladIcon from './icons/SaladIcon.svelte';
-  import SandwichIcon from './icons/SandwichIcon.svelte';
-  import BreakfastIcon from './icons/BreakfastIcon.svelte';
-  import PastaIcon from './icons/PastaIcon.svelte';
-  import SeafoodIcon from './icons/SeafoodIcon.svelte';
-  import TacosIcon from './icons/TacosIcon.svelte';
-  import BreadIcon from './icons/BreadIcon.svelte';
-  import SnackIcon from './icons/SnackIcon.svelte';
-  import CoffeeIcon from './icons/CoffeeIcon.svelte';
-  import RiceIcon from './icons/RiceIcon.svelte';
-  import SearchIcon from './icons/SearchIcon.svelte';
-  import XIcon from './icons/XIcon.svelte';
+  import UtensilsIcon from '../primitives/icons/UtensilsIcon.svelte';
+  import ChefHatIcon from '../primitives/icons/ChefHatIcon.svelte';
+  import BookIcon from '../primitives/icons/BookIcon.svelte';
+  import PizzaIcon from '../primitives/icons/PizzaIcon.svelte';
+  import BowlIcon from '../primitives/icons/BowlIcon.svelte';
+  import BbqIcon from '../primitives/icons/BbqIcon.svelte';
+  import DrinkIcon from '../primitives/icons/DrinkIcon.svelte';
+  import DessertIcon from '../primitives/icons/DessertIcon.svelte';
+  import SaladIcon from '../primitives/icons/SaladIcon.svelte';
+  import SandwichIcon from '../primitives/icons/SandwichIcon.svelte';
+  import BreakfastIcon from '../primitives/icons/BreakfastIcon.svelte';
+  import PastaIcon from '../primitives/icons/PastaIcon.svelte';
+  import SeafoodIcon from '../primitives/icons/SeafoodIcon.svelte';
+  import TacosIcon from '../primitives/icons/TacosIcon.svelte';
+  import BreadIcon from '../primitives/icons/BreadIcon.svelte';
+  import SnackIcon from '../primitives/icons/SnackIcon.svelte';
+  import CoffeeIcon from '../primitives/icons/CoffeeIcon.svelte';
+  import RiceIcon from '../primitives/icons/RiceIcon.svelte';
+  import SearchIcon from '../primitives/icons/SearchIcon.svelte';
+  import XIcon from '../primitives/icons/XIcon.svelte';
 
   interface Props {
     selectedIcon?: string;

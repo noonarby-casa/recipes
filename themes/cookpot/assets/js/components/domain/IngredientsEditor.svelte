@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { IngredientInput } from '../types';
-  import { parseRawUserInput } from '../simple-parser';
-  import { formatItemQuantity } from '../units';
-  import EditIcon from './icons/EditIcon.svelte';
+  import type { IngredientInput } from '../../types';
+  import { parseRawUserInput } from '../../simple-parser';
+  import { formatItemQuantity } from '../../units';
+  import EditIcon from '../primitives/icons/EditIcon.svelte';
 
   interface Props {
     /** The list of ingredient inputs to manage. */

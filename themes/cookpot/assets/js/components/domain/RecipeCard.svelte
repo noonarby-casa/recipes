@@ -1,16 +1,16 @@
 <script lang="ts">
-  import type { Recipe, PlannedItem } from '../types';
-  import { recipesStore } from '../stores/recipes';
-  import { plannerStore } from '../stores/planner';
-  import { favoritesStore } from '../stores/favorites';
-  import { formatItemQuantity, formatAbbreviatedTime } from '../units';
+  import type { Recipe, PlannedItem } from '../../types';
+  import { recipesStore } from '../../stores/recipes';
+  import { plannerStore } from '../../stores/planner';
+  import { favoritesStore } from '../../stores/favorites';
+  import { formatItemQuantity, formatAbbreviatedTime } from '../../units';
   import ServingsPicker from './ServingsPicker.svelte';
-  import HeartIcon from './icons/HeartIcon.svelte';
-  import CalendarIcon from './icons/CalendarIcon.svelte';
-  import ClockIcon from './icons/ClockIcon.svelte';
-  import UserIcon from './icons/UserIcon.svelte';
-  import SwapIcon from './icons/SwapIcon.svelte';
-  import EditIcon from './icons/EditIcon.svelte';
+  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
+  import CalendarIcon from '../primitives/icons/CalendarIcon.svelte';
+  import ClockIcon from '../primitives/icons/ClockIcon.svelte';
+  import UserIcon from '../primitives/icons/UserIcon.svelte';
+  import SwapIcon from '../primitives/icons/SwapIcon.svelte';
+  import EditIcon from '../primitives/icons/EditIcon.svelte';
 
   interface Props {
     /** The recipe data to display. */

@@ -1,33 +1,31 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { recipesStore } from '../stores/recipes';
-  import { plannerStore, getLocalPlanFromStorage } from '../stores/planner';
-  import { settingsStore } from '../stores/settings';
-  import { favoritesStore } from '../stores/favorites';
-  import { filtersStore } from '../stores/filters';
+  import { recipesStore } from '../../stores/recipes';
+  import { plannerStore, getLocalPlanFromStorage } from '../../stores/planner';
+  import { settingsStore } from '../../stores/settings';
+  import { favoritesStore } from '../../stores/favorites';
+  import { filtersStore } from '../../stores/filters';
   import {
     shoppingCheckedStore,
     combinedShoppingList,
     getIngredientKey,
     isItemChecked,
-  } from '../stores/shopping';
+  } from '../../stores/shopping';
   import {
     parsePlanUrlParams,
     planUrlQueryString,
-  } from '../stores/planUrlSync';
-  import { ls } from '../utils/storage';
-  import type { PlannedItem, Recipe } from '../types';
-  import CalendarGrid from './CalendarGrid.svelte';
-  import ShoppingListColumn from './ShoppingListColumn.svelte';
-  import FiltersModal from './FiltersModal.svelte';
-  import RecipeSelectorModal from './RecipeSelectorModal.svelte';
-  import PlannedRecipeDetailsModal from './PlannedRecipeDetailsModal.svelte';
-  import ToggleGroup from './ToggleGroup.svelte';
-  import FilterIcon from './icons/FilterIcon.svelte';
-  import DiceIcon from './icons/DiceIcon.svelte';
+  } from '../../stores/planUrlSync';
+  import { ls } from '../../utils/storage';
+  import type { PlannedItem, Recipe } from '../../types';
+  import CalendarGrid from '../domain/CalendarGrid.svelte';
+  import ShoppingListColumn from '../domain/ShoppingListColumn.svelte';
+  import FiltersModal from '../domain/FiltersModal.svelte';
+  import RecipeSelectorModal from '../domain/RecipeSelectorModal.svelte';
+  import PlannedRecipeDetailsModal from '../domain/PlannedRecipeDetailsModal.svelte';
+  import MealPlannerToolbar from '../domain/MealPlannerToolbar.svelte';
 
-  import ExportModal from './ExportModal.svelte';
-  import type { ExportItem } from '../shopping-list/export-formatter';
+  import ExportModal from '../domain/ExportModal.svelte';
+  import type { ExportItem } from '../../shopping-list/export-formatter';
 
   let isFiltersModalOpen = $state(false);
   let isExportModalOpen = $state(false);
@@ -407,158 +405,25 @@
   </div>
 {/if}
 
-<!-- 2. Mode Selector Header Row -->
-<div class="planner-mode-header">
-  <div class="mode-toggle-group">
-    <ToggleGroup
-      options={[
-        { id: 'edit', label: 'Edit Plan', idAttr: 'mode-edit-btn' },
-        { id: 'view', label: 'View Plan', idAttr: 'mode-view-btn' },
-        {
-          id: 'shop',
-          label:
-            `Shopping List` + (shoppingCount > 0 ? ` (${shoppingCount})` : ''),
-          idAttr: 'mode-shop-btn',
-        },
-      ]}
-      selectedId={$settingsStore.activeTab}
-      onChange={(id) =>
-        settingsStore.update((s) => ({
-          ...s,
-          activeTab: id as 'edit' | 'view' | 'shop',
-        }))}
-    />
-  </div>
-</div>
-
-<!-- 3. Edit Toolbar -->
-<div
-  class="planner-controls-toolbar"
-  class:visible={$settingsStore.activeTab === 'edit'}
-  id="toolbar-edit"
->
-  <div class="week-toggle-group" id="week-toggle-group">
-    <ToggleGroup
-      options={[
-        { id: '7day', label: '7-Day Week', idAttr: 'week-7day-btn' },
-        { id: '5day', label: '5-Day Week', idAttr: 'week-5day-btn' },
-      ]}
-      selectedId={$settingsStore.workWeekOnly ? '5day' : '7day'}
-      onChange={(id) =>
-        settingsStore.update((s) => ({ ...s, workWeekOnly: id === '5day' }))}
-    />
-  </div>
-
-  <div class="global-scaler-panel" id="global-scaler-panel">
-    <span class="global-scaler-label">Adjust Servings</span>
-    <div class="servings-picker">
-      <button
-        type="button"
-        class="servings-btn"
-        id="global-dec-btn"
-        title="Scale down all recipe servings by 1"
-        onclick={() => adjustGlobalPortions(-1)}
-      >
-        -
-      </button>
-      <span class="servings-val" id="global-scaler-indicator"
-        >{$plannerStore.plan.length > 0 ? 'Servings' : '—'}</span
-      >
-      <button
-        type="button"
-        class="servings-btn"
-        id="global-inc-btn"
-        title="Scale up all recipe servings by 1"
-        onclick={() => adjustGlobalPortions(1)}
-      >
-        +
-      </button>
-    </div>
-  </div>
-
-  <div class="planner-top-actions">
-    <button
-      type="button"
-      id="btn-toggle-filters"
-      class="btn btn-secondary"
-      onclick={() => (isFiltersModalOpen = true)}
-    >
-      <FilterIcon size={14} strokeWidth={2.5} />
-      Filters
-    </button>
-    <button
-      type="button"
-      id="btn-generate-plan"
-      class="btn btn-brand"
-      onclick={handleGenerateDinnerPlan}
-    >
-      <DiceIcon size={14} strokeWidth={2.5} />
-      Generate Dinner Plan
-    </button>
-    <button
-      type="button"
-      id="btn-clear-plan"
-      class="planner-clear-btn"
-      onclick={() => plannerStore.clearPlan()}
-    >
-      Clear Plan
-    </button>
-  </div>
-</div>
-
-<!-- 4. View Toolbar -->
-<div
-  class="planner-controls-toolbar"
-  class:visible={$settingsStore.activeTab === 'view'}
-  id="toolbar-view"
->
-  <div class="planner-top-actions">
-    <button
-      type="button"
-      id="btn-share-plan"
-      class="btn btn-secondary"
-      onclick={sharePlanUrl}
-    >
-      Share Plan
-    </button>
-  </div>
-</div>
-
-<!-- 5. Shop Toolbar -->
-<div
-  class="planner-controls-toolbar"
-  class:visible={$settingsStore.activeTab === 'shop'}
-  id="toolbar-shop"
->
-  <div class="planner-top-actions">
-    <button
-      type="button"
-      id="btn-copy-combined-list"
-      class="btn btn-secondary"
-      onclick={() => (isExportModalOpen = true)}
-    >
-      Export List...
-    </button>
-    <button
-      type="button"
-      id="btn-copy-menu-text"
-      class="btn btn-secondary"
-      title="Copy weekly menu as plain text"
-      onclick={copyMenuTextToClipboard}
-    >
-      {copyMenuLabel}
-    </button>
-    <button
-      type="button"
-      class="planner-clear-btn"
-      id="btn-reset-shopping-list"
-      title="Reset checkboxes"
-      onclick={() => shoppingCheckedStore.clearChecked()}
-    >
-      Reset Checkboxes
-    </button>
-  </div>
-</div>
+<MealPlannerToolbar
+  activeTab={$settingsStore.activeTab}
+  workWeekOnly={$settingsStore.workWeekOnly}
+  shoppingCount={shoppingCount}
+  hasPlan={$plannerStore.plan.length > 0}
+  copyMenuLabel={copyMenuLabel}
+  onTabChange={(tab) =>
+    settingsStore.update((s) => ({ ...s, activeTab: tab }))}
+  onWorkWeekChange={(workWeekOnly) =>
+    settingsStore.update((s) => ({ ...s, workWeekOnly }))}
+  onAdjustPortions={adjustGlobalPortions}
+  onOpenFilters={() => (isFiltersModalOpen = true)}
+  onGenerateDinnerPlan={handleGenerateDinnerPlan}
+  onClearPlan={() => plannerStore.clearPlan()}
+  onSharePlan={sharePlanUrl}
+  onExportList={() => (isExportModalOpen = true)}
+  onCopyMenu={copyMenuTextToClipboard}
+  onResetCheckboxes={() => shoppingCheckedStore.clearChecked()}
+/>
 
 <!-- 6. Main Grid / Columns Wrapper -->
 <div class="meal-planner-container">
@@ -635,62 +500,7 @@
     gap: 1.5rem;
   }
 
-  .planner-mode-header {
-    align-items: center;
-    background: var(--font-panel-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-    box-shadow: var(--btn-shadow);
-    display: flex;
-    justify-content: center;
-    margin-bottom: 0.75rem;
-    margin-top: 1rem;
-    padding: 0.75rem 1.25rem;
-  }
 
-  .planner-controls-toolbar {
-    align-items: center;
-    background: var(--font-panel-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-    box-shadow: var(--btn-shadow);
-    display: none;
-    flex-wrap: wrap;
-    gap: 1.25rem;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-    padding: 0.75rem 1.25rem;
-  }
-
-  .planner-controls-toolbar.visible {
-    display: flex;
-  }
-
-  .planner-top-actions {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .global-scaler-panel {
-    align-items: center;
-    background-color: var(--font-controls-bg);
-    border: 1px solid var(--border-ultra-subtle);
-    border-radius: 10px;
-    display: inline-flex;
-    gap: 0.75rem;
-    padding: 3px 0.75rem 3px 3px;
-  }
-
-  .global-scaler-label {
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    padding-left: 0.5rem;
-    text-transform: uppercase;
-  }
 
   .planner-banner {
     align-items: center;
@@ -827,10 +637,5 @@
     }
   }
 
-  @media (max-width: 767px) {
-    .planner-controls-toolbar {
-      gap: 0.75rem;
-      justify-content: center;
-    }
-  }
+
 </style>

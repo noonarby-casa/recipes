@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { timersStore } from '../stores/timers';
-  import type { TimerState } from '../types';
-  import { formatTime } from '../utils/timer';
-  import PlayIcon from './icons/PlayIcon.svelte';
-  import PauseIcon from './icons/PauseIcon.svelte';
-  import ResetIcon from './icons/ResetIcon.svelte';
+  import { timersStore } from '../../stores/timers';
+  import type { TimerState } from '../../types';
+  import { formatTime } from '../../utils/timer';
+  import PlayIcon from '../primitives/icons/PlayIcon.svelte';
+  import PauseIcon from '../primitives/icons/PauseIcon.svelte';
+  import ResetIcon from '../primitives/icons/ResetIcon.svelte';
 
   interface Props {
     /** The raw duration string (e.g., '10m', '1-2h', '15-20 mins'). */

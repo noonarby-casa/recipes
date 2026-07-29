@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { recipesStore } from '../stores/recipes';
-  import { plannerStore } from '../stores/planner';
-  import { BREAKDOWN_CATEGORIES } from '../constants';
+  import { recipesStore } from '../../stores/recipes';
+  import { plannerStore } from '../../stores/planner';
+  import { BREAKDOWN_CATEGORIES } from '../../constants';
 
   let recipes = $derived($recipesStore);
   let plan = $derived($plannerStore.plan);

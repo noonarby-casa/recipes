@@ -1,20 +1,20 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Modal from './Modal.svelte';
-  import ToggleGroup, { type Option } from './ToggleGroup.svelte';
+  import Modal from '../primitives/Modal.svelte';
+  import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
   import StorePicker from './StorePicker.svelte';
   import {
     getThemePreference,
     setThemePreference,
     type ThemeOption,
-  } from '../darkmode';
-  import { fontSizeStore, timerMutedStore } from '../stores/settings';
+  } from '../../darkmode';
+  import { fontSizeStore, timerMutedStore } from '../../stores/settings';
   import {
     STORE_LAYOUTS,
     getActiveStoreLayoutId,
     setActiveStoreLayoutId,
-  } from '../shopping-list/store-sections';
-  import type { FontSizeOption } from '../types';
+  } from '../../shopping-list/store-sections';
+  import type { FontSizeOption } from '../../types';
 
   let isOpen = $state(false);
 

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { recipesStore } from '../stores/recipes';
-  import { favoritesStore } from '../stores/favorites';
-  import { plannerStore } from '../stores/planner';
-  import { scrollable } from '../actions/scrollable';
-  import type { PlannedItem, IngredientInput } from '../types';
-  import Modal from './Modal.svelte';
+  import { recipesStore } from '../../stores/recipes';
+  import { favoritesStore } from '../../stores/favorites';
+  import { plannerStore } from '../../stores/planner';
+  import { scrollable } from '../../actions/scrollable';
+  import type { PlannedItem, IngredientInput } from '../../types';
+  import Modal from '../primitives/Modal.svelte';
   import ServingsPicker from './ServingsPicker.svelte';
-  import HeartIcon from './icons/HeartIcon.svelte';
+  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
   import IconPicker from './IconPicker.svelte';
   import IngredientsEditor from './IngredientsEditor.svelte';
 

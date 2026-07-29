@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { recipesStore } from '../stores/recipes';
-  import { filtersStore, calculateTagTallies, calculateSourceTallies } from '../stores/filters';
-  import { favoritesStore } from '../stores/favorites';
-  import { scrollable } from '../actions/scrollable';
-  import Modal from './Modal.svelte';
+  import { recipesStore } from '../../stores/recipes';
+  import { filtersStore, calculateTagTallies, calculateSourceTallies } from '../../stores/filters';
+  import { favoritesStore } from '../../stores/favorites';
+  import { scrollable } from '../../actions/scrollable';
+  import Modal from '../primitives/Modal.svelte';
 
   interface Props {
     /** Whether the filters modal dialog is open and visible. */

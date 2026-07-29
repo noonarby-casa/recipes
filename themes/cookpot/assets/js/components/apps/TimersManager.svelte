@@ -1,12 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { timersStore } from '../stores/timers';
-  import type { TimerState } from '../types';
-  import { overlayStore } from '../stores/overlay';
-  import { formatTime } from '../utils/timer';
-  import PlayIcon from './icons/PlayIcon.svelte';
-  import PauseIcon from './icons/PauseIcon.svelte';
-  import ResetIcon from './icons/ResetIcon.svelte';
+  import { timersStore } from '../../stores/timers';
+  import type { TimerState } from '../../types';
+  import { overlayStore } from '../../stores/overlay';
+  import { formatTime } from '../../utils/timer';
+  import PlayIcon from '../primitives/icons/PlayIcon.svelte';
+  import PauseIcon from '../primitives/icons/PauseIcon.svelte';
+  import ResetIcon from '../primitives/icons/ResetIcon.svelte';
 
   let recipeUrl = $state('');
 

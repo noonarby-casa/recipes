@@ -1,18 +1,19 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
-  import { recipesStore } from '../stores/recipes';
-  import { favoritesStore } from '../stores/favorites';
-  import { filtersStore, filterRecipes } from '../stores/filters';
-  import { plannerStore } from '../stores/planner';
-  import { ls } from '../utils/storage';
-  import RecipeCard from './RecipeCard.svelte';
-  import FiltersModal from './FiltersModal.svelte';
-  import { PRIMARY_TAGS } from '../constants';
-  import SearchIcon from './icons/SearchIcon.svelte';
-  import XIcon from './icons/XIcon.svelte';
-  import HeartIcon from './icons/HeartIcon.svelte';
-  import FilterIcon from './icons/FilterIcon.svelte';
-  import DiceIcon from './icons/DiceIcon.svelte';
+  import { recipesStore } from '../../stores/recipes';
+  import { favoritesStore } from '../../stores/favorites';
+  import { filtersStore, filterRecipes } from '../../stores/filters';
+  import { plannerStore } from '../../stores/planner';
+  import { ls } from '../../utils/storage';
+  import RecipeCard from '../domain/RecipeCard.svelte';
+  import FiltersModal from '../domain/FiltersModal.svelte';
+  import { PRIMARY_TAGS } from '../../constants';
+  import SearchIcon from '../primitives/icons/SearchIcon.svelte';
+  import XIcon from '../primitives/icons/XIcon.svelte';
+  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
+  import EmptyState from '../primitives/EmptyState.svelte';
+  import FilterIcon from '../primitives/icons/FilterIcon.svelte';
+  import DiceIcon from '../primitives/icons/DiceIcon.svelte';
 
   let hasHydrated = $state(false);
   let isFiltersOpen = $state(false);
@@ -313,9 +314,16 @@
 
   <div class="recipe-list recipe-grid">
     {#if paginatedResults.length === 0}
-      <div class="search-no-results-text">
-        No recipes found matching your filters.
-      </div>
+      <EmptyState
+        title="No recipes found"
+        description="No recipes match your current search query or active filters."
+        icon="🔍"
+        class="search-no-results-empty-state"
+      >
+        {#snippet action()}
+          <button type="button" class="search-results-clear-link" onclick={clearAllFilters}>Clear filters</button>
+        {/snippet}
+      </EmptyState>
     {:else}
       {#each paginatedResults as recipe (recipe.permalink)}
         <RecipeCard {recipe} />
@@ -336,7 +344,7 @@
     fill: currentColor;
     stroke: none;
   }
-  .search-no-results-text {
+  :global(.search-no-results-empty-state) {
     grid-column: 1 / -1;
     text-align: center;
     padding: 4rem 1.5rem;

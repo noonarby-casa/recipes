@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { combinedShoppingList, shoppingCheckedStore, getIngredientKey, isItemChecked } from '../stores/shopping';
-  import { formatItemQuantity } from '../units';
-  import { scrollable } from '../actions/scrollable';
-  import type { ShoppingItem } from '../types';
-  import { STORE_LAYOUTS, getSectionForCategory } from '../shopping-list/store-sections';
-  import { getGroupedNotes } from '../shopping-list/utils';
-  import { storeLayout } from '../stores/shopping';
+  import { combinedShoppingList, shoppingCheckedStore, getIngredientKey, isItemChecked } from '../../stores/shopping';
+  import { formatItemQuantity } from '../../units';
+  import { scrollable } from '../../actions/scrollable';
+  import type { ShoppingItem } from '../../types';
+  import { STORE_LAYOUTS, getSectionForCategory } from '../../shopping-list/store-sections';
+  import { getGroupedNotes } from '../../shopping-list/utils';
+  import { storeLayout } from '../../stores/shopping';
 
   let items = $derived($combinedShoppingList.combinedBuyItems);
   let optionalItems = $derived($combinedShoppingList.optionalItems);

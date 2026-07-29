@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { settingsStore } from '../stores/settings';
-  import { plannerStore } from '../stores/planner';
-  import { scrollable } from '../actions/scrollable';
-  import type { PlannedItem } from '../types';
+  import { settingsStore } from '../../stores/settings';
+  import { plannerStore } from '../../stores/planner';
+  import { scrollable } from '../../actions/scrollable';
+  import type { PlannedItem } from '../../types';
   import DayColumn from './DayColumn.svelte';
   import DietBreakdownPanel from './DietBreakdownPanel.svelte';
-  import TrashIcon from './icons/TrashIcon.svelte';
+  import TrashIcon from '../primitives/icons/TrashIcon.svelte';
 
   interface Props {
     /** Whether the meal planner is currently in edit mode (allowing adding/moving/removing/editing recipes). */

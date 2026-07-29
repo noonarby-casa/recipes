@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { PlannedItem } from '../types';
-  import { plannerStore } from '../stores/planner';
+  import type { PlannedItem } from '../../types';
+  import { plannerStore } from '../../stores/planner';
   import RecipeCard from './RecipeCard.svelte';
-  import { recipesStore } from '../stores/recipes';
+  import { recipesStore } from '../../stores/recipes';
 
   interface Props {
     /** The abbreviation of the day of the week (e.g. 'mon', 'tue'). */
