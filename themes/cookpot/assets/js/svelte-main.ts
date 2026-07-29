@@ -1,84 +1,62 @@
 import { mount } from 'svelte';
+import type { Component } from 'svelte';
 import { initDarkMode } from './darkmode';
 import { initRandomRecipe } from './random';
-import MealPlannerApp from './components/MealPlannerApp.svelte';
-import HomepageSearchApp from './components/HomepageSearchApp.svelte';
-import SingleRecipeScaler from './components/SingleRecipeScaler.svelte';
-import OverlayPanel from './components/OverlayPanel.svelte';
-import RecipeSidesInjector from './components/RecipeSidesInjector.svelte';
-import InlineTimer from './components/InlineTimer.svelte';
-import ToggleGroup from './components/ToggleGroup.svelte';
-import FontSizeController from './components/FontSizeController.svelte';
-import SettingsModal from './components/SettingsModal.svelte';
-import RecipeShoppingList from './components/RecipeShoppingList.svelte';
-import type { Component } from 'svelte';
+import MealPlannerApp from './components/apps/MealPlannerApp.svelte';
+import HomepageSearchApp from './components/apps/HomepageSearchApp.svelte';
+import SingleRecipeScaler from './components/apps/SingleRecipeScaler.svelte';
+import OverlayPanel from './components/primitives/OverlayPanel.svelte';
+import RecipeSidesInjector from './components/domain/RecipeSidesInjector.svelte';
+import InlineTimer from './components/domain/InlineTimer.svelte';
+import ToggleGroup from './components/primitives/ToggleGroup.svelte';
+import FontSizeController from './components/primitives/FontSizeController.svelte';
+import SettingsModal from './components/domain/SettingsModal.svelte';
+import RecipeShoppingList from './components/domain/RecipeShoppingList.svelte';
 
-function mountAppToTarget(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: Component<any>,
-  idOrSelector: string,
-  options: {
-    many?: boolean;
-    clearInner?: boolean;
-    props?: (el: HTMLElement, index: number) => Record<string, unknown>;
-  } = {},
-) {
-  const { many = false, clearInner = false, props } = options;
-  const targets: HTMLElement[] = many
-    ? Array.from(document.querySelectorAll<HTMLElement>(idOrSelector))
-    : filterNullish([document.getElementById(idOrSelector)]);
+/** Registry mapping component names to Svelte component definitions. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const COMPONENT_REGISTRY: Record<string, Component<any>> = {
+  MealPlannerApp,
+  HomepageSearchApp,
+  SingleRecipeScaler,
+  OverlayPanel,
+  RecipeSidesInjector,
+  InlineTimer,
+  ToggleGroup,
+  FontSizeController,
+  SettingsModal,
+  RecipeShoppingList,
+};
 
-  targets.forEach((el, index) => {
-    if (clearInner) {
-      el.innerHTML = '';
-    }
-    mount(component, { target: el, props: props?.(el, index) });
-  });
+interface MountConfig {
+  component: string;
+  selector: string;
+  many?: boolean;
+  clearInner?: boolean;
+  props?: (el: HTMLElement, index: number) => Record<string, unknown>;
 }
 
-function filterNullish<T>(arr: (T | null)[]): T[] {
-  return arr.filter((x): x is T => x !== null);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  // ---------------------------------------------------------------------------
-  // Plain utilities (no Svelte needed — targets Hugo-rendered header elements)
-  // ---------------------------------------------------------------------------
-  initDarkMode();
-  initRandomRecipe();
-
-  // ---------------------------------------------------------------------------
-  // Svelte islands
-  // ---------------------------------------------------------------------------
-
-  // Meal planning functionality at /plan
-  mountAppToTarget(MealPlannerApp, 'meal-planner');
-
-  // Search functionality on homepage and tags/
-  mountAppToTarget(HomepageSearchApp, 'homepage-search-mount');
-
-  // Recipe scaling functionality on a recipe page
-  mountAppToTarget(SingleRecipeScaler, 'recipe-scale-mount', {
+/** Pre-configured legacy DOM mounting targets mapped to registry components. */
+const LEGACY_ISLAND_CONFIGS: MountConfig[] = [
+  { component: 'MealPlannerApp', selector: '#meal-planner' },
+  { component: 'HomepageSearchApp', selector: '#homepage-search-mount' },
+  {
+    component: 'SingleRecipeScaler',
+    selector: '#recipe-scale-mount',
     clearInner: true,
     props: (el) => ({
       baseServings: parseInt(el.dataset['baseServings'] ?? '4', 10),
       shortId: el.dataset['shortId'],
     }),
-  });
-  // Overlay panel for displaying content in the bottom left of the site
-  mountAppToTarget(OverlayPanel, 'overlay-panel-mount');
-  mountAppToTarget(RecipeSidesInjector, 'recipe-sides-mount');
-
-  // Font-size controller — single-recipe pages only (no-ops elsewhere)
-  mountAppToTarget(FontSizeController, 'font-size-controller-mount');
-
-  // Settings modal — combines theme, text-size, store-layout, and timer-sound controls
-  mountAppToTarget(SettingsModal, 'settings-modal-mount');
-
-  // Recipe shopping list — replaces imperative shopping-list.ts
-  mountAppToTarget(RecipeShoppingList, 'recipe-shopping-list-mount');
-
-  mountAppToTarget(InlineTimer, '.recipe-timer', {
+  },
+  { component: 'OverlayPanel', selector: '#overlay-panel-mount' },
+  { component: 'RecipeSidesInjector', selector: '#recipe-sides-mount' },
+  { component: 'FontSizeController', selector: '#font-size-controller-mount' },
+  { component: 'SettingsModal', selector: '#settings-modal-mount' },
+  { component: 'RecipeShoppingList', selector: '#recipe-shopping-list-mount' },
+  {
+    component: 'InlineTimer',
+    selector: '.recipe-timer',
     many: true,
     clearInner: true,
     props: (el, index) => ({
@@ -86,9 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
       index,
       target: el,
     }),
-  });
-
-  mountAppToTarget(ToggleGroup, '.toggle-group-mount', {
+  },
+  {
+    component: 'ToggleGroup',
+    selector: '.toggle-group-mount',
     many: true,
     clearInner: true,
     props: (el) => {
@@ -104,11 +83,93 @@ document.addEventListener('DOMContentLoaded', () => {
         ? localStorage.getItem(storageKey) || (el.dataset['selected'] ?? '')
         : (el.dataset['selected'] ?? '');
 
-      return {
-        options,
-        selectedId,
-        onChange: () => {},
-      };
+      return { options, selectedId, onChange: () => {} };
     },
+  },
+];
+
+function mountComponent(
+  componentName: string,
+  el: HTMLElement,
+  index: number,
+  options: {
+    clearInner?: boolean;
+    customProps?: Record<string, unknown>;
+    propsExtractor?: (
+      el: HTMLElement,
+      index: number,
+    ) => Record<string, unknown>;
+  } = {},
+) {
+  const component = COMPONENT_REGISTRY[componentName];
+  if (!component) {
+    console.warn(`[SvelteMount] Unknown component "${componentName}"`);
+    return;
+  }
+
+  if (options.clearInner) {
+    el.innerHTML = '';
+  }
+
+  let finalProps: Record<string, unknown> = {};
+  if (el.dataset['props']) {
+    try {
+      finalProps = JSON.parse(el.dataset['props']);
+    } catch (err) {
+      console.error(
+        `[SvelteMount] Invalid JSON in data-props for ${componentName}`,
+        err,
+      );
+    }
+  } else if (options.propsExtractor) {
+    finalProps = options.propsExtractor(el, index);
+  } else if (options.customProps) {
+    finalProps = options.customProps;
+  }
+
+  mount(component, { target: el, props: finalProps });
+}
+
+function initSvelteIslands() {
+  // 1. Declarative data-attribute island mounting ([data-svelte-component])
+  const declarativeElements = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-svelte-component]'),
+  );
+  declarativeElements.forEach((el, index) => {
+    const name = el.dataset['svelteComponent'];
+    if (name) {
+      el.setAttribute('data-svelte-mounted', 'true');
+      const clearInner = el.dataset['clearInner'] === 'true';
+      mountComponent(name, el, index, { clearInner });
+    }
   });
+
+  // 2. Legacy island selector mounting
+  LEGACY_ISLAND_CONFIGS.forEach((cfg) => {
+    const targets = cfg.many
+      ? Array.from(document.querySelectorAll<HTMLElement>(cfg.selector))
+      : Array.from(
+          [document.querySelector<HTMLElement>(cfg.selector)].filter(
+            (x): x is HTMLElement => x !== null,
+          ),
+        );
+
+    targets.forEach((el, index) => {
+      if (el.hasAttribute('data-svelte-mounted')) {
+        return;
+      }
+      el.setAttribute('data-svelte-mounted', 'true');
+
+      mountComponent(cfg.component, el, index, {
+        clearInner: cfg.clearInner,
+        propsExtractor: cfg.props,
+      });
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initDarkMode();
+  initRandomRecipe();
+  initSvelteIslands();
 });
