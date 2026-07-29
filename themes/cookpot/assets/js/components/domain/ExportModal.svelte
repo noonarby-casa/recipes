@@ -7,7 +7,7 @@
     type ExportItem,
     type ExportFormat,
     type ItemFilter,
-  } from '../../shopping-list/export-formatter';
+  } from '../../pipelines/shopping-list/export-formatter';
 
   interface Props {
     isOpen: boolean;

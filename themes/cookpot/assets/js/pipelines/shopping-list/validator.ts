@@ -3,8 +3,8 @@ import type {
   QtyValue,
   ValidationError,
   IngredientSection,
-} from '../types';
-import { SINGULAR_TO_PLURAL } from '../constants';
+} from '../../types';
+import { SINGULAR_TO_PLURAL } from '../../constants';
 import { getSingularUnit } from './utils';
 import { ITEM_RULES } from './rules';
 

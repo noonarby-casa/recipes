@@ -6,16 +6,16 @@
   import {
     processShoppingList,
     extractIngredientsFromDOM,
-  } from '../../shopping-list/pipeline';
+  } from '../../pipelines/shopping-list/pipeline';
   import type {ShoppingItem} from '../../types';
   import {
     getSectionForCategory,
     getActiveStoreLayout,
-  } from '../../shopping-list/store-sections';
+  } from '../../pipelines/shopping-list/store-sections';
   import { getIngredientKey } from '../../stores/shopping';
 
   import ExportModal from './ExportModal.svelte';
-  import type { ExportItem } from '../../shopping-list/export-formatter';
+  import type { ExportItem } from '../../pipelines/shopping-list/export-formatter';
 
   type Tab = 'recipe' | 'shopping';
 

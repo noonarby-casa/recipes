@@ -1,0 +1,229 @@
+import categoryKeywordsJson from '../../../data/category-keywords.json';
+import usGrocerySizes from '../../../data/stores/us-grocery.json';
+import type { StoreLayout, StoreSection } from '../../types';
+
+export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] =
+  categoryKeywordsJson;
+
+import { ITEM_RULES } from './rules';
+import { singularizeWord, pluralizeWord } from '../../units';
+
+export function classifyItemToCategory(itemName: string): string {
+  const lower = itemName.toLowerCase().trim();
+  const sing = singularizeWord(lower);
+  const plur = pluralizeWord(lower);
+
+  const rule = ITEM_RULES.find(
+    (r) =>
+      r.canonicalName.toLowerCase() === lower ||
+      r.canonicalName.toLowerCase() === sing ||
+      r.items.some((item) => {
+        if (typeof item === 'string') {
+          const itemLower = item.toLowerCase();
+          return (
+            itemLower === lower || itemLower === sing || itemLower === plur
+          );
+        }
+        const s = item.singular.toLowerCase();
+        const p = item.plural.toLowerCase();
+        return (
+          s === lower ||
+          p === lower ||
+          s === sing ||
+          p === plur ||
+          item.aliases?.some(
+            (a) => a.toLowerCase() === lower || a.toLowerCase() === sing,
+          )
+        );
+      }),
+  );
+  if (rule) {
+    return rule.category;
+  }
+  return 'other';
+}
+
+export const STANDARD_SECTIONS: StoreSection[] = [
+  {
+    id: 'produce',
+    name: '🥬 Produce',
+    order: 1,
+    categories: ['fresh-produce', 'fresh-herbs', 'tofu-tempeh'],
+  },
+  {
+    id: 'bakery',
+    name: '🍞 Bakery',
+    order: 2,
+    categories: ['bakery'],
+  },
+  {
+    id: 'meat',
+    name: '🥩 Meat & Seafood',
+    order: 3,
+    categories: ['poultry', 'meat', 'seafood'],
+  },
+  {
+    id: 'dairy',
+    name: '🧀 Dairy & Eggs',
+    order: 4,
+    categories: ['milk-cream', 'butter-cheese', 'eggs'],
+  },
+  {
+    id: 'deli',
+    name: '🥪 Deli',
+    order: 5,
+    categories: ['deli'],
+  },
+  {
+    id: 'frozen',
+    name: '❄️ Frozen',
+    order: 6,
+    categories: ['frozen'],
+  },
+  {
+    id: 'pasta-grains',
+    name: '🍝 Pasta & Grains',
+    order: 7,
+    categories: ['pasta-grains'],
+  },
+  {
+    id: 'canned',
+    name: '🥫 Canned & Jarred',
+    order: 8,
+    categories: ['canned-tomatoes', 'canned-beans', 'canned-other'],
+  },
+  {
+    id: 'condiments',
+    name: '🫙 Condiments & Sauces',
+    order: 9,
+    categories: ['condiments'],
+  },
+  {
+    id: 'baking',
+    name: '🧁 Baking',
+    order: 10,
+    categories: ['baking'],
+  },
+  {
+    id: 'oils',
+    name: '🫒 Oils & Vinegars',
+    order: 11,
+    categories: ['oils-vinegars'],
+  },
+  {
+    id: 'spices',
+    name: '🌶️ Spices & Seasonings',
+    order: 12,
+    categories: ['spices-seasonings'],
+  },
+  {
+    id: 'snacks',
+    name: '🍿 Snacks',
+    order: 13,
+    categories: ['snacks'],
+  },
+  {
+    id: 'beverages',
+    name: '🥤 Beverages',
+    order: 14,
+    categories: ['beverages'],
+  },
+  {
+    id: 'other',
+    name: '📦 Other',
+    order: 99,
+    categories: ['other'],
+  },
+];
+
+// Alternate Layout: Dairy first (e.g. for grab-and-go dairy runs)
+export const DAIRY_FIRST_SECTIONS: StoreSection[] = STANDARD_SECTIONS.map(
+  (sec) => {
+    let order = sec.order;
+    if (sec.id === 'dairy') {
+      order = 1;
+    } else if (sec.id === 'produce') {
+      order = 4;
+    } // swap dairy and produce
+    return { ...sec, order };
+  },
+);
+
+// Alternate Layout: Meat first
+export const MEAT_FIRST_SECTIONS: StoreSection[] = STANDARD_SECTIONS.map(
+  (sec) => {
+    let order = sec.order;
+    if (sec.id === 'meat') {
+      order = 1;
+    } else if (sec.id === 'produce') {
+      order = 3;
+    } // swap meat and produce
+    return { ...sec, order };
+  },
+);
+
+export const STORE_LAYOUTS: StoreLayout[] = [
+  {
+    id: 'standard',
+    name: 'Standard Layout (Produce First)',
+    sections: STANDARD_SECTIONS,
+    itemSizes: usGrocerySizes as unknown as Record<string, [number, string][]>,
+  },
+  {
+    id: 'dairy-first',
+    name: 'Dairy First Layout',
+    sections: DAIRY_FIRST_SECTIONS,
+    itemSizes: usGrocerySizes as unknown as Record<string, [number, string][]>,
+  },
+  {
+    id: 'meat-first',
+    name: 'Meat First Layout',
+    sections: MEAT_FIRST_SECTIONS,
+    itemSizes: usGrocerySizes as unknown as Record<string, [number, string][]>,
+  },
+];
+
+export const STORAGE_KEY_STORE_LAYOUT = 'noonarby-store-layout';
+
+export function getActiveStoreLayoutId(): string {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return localStorage.getItem(STORAGE_KEY_STORE_LAYOUT) || 'standard';
+  }
+  return 'standard';
+}
+
+export function setActiveStoreLayoutId(id: string): void {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    localStorage.setItem(STORAGE_KEY_STORE_LAYOUT, id);
+  }
+}
+
+export function getActiveStoreLayout(): StoreLayout {
+  const activeId = getActiveStoreLayoutId();
+  return STORE_LAYOUTS.find((l) => l.id === activeId) || STORE_LAYOUTS[0];
+}
+
+export function getSectionForCategory(
+  category: string,
+  layout?: StoreLayout,
+): StoreSection {
+  const activeLayout = layout || getActiveStoreLayout();
+  const section = activeLayout.sections.find((s) =>
+    s.categories.includes(category),
+  );
+  if (section) {
+    return section;
+  }
+  return (
+    activeLayout.sections.find((s) => s.id === 'other') ||
+    activeLayout.sections[activeLayout.sections.length - 1]
+  );
+}
+
+export function getStoreSection(
+  itemRestOrName: string,
+  itemItem?: string,
+): StoreSection {
+  const category = classifyItemToCategory(itemItem || itemRestOrName);
+  return getSectionForCategory(category);
+}

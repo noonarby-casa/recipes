@@ -1,0 +1,320 @@
+[
+  {
+    "category": "fresh-herbs",
+    "keywords": [
+      "herb",
+      "basil",
+      "cilantro",
+      "parsley",
+      "rosemary",
+      "thyme",
+      "dill",
+      "chives",
+      "mint",
+      "oregano fresh",
+      "fresh oregano",
+      "fresh sage",
+      "sage"
+    ]
+  },
+  {
+    "category": "tofu-tempeh",
+    "keywords": ["tofu", "tempeh"]
+  },
+  {
+    "category": "frozen",
+    "keywords": ["frozen", "ice cream", "dumpling", "mila soup dumplings"]
+  },
+  {
+    "category": "poultry",
+    "keywords": ["chicken", "turkey"]
+  },
+  {
+    "category": "seafood",
+    "keywords": ["salmon", "shrimp", "fish", "cod", "halibut", "trout", "tuna"]
+  },
+  {
+    "category": "meat",
+    "keywords": [
+      "beef",
+      "pork",
+      "sausage",
+      "bacon",
+      "ground",
+      "steak",
+      "meatball",
+      "lamb",
+      "chorizo",
+      "cocktail weenies",
+      "weenies"
+    ]
+  },
+  {
+    "category": "eggs",
+    "keywords": ["egg", "eggs"]
+  },
+  {
+    "category": "canned-tomatoes",
+    "keywords": [
+      "tomato paste",
+      "tomato sauce",
+      "crushed tomato",
+      "diced tomato",
+      "canned tomato",
+      "canned tomatoes",
+      "fire roasted tomato"
+    ]
+  },
+  {
+    "category": "canned-beans",
+    "keywords": [
+      "beans",
+      "chickpea",
+      "chickpeas",
+      "black bean",
+      "kidney bean",
+      "cannellini bean",
+      "pinto bean",
+      "refried beans"
+    ]
+  },
+  {
+    "category": "canned-other",
+    "keywords": [
+      "can",
+      "canned",
+      "coconut milk",
+      "broth",
+      "stock",
+      "soup",
+      "lentils canned"
+    ]
+  },
+  {
+    "category": "condiments",
+    "keywords": [
+      "sauce",
+      "soy sauce",
+      "mustard",
+      "ketchup",
+      "mayo",
+      "mayonnaise",
+      "hot sauce",
+      "sriracha",
+      "tahini",
+      "honey",
+      "maple syrup",
+      "jam",
+      "jelly",
+      "peanut butter",
+      "almond butter",
+      "salad dressing",
+      "marinade",
+      "miso",
+      "salsa",
+      "red curry paste",
+      "kalamata olive",
+      "tamari",
+      "pickle",
+      "pickles",
+      "coconut amino",
+      "coconut aminos"
+    ]
+  },
+  {
+    "category": "butter-cheese",
+    "keywords": [
+      "butter",
+      "cheese",
+      "ricotta",
+      "mozzarella",
+      "parmesan",
+      "parmigiano-reggiano",
+      "parmigiano",
+      "cheddar",
+      "cream cheese",
+      "feta",
+      "goat cheese"
+    ]
+  },
+  {
+    "category": "milk-cream",
+    "keywords": [
+      "milk",
+      "cream",
+      "heavy cream",
+      "whipping cream",
+      "half and half",
+      "sour cream",
+      "yogurt",
+      "kefir",
+      "almond milk",
+      "plain kefir"
+    ]
+  },
+  {
+    "category": "deli",
+    "keywords": ["deli", "hummus", "pesto"]
+  },
+  {
+    "category": "pasta-grains",
+    "keywords": [
+      "pasta",
+      "spaghetti",
+      "penne",
+      "fettuccine",
+      "linguine",
+      "noodle",
+      "rice",
+      "orzo",
+      "couscous",
+      "quinoa",
+      "gnocchi",
+      "lasagna",
+      "macaroni",
+      "panko",
+      "barley",
+      "farro",
+      "oats",
+      "oatmeal",
+      "oat"
+    ]
+  },
+  {
+    "category": "bakery",
+    "keywords": [
+      "bread",
+      "roll",
+      "bun",
+      "tortilla",
+      "pita",
+      "naan",
+      "brioche",
+      "bagel",
+      "crescent rolls",
+      "sliced bread",
+      "cookie",
+      "cookies",
+      "shortbread"
+    ]
+  },
+  {
+    "category": "oils-vinegars",
+    "keywords": [
+      "oil",
+      "olive oil",
+      "vegetable oil",
+      "canola oil",
+      "sesame oil",
+      "coconut oil",
+      "avocado oil",
+      "vinegar",
+      "balsamic glaze"
+    ]
+  },
+  {
+    "category": "fresh-produce",
+    "keywords": [
+      "lettuce",
+      "tomato",
+      "onion",
+      "garlic",
+      "ginger",
+      "lemon",
+      "lime",
+      "broccoli",
+      "scallion",
+      "green onion",
+      "cabbage",
+      "zucchini",
+      "potato",
+      "carrot",
+      "celery",
+      "mushroom",
+      "bell pepper",
+      "avocado",
+      "banana",
+      "apple",
+      "berry",
+      "blueberry",
+      "raspberry",
+      "strawberry",
+      "raspberry preserve",
+      "raspberry preserves",
+      "spinach",
+      "kale",
+      "shallot",
+      "squash",
+      "cucumber",
+      "cauliflower",
+      "asparagus",
+      "brussels sprout",
+      "sweet potato",
+      "corn",
+      "aubergine",
+      "eggplant",
+      "sugar snap pea",
+      "snow pea",
+      "snap pea",
+      "jalapeño",
+      "poblano",
+      "beet",
+      "cranberry",
+      "cranberries"
+    ]
+  },
+  {
+    "category": "baking",
+    "keywords": [
+      "flour",
+      "sugar",
+      "baking powder",
+      "baking soda",
+      "vanilla",
+      "cornstarch",
+      "yeast",
+      "chocolate chip",
+      "cocoa",
+      "confectioners",
+      "granulated sugar",
+      "brown sugar",
+      "cake mix",
+      "chia seeds",
+      "raisin"
+    ]
+  },
+  {
+    "category": "beverages",
+    "keywords": [
+      "water",
+      "juice",
+      "soda",
+      "wine",
+      "beer",
+      "coffee",
+      "tea",
+      "tequila"
+    ]
+  },
+  {
+    "category": "spices-seasonings",
+    "keywords": [
+      "salt",
+      "pepper",
+      "paprika",
+      "cumin",
+      "oregano",
+      "cinnamon",
+      "nutmeg",
+      "turmeric",
+      "coriander",
+      "cardamom",
+      "cloves",
+      "allspice",
+      "chili powder",
+      "cayenne",
+      "garlic powder",
+      "onion powder"
+    ]
+  }
+]

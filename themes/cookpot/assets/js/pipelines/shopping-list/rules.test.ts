@@ -12,7 +12,7 @@ import {
   STORE_LAYOUTS,
 } from './store-sections';
 import { getConversionFactor } from './utils';
-import type { IngredientInput } from '../types';
+import type { IngredientInput } from '../../types';
 import { validateRecipe } from './validator';
 
 interface RecipeIngredients {
@@ -24,7 +24,7 @@ interface RecipeIngredients {
 }
 
 function getRecipeIngredients(): RecipeIngredients[] {
-  const contentDir = path.resolve(__dirname, '../../../../../content');
+  const contentDir = path.resolve(__dirname, '../../../../../../content');
   const recipes: RecipeIngredients[] = [];
 
   function scanDir(dir: string) {
@@ -269,7 +269,7 @@ describe('Static configuration and recipe database tests', () => {
       });
       for (const error of errors) {
         const relativePath = path.relative(
-          path.resolve(__dirname, '../../../../../'),
+          path.resolve(__dirname, '../../../../../../'),
           recipe.filepath,
         );
         const formatted = `${recipe.title} (file: ${relativePath}): [${error.severity.toUpperCase()}] ${error.message}`;

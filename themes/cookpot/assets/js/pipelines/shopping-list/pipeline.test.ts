@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { processShoppingList } from './pipeline';
-import type { IngredientInput, StoreLayout } from '../types';
+import type { IngredientInput, StoreLayout } from '../../types';
 import { getSectionForCategory, STORE_LAYOUTS } from './store-sections';
 
 const mockGnocchiLayout: StoreLayout = {

@@ -3,8 +3,8 @@ import {
   PLURAL_TO_SINGULAR,
   PLURAL_BY_DEFAULT_ITEMS,
 } from './constants';
-import { getCanonicalName } from './shopping-list/validator';
-import { ITEM_RULES } from './shopping-list/rules';
+import { getCanonicalName } from './pipelines/shopping-list/validator';
+import { ITEM_RULES } from './pipelines/shopping-list/rules';
 
 function applyMatchCase(original: string, target: string): string {
   if (original && original[0] === original[0].toUpperCase()) {

@@ -22,7 +22,10 @@ import type {
   IngredientNote,
   QtyValue,
   StoreLayout,
-} from '../types';
+} from '../../types';
+import { RulePipeline } from '../core/RulePipeline';
+import { StapleNormalizationStep } from '../steps/StapleNormalizationStep';
+import { PackageMatcherStep } from './steps/PackageMatcherStep';
 
 function getRuleForItem(itemName: string): ItemRule | undefined {
   const lower = itemName.toLowerCase().trim();
@@ -358,7 +361,7 @@ export function processShoppingList(
       }
     }
 
-    const category = classifyItemToCategory(group.name);
+    const category = rule?.category || classifyItemToCategory(group.name);
     const itemIsStaple = isStaple(group.key, rule);
     const stapleState: 'in-pantry' | undefined = itemIsStaple
       ? 'in-pantry'
@@ -391,20 +394,34 @@ export function processShoppingList(
     }
   }
 
+  const pipeline = new RulePipeline<ShoppingItem>()
+    .use(new PackageMatcherStep(layout))
+    .use(new StapleNormalizationStep());
+
+  const processedBuyItems = pipeline.execute(buyItems);
+  const processedOptionalItems = pipeline.execute(optionalItems);
+  const processedStapleItems = pipeline.execute(stapleItems);
+
   const sorter = (a: ShoppingItem, b: ShoppingItem) => {
-    const secA = getSectionForCategory(a.category);
-    const secB = getSectionForCategory(b.category);
-    if (secA.order !== secB.order) {
-      return secA.order - secB.order;
+    const secA = getSectionForCategory(a.category, layout);
+    const secB = getSectionForCategory(b.category, layout);
+    const orderA = secA?.order ?? 999;
+    const orderB = secB?.order ?? 999;
+    if (orderA !== orderB) {
+      return orderA - orderB;
     }
     return a.item.localeCompare(b.item);
   };
 
-  buyItems.sort(sorter);
-  optionalItems.sort(sorter);
-  stapleItems.sort(sorter);
+  processedBuyItems.sort(sorter);
+  processedOptionalItems.sort(sorter);
+  processedStapleItems.sort(sorter);
 
-  return { buyItems, optionalItems, stapleItems };
+  return {
+    buyItems: processedBuyItems,
+    optionalItems: processedOptionalItems,
+    stapleItems: processedStapleItems,
+  };
 }
 
 export function extractIngredientsFromDOM(

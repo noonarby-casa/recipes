@@ -1,15 +1,15 @@
-import { formatCookingNumber, pluralizeWord } from '../units';
+import { formatCookingNumber, pluralizeWord } from '../../units';
 import type {
   QtyValue,
   IngredientInput,
   ItemRule,
   UnitCategory,
-} from '../types';
+} from '../../types';
 import {
   UNIT_CONVERSIONS,
   PLURAL_TO_SINGULAR,
   UNIT_LOOKUP,
-} from '../constants';
+} from '../../constants';
 
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.
@@ -406,7 +406,7 @@ export interface GroupedNote {
   recipes: string[];
 }
 
-export function getGroupedNotes(item: import('../types').ShoppingItem): {
+export function getGroupedNotes(item: import('../../types').ShoppingItem): {
   sizeNote?: string;
   details: GroupedNote[];
   fallbackRecipes: string[];
@@ -453,7 +453,7 @@ export function getGroupedNotes(item: import('../types').ShoppingItem): {
 }
 
 export function formatShoppingItemNotes(
-  item: import('../types').ShoppingItem,
+  item: import('../../types').ShoppingItem,
   includeRecipes = true,
 ): string {
   const { sizeNote, details, fallbackRecipes } = getGroupedNotes(item);
