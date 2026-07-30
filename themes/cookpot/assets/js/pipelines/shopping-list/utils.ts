@@ -5,11 +5,110 @@ import type {
   ItemRule,
   UnitCategory,
 } from '../../types';
+import { ITEM_RULES } from './rules';
 import {
   UNIT_CONVERSIONS,
   PLURAL_TO_SINGULAR,
   UNIT_LOOKUP,
 } from '../../constants';
+
+export function getRuleForItem(itemName: string): ItemRule | undefined {
+  const lower = itemName.toLowerCase().trim();
+  return ITEM_RULES.find(
+    (rule) =>
+      rule.canonicalName.toLowerCase() === lower ||
+      rule.items.some((item) =>
+        typeof item === 'string'
+          ? item.toLowerCase() === lower
+          : item.singular.toLowerCase() === lower ||
+            item.plural.toLowerCase() === lower ||
+            item.aliases?.some((a) => a.toLowerCase() === lower),
+      ),
+  );
+}
+
+export function isStaple(itemName: string, rule?: ItemRule): boolean {
+  return rule?.staple === true;
+}
+
+export function getItemCanonicalInfo(itemName: string): {
+  key: string;
+  name: string;
+} {
+  const lower = itemName.toLowerCase().trim();
+  const rule = getRuleForItem(lower);
+  if (rule?.canonicalName) {
+    return { key: rule.canonicalName.toLowerCase(), name: rule.canonicalName };
+  }
+  return { key: lower, name: itemName };
+}
+
+export function determineTargetUnit(units: string[], rule?: ItemRule): string {
+  const uniqueUnits = Array.from(
+    new Set(units.map((u) => u.trim().toLowerCase())),
+  );
+  if (
+    uniqueUnits.length === 0 ||
+    (uniqueUnits.length === 1 && uniqueUnits[0] === '')
+  ) {
+    return '';
+  }
+
+  if (rule?.unitEquivalences) {
+    const firstEq = Object.values(rule.unitEquivalences)[0];
+    if (firstEq) {
+      const canConvertAll = uniqueUnits.every(
+        (u) => u === '' || getConversionFactor(u, firstEq.base, rule) > 0,
+      );
+      if (canConvertAll) {
+        return firstEq.base;
+      }
+    }
+  }
+
+  const normalizedSingulars = uniqueUnits.map((u) => getSingularUnit(u));
+  const uniqueSingulars = Array.from(new Set(normalizedSingulars));
+  if (uniqueSingulars.length === 1) {
+    return uniqueUnits[0];
+  }
+
+  return uniqueUnits[0] || '';
+}
+
+export function convertQtyValue(
+  val: QtyValue,
+  fromUnit: string,
+  toUnit: string,
+  rule?: ItemRule,
+): QtyValue {
+  if (fromUnit === toUnit) {
+    return val;
+  }
+  const factor = getConversionFactor(fromUnit, toUnit, rule);
+  if (factor <= 0) {
+    return val;
+  }
+  if (Array.isArray(val)) {
+    return [val[0] * factor, val[1] * factor];
+  }
+  return val * factor;
+}
+
+export function addQtyValues(a: QtyValue | undefined, b: QtyValue): QtyValue {
+  if (a === undefined) {
+    return b;
+  }
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return [a[0] + b[0], a[1] + b[1]];
+  }
+  if (Array.isArray(a)) {
+    return [a[0] + (b as number), a[1] + (b as number)];
+  }
+  if (Array.isArray(b)) {
+    return [a + b[0], a + b[1]];
+  }
+  return (a as number) + (b as number);
+}
 
 /**
  * Returns the singular form of a given unit, or the unit itself if not found.

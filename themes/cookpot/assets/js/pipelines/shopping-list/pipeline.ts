@@ -1,407 +1,64 @@
-import { ITEM_RULES } from './rules';
-import {
-  convertQty,
-  getConversionFactor,
-  pluralizeUnit,
-  isVolumeUnit,
-  isWeightUnit,
-  formatQtyValueWithUnit,
-  getSingularUnit,
-  getUnitCategory,
-} from './utils';
-import {
-  getSectionForCategory,
-  classifyItemToCategory,
-} from './store-sections';
 import type {
   IngredientInput,
   ShoppingItem,
   ProcessedShoppingList,
-  ItemRule,
-  ShoppingItemNote,
-  IngredientNote,
-  QtyValue,
-  StoreLayout,
 } from '../../types';
 import { RulePipeline } from '../core/RulePipeline';
+import { FilterIngredientsStep } from '../steps/FilterIngredientsStep';
 import { StapleNormalizationStep } from '../steps/StapleNormalizationStep';
+import { GroupCanonicalIngredientsStep } from './steps/GroupCanonicalIngredientsStep';
+import { AggregateQuantityStep } from './steps/AggregateQuantityStep';
 import { PackageMatcherStep } from './steps/PackageMatcherStep';
+import { getSectionForCategory } from './store-sections';
+import type { StoreLayout } from '../../types';
 
-function getRuleForItem(itemName: string): ItemRule | undefined {
-  const lower = itemName.toLowerCase().trim();
-  return ITEM_RULES.find(
-    (rule) =>
-      rule.canonicalName.toLowerCase() === lower ||
-      rule.items.some((item) =>
-        typeof item === 'string'
-          ? item.toLowerCase() === lower
-          : item.singular.toLowerCase() === lower ||
-            item.plural.toLowerCase() === lower ||
-            item.aliases?.some((a) => a.toLowerCase() === lower),
-      ),
-  );
-}
-
-function isStaple(itemName: string, rule?: ItemRule): boolean {
-  return rule?.staple === true;
-}
-
-function getItemCanonicalInfo(itemName: string): { key: string; name: string } {
-  const lower = itemName.toLowerCase().trim();
-  const rule = getRuleForItem(lower);
-  if (rule?.canonicalName) {
-    return { key: rule.canonicalName.toLowerCase(), name: rule.canonicalName };
-  }
-  return { key: lower, name: itemName };
-}
-
-function determineTargetUnit(units: string[], rule?: ItemRule): string {
-  const uniqueUnits = Array.from(
-    new Set(units.map((u) => u.trim().toLowerCase())),
-  );
-  if (
-    uniqueUnits.length === 0 ||
-    (uniqueUnits.length === 1 && uniqueUnits[0] === '')
-  ) {
-    return '';
-  }
-
-  if (rule?.unitEquivalences) {
-    const firstEq = Object.values(rule.unitEquivalences)[0];
-    if (firstEq) {
-      const canConvertAll = uniqueUnits.every(
-        (u) => u === '' || getConversionFactor(u, firstEq.base, rule) > 0,
-      );
-      if (canConvertAll) {
-        return firstEq.base;
-      }
-    }
-  }
-
-  // Q2: Direct Package Addition when normalized units match!
-  const normalizedSingulars = uniqueUnits.map((u) => getSingularUnit(u));
-  const uniqueSingulars = Array.from(new Set(normalizedSingulars));
-  if (uniqueSingulars.length === 1 && uniqueSingulars[0] !== '') {
-    return uniqueSingulars[0];
-  }
-
-  if (uniqueUnits.length === 1) {
-    return units[0];
-  }
-
-  const hasVolume = uniqueUnits.some(
-    (u) => getConversionFactor(u, 'teaspoon') > 0,
-  );
-  const hasWeight = uniqueUnits.some(
-    (u) => getConversionFactor(u, 'ounce') > 0,
-  );
-
-  if (hasVolume && !hasWeight) {
-    if (uniqueUnits.includes('cup')) {
-      return 'cup';
-    }
-    if (uniqueUnits.includes('tablespoon') || uniqueUnits.includes('tbsp')) {
-      return 'tablespoon';
-    }
-    return 'teaspoon';
-  }
-  if (hasWeight && !hasVolume) {
-    if (uniqueUnits.includes('pound') || uniqueUnits.includes('lb')) {
-      return 'pound';
-    }
-    return 'ounce';
-  }
-  return units[0];
-}
-
-function addQtyValues(
-  a: QtyValue | undefined,
-  b: QtyValue | undefined,
-): QtyValue | undefined {
-  if (a === undefined) {
-    return b;
-  }
-  if (b === undefined) {
-    return a;
-  }
-  const aMin = Array.isArray(a) ? a[0] : a;
-  const aMax = Array.isArray(a) ? a[1] : a;
-  const bMin = Array.isArray(b) ? b[0] : b;
-  const bMax = Array.isArray(b) ? b[1] : b;
-  if (Array.isArray(a) || Array.isArray(b)) {
-    return [aMin + bMin, aMax + bMax];
-  }
-  return a + b;
-}
-
-function convertQtyValue(
-  qty: QtyValue,
-  fromUnit: string,
-  toUnit: string,
-  rule?: ItemRule,
-): QtyValue {
-  if (Array.isArray(qty)) {
-    return [
-      convertQty(qty[0], fromUnit, toUnit, rule),
-      convertQty(qty[1], fromUnit, toUnit, rule),
-    ];
-  }
-  return convertQty(qty, fromUnit, toUnit, rule);
-}
-
-/**
- * Runs the complete processing pipeline on the recipe ingredients.
- * Groups by item, converts units to a common base, matches package sizes, and sorts.
- */
 export function processShoppingList(
   ingredients: IngredientInput[],
   layout?: StoreLayout,
 ): ProcessedShoppingList {
-  const groupsMap = new Map<
-    string,
-    {
-      key: string;
-      name: string;
-      ingredients: IngredientInput[];
-      optional: boolean;
-    }
-  >();
+  // Step 1: Filter water
+  const filterStep = new FilterIngredientsStep<IngredientInput>(
+    (ing) => ing.item.toLowerCase().trim() !== 'water',
+  );
+  const filteredIngredients = filterStep.process(ingredients);
 
-  for (const ing of ingredients) {
-    const itemName = ing.item.toLowerCase().trim();
-    if (itemName === 'water') {
-      continue;
-    }
-    const info = getItemCanonicalInfo(itemName);
-    let existing = groupsMap.get(info.key);
-    if (!existing) {
-      existing = {
-        key: info.key,
-        name: info.name,
-        ingredients: [],
-        optional: true,
-      };
-      groupsMap.set(info.key, existing);
-    }
-    existing.ingredients.push(ing);
-    if (!ing.optional) {
-      existing.optional = false;
-    }
-  }
+  // Step 2: Group canonical ingredients
+  const groupingStep = new GroupCanonicalIngredientsStep();
+  const groupedIngredients = groupingStep.group(filteredIngredients);
 
+  // Step 3: Aggregate quantities & notes into ShoppingItem[]
+  const aggregationStep = new AggregateQuantityStep();
+  const rawShoppingItems = aggregationStep.aggregate(groupedIngredients);
+
+  // Step 4: Run post-aggregation item pipeline (PackageMatcher & StapleNormalization)
+  const itemPipeline = new RulePipeline<ShoppingItem>()
+    .use(new PackageMatcherStep(layout))
+    .use(new StapleNormalizationStep());
+
+  const processedShoppingItems = rawShoppingItems.map((entry) => {
+    const [processed] = itemPipeline.execute([entry.item]);
+    return {
+      item: processed,
+      isOptional: entry.isOptional,
+    };
+  });
+
+  // Step 5: Partition into buy, optional, & staple items
   const buyItems: ShoppingItem[] = [];
   const optionalItems: ShoppingItem[] = [];
   const stapleItems: ShoppingItem[] = [];
 
-  for (const group of groupsMap.values()) {
-    const rule = getRuleForItem(group.key);
-    const units = group.ingredients
-      .map((ing) => ing.unit || '')
-      .filter(Boolean);
-    const targetUnit = determineTargetUnit(units, rule);
-
-    let totalQty: QtyValue | undefined = undefined;
-    let unquantified = false;
-    const ingredientNotes: IngredientNote[] = [];
-
-    for (const ing of group.ingredients) {
-      if (ing.recipe || ing.alt?.item || ing.desc) {
-        ingredientNotes.push({
-          recipe: ing.recipe || undefined,
-          altItem: ing.alt?.item || undefined,
-          descriptor: ing.desc || undefined,
-        });
-      }
-
-      if (ing.qty === undefined) {
-        if (rule?.defaultQty !== undefined) {
-          const unit = ing.unit || '';
-          let converted: QtyValue = rule.defaultQty;
-          if (unit !== targetUnit) {
-            converted = convertQtyValue(
-              rule.defaultQty,
-              unit,
-              targetUnit,
-              rule,
-            );
-          }
-          totalQty = addQtyValues(totalQty, converted);
-        } else {
-          unquantified = true;
-        }
-      } else {
-        const unit = ing.unit || '';
-        let converted: QtyValue;
-        // Q1: Preferred alt.qty if ing.alt specifies a count matching targetUnit
-        const targetCategory = getUnitCategory(targetUnit, rule);
-        if (
-          ing.alt?.qty !== undefined &&
-          ing.alt.unit &&
-          (getSingularUnit(ing.alt.unit) === getSingularUnit(targetUnit) ||
-            (targetCategory === 'COUNTABLE' &&
-              getUnitCategory(ing.alt.unit, rule) === 'COUNTABLE'))
-        ) {
-          converted = ing.alt.qty;
-        } else if (
-          unit === targetUnit ||
-          getSingularUnit(unit) === getSingularUnit(targetUnit)
-        ) {
-          converted = ing.qty;
-        } else {
-          converted = convertQtyValue(ing.qty, unit, targetUnit, rule);
-        }
-        totalQty = addQtyValues(totalQty, converted);
-      }
-    }
-
-    let finalQty: number | null =
-      unquantified || totalQty === undefined
-        ? null
-        : Array.isArray(totalQty)
-          ? totalQty[1]
-          : totalQty;
-    let finalUnit = targetUnit;
-    let sizeNote: string | undefined = undefined;
-
-    const canonicalName = rule?.canonicalName || group.name;
-    const itemSizes =
-      layout?.itemSizes?.[canonicalName.toLowerCase()] ||
-      layout?.itemSizes?.[group.name.toLowerCase()] ||
-      layout?.itemSizes?.[group.key] ||
-      (rule
-        ? rule.items
-            .map((i) =>
-              typeof i === 'string'
-                ? layout?.itemSizes?.[i.toLowerCase()]
-                : layout?.itemSizes?.[i.singular.toLowerCase()],
-            )
-            .find(Boolean)
-        : undefined);
-
-    let matched = false;
-    const originalQty = totalQty;
-    const originalUnit = targetUnit;
-
-    if (finalQty !== null && itemSizes && itemSizes.length > 0) {
-      // Q2: If targetUnit is already an explicit package size in itemSizes, preserve it directly!
-      const targetUnitSingular = getSingularUnit(targetUnit);
-      const isAlreadyExactPackage = itemSizes.some(
-        ([_, sizeUnit]) => getSingularUnit(sizeUnit) === targetUnitSingular,
-      );
-
-      if (isAlreadyExactPackage) {
-        matched = true;
-      } else {
-        // Q3: 3-Tier Minimal-Waste Package Matcher
-        interface PackageCandidate {
-          count: number;
-          sizeUnit: string;
-          sizeInBase: number;
-          totalPurchased: number;
-          waste: number;
-        }
-        const candidates: PackageCandidate[] = [];
-
-        for (const [limit, sizeUnit] of itemSizes) {
-          const factor = getConversionFactor(sizeUnit, finalUnit, rule);
-          if (factor > 0) {
-            const sizeInBase = limit * factor;
-            const count = Math.ceil(finalQty / sizeInBase);
-            const totalPurchased = count * sizeInBase;
-            const waste = totalPurchased - finalQty;
-            candidates.push({
-              count,
-              sizeUnit,
-              sizeInBase,
-              totalPurchased,
-              waste,
-            });
-          }
-        }
-
-        if (candidates.length > 0) {
-          candidates.sort((a, b) => {
-            if (Math.abs(a.waste - b.waste) > 0.001) {
-              return a.waste - b.waste;
-            }
-            if (a.count !== b.count) {
-              return a.count - b.count;
-            }
-            return b.sizeInBase - a.sizeInBase;
-          });
-
-          const best = candidates[0];
-          finalQty = best.count;
-          finalUnit = best.sizeUnit;
-          matched = true;
-        }
-      }
-    }
-
-    if (finalQty !== null) {
-      if (matched) {
-        finalQty = Math.ceil(finalQty);
-        if (
-          !getSingularUnit(originalUnit) ||
-          getSingularUnit(originalUnit) !== getSingularUnit(finalUnit)
-        ) {
-          sizeNote = `${formatQtyValueWithUnit(originalQty!, originalUnit)} needed`;
-        }
-      } else {
-        if (isVolumeUnit(finalUnit)) {
-          sizeNote = `${formatQtyValueWithUnit(totalQty!, finalUnit)} needed`;
-          finalQty = null;
-          finalUnit = '';
-        } else if (isWeightUnit(finalUnit)) {
-          finalQty = Math.ceil(finalQty * 100) / 100;
-        } else {
-          // Countable/package items round up to integers
-          finalQty = Math.ceil(finalQty);
-        }
-      }
-    }
-
-    const category = rule?.category || classifyItemToCategory(group.name);
-    const itemIsStaple = isStaple(group.key, rule);
-    const stapleState: 'in-pantry' | undefined = itemIsStaple
-      ? 'in-pantry'
-      : undefined;
-
-    const note: ShoppingItemNote = {
-      ingredientNotes,
-    };
-    if (sizeNote) {
-      note.sizeNote = sizeNote;
-    }
-
-    const finalUnitPlural =
-      finalQty !== null ? pluralizeUnit(finalUnit, finalQty) : finalUnit;
-    const shopItem: ShoppingItem = {
-      qty: finalQty,
-      unit: finalUnitPlural,
-      item: canonicalName,
-      category,
-      staple: stapleState,
-      note,
-    };
-
-    if (shopItem.staple === 'in-pantry') {
-      stapleItems.push(shopItem);
-    } else if (group.optional) {
-      optionalItems.push(shopItem);
+  processedShoppingItems.forEach(({ item, isOptional }) => {
+    if (item.staple === 'in-pantry') {
+      stapleItems.push(item);
+    } else if (isOptional) {
+      optionalItems.push(item);
     } else {
-      buyItems.push(shopItem);
+      buyItems.push(item);
     }
-  }
+  });
 
-  const pipeline = new RulePipeline<ShoppingItem>()
-    .use(new PackageMatcherStep(layout))
-    .use(new StapleNormalizationStep());
-
-  const processedBuyItems = pipeline.execute(buyItems);
-  const processedOptionalItems = pipeline.execute(optionalItems);
-  const processedStapleItems = pipeline.execute(stapleItems);
-
+  // Step 6: Sort by store aisle order
   const sorter = (a: ShoppingItem, b: ShoppingItem) => {
     const secA = getSectionForCategory(a.category, layout);
     const secB = getSectionForCategory(b.category, layout);
@@ -413,15 +70,11 @@ export function processShoppingList(
     return a.item.localeCompare(b.item);
   };
 
-  processedBuyItems.sort(sorter);
-  processedOptionalItems.sort(sorter);
-  processedStapleItems.sort(sorter);
+  buyItems.sort(sorter);
+  optionalItems.sort(sorter);
+  stapleItems.sort(sorter);
 
-  return {
-    buyItems: processedBuyItems,
-    optionalItems: processedOptionalItems,
-    stapleItems: processedStapleItems,
-  };
+  return { buyItems, optionalItems, stapleItems };
 }
 
 export function extractIngredientsFromDOM(
