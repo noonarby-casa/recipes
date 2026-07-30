@@ -1,12 +1,12 @@
-import categoryKeywordsJson from '../../../data/category-keywords.json';
-import usGrocerySizes from '../../../data/stores/us-grocery.json';
-import type { StoreLayout, StoreSection } from '../../types';
+import categoryKeywordsJson from '../../data/category-keywords.json';
+import usGrocerySizes from '../../data/stores/us-grocery.json';
+import type { StoreLayout, StoreSection } from '../types';
 
 export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] =
   categoryKeywordsJson;
 
 import { ITEM_RULES } from './rules';
-import { singularizeWord, pluralizeWord } from '../../units';
+import { singularizeWord, pluralizeWord } from '../units';
 
 export function classifyItemToCategory(itemName: string): string {
   const lower = itemName.toLowerCase().trim();

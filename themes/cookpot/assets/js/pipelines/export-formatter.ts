@@ -1,5 +1,5 @@
-import type { ShoppingItem } from '../../types';
-import { formatItemQuantity } from '../../units';
+import type { ShoppingItem } from '../types';
+import { formatItemQuantity } from '../units';
 import { getSectionForCategory, getActiveStoreLayout } from './store-sections';
 import { formatShoppingItemNotes } from './utils';
 

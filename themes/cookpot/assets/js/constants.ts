@@ -1,5 +1,5 @@
 import type { UnitDefinition } from './types';
-import { ITEM_RULES } from './pipelines/shopping-list/rules';
+import { ITEM_RULES } from './pipelines/rules';
 
 export const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
   // Volume (base: teaspoon)

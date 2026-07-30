@@ -3,8 +3,8 @@
   import { formatItemQuantity } from '../../units';
   import { scrollable } from '../../actions/scrollable';
   import type { ShoppingItem } from '../../types';
-  import { STORE_LAYOUTS, getSectionForCategory } from '../../pipelines/shopping-list/store-sections';
-  import { getGroupedNotes } from '../../pipelines/shopping-list/utils';
+  import { STORE_LAYOUTS, getSectionForCategory } from '../../pipelines/store-sections';
+  import { getGroupedNotes } from '../../pipelines/utils';
   import { storeLayout } from '../../stores/shopping';
 
   let items = $derived($combinedShoppingList.combinedBuyItems);

@@ -1,10 +1,10 @@
-import type { RuleStep } from '../core/RulePipeline';
+import type { RuleStep } from '../RulePipeline';
 import type { ShoppingItem } from '../../types';
 import {
   getSectionForCategory,
   getActiveStoreLayout,
   STORE_LAYOUTS,
-} from '../shopping-list/store-sections';
+} from '../store-sections';
 
 export class StoreCategorizationStep implements RuleStep<ShoppingItem> {
   readonly name = 'StoreCategorizationStep';

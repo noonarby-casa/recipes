@@ -1,6 +1,6 @@
-import { parseRawUserInput, parseSimpleQty } from '../../simple-parser';
-import type { IngredientInput } from '../../types';
-import { RulePipeline, type RuleStep } from '../core/RulePipeline';
+import { parseRawUserInput, parseSimpleQty } from '../simple-parser';
+import type { IngredientInput } from '../types';
+import { RulePipeline, type RuleStep } from './RulePipeline';
 
 export interface RawIngredientText {
   rawText: string;

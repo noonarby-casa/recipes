@@ -2,15 +2,15 @@ import type {
   IngredientInput,
   ShoppingItem,
   ProcessedShoppingList,
-} from '../../types';
-import { RulePipeline } from '../core/RulePipeline';
-import { FilterIngredientsStep } from '../steps/FilterIngredientsStep';
-import { StapleNormalizationStep } from '../steps/StapleNormalizationStep';
+} from '../types';
+import { RulePipeline } from './RulePipeline';
+import { FilterIngredientsStep } from './steps/FilterIngredientsStep';
+import { StapleNormalizationStep } from './steps/StapleNormalizationStep';
 import { GroupCanonicalIngredientsStep } from './steps/GroupCanonicalIngredientsStep';
 import { AggregateQuantityStep } from './steps/AggregateQuantityStep';
 import { PackageMatcherStep } from './steps/PackageMatcherStep';
 import { getSectionForCategory } from './store-sections';
-import type { StoreLayout } from '../../types';
+import type { StoreLayout } from '../types';
 
 export function processShoppingList(
   ingredients: IngredientInput[],

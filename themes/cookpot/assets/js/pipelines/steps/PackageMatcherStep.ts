@@ -1,9 +1,5 @@
-import type { RuleStep } from '../../core/RulePipeline';
-import type {
-  ShoppingItem,
-  StoreLayout,
-  ShoppingItemNote,
-} from '../../../types';
+import type { RuleStep } from '../RulePipeline';
+import type { ShoppingItem, StoreLayout, ShoppingItemNote } from '../../types';
 import { ITEM_RULES } from '../rules';
 import {
   getSingularUnit,

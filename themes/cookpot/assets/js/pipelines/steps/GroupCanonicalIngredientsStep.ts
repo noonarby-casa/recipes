@@ -1,5 +1,5 @@
-import type { RuleStep } from '../../core/RulePipeline';
-import type { IngredientInput } from '../../../types';
+import type { RuleStep } from '../RulePipeline';
+import type { IngredientInput } from '../../types';
 import { getItemCanonicalInfo } from '../utils';
 
 export interface IngredientGroup {

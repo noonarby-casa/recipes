@@ -1,6 +1,6 @@
-import type { RuleStep } from '../core/RulePipeline';
+import type { RuleStep } from '../RulePipeline';
 import { pluralizeWord } from '../../units';
-import { pluralizeUnit } from '../shopping-list/utils';
+import { pluralizeUnit } from '../utils';
 
 export interface PluralizableItem {
   qty: number | null;

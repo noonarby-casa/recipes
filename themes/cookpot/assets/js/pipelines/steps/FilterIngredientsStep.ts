@@ -1,4 +1,4 @@
-import type { RuleStep } from '../core/RulePipeline';
+import type { RuleStep } from '../RulePipeline';
 
 export class FilterIngredientsStep<T> implements RuleStep<T> {
   readonly name = 'FilterIngredientsStep';

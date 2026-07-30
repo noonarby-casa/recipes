@@ -2,12 +2,12 @@ import { writable, derived } from 'svelte/store';
 import { plannerStore } from './planner';
 import { recipesStore } from './recipes';
 import type { IngredientInput } from '../types';
-import { processShoppingList } from '../pipelines/shopping-list/pipeline';
+import { processShoppingList } from '../pipelines/pipeline';
 import {
   getActiveStoreLayoutId,
   getSectionForCategory,
   STORE_LAYOUTS,
-} from '../pipelines/shopping-list/store-sections';
+} from '../pipelines/store-sections';
 import { ls } from '../utils/storage';
 
 const CHECKED_STORAGE_KEY = 'noonarby-shopping-checked-items-v2';

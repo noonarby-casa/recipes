@@ -12,7 +12,7 @@ import {
   STORE_LAYOUTS,
 } from './store-sections';
 import { getConversionFactor } from './utils';
-import type { IngredientInput } from '../../types';
+import type { IngredientInput } from '../types';
 import { validateRecipe } from './validator';
 
 interface RecipeIngredients {
@@ -24,7 +24,7 @@ interface RecipeIngredients {
 }
 
 function getRecipeIngredients(): RecipeIngredients[] {
-  const contentDir = path.resolve(__dirname, '../../../../../../content');
+  const contentDir = path.resolve(__dirname, '../../../../../content');
   const recipes: RecipeIngredients[] = [];
 
   function scanDir(dir: string) {

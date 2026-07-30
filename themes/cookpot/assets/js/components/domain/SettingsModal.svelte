@@ -13,7 +13,7 @@
     STORE_LAYOUTS,
     getActiveStoreLayoutId,
     setActiveStoreLayoutId,
-  } from '../../pipelines/shopping-list/store-sections';
+  } from '../../pipelines/store-sections';
   import type { FontSizeOption } from '../../types';
 
   let isOpen = $state(false);

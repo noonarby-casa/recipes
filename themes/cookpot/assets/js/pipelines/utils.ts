@@ -1,16 +1,18 @@
-import { formatCookingNumber, pluralizeWord } from '../../units';
+import { formatCookingNumber, pluralizeWord } from '../units';
 import type {
   QtyValue,
   IngredientInput,
   ItemRule,
   UnitCategory,
-} from '../../types';
+  ShoppingItem,
+  IngredientNote,
+} from '../types';
 import { ITEM_RULES } from './rules';
 import {
   UNIT_CONVERSIONS,
   PLURAL_TO_SINGULAR,
   UNIT_LOOKUP,
-} from '../../constants';
+} from '../constants';
 
 export function getRuleForItem(itemName: string): ItemRule | undefined {
   const lower = itemName.toLowerCase().trim();
@@ -505,7 +507,7 @@ export interface GroupedNote {
   recipes: string[];
 }
 
-export function getGroupedNotes(item: import('../../types').ShoppingItem): {
+export function getGroupedNotes(item: ShoppingItem): {
   sizeNote?: string;
   details: GroupedNote[];
   fallbackRecipes: string[];
@@ -520,7 +522,7 @@ export function getGroupedNotes(item: import('../../types').ShoppingItem): {
   const sizeNote = item.note.sizeNote;
   const groups: Record<string, GroupedNote> = {};
 
-  (item.note.ingredientNotes || []).forEach((n) => {
+  (item.note.ingredientNotes || []).forEach((n: IngredientNote) => {
     const desc = n.descriptor || '';
     const alt = n.altItem || '';
     const recipe = n.recipe;
@@ -552,7 +554,7 @@ export function getGroupedNotes(item: import('../../types').ShoppingItem): {
 }
 
 export function formatShoppingItemNotes(
-  item: import('../../types').ShoppingItem,
+  item: ShoppingItem,
   includeRecipes = true,
 ): string {
   const { sizeNote, details, fallbackRecipes } = getGroupedNotes(item);

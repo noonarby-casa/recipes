@@ -1,4 +1,4 @@
-import type { ShoppingItem } from '../../types';
+import type { ShoppingItem } from '../types';
 
 export interface RuleStep<TItem = ShoppingItem> {
   /** Name of the transformation step for logging/debugging. */

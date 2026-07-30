@@ -1,10 +1,10 @@
-import type { RuleStep } from '../../core/RulePipeline';
+import type { RuleStep } from '../RulePipeline';
 import type {
   ShoppingItem,
   ShoppingItemNote,
   IngredientNote,
   QtyValue,
-} from '../../../types';
+} from '../../types';
 import type { IngredientGroup } from './GroupCanonicalIngredientsStep';
 import { ITEM_RULES } from '../rules';
 import {

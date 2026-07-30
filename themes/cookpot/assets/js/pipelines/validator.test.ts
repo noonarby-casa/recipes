@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { validateIngredient, validateRecipe } from './validator';
-import type { IngredientInput } from '../../types';
+import type { IngredientInput } from '../types';
 
 describe('validateIngredient', () => {
   test('valid ingredient returns no errors', () => {
