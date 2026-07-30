@@ -4,7 +4,7 @@ import {
   getSectionForCategory,
   getActiveStoreLayout,
   STORE_LAYOUTS,
-} from '../store-sections';
+} from '../../data/store-sections';
 
 export class StoreCategorizationStep implements RuleStep<ShoppingItem> {
   readonly name = 'StoreCategorizationStep';

@@ -7,7 +7,7 @@ import {
   getActiveStoreLayoutId,
   getSectionForCategory,
   STORE_LAYOUTS,
-} from '../pipelines/store-sections';
+} from '../data/store-sections';
 import { ls } from '../utils/storage';
 
 const CHECKED_STORAGE_KEY = 'noonarby-shopping-checked-items-v2';

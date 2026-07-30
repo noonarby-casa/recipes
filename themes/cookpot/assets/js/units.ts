@@ -2,9 +2,11 @@ import {
   SINGULAR_TO_PLURAL,
   PLURAL_TO_SINGULAR,
   PLURAL_BY_DEFAULT_ITEMS,
+  UNIT_CONVERSIONS,
+  UNIT_LOOKUP,
 } from './constants';
-import { getCanonicalName } from './pipelines/validator';
-import { ITEM_RULES } from './pipelines/rules';
+import { getCanonicalName } from './pipelines/recipeValidationPipeline';
+import { ITEM_RULES } from './data/rules';
 
 function applyMatchCase(original: string, target: string): string {
   if (original && original[0] === original[0].toUpperCase()) {
@@ -478,4 +480,221 @@ export function formatAbbreviatedTime(timeStr: string): string {
     .replace(/\s*(minutes|minute|mins|min)\b/gi, 'm')
     .replace(/\s*(hours|hour|hrs|hr)\b/gi, 'h')
     .replace(/\s*(seconds|second|secs|sec)\b/gi, 's');
+}
+
+export function getSingularUnit(unit: string): string {
+  if (!unit) {
+    return '';
+  }
+  let base = unit.toLowerCase().trim();
+  base = base
+    .replace(/\btbs\b/g, 'tbsp')
+    .replace(/-ounce/g, ' oz')
+    .replace(/ounces/g, 'oz')
+    .replace(/ounce/g, 'oz')
+    .replace(/fl oz/g, 'oz')
+    .replace(/fl\. oz/g, 'oz')
+    .replace(/\s+/g, ' ');
+
+  if (base.includes('(')) {
+    const parts = base.split('(');
+    const firstWord = parts[0].trim();
+    const rest = parts.slice(1).join('(');
+    return `${getSingularUnit(firstWord)} (${rest}`;
+  }
+
+  return PLURAL_TO_SINGULAR[base] || base;
+}
+
+export function formatQty(qty: import('./types').QtyValue): string {
+  if (Array.isArray(qty)) {
+    return `${formatCookingNumber(qty[0])}-${formatCookingNumber(qty[1])}`;
+  }
+  return formatCookingNumber(qty);
+}
+
+export function pluralizeUnit(
+  unit: string,
+  qty: import('./types').QtyValue,
+): string {
+  if (!unit) {
+    return '';
+  }
+
+  const isPlural = Array.isArray(qty) ? qty[1] > 1 : qty > 1;
+  if (!isPlural) {
+    return unit;
+  }
+
+  const sing = getSingularUnit(unit);
+  const def = UNIT_LOOKUP[sing];
+  if (def?.aliases?.some((a) => a.toLowerCase() === unit.toLowerCase())) {
+    return unit;
+  }
+
+  return pluralizeWord(unit);
+}
+
+function isVolumeWeightUnit(
+  unit: string,
+  rule?: import('./types').ItemRule,
+): boolean {
+  const sing = getSingularUnit(unit);
+  if (!sing) {
+    return false;
+  }
+  if (sing in UNIT_CONVERSIONS) {
+    return true;
+  }
+  if (rule?.unitEquivalences) {
+    const eqKey = Object.keys(rule.unitEquivalences).find(
+      (k) => getSingularUnit(k) === sing,
+    );
+    if (eqKey) {
+      const eq = rule.unitEquivalences[eqKey];
+      if (eq && getSingularUnit(eq.base) in UNIT_CONVERSIONS) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+export function getConversionFactor(
+  fromUnit: string,
+  toUnit: string,
+  rule?: import('./types').ItemRule,
+): number {
+  if (fromUnit === toUnit) {
+    return 1;
+  }
+  const fromSing = getSingularUnit(fromUnit);
+  const toSing = getSingularUnit(toUnit);
+  if (fromSing === toSing) {
+    return 1;
+  }
+
+  if (rule?.unitEquivalences) {
+    const fromEqKey = Object.keys(rule.unitEquivalences).find(
+      (k) => getSingularUnit(k) === fromSing,
+    );
+    if (fromEqKey) {
+      const eq = rule.unitEquivalences[fromEqKey];
+      if (
+        getSingularUnit(eq.base) === toSing ||
+        (!toSing &&
+          getSingularUnit(eq.base) === rule.canonicalName.toLowerCase())
+      ) {
+        return eq.factor;
+      }
+    }
+
+    const toEqKey = Object.keys(rule.unitEquivalences).find(
+      (k) => getSingularUnit(k) === toSing,
+    );
+    if (toEqKey) {
+      const eq = rule.unitEquivalences[toEqKey];
+      if (getSingularUnit(eq.base) === fromSing) {
+        return 1 / eq.factor;
+      }
+    }
+  }
+
+  const fromVolWt = isVolumeWeightUnit(fromSing, rule);
+  const toVolWt = isVolumeWeightUnit(toSing, rule);
+
+  if (fromVolWt && toVolWt) {
+    let fromInTeaspoon: number | undefined = undefined;
+    let toInTeaspoon: number | undefined = undefined;
+
+    if (rule?.unitEquivalences) {
+      const fromEqKey = Object.keys(rule.unitEquivalences).find(
+        (k) => getSingularUnit(k) === fromSing,
+      );
+      if (fromEqKey) {
+        const eq = rule.unitEquivalences[fromEqKey];
+        const baseInTeaspoon =
+          UNIT_CONVERSIONS[getSingularUnit(eq.base)]?.factor;
+        if (baseInTeaspoon) {
+          fromInTeaspoon = eq.factor * baseInTeaspoon;
+        }
+      }
+
+      const toEqKey = Object.keys(rule.unitEquivalences).find(
+        (k) => getSingularUnit(k) === toSing,
+      );
+      if (toEqKey) {
+        const eq = rule.unitEquivalences[toEqKey];
+        const baseInTeaspoon =
+          UNIT_CONVERSIONS[getSingularUnit(eq.base)]?.factor;
+        if (baseInTeaspoon) {
+          toInTeaspoon = eq.factor * baseInTeaspoon;
+        }
+      }
+    }
+
+    if (fromInTeaspoon === undefined) {
+      fromInTeaspoon = UNIT_CONVERSIONS[fromSing]?.factor;
+    }
+    if (toInTeaspoon === undefined) {
+      toInTeaspoon = UNIT_CONVERSIONS[toSing]?.factor;
+    }
+
+    if (fromInTeaspoon !== undefined && toInTeaspoon !== undefined) {
+      return fromInTeaspoon / toInTeaspoon;
+    }
+  }
+
+  return -1;
+}
+
+export function convertQty(
+  val: number,
+  fromUnit: string,
+  toUnit: string,
+  rule?: import('./types').ItemRule,
+): number {
+  if (fromUnit === toUnit) {
+    return val;
+  }
+  const factor = getConversionFactor(fromUnit, toUnit, rule);
+  if (factor <= 0) {
+    return val;
+  }
+  return val * factor;
+}
+
+export function isVolumeUnit(unit: string): boolean {
+  const sing = getSingularUnit(unit);
+  if (!sing) {
+    return false;
+  }
+  return UNIT_LOOKUP[sing]?.category === 'VOLUME';
+}
+
+export function isWeightUnit(unit: string): boolean {
+  const sing = getSingularUnit(unit);
+  if (!sing) {
+    return false;
+  }
+  return UNIT_LOOKUP[sing]?.category === 'WEIGHT';
+}
+
+export function formatQtyValueWithUnit(
+  qty: import('./types').QtyValue,
+  unit: string,
+): string {
+  const formattedNumber = formatQty(qty);
+  if (!unit) {
+    return formattedNumber;
+  }
+  const singular = getSingularUnit(unit);
+  const def = UNIT_LOOKUP[singular.toLowerCase()];
+  let formattedUnit: string;
+  if (def?.aliases && def.aliases.length > 0) {
+    formattedUnit = def.aliases[0];
+  } else {
+    formattedUnit = pluralizeUnit(unit, qty);
+  }
+  return `${formattedNumber} ${formattedUnit}`;
 }

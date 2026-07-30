@@ -5,8 +5,8 @@ import type {
   IngredientSection,
 } from '../types';
 import { SINGULAR_TO_PLURAL } from '../constants';
-import { getSingularUnit } from './utils';
-import { ITEM_RULES } from './rules';
+import { getSingularUnit } from '../units';
+import { ITEM_RULES } from '../data/rules';
 
 const PLURAL_UNITS_SET = new Set(
   Object.entries(SINGULAR_TO_PLURAL)

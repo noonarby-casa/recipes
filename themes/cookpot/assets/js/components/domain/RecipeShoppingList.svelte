@@ -11,11 +11,11 @@
   import {
     getSectionForCategory,
     getActiveStoreLayout,
-  } from '../../pipelines/store-sections';
+  } from '../../data/store-sections';
   import { getIngredientKey } from '../../stores/shopping';
 
   import ExportModal from './ExportModal.svelte';
-  import type { ExportItem } from '../../pipelines/export-formatter';
+  import type { ExportItem } from '../../pipelines/shoppingExportPipeline';
 
   type Tab = 'recipe' | 'shopping';
 

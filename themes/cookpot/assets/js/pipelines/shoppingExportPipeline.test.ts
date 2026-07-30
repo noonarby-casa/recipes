@@ -3,7 +3,7 @@ import {
   formatShoppingListExport,
   filterExportItems,
   type ExportItem,
-} from './export-formatter';
+} from './shoppingExportPipeline';
 
 describe('export-formatter', () => {
   const sampleItems: ExportItem[] = [

@@ -1,12 +1,36 @@
 import type { RuleStep } from '../RulePipeline';
-import type { IngredientInput } from '../../types';
-import { getItemCanonicalInfo } from '../utils';
+import type { IngredientInput, ItemRule } from '../../types';
+import { ITEM_RULES } from '../../data/rules';
 
 export interface IngredientGroup {
   key: string;
   name: string;
   ingredients: IngredientInput[];
   optional: boolean;
+}
+
+function getRuleForItem(itemName: string): ItemRule | undefined {
+  const lower = itemName.toLowerCase().trim();
+  return ITEM_RULES.find(
+    (rule) =>
+      rule.canonicalName.toLowerCase() === lower ||
+      rule.items.some((item) =>
+        typeof item === 'string'
+          ? item.toLowerCase() === lower
+          : item.singular.toLowerCase() === lower ||
+            item.plural.toLowerCase() === lower ||
+            item.aliases?.some((a) => a.toLowerCase() === lower),
+      ),
+  );
+}
+
+function getItemCanonicalInfo(itemName: string): { key: string; name: string } {
+  const lower = itemName.toLowerCase().trim();
+  const rule = getRuleForItem(lower);
+  if (rule?.canonicalName) {
+    return { key: rule.canonicalName.toLowerCase(), name: rule.canonicalName };
+  }
+  return { key: lower, name: itemName };
 }
 
 export class GroupCanonicalIngredientsStep implements RuleStep<IngredientInput> {

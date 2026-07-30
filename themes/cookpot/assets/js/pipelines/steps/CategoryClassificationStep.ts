@@ -1,5 +1,5 @@
 import type { RuleStep } from '../RulePipeline';
-import { classifyItemToCategory } from '../store-sections';
+import { classifyItemToCategory } from '../../data/store-sections';
 
 export interface CategorizedItem {
   item: string;

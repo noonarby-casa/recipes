@@ -5,15 +5,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 declare const __dirname: string;
-import { ITEM_RULES } from './rules';
+import { ITEM_RULES } from '../data/rules';
 import {
   CATEGORY_KEYWORDS,
   classifyItemToCategory,
   STORE_LAYOUTS,
-} from './store-sections';
-import { getConversionFactor } from './utils';
+} from '../data/store-sections';
+import { getConversionFactor } from '../units';
 import type { IngredientInput } from '../types';
-import { validateRecipe } from './validator';
+import { validateRecipe } from './recipeValidationPipeline';
 
 interface RecipeIngredients {
   title: string;

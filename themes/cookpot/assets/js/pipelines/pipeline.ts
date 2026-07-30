@@ -9,7 +9,7 @@ import { StapleNormalizationStep } from './steps/StapleNormalizationStep';
 import { GroupCanonicalIngredientsStep } from './steps/GroupCanonicalIngredientsStep';
 import { AggregateQuantityStep } from './steps/AggregateQuantityStep';
 import { PackageMatcherStep } from './steps/PackageMatcherStep';
-import { getSectionForCategory } from './store-sections';
+import { getSectionForCategory } from '../data/store-sections';
 import type { StoreLayout } from '../types';
 
 export function processShoppingList(

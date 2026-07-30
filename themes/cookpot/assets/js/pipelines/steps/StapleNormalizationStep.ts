@@ -1,6 +1,6 @@
 import type { RuleStep } from '../RulePipeline';
 import type { ShoppingItem, ItemRule, ItemForm } from '../../types';
-import { ITEM_RULES } from '../rules';
+import { ITEM_RULES } from '../../data/rules';
 
 export class StapleNormalizationStep implements RuleStep<ShoppingItem> {
   readonly name = 'StapleNormalizationStep';

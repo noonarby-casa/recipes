@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { processShoppingList } from './pipeline';
 import type { IngredientInput, StoreLayout } from '../types';
-import { getSectionForCategory, STORE_LAYOUTS } from './store-sections';
+import { getSectionForCategory, STORE_LAYOUTS } from '../data/store-sections';
 
 const mockGnocchiLayout: StoreLayout = {
   id: 'test-layout',

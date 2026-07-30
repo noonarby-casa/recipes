@@ -25,7 +25,7 @@
   import MealPlannerToolbar from '../domain/MealPlannerToolbar.svelte';
 
   import ExportModal from '../domain/ExportModal.svelte';
-  import type { ExportItem } from '../../pipelines/export-formatter';
+  import type { ExportItem } from '../../pipelines/shoppingExportPipeline';
 
   let isFiltersModalOpen = $state(false);
   let isExportModalOpen = $state(false);

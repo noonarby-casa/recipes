@@ -1,6 +1,6 @@
 import type { RuleStep } from '../RulePipeline';
 import type { ShoppingItem, StoreLayout, ShoppingItemNote } from '../../types';
-import { ITEM_RULES } from '../rules';
+import { ITEM_RULES } from '../../data/rules';
 import {
   getSingularUnit,
   getConversionFactor,
@@ -8,7 +8,10 @@ import {
   isVolumeUnit,
   isWeightUnit,
   pluralizeUnit,
-} from '../utils';
+  isSizeOnlyUnit,
+  pluralizeWord,
+  singularizeWord,
+} from '../../units';
 
 export class PackageMatcherStep implements RuleStep<ShoppingItem> {
   readonly name = 'PackageMatcherStep';
@@ -59,10 +62,18 @@ export class PackageMatcherStep implements RuleStep<ShoppingItem> {
           ? Math.ceil(shopItem.qty * 100) / 100
           : Math.ceil(shopItem.qty);
 
+        const isSizeModifier = shopItem.unit && isSizeOnlyUnit(shopItem.unit);
+        const finalUnit =
+          isSizeModifier && rule?.unitEquivalences
+            ? roundedQty > 1
+              ? pluralizeWord(shopItem.item)
+              : singularizeWord(shopItem.item)
+            : pluralizeUnit(shopItem.unit, roundedQty);
+
         return {
           ...shopItem,
           qty: roundedQty,
-          unit: pluralizeUnit(shopItem.unit, roundedQty),
+          unit: finalUnit,
         };
       }
 
@@ -107,6 +118,21 @@ export class PackageMatcherStep implements RuleStep<ShoppingItem> {
       }
 
       if (candidates.length === 0) {
+        if (
+          originalUnit &&
+          isSizeOnlyUnit(originalUnit) &&
+          rule?.unitEquivalences
+        ) {
+          const roundedQty = Math.ceil(originalQty);
+          return {
+            ...shopItem,
+            qty: roundedQty,
+            unit:
+              roundedQty > 1
+                ? pluralizeWord(shopItem.item)
+                : singularizeWord(shopItem.item),
+          };
+        }
         return shopItem;
       }
 

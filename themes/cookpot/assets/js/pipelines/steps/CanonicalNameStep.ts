@@ -1,6 +1,6 @@
 import type { RuleStep } from '../RulePipeline';
 import type { ItemRule, ItemForm } from '../../types';
-import { ITEM_RULES } from '../rules';
+import { ITEM_RULES } from '../../data/rules';
 
 export interface NamedItem {
   item: string;
