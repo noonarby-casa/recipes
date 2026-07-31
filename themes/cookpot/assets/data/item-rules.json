@@ -407,6 +407,11 @@
     "items": ["frozen corn"]
   },
   {
+    "canonicalName": "frozen hash browns",
+    "category": "frozen",
+    "items": ["frozen hash browns", "hash brown", "hash browns"]
+  },
+  {
     "canonicalName": "panko",
     "category": "pasta-grains",
     "items": ["panko"]
@@ -891,6 +896,11 @@
     ]
   },
   {
+    "canonicalName": "breakfast sausage",
+    "category": "meat",
+    "items": ["breakfast sausage", "sausage"]
+  },
+  {
     "canonicalName": "chorizo",
     "category": "meat",
     "items": ["chorizo"]
@@ -1334,6 +1344,26 @@
     "canonicalName": "mozzarella ball",
     "category": "butter-cheese",
     "items": ["mozzarella ball", "mozzarella", "cheese", "sliced cheese"]
+  },
+  {
+    "canonicalName": "cheddar cheese",
+    "category": "butter-cheese",
+    "items": ["cheddar cheese", "cheddar", "sharp cheddar", "sharp Cheddar"]
+  },
+  {
+    "canonicalName": "Italian seasoning",
+    "category": "spices-seasonings",
+    "items": ["Italian seasoning"]
+  },
+  {
+    "canonicalName": "chive",
+    "category": "fresh-herbs",
+    "items": [
+      {
+        "singular": "chive",
+        "plural": "chives"
+      }
+    ]
   },
   {
     "canonicalName": "whipped cream",

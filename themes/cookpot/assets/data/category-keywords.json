@@ -10,6 +10,7 @@
       "thyme",
       "dill",
       "chives",
+      "chive",
       "mint",
       "oregano fresh",
       "fresh oregano",
@@ -23,7 +24,14 @@
   },
   {
     "category": "frozen",
-    "keywords": ["frozen", "ice cream", "dumpling", "mila soup dumplings"]
+    "keywords": [
+      "frozen",
+      "ice cream",
+      "dumpling",
+      "mila soup dumplings",
+      "hash brown",
+      "hash browns"
+    ]
   },
   {
     "category": "poultry",

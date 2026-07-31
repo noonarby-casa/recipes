@@ -367,6 +367,76 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
+      item: 'breakfast sausage',
+      qty: 1,
+      unit: 'pound',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'breakfast sausage',
+      qty: 1,
+      unit: 'pound',
+      category: 'meat',
+    },
+  },
+  {
+    input: {
+      item: 'frozen hash browns',
+      qty: 1,
+      unit: 'pound',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'frozen hash browns',
+      qty: 1,
+      unit: 'pound',
+      category: 'frozen',
+    },
+  },
+  {
+    input: {
+      item: 'cheddar cheese',
+      qty: 2,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'cheddar cheese',
+      qty: 2,
+      unit: 'cups',
+      category: 'butter-cheese',
+    },
+  },
+  {
+    input: {
+      item: 'Italian seasoning',
+      qty: 1,
+      unit: 'teaspoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'Italian seasoning',
+      qty: 1,
+      unit: 'teaspoon',
+      category: 'spices-seasonings',
+    },
+  },
+  {
+    input: {
+      item: 'chive',
+      qty: 2,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'chive',
+      qty: 2,
+      unit: 'tablespoons',
+      category: 'fresh-herbs',
+    },
+  },
+  {
+    input: {
       item: 'almond',
       qty: 0.25,
       unit: 'cup',
