@@ -238,11 +238,11 @@
   }
 
   .dashboard-timer-row.is-in-range .dashboard-timer-time {
-    color: #10b981;
+    color: var(--success-color);
   }
 
   .dashboard-timer-row.is-beyond-range .dashboard-timer-time {
-    color: #f97316;
+    color: var(--warning-color);
     animation: dashboard-text-pulse 1s infinite ease-in-out;
   }
 

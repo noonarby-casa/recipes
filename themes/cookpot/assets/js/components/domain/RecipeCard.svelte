@@ -379,9 +379,9 @@
     color: var(--noonblue);
   }
   .recipe-control-btn.recipe-remove-btn:hover {
-    background-color: rgba(255, 59, 48, 0.15);
-    border-color: #ff3b30;
-    color: #ff3b30;
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: var(--danger-color);
+    color: var(--danger-color);
   }
   .recipe-drag-handle {
     position: absolute;
@@ -391,7 +391,7 @@
     background: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(2px);
     border-radius: 6px;
-    color: #fff;
+    color: var(--font-btn-hover, #fff);
     cursor: grab;
     display: flex;
     font-size: 0.85rem;

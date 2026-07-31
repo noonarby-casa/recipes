@@ -225,9 +225,9 @@
   }
 
   .export-copy-btn.success {
-    background-color: #10b981;
-    border-color: #10b981;
-    color: #ffffff;
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: var(--font-btn-hover, #fff);
   }
 
   .export-preview-col {

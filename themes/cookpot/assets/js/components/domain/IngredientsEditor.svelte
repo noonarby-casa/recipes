@@ -247,7 +247,7 @@
     color: var(--text-body);
   }
   .remove-btn:hover {
-    color: #ef4444;
+    color: var(--danger-color);
   }
   .controls-row {
     display: flex;

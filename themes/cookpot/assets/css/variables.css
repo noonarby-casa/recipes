@@ -61,6 +61,13 @@
   --heart-color: #d11a5b;
   --heart-bg-hover: rgba(209, 26, 91, 0.08);
   --heart-border-hover: rgba(209, 26, 91, 0.4);
+  /* Semantic Status Colors */
+  --danger-color: #ef4444;
+  --danger-color-hover: #dc2626;
+  --success-color: #10b981;
+  --success-color-hover: #059669;
+  --warning-color: #f97316;
+  --warning-color-hover: #ea580c;
 }
 
 /* Dark Theme Variables */
@@ -126,4 +133,11 @@ html.dark-mode {
   --heart-color: #ff6584;
   --heart-bg-hover: rgba(255, 101, 132, 0.15);
   --heart-border-hover: rgba(255, 101, 132, 0.5);
+  /* Semantic Status Colors */
+  --danger-color: #f87171;
+  --danger-color-hover: #ef4444;
+  --success-color: #34d399;
+  --success-color-hover: #10b981;
+  --warning-color: #fb923c;
+  --warning-color-hover: #f97316;
 }

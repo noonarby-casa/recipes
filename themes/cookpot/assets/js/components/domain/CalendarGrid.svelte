@@ -141,10 +141,10 @@
 
   .planner-trash-zone {
     align-items: center;
-    background-color: rgba(255, 74, 74, 0.05);
-    border: 2px dashed #ff4a4a;
+    background-color: rgba(239, 68, 68, 0.05);
+    border: 2px dashed var(--danger-color);
     border-radius: 12px;
-    color: #ff4a4a;
+    color: var(--danger-color);
     display: none;
     font-size: 0.9rem;
     font-weight: 700;
