@@ -76,6 +76,8 @@ function loadFilters(): FiltersState {
   };
 }
 
+import { syncStoreWithUrl } from './urlSyncStore';
+
 export const filtersStore = writable<FiltersState>(loadFilters());
 
 filtersStore.subscribe((state) => {
@@ -85,6 +87,39 @@ filtersStore.subscribe((state) => {
     includedSources: state.includedSources,
     excludedSources: state.excludedSources,
   });
+});
+
+syncStoreWithUrl(filtersStore, {
+  paramKeys: ['q', 'tag', 'source', 'favorites'],
+  serialize: (state) => ({
+    q: state.searchQuery ? state.searchQuery : null,
+    tag: state.includedTags.length > 0 ? state.includedTags.join(',') : null,
+    source:
+      state.includedSources.length > 0 ? state.includedSources.join(',') : null,
+    favorites: state.favoritesOnly ? '1' : null,
+  }),
+  deserialize: (params) => {
+    const deserialized: Partial<FiltersState> = {};
+    if (params.has('q')) {
+      deserialized.searchQuery = params.get('q') || '';
+    }
+    if (params.has('tag')) {
+      deserialized.includedTags = (params.get('tag') || '')
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
+    }
+    if (params.has('source')) {
+      deserialized.includedSources = (params.get('source') || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    if (params.has('favorites')) {
+      deserialized.favoritesOnly = params.get('favorites') === '1';
+    }
+    return deserialized;
+  },
 });
 
 export function hasTag(rTags: string[] | undefined, tag: string): boolean {

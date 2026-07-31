@@ -6,6 +6,20 @@ import type { PlannedItem, Recipe } from '../types';
 import { formatCookingNumber } from '../units';
 import { parseRawUserInput } from '../simple-parser';
 import { generateInstanceId } from '../utils/ids';
+import { updateUrlParams } from '../utils/urlSync';
+
+export function syncPlanStateToUrl(searchStr: string | null): void {
+  if (searchStr === null) {
+    return;
+  }
+  const params = new URLSearchParams(searchStr);
+  updateUrlParams({
+    p: params.get('p'),
+    x: params.get('x'),
+    w: params.get('w'),
+    m: params.get('m'),
+  });
+}
 
 const DAY_CODES: Record<string, string> = {
   sun: '0',
