@@ -804,6 +804,20 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
+      item: 'green bean',
+      qty: 1,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'green bean',
+      qty: 1,
+      unit: 'cup',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
       item: 'steamed rice',
       prep: 'for serving',
     },
@@ -3490,6 +3504,51 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: '',
       category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'ground pork',
+      qty: 1,
+      unit: 'pound',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'ground pork',
+      qty: 1,
+      unit: 'pound',
+      category: 'meat',
+    },
+  },
+  {
+    input: {
+      item: 'ricotta',
+      qty: 0.5,
+      unit: 'cup',
+      desc: 'whole-milk',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'ricotta',
+      qty: 0.5,
+      unit: 'half-pint (8 oz)',
+      category: 'butter-cheese',
+      sizeNote: '1/2 cup needed',
+    },
+  },
+  {
+    input: {
+      item: 'bread crumbs',
+      qty: 0.5,
+      unit: 'cup',
+      desc: 'plain dry',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'bread crumbs',
+      qty: 0.5,
+      unit: 'cups',
+      category: 'pasta-grains',
     },
   },
 ];

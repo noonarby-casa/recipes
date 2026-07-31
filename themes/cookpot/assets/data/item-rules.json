@@ -414,7 +414,7 @@
   {
     "canonicalName": "panko",
     "category": "pasta-grains",
-    "items": ["panko"]
+    "items": ["panko", "bread crumbs", "breadcrumbs", "bread crumb"]
   },
   {
     "canonicalName": "pasta",
@@ -887,6 +887,7 @@
     "items": [
       "beef",
       "ground beef",
+      "ground pork",
       "beef chuck roast",
       "beef bone broth",
       "pork",
@@ -1140,7 +1141,7 @@
       {
         "singular": "russet potato",
         "plural": "russet potatoes",
-        "aliases": ["potato", "potatoes"]
+        "aliases": ["potato", "potatoes", "baby potato", "baby potatoes"]
       }
     ]
   },
@@ -1216,7 +1217,7 @@
   {
     "canonicalName": "sage",
     "category": "fresh-herbs",
-    "items": ["sage", "fresh sage", "sage leaf", "sage leaves"]
+    "items": ["sage", "fresh sage", "dried sage", "sage leaf", "sage leaves"]
   },
   {
     "canonicalName": "Kalamata olive",
@@ -1426,7 +1427,13 @@
   {
     "canonicalName": "rice vinegar",
     "category": "oils-vinegars",
-    "items": ["rice vinegar", "red wine vinegar", "rice wine vinegar"]
+    "items": [
+      "rice vinegar",
+      "red wine vinegar",
+      "rice wine vinegar",
+      "apple cider vinegar",
+      "cider vinegar"
+    ]
   },
   {
     "canonicalName": "sugar",
@@ -1513,5 +1520,16 @@
     "canonicalName": "tequila",
     "category": "beverages",
     "items": ["tequila"]
+  },
+  {
+    "canonicalName": "green beans",
+    "category": "fresh-produce",
+    "pluralByDefault": true,
+    "items": [
+      {
+        "singular": "green bean",
+        "plural": "green beans"
+      }
+    ]
   }
 ]
