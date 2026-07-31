@@ -1,6 +1,6 @@
 ---
 name: create-recipe
-description: Documents the step-by-step instructions for creating a new recipe in the Noonarby Casa Recipes website, including front matter schema, formatting quantity and timer shortcodes, and running verification checks.
+description: Step-by-step instructions for creating a new recipe in Noonarby Casa Recipes, including leaf bundle setup, front matter schema, shortcodes, and verification.
 ---
 
 # Creating a New Recipe in Noonarby Casa Recipes
@@ -9,116 +9,70 @@ This skill guides you through adding a new recipe leaf bundle to the Hugo websit
 
 ## 📁 1. Leaf Bundle Structure
 
-Each recipe is created as a Hugo leaf bundle inside `content/`:
+Each recipe is stored inside `content/` as a Hugo leaf bundle:
 
 - **Directory Path:** `content/<recipe-slug>/`
 - **File Name:** `index.md` (e.g. `content/chili-lime-grilled-chicken/index.md`)
-- **Important:** Do NOT create `featured-image.jpg` or any featured image files when creating new recipes.
+- **Note:** Do NOT create `featured-image.jpg` or any featured image files.
 
 ## 📝 2. TOML Front Matter Schema
 
-Every recipe must start with a TOML block. Refer to [archetypes/default.md](../../../archetypes/default.md) for the base schema.
-
-Here is the recommended format:
+Every recipe must start with a TOML block. Refer to [archetypes/default.md](../../../themes/cookpot/archetypes/default.md) for the base schema.
 
 ```toml
 +++
 title = "Recipe Title in Title Case"
-date = YYYY-MM-DDTHH:MM:SS-04:00 # Current local date/time (use local offset)
+date = YYYY-MM-DDTHH:MM:SS-04:00 # Current local timestamp with timezone offset
 slug = "recipe-slug-in-lowercase"
-shortId = "clc" # Unique 2-6 letter lowercase alphabetic ID. Search existing recipes first to avoid duplication!
+shortId = "clc" # Unique 2-6 letter lowercase alphabetic ID
 servings = 4
 times = [
   { time = "15 min", step = "prep" },
-  { time = "2 hours", step = "marinate" }, # (optional)
   { time = "30 min", step = "cook" }
 ]
-recipeSource = "Noonarbys" # Or "Rickarbys", etc. (defaults to "Noonarby")
-tags = [
-  "chicken",
-  "grill",
-  "summer",
-  "easy",
-  "dinner"
-]
+recipeSource = "Noonarbys" # Default: "Noonarby"
+tags = ["chicken", "grill", "dinner"]
 
 ingredients = [
-  { category = "Chicken", items = [
-    { qty = 2.25, unit = "pound", item = "chicken thighs", desc = "skin-on", prep = "deboned" }
+  { category = "Main Section", items = [
+    { qty = 2.25, unit = "pound", item = "chicken thigh", desc = "skin-on", prep = "deboned" }
   ] },
   { category = "Marinade", items = [
     { qty = 0.5, unit = "cup", item = "lime juice", desc = "fresh" },
-    { qty = 3, unit = "teaspoon", item = "lime zest", desc = "fresh" },
     { qty = 4, unit = "clove", item = "garlic", prep = "finely chopped" }
   ] }
 ]
 +++
 ```
 
-### TOML Properties & Guidelines:
+### Property Rules & Guidelines:
 
-1. **`shortId` Validation:**
-   - Must be **2 to 6 lowercase letters only** (no numbers, hyphens, or uppercase letters).
-   - Must be **globally unique** across all recipes. To quickly see all existing `shortId` values in the [content/](../../../content/) directory and help you pick a new unique one, run: `grep -RE "shortId =" content/`
-   - The build pipeline template [index.json](../../../themes/cookpot/layouts/index.json) validates this. If `shortId` is missing, duplicate, or invalid, the Hugo build will throw a build error and fail.
-
-2. **`tags` Categories:**
-   - Always include at least one of the primary tags from [constants.ts](../../../themes/cookpot/assets/js/constants.ts): `"breakfast"`, `"lunch"`, `"dinner"`, `"dessert"`, `"vegetarian"`, or `"vegan"`.
-   - Add other specific tags (e.g. `"chicken"`, `"baking"`, `"pasta"`, `"soup"`, `"salad"`, `"easy"`, `"summer"`) as appropriate.
-
-3. **`ingredients` Structure:**
-   - Mapped to the `IngredientInput` type in [types.ts](../../../themes/cookpot/assets/js/types.ts).
-   - `qty`: Numerical value (e.g., `2.25` or `0.333` instead of `"2 1/4"` or `"1/3"`).
-     - **Range Support:** Can be a tuple range `[min, max]` (e.g., `qty = [2, 3]` for 2 to 3 garlic cloves).
-   - `unit`: Supported unit name from [rules.ts](../../../themes/cookpot/assets/js/shopping-list/rules.ts). Prefer standard singular forms: `"pound"`, `"ounce"`, `"cup"`, `"tablespoon"`, `"teaspoon"`, `"clove"`, `"can"`, `"package"`, `"bag"`, `"box"`, `"jar"`, `"root"`, `"head"`, `"bundle"`, etc.
-   - `item`: Name of the ingredient. Use standard/simplified names in their **singular form** (e.g., `"garlic"`, `"butter"`, `"egg"`, `"lemon"`, `"lime"`, `"ginger"`, `"onion"`, `"scallion"`, `"grape tomato"`, `"chickpea"`). The client-side engine automatically scales and pluralizes/singularizes ingredient names dynamically on display (e.g., `1 egg` -> `3 eggs`). Defining them as plurals in the TOML prevents the engine from scaling down to singular forms.
-     - **Ingredient Standardizing & Substring Collisions**: Prefer simpler or standardized names (like `"Parmesan"` instead of `"Parmigiano-Reggiano"`) to ensure proper rule matching and avoid category collisions. The store section matching engine uses simple substring checks (e.g., `lower.includes("egg")` matches `"parmigiano-reggiano"`, which incorrectly maps it to the `'eggs'` category instead of cheese).
-   - `desc`: (Optional) Descriptors like `"fresh"`, `"skin-on"`.
-   - `prep`: (Optional) Preparation steps like `"finely chopped"`, `"minced"`, `"diced"`.
-   - `optional`: (Optional) Set to `true` if the ingredient is optional.
-   - `alt`: (Optional) Alternative measurement or substitution, mapped to the `IngredientInputAlt` type:
-     ```toml
-     # Example alternative ingredient
-     alt = { item = "regular soy sauce" }
-     # Example secondary measurement
-     alt = { qty = 1, unit = "tablespoon", item = "hot chilli sauce" }
-     ```
+1. **`shortId`:** Must be **2 to 6 lowercase letters only**. Verify uniqueness across [content/](../../../content/) using: `grep -RE "shortId =" content/`
+2. **`tags`:** Include at least one primary category (`"breakfast"`, `"lunch"`, `"dinner"`, `"dessert"`, `"vegetarian"`, `"vegan"`) plus specific descriptive tags.
+3. **`ingredients`:** Mapped to `IngredientInput` in [types.ts](../../../themes/cookpot/assets/js/types.ts).
+   - `qty`: Numerical amount or tuple range `[min, max]` (e.g. `qty = [2, 3]`).
+   - `unit`: Standard unit from UNIT_DEFINITIONS in [constants.ts](../../../themes/cookpot/assets/js/constants.ts) (`"pound"`, `"cup"`, `"clove"`, `"can"`, etc.).
+   - `item`: Use standard names in **singular form** (e.g. `"garlic"`, `"egg"`, `"grape tomato"`). The client engine handles pluralization dynamically on display.
+   - `desc` / `prep`: Optional descriptors (e.g. `"fresh"`, `"minced"`).
+   - `alt`: (Optional) Alternative item or measurement (e.g. `alt = { item = "soy sauce" }`).
 
 ## ✍️ 3. Instructions & Shortcodes
 
-Under the TOML block, add a `## Instructions` section. You must format ingredient quantities and step durations using the custom Hugo shortcodes:
+Under the TOML block, add a `## Instructions` section using custom shortcodes:
 
-### 🥄 Ingredient Quantities
+- **Ingredient Quantities:** `{{< qty "1/2 cup" >}}` or `{{< qty "2" >}} lemons` (wrap only the number for unsupported units).
+- **Interactive Timers:** `{{< timer "5-7 minutes" >}}` or `{{< timer "30 seconds" >}}`.
 
-Wrap ingredient quantities in step descriptions with the `qty` shortcode:
+## 🧪 4. Verification Checklist
 
-- **Standard Unit:** `{{< qty "amount unit" >}}` (e.g., `{{< qty "1/2 cup" >}}` or `{{< qty "2 1/4 pounds" >}}`).
-- **Unsupported/Non-standard Unit:** Wrap _only_ the numeric amount (e.g., `{{< qty "1" >}} lemon` or `{{< qty "2" >}} jalapeños`).
-- Refer to [rules.ts](../../../themes/cookpot/assets/js/shopping-list/rules.ts) for standard units.
+Before completing recipe creation:
 
-### ⏱️ Timers
+1. **Unit Tests:** Add test cases for any new ingredients to `INGREDIENT_TEST_CASES` in [conversions.test.ts](../../../themes/cookpot/assets/js/pipelines/conversions.test.ts).
+2. **Store Sections:** Check section mapping in [category-keywords.json](../../../themes/cookpot/assets/data/category-keywords.json) so new items don't fall back to `"Other"`.
+3. **CI Pipeline:** Run `pnpm run ci` to check types, linting, formatting, and unit tests (use `pnpm fix` if needed).
+4. **Hugo Build:** Run `hugo --minify` to verify index generation and build success.
 
-Wrap all step durations in the `timer` shortcode to enable interactive cooking timers:
+## 🔱 5. Version Control Protocol (`jj`)
 
-- **Format:** `{{< timer "duration" >}}` (e.g., `{{< timer "30 seconds" >}}`, `{{< timer "5-7 minutes" >}}`, or `{{< timer "2 hours" >}}`).
-- **Timer Range Support:** Durations can specify a range (e.g., `"5-7 minutes"`). The unit (minutes, seconds, hours, etc.) must be specified at the very end of the range.
-- Separate audio bounds will play at the lower and upper bounds of a range timer, whereas a single timer only plays at the upper bound.
-
-## 🧪 4. Verification & Testing
-
-Before squashing or committing any changes:
-
-1. **Lint and Format:** Execute `pnpm run ci` to run typechecking (`tsc`), linting (`eslint`), formatting (`prettier`), and unit tests (`vitest`).
-2. **Auto-Fix:** Use `pnpm fix` to automatically correct linting or formatting issues if any are found.
-3. **Add Ingredient Conversion Tests**: Because the test suite requires every unique recipe ingredient to be covered by at least one unit test, you **must** add a corresponding test case for any new ingredient to the `INGREDIENT_TEST_CASES` array in [conversions.test.ts](../../../themes/cookpot/assets/js/shopping-list/conversions.test.ts).
-4. **Verify Category Mapping**: Check the linter output of the unit tests. If any new recipe ingredients fall back to `"Other"` (or are misclassified into incorrect categories due to substring collisions), add corresponding keywords to [store-sections.ts](../../../themes/cookpot/assets/js/shopping-list/store-sections.ts) or define equivalence rules in [rules.ts](../../../themes/cookpot/assets/js/shopping-list/rules.ts) to ensure correct grocery list section mapping and to prevent collisions.
-5. **Hugo Build:** Run `hugo --minify` in the repository root to verify that the static site builds successfully and index validation succeeds.
-
-## 🔱 5. Version Control Protocol (Jujutsu)
-
-Always use the standard Jujutsu workflow when implementing changes:
-
-1. Describe the target (parent) commit: `jj describe -m "Add recipe: <Recipe Name>"`
-2. Create a scratch commit: `jj new`
-3. Implement files and perform testing.
-4. Squash changes into the described commit: `jj squash -u`
+Refer to the global `jj` skill. Always describe the target commit and squash changes:
+`jj describe -m "Add recipe: <Recipe Name>"` -> `jj new` -> edit/test -> `jj squash -u`.
