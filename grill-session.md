@@ -1,87 +1,63 @@
-# Grill Session: Removing Fallbacks & Ensuring Definition Completeness
+# Grill Session: Ensuring Favorite Recipes Can Be Filtered in Meal Planner Edit UX
 
 ## Closed Decisions
 
-### Q1. Fallback Removal Policy in `units.ts`
+### Q1. Primary UX Entry Point for Favorites Filtering
 
-- **Question:** Should `pluralizeWord` and `singularizeWord` strictly rely on explicit lookup entries from `UNIT_DEFINITIONS` and `ITEM_RULES`, completely eliminating generic English regex/heuristic rules (such as `+ 's'`, `endsWith('y') -> 'ies'`), and returning the original word untouched if unmapped?
-- **Decision:** Strict Registry Lookup with Passthrough.
+- **Question:** Where should the UI control for filtering by favorite recipes be exposed within the Meal Planner edit experience?
+- **Decision:** Both `RecipeSelectorModal.svelte` (inline heart button next to search input) and `FiltersModal.svelte` (dedicated toggle row).
 - **Details:**
-  - Remove English heuristic rules (`+ 's'`, `ies`, `es`) from `units.ts`.
-  - If a word is not in `SINGULAR_TO_PLURAL` or `PLURAL_TO_SINGULAR` (derived from `UNIT_DEFINITIONS` and `ITEM_RULES`), return the input string untouched without guessing.
+  - Inline heart button in `RecipeSelectorModal.svelte` allows zero-click toggling while browsing/adding recipes to a day.
+  - Toggle in `FiltersModal.svelte` provides consistency when configuring broader recipe search filters for the planner.
 
-### Q2. Store Categorization Single Source of Truth & Category Enum
+### Q2. Scope & Persistence of Favorites Filter
 
-- **Question:** Should store category assignment (`fresh-produce`, `dairy`, `spices-seasonings`, etc.) be consolidated directly onto `ItemRule` as an explicit enum property, replacing the fuzzy `CATEGORY_KEYWORDS` array and regex loops?
-- **Decision:** Consolidate `category` onto `ItemRule` using an `ItemCategory` Enum.
+- **Question:** How should the "Favorites Only" state behave regarding persistence and scope across the application?
+- **Decision:** Bind directly to `$filtersStore.favoritesOnly` (Option A).
 - **Details:**
-  - Define `ItemCategory` as a TypeScript `enum` (or `const` array/union) representing all valid item categories.
-  - Add `category: ItemCategory` as a required field on `ItemRule`, removing `CATEGORY_KEYWORDS` and dynamic regex matching from `store-sections.ts`.
-  - Add automated test assertions verifying:
-    1. Every item rule in `ITEM_RULES` specifies a valid `ItemCategory`.
-    2. Every `StoreLayout` section configuration defines a mapping location for 100% of defined `ItemCategory` values.
+  - Persisted in `localStorage` (`noonarby-meal-plan-filters`) and synchronized with URL search params (`?favorites=1`).
+  - Single global store guarantees consistent behavior between homepage search and meal planner modal views.
 
-### Q3. Automated Completeness Verification in `conversions.test.ts`
+### Q3. Handling Empty Favorites State & Active Filter Notice Banner
 
-- **Question:** How should automated completeness verification be implemented to ensure that every `item` and `unit` referenced across all recipe files in `content/` is defined in `UNIT_DEFINITIONS` and `ITEM_RULES`?
-- **Decision:** Extend existing static coverage assertions in `conversions.test.ts`.
+- **Question:** How should the UX communicate active favorite filtering and zero-result states in the recipe selector?
+- **Decision:** Option A (enhanced notice banner + targeted empty state with recovery action).
 - **Details:**
-  - `conversions.test.ts` already contains tests asserting 100% recipe ingredient coverage and 100% `ITEM_RULES` coverage against `INGREDIENT_TEST_CASES`.
-  - Update `INGREDIENT_TEST_CASES` to validate that `category` matches `ItemRule.category` using the `ItemCategory` enum.
-  - Add a test assertion in `conversions.test.ts` verifying that 100% of units referenced in recipes and test cases exist in `UNIT_DEFINITIONS` / `UNIT_LOOKUP`.
+  - Include `Favorites only` in `filtersNotice` within `RecipeSelectorModal.svelte` when active.
+  - When 0 results match with `favoritesOnly` active, display targeted `EmptyState` text ("No favorite recipes match your search") and a direct action button ("Show All Recipes") to disable the filter in one click.
 
-### Q4. Production vs. Development Runtime Handling & Compiler-Stripped Dev Badges
+### Q4. Visual Control Style & Micro-Interactions
 
-- **Question:** How should production vs development handle unregistered items & units at runtime?
-- **Decision:** Compiler-Stripped Dev-Mode Visual Warning Badges with Safe String Passthrough.
+- **Question:** How should the Favorites Filter controls be styled visually in `RecipeSelectorModal.svelte` and `FiltersModal.svelte`?
+- **Decision:** Option A (circular heart button in selector + dedicated tally pill in filters modal).
 - **Details:**
-  - In local development (`import.meta.env.DEV`), render inline visual badges (`⚠️ Unruled item`) on affected ingredients in `SingleRecipeScaler.svelte` and `ShoppingListColumn.svelte`.
-  - In production builds (`import.meta.env.PROD`), Vite's tree-shaker evaluates `import.meta.env.DEV` as `false` and performs dead-code elimination, completely stripping warning logic and templates from `meal-planner.js`.
-  - CI (`pnpm run ci` / `conversions.test.ts`) blocks any deployment containing un-ruled ingredients or un-registered units.
+  - In `RecipeSelectorModal.svelte`: Circular heart icon button beside search input, using `--heart-color` fill and `pop-anim` micro-animation matching `FavoriteButton.svelte`.
+  - In `FiltersModal.svelte`: Top-level toggle pill (`♥ Favorites Only`) with tally count of favorited recipes.
 
-### Q5. Scope Separation & Structured `ItemForm[]` Alias Schema
+### Q5. Auto-Planner ("Generate Dinner Plan") Feedback & Edge Cases
 
-- **Question:** How should `UNIT_DEFINITIONS` and `ITEM_RULES` be scoped, structured, and how should aliases be handled?
-- **Decision:** Strict Separation of Concerns with Structured `ItemForm[]` Nesting.
+- **Question:** How should the auto-planner handle cases where `favoritesOnly` is active but no favorited dinner recipes are available?
+- **Decision:** Option A (replace native `alert()` with in-app banner/toast offering fallback).
 - **Details:**
-  - `UNIT_DEFINITIONS`: Scoped strictly to measurement units (`volume`, `weight`), package/container units (`can`, `box`, `jar`), counting terms (`clove`, `head`, `bunch`), and size modifiers (`large`, `medium`). Unit abbreviations (`tbsp`, `oz`, `g`) are registered in unit `aliases`.
-  - `ITEM_RULES`: Scoped strictly to food ingredients. `items` uses a structured `ItemForm[]` array where each element specifies `{ singular, plural, aliases? }` (e.g. `{ singular: 'yellow onion', plural: 'yellow onions' }`).
-  - `canonicalName` defines the merged display name on shopping lists.
-  - No automatic cross-synthesis between units and items. Unit normalization occurs first via `UNIT_DEFINITIONS`, followed by item matching via `ITEM_RULES`.
-  - `SINGULAR_TO_PLURAL` and `PLURAL_TO_SINGULAR` index maps are auto-populated at module load time by combining both registries.
+  - Replaces native browser `alert()` with a smooth in-app notice banner/toast.
+  - Offers single-click action button ("Generate from All Recipes") to proceed without getting blocked.
 
-### Q6. Integration of `simple-parser.ts` with Central Registries
+### Q7. Automated Testing Strategy (Vitest Unit & Playwright E2E Specs)
 
-- **Question:** How should `simple-parser.ts` integrate with `ITEM_RULES` and `UNIT_DEFINITIONS`?
-- **Decision:** Eliminate hardcoded `unitList` and drive parsing directly from `UNIT_LOOKUP` and `ITEM_RULES`.
+- **Question:** How will automated tests verify the favorites filtering feature across unit logic and UI workflows?
+- **Decision:** Implement a dual-layer test suite using Vitest (store/filtering logic) and Playwright (E2E browser interactions).
 - **Details:**
-  - Delete hardcoded `unitList` string array in `parseRawUserInput()`.
-  - Use `UNIT_LOOKUP` (derived from `UNIT_DEFINITIONS`) to identify valid units from raw text input.
-  - Match remaining item text against `ITEM_RULES` (checking `singular`, `plural`, and `aliases` across `ItemForm[]`).
-
-### Q7. Elimination of Substring Heuristics in `isStaple()`
-
-- **Question:** How should pantry staple detection in `pipeline.ts` be simplified?
-- **Decision:** Replace heuristic fallback chain with explicit `rule.staple === true` on `ItemRule`.
-- **Details:**
-  - Delete `STAPLE_ITEMS` set and all string substring checks (`endsWith(' salt')`, `includes('pepper')`, `nonStapleSalts`, `staplePeppers`).
-  - `isStaple(itemName, rule)` evaluates strictly to `rule?.staple === true`.
-
-### Q8. Direct Canonical Key Lookup for Package Sizes (`us-grocery.json`)
-
-- **Question:** How should package size lookup in `pipeline.ts` locate store sizes without searching multiple key variations?
-- **Decision:** Index `us-grocery.json` strictly by `ItemRule.canonicalName`.
-- **Details:**
-  - Eliminate 3-step fallback search (`group.name` -> `group.key` -> `rule.items.map(...)`).
-  - Lookup retrieves sizes via single direct fetch: `layout.itemSizes[rule.canonicalName]`.
-
-### Q9. Elimination of Silent Category Fallback to `'other'`
-
-- **Question:** Should items be allowed to silently fall back to category `'other'`?
-- **Decision:** Eliminate silent fallback to `'other'` for all recipe ingredients.
-- **Details:**
-  - With `category: ItemCategory` required on every `ItemRule` (Q2) and 100% CI recipe item coverage enforced in `conversions.test.ts` (Q3), every ingredient in existing recipes resolves to a valid `ItemCategory`.
+  - **Unit & Store Tests (`themes/cookpot/assets/js/stores/filters.test.ts` & `planner.test.ts`):**
+    - Verify `filterRecipes()` filters recipes correctly when `favoritesOnly: true`.
+    - Verify `plannerStore.generateDinnerPlan()` pools favorited dinner recipes and returns `false` when no favorited dinner recipes exist.
+    - Verify URL query param synchronization (`?favorites=1`) and `localStorage` persistence.
+  - **E2E Playwright Tests (`tests/e2e/meal-plan.spec.ts`):**
+    - Test inline heart toggle in `RecipeSelectorModal.svelte` and verify `filtersNotice` updates.
+    - Test empty state recovery ("Show All Recipes" button) when zero favorited recipes match a search query.
+    - Test top-level `♥ Favorites Only` toggle pill and tally count in `FiltersModal.svelte`.
+    - Test auto-planner fallback banner ("Generate from All Recipes") when generating with 0 favorited recipes.
+  - **Verification:** Validated using `pnpm run test`, `pnpm run test:e2e`, and `pnpm run ci`.
 
 ## Open Questions
 
-_(All design decisions resolved!)_
+_(All design decisions resolved)_

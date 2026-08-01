@@ -306,16 +306,22 @@
     });
   }
 
+  let showGenerateFallbackNotice = $state(false);
+
   function handleGenerateDinnerPlan() {
+    showGenerateFallbackNotice = false;
     const planChanged = plannerStore.generateDinnerPlan();
     if (!planChanged) {
-      // display warning toast if favorites filter is active but no favorites exist
       if ($filtersStore.favoritesOnly) {
-        alert(
-          'No dinner recipes have been favorited yet. Add some favorites to generate a dinner plan.',
-        );
+        showGenerateFallbackNotice = true;
       }
     }
+  }
+
+  function handleFallbackGenerateAll() {
+    filtersStore.update((f) => ({ ...f, favoritesOnly: false }));
+    plannerStore.generateDinnerPlan();
+    showGenerateFallbackNotice = false;
   }
 
   let shoppingCount = $derived($plannerStore.plan.length);
@@ -400,6 +406,32 @@
         onclick={() => plannerStore.mergePlan()}
       >
         Merge Both
+      </button>
+    </div>
+  </div>
+{/if}
+
+{#if showGenerateFallbackNotice}
+  <div id="planner-fav-fallback-banner" class="planner-banner fav-fallback-banner">
+    <div class="banner-compare-group">
+      <span class="banner-text">
+        No favorited dinner recipes found. Would you like to generate your dinner plan using all catalog recipes?
+      </span>
+    </div>
+    <div class="banner-actions">
+      <button
+        type="button"
+        class="banner-btn btn-brand"
+        onclick={handleFallbackGenerateAll}
+      >
+        Generate from All Recipes
+      </button>
+      <button
+        type="button"
+        class="planner-clear-btn"
+        onclick={() => (showGenerateFallbackNotice = false)}
+      >
+        Dismiss
       </button>
     </div>
   </div>
@@ -620,7 +652,8 @@
     color: var(--noonblue);
   }
 
-  #plan-conflict-banner {
+  #plan-conflict-banner,
+  .fav-fallback-banner {
     display: flex;
   }
 

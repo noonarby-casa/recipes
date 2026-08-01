@@ -31,6 +31,8 @@
     calculateSourceTallies(recipes, $filtersStore, $favoritesStore)
   );
 
+  let totalFavoritesCount = $derived($favoritesStore.length);
+
   function toggleTag(tag: string) {
     filtersStore.update((state) => {
       const included = [...state.includedTags];
@@ -82,6 +84,7 @@
   function clearAll() {
     filtersStore.update((state) => ({
       ...state,
+      favoritesOnly: false,
       includedTags: [],
       excludedTags: [],
       includedSources: [],
@@ -117,6 +120,19 @@
         ✕ Clear All Filters
       </button>
     </div>
+    <h4 class="filter-section-title">
+      Favorites
+    </h4>
+    <div class="planner-tag-filters tag-section-margin">
+      <button
+        type="button"
+        class="tag-filter-pill {$filtersStore.favoritesOnly ? 'include' : ''}"
+        onclick={() => filtersStore.update((f) => ({ ...f, favoritesOnly: !f.favoritesOnly }))}
+      >
+        {#if $filtersStore.favoritesOnly}✓{/if} ♥ Favorites Only <span class="tag-count">{totalFavoritesCount}</span>
+      </button>
+    </div>
+    <hr class="modal-divider" />
     <h4 class="filter-section-title">
       Filter by Tag
     </h4>

@@ -9,6 +9,7 @@
   import Modal from '../primitives/Modal.svelte';
   import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
   import EmptyState from '../primitives/EmptyState.svelte';
+  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
   import ServingsPicker from './ServingsPicker.svelte';
   import IconPicker from './IconPicker.svelte';
   import IngredientsEditor from './IngredientsEditor.svelte';
@@ -51,6 +52,9 @@
 
   let filtersNotice = $derived.by(() => {
     const activeFilters: string[] = [];
+    if ($filtersStore.favoritesOnly) {
+      activeFilters.push('Favorites only');
+    }
     for (const tag of $filtersStore.includedTags) {
       activeFilters.push(`+${tag}`);
     }
@@ -203,6 +207,16 @@
             placeholder="Search available recipes by title..."
             autocomplete="off"
           />
+          <button
+            type="button"
+            class="recipe-favorite-filter-btn {$filtersStore.favoritesOnly ? 'is-favorite' : ''}"
+            onclick={() => filtersStore.update((f) => ({ ...f, favoritesOnly: !f.favoritesOnly }))}
+            aria-label="Filter favorites only"
+            aria-pressed={$filtersStore.favoritesOnly}
+            title={$filtersStore.favoritesOnly ? 'Showing favorites only' : 'Filter favorites only'}
+          >
+            <HeartIcon class="heart-icon {$filtersStore.favoritesOnly ? 'pop-anim' : ''}" />
+          </button>
         </div>
 
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -215,11 +229,28 @@
           aria-label="Available Recipes Shelf"
         >
           {#if filteredRecipes.length === 0}
-            <EmptyState
-              title={searchQuery.trim() ? 'No matching recipes found' : 'No recipes found'}
-              icon="🔍"
-              class="planner-empty-state-component"
-            />
+            {#if $filtersStore.favoritesOnly}
+              <div class="selector-empty-fav-wrapper">
+                <EmptyState
+                  title={searchQuery.trim() ? 'No favorite recipes match your search' : 'No favorite recipes found'}
+                  icon="❤️"
+                  class="planner-empty-state-component"
+                />
+                <button
+                  type="button"
+                  class="btn btn-secondary clear-fav-filter-btn"
+                  onclick={() => filtersStore.update((f) => ({ ...f, favoritesOnly: false }))}
+                >
+                  Show All Recipes
+                </button>
+              </div>
+            {:else}
+              <EmptyState
+                title={searchQuery.trim() ? 'No matching recipes found' : 'No recipes found'}
+                icon="🔍"
+                class="planner-empty-state-component"
+              />
+            {/if}
           {:else}
             {#each filteredRecipes as r, idx}
               {@const isPlanned = plannedPermalinks.has(r.permalink)}
@@ -418,16 +449,76 @@
   }
 
   .modal-search-wrapper {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
     padding: 1rem 1.5rem 0.5rem 1.5rem;
   }
   .modal-search-wrapper input {
-    width: 100%;
-    padding: 0.55rem 0.85rem;
+    background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    background: var(--bg-card);
     color: var(--text-body);
+    flex: 1;
     font-size: 0.85rem;
+    min-width: 0;
+    padding: 0.55rem 0.85rem;
+  }
+  .recipe-favorite-filter-btn {
+    align-items: center;
+    background: transparent;
+    border: 1px solid var(--btn-border);
+    border-radius: 50%;
+    box-shadow: var(--btn-shadow);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    flex-shrink: 0;
+    height: 36px;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 36px;
+  }
+  .recipe-favorite-filter-btn:hover {
+    background-color: var(--heart-bg-hover);
+    border-color: var(--heart-border-hover);
+    color: var(--heart-color);
+    transform: scale(1.05);
+  }
+  .recipe-favorite-filter-btn:active {
+    transform: scale(0.95);
+  }
+  :global(.recipe-favorite-filter-btn .heart-icon) {
+    fill: none;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    transition: fill 0.25s ease, stroke 0.25s ease;
+    width: 18px;
+  }
+  .recipe-favorite-filter-btn.is-favorite {
+    background-color: var(--heart-bg-hover);
+    border-color: var(--heart-color);
+    color: var(--heart-color);
+  }
+  :global(.recipe-favorite-filter-btn.is-favorite .heart-icon) {
+    fill: var(--heart-color);
+    stroke: var(--heart-color);
+  }
+  .selector-empty-fav-wrapper {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    grid-column: 1 / -1;
+    justify-content: center;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  .clear-fav-filter-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.85rem;
   }
   :global(.planner-empty-state-component) {
     margin-top: 1rem;

@@ -46,3 +46,71 @@ test.describe('Meal Planner default mode', () => {
     await expect(colShopping).toBeHidden();
   });
 });
+
+test.describe('Meal Planner favorites filtering UX', () => {
+  test('toggles favorites filter button in RecipeSelectorModal', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/plan/');
+
+    // Switch to edit mode
+    await page.click('#mode-edit-btn');
+
+    // Click "Add Recipe" slot for Monday
+    const addMonBtn = page.locator('.empty-slot-box[data-day="mon"]');
+    await addMonBtn.click();
+
+    // Verify recipe selector modal opens
+    const modal = page.locator('.selector-modal-content');
+    await expect(modal).toBeVisible();
+
+    // Verify inline heart filter button exists
+    const heartBtn = modal.locator('.recipe-favorite-filter-btn');
+    await expect(heartBtn).toBeVisible();
+    await expect(heartBtn).toHaveAttribute(
+      'aria-label',
+      'Filter favorites only',
+    );
+
+    // Click heart filter button to toggle favorites
+    await heartBtn.click();
+    await expect(heartBtn).toHaveClass(/is-favorite/);
+    await expect(heartBtn).toHaveAttribute('aria-pressed', 'true');
+
+    // Verify active filter notice banner mentions Favorites only
+    const notice = modal.locator('.modal-tags-notice');
+    await expect(notice).toContainText('Favorites only');
+  });
+
+  test('provides Show All Recipes action button when zero favorites match query', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/plan/?favorites=1');
+
+    await page.click('#mode-edit-btn');
+
+    const addMonBtn = page.locator('.empty-slot-box[data-day="mon"]');
+    await addMonBtn.click();
+
+    const modal = page.locator('.selector-modal-content');
+    await expect(modal).toBeVisible();
+
+    // Search for a non-matching query
+    const searchInput = modal.locator('.modal-search-wrapper input');
+    await searchInput.fill('NonexistentRecipeXYZ999');
+
+    // Verify recovery empty state and "Show All Recipes" button appear
+    const recoveryBtn = modal.locator('.clear-fav-filter-btn');
+    await expect(recoveryBtn).toBeVisible();
+    await expect(recoveryBtn).toContainText('Show All Recipes');
+
+    // Click recovery button
+    await recoveryBtn.click();
+
+    // Verify heart button is no longer active
+    const heartBtn = modal.locator('.recipe-favorite-filter-btn');
+    await expect(heartBtn).not.toHaveClass(/is-favorite/);
+  });
+});
