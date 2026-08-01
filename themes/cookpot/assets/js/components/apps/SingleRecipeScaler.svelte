@@ -56,7 +56,9 @@
       return false;
     }
     return $plannerStore.plan.some(
-      (item) => item.permalink === currentPermalink && item.day === dayKey,
+      (item) =>
+        item.permalink === currentPermalink &&
+        (item.date || item.day) === dayKey,
     );
   }
 
@@ -65,7 +67,9 @@
       return;
     }
     const existing = $plannerStore.plan.find(
-      (item) => item.permalink === currentPermalink && item.day === dayKey,
+      (item) =>
+        item.permalink === currentPermalink &&
+        (item.date || item.day) === dayKey,
     );
     if (existing) {
       plannerStore.removeRecipe(existing.instanceId);

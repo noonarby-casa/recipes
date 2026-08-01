@@ -16,6 +16,12 @@
     planUrlQueryString,
   } from '../../stores/planUrlSync';
   import { ls } from '../../utils/storage';
+  import {
+    formatDayTitle,
+    formatIsoDate,
+    getDateSequence,
+    getMondayOfWeek,
+  } from '../../utils/dates';
   import type { PlannedItem, Recipe } from '../../types';
   import CalendarGrid from '../domain/CalendarGrid.svelte';
   import ShoppingListColumn from '../domain/ShoppingListColumn.svelte';
@@ -23,17 +29,72 @@
   import RecipeSelectorModal from '../domain/RecipeSelectorModal.svelte';
   import PlannedRecipeDetailsModal from '../domain/PlannedRecipeDetailsModal.svelte';
   import MealPlannerToolbar from '../domain/MealPlannerToolbar.svelte';
+  import HistoryView from '../domain/HistoryView.svelte';
+  import StorageDetailsModal from '../domain/StorageDetailsModal.svelte';
+  import {
+    getCalendarLedgerFromStorage,
+    getLedgerStats,
+  } from '../../stores/planner';
+  import { getCalendarMonthMatrix } from '../../utils/dates';
 
   import ExportModal from '../domain/ExportModal.svelte';
   import type { ExportItem } from '../../pipelines/shoppingExportPipeline';
 
   let isFiltersModalOpen = $state(false);
   let isExportModalOpen = $state(false);
+  let isStorageModalOpen = $state(false);
   let activeAddDay = $state<string | null>(null);
   let detailsItem = $state<PlannedItem | null>(null);
 
   let copyMenuLabel = $state('Copy Menu');
   let unsubscribeUrlSync: (() => void) | null = null;
+
+  const now = new Date();
+  let historyYear = $state(now.getFullYear());
+  let historyMonth = $state(now.getMonth());
+
+  let storageStats = $derived(getLedgerStats());
+
+  let totalMonthMeals = $derived.by(() => {
+    const ledger = getCalendarLedgerFromStorage();
+    const matrix = getCalendarMonthMatrix(historyYear, historyMonth);
+    let count = 0;
+    matrix.forEach((row) => {
+      row.forEach((cell) => {
+        if (cell) {
+          const iso = formatIsoDate(cell);
+          if (ledger[iso]) {
+            count += ledger[iso].length;
+          }
+        }
+      });
+    });
+    return count;
+  });
+
+  function prevHistoryMonth() {
+    if (historyMonth === 0) {
+      historyYear -= 1;
+      historyMonth = 11;
+    } else {
+      historyMonth -= 1;
+    }
+  }
+
+  function nextHistoryMonth() {
+    if (historyMonth === 11) {
+      historyYear += 1;
+      historyMonth = 0;
+    } else {
+      historyMonth += 1;
+    }
+  }
+
+  function jumpHistoryToday() {
+    const today = new Date();
+    historyYear = today.getFullYear();
+    historyMonth = today.getMonth();
+  }
 
   let combinedExportItems = $derived<ExportItem[]>([
     ...$combinedShoppingList.combinedBuyItems.map((item) => {
@@ -55,17 +116,6 @@
     }),
   ]);
 
-  const DAY_NAMES: Record<string, string> = {
-    sun: 'Sunday',
-    mon: 'Monday',
-    tue: 'Tuesday',
-    wed: 'Wednesday',
-    thu: 'Thursday',
-    fri: 'Friday',
-    sat: 'Saturday',
-    supplemental: 'Anytime / Supplemental',
-  };
-
   function arePlansEqual(planA: PlannedItem[], planB: PlannedItem[]): boolean {
     if (planA.length !== planB.length) {
       return false;
@@ -79,7 +129,7 @@
       if (a.customTitle !== b.customTitle) {
         return false;
       }
-      if (a.day !== b.day) {
+      if ((a.date || a.day) !== (b.date || b.day)) {
         return false;
       }
       if (Math.abs(a.scale - b.scale) > 0.001) {
@@ -118,10 +168,21 @@
 
       const urlInfo = parsePlanUrlParams(data, window.location.search);
       const urlPlan = urlInfo.plan;
+      const urlStartDate = urlInfo.startDate;
+      const urlDurationDays = urlInfo.durationDays;
       const urlWorkWeekOnly = urlInfo.workWeekOnly;
       const urlActiveTab = urlInfo.activeTab;
 
-      const localPlanExists = ls.has('noonarby-meal-plan');
+      settingsStore.update((s) => ({
+        ...s,
+        startDate: urlStartDate,
+        durationDays: urlDurationDays,
+        workWeekOnly: urlWorkWeekOnly,
+        activeTab: urlActiveTab,
+      }));
+
+      const localPlanExists =
+        ls.has('noonarby-calendar-ledger') || ls.has('noonarby-meal-plan');
       const localPlan = getLocalPlanFromStorage();
 
       const hasConflict =
@@ -132,21 +193,11 @@
 
       if (hasConflict) {
         plannerStore.setConflict(urlPlan, localPlan);
-        settingsStore.update((s) => ({
-          ...s,
-          workWeekOnly: urlWorkWeekOnly,
-          activeTab: 'view',
-        }));
       } else {
         if (urlInfo.hasValidParams) {
           plannerStore.reorderRecipes(urlPlan);
-          settingsStore.update((s) => ({
-            ...s,
-            workWeekOnly: urlWorkWeekOnly,
-            activeTab: urlActiveTab,
-          }));
         } else {
-          plannerStore.reorderRecipes(localPlan);
+          plannerStore.reloadActivePlan();
         }
       }
     } catch (e) {
@@ -211,9 +262,12 @@
       return;
     }
 
-    const dayMeals = $plannerStore.plan.filter((p) => p.day === item.day);
+    const itemKey = item.date || item.day;
+    const dayMeals = $plannerStore.plan.filter(
+      (p) => (p.date || p.day) === itemKey,
+    );
     const isDinnerSlot =
-      item.day !== 'supplemental' && dayMeals.indexOf(item) === 0;
+      itemKey !== 'supplemental' && dayMeals.indexOf(item) === 0;
 
     const filters = $filtersStore;
     const favs = $favoritesStore;
@@ -278,13 +332,17 @@
       return;
     }
 
-    const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-    const activeDays = $settingsStore.workWeekOnly ? DAYS.slice(0, 5) : DAYS;
-    let text = 'My Weekly Meal Plan:\n';
+    const activeDates = getDateSequence(
+      $settingsStore.startDate || formatIsoDate(getMondayOfWeek()),
+      $settingsStore.durationDays || 5,
+    );
+    let text = 'My Meal Plan:\n';
 
-    activeDays.forEach((day) => {
-      const dayRecipes = $plannerStore.plan.filter((p) => p.day === day);
-      text += `\n${DAY_NAMES[day]}:\n`;
+    activeDates.forEach((dateStr) => {
+      const dayRecipes = $plannerStore.plan.filter(
+        (p) => (p.date || p.day) === dateStr,
+      );
+      text += `\n${formatDayTitle(dateStr)}:\n`;
       if (dayRecipes.length === 0) {
         text += '  - No meals planned\n';
       } else {
@@ -439,14 +497,29 @@
 
 <MealPlannerToolbar
   activeTab={$settingsStore.activeTab}
-  workWeekOnly={$settingsStore.workWeekOnly}
+  startDate={$settingsStore.startDate}
+  durationDays={$settingsStore.durationDays}
   shoppingCount={shoppingCount}
   hasPlan={$plannerStore.plan.length > 0}
   copyMenuLabel={copyMenuLabel}
-  onTabChange={(tab) =>
-    settingsStore.update((s) => ({ ...s, activeTab: tab }))}
-  onWorkWeekChange={(workWeekOnly) =>
-    settingsStore.update((s) => ({ ...s, workWeekOnly }))}
+  historyYear={historyYear}
+  historyMonth={historyMonth}
+  storageKb={storageStats.storageKb}
+  storagePercent={storageStats.percent}
+  totalMonthMeals={totalMonthMeals}
+  onTabChange={(tab) => {
+    settingsStore.update((s) => ({ ...s, activeTab: tab }));
+    plannerStore.reloadActivePlan();
+  }}
+  onRangeChange={(startDate, durationDays) => {
+    settingsStore.update((s) => ({
+      ...s,
+      startDate,
+      durationDays,
+      workWeekOnly: durationDays === 5,
+    }));
+    plannerStore.reloadActivePlan();
+  }}
   onAdjustPortions={adjustGlobalPortions}
   onOpenFilters={() => (isFiltersModalOpen = true)}
   onGenerateDinnerPlan={handleGenerateDinnerPlan}
@@ -455,6 +528,25 @@
   onExportList={() => (isExportModalOpen = true)}
   onCopyMenu={copyMenuTextToClipboard}
   onResetCheckboxes={() => shoppingCheckedStore.clearChecked()}
+  onPrevHistoryMonth={prevHistoryMonth}
+  onNextHistoryMonth={nextHistoryMonth}
+  onJumpHistoryToday={jumpHistoryToday}
+  onSelectHistoryMonthYear={(y, m) => {
+    historyYear = y;
+    historyMonth = m;
+  }}
+  onOpenStorageModal={() => (isStorageModalOpen = true)}
+  onJumpActivePlan={() => {
+    const mon = formatIsoDate(getMondayOfWeek());
+    settingsStore.update((s) => ({
+      ...s,
+      startDate: mon,
+      durationDays: 5,
+      workWeekOnly: true,
+      activeTab: 'view',
+    }));
+    plannerStore.reloadActivePlan();
+  }}
 />
 
 <!-- 6. Main Grid / Columns Wrapper -->
@@ -470,6 +562,22 @@
   {#if $settingsStore.activeTab === 'shop'}
     <ShoppingListColumn />
   {/if}
+  {#if $settingsStore.activeTab === 'history'}
+    <HistoryView
+      viewYear={historyYear}
+      viewMonth={historyMonth}
+      onSelectWindow={(startDate, durationDays) => {
+        settingsStore.update((s) => ({
+          ...s,
+          startDate,
+          durationDays,
+          workWeekOnly: durationDays === 5,
+          activeTab: 'view',
+        }));
+        plannerStore.reloadActivePlan();
+      }}
+    />
+  {/if}
 </div>
 
 <!-- 7. Modals & Dialogs -->
@@ -482,6 +590,10 @@
   onClose={() => (isExportModalOpen = false)}
   title="Combined Shopping List"
   items={combinedExportItems}
+/>
+<StorageDetailsModal
+  isOpen={isStorageModalOpen}
+  onClose={() => (isStorageModalOpen = false)}
 />
 
 {#if activeAddDay}
@@ -506,9 +618,11 @@
   <div class="plan-toast-notification">
     <div class="toast-body">
       <span
-        >Removed <strong>{removedRecipeTitle}</strong> from {DAY_NAMES[
-          $plannerStore.lastRemovedRecipe.day
-        ]}.</span
+        >Removed <strong>{removedRecipeTitle}</strong> from {formatDayTitle(
+          $plannerStore.lastRemovedRecipe.date ||
+            $plannerStore.lastRemovedRecipe.day ||
+            '',
+        )}.</span
       >
       <button
         type="button"

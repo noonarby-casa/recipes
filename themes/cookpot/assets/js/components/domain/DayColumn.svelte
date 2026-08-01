@@ -21,7 +21,7 @@
 
   let { day, dayName, editMode, onAddRecipe, onSwapRecipe, onEditDetails }: Props = $props();
 
-  let items = $derived($plannerStore.plan.filter((p) => p.day === day));
+  let items = $derived($plannerStore.plan.filter((p) => (p.date || p.day) === day));
 
   let isDragOver = $state(false);
 

@@ -7,6 +7,14 @@ import { formatCookingNumber } from '../units';
 import { parseRawUserInput } from '../simple-parser';
 import { generateInstanceId } from '../utils/ids';
 import { updateUrlParams } from '../utils/urlSync';
+import {
+  addDays,
+  formatIsoDate,
+  formatUrlDate,
+  getMondayOfWeek,
+  parseIsoDate,
+  parseUrlDate,
+} from '../utils/dates';
 
 export function syncPlanStateToUrl(searchStr: string | null): void {
   if (searchStr === null) {
@@ -17,20 +25,10 @@ export function syncPlanStateToUrl(searchStr: string | null): void {
     p: params.get('p'),
     x: params.get('x'),
     w: params.get('w'),
+    d: params.get('d'),
     m: params.get('m'),
   });
 }
-
-const DAY_CODES: Record<string, string> = {
-  sun: '0',
-  mon: '1',
-  tue: '2',
-  wed: '3',
-  thu: '4',
-  fri: '5',
-  sat: '6',
-  supplemental: '7',
-};
 
 const CODE_TO_DAYS: Record<string, string> = {
   '0': 'sun',
@@ -78,25 +76,34 @@ function codeToPermalink(code: string, recipes: Recipe[]): string {
 export const planUrlQueryString = derived(
   [plannerStore, settingsStore, recipesStore],
   ([$planner, $settings, $recipes]) => {
-    // If planner is in preview/conflict mode, we shouldn't overwrite the URL with the local state randomly,
-    // wait, does legacy code sync URL in conflict mode?
-    // "unless in preview conflict mode" -> it checks if the conflict banner is open, and if so, it doesn't write.
     if ($planner.isPreviewing) {
-      // In conflict preview mode, return a special null/empty indicator, or return the current query string
-      // to avoid modifying it. Let's just return a flag or prevent replacement.
       return null;
     }
 
     const params = new URLSearchParams();
     const entries: string[] = [];
 
+    const startDateStr =
+      $settings.startDate || formatIsoDate(getMondayOfWeek());
+    const startDate = parseIsoDate(startDateStr);
+    const durationDays = $settings.durationDays || 5;
+
     $planner.plan.forEach((item) => {
       const rec = item.permalink
         ? $recipes.find((r) => r.permalink === item.permalink)
         : undefined;
-      const dayCode = DAY_CODES[item.day];
-      if (!dayCode) {
-        return;
+
+      let dayCode = 'S';
+      if (item.date && item.date !== 'supplemental') {
+        const itemDate = parseIsoDate(item.date);
+        const offsetMs = itemDate.getTime() - startDate.getTime();
+        const offsetDays = Math.round(offsetMs / (1000 * 60 * 60 * 24));
+        if (offsetDays >= 0 && offsetDays < durationDays) {
+          dayCode = offsetDays.toString();
+        } else {
+          // Date outside current window, skip encoding into this window's URL
+          return;
+        }
       }
 
       let code = 'c';
@@ -117,7 +124,7 @@ export const planUrlQueryString = derived(
     });
 
     if (entries.length > 0) {
-      const pVal = ['1', ...entries].join('.');
+      const pVal = ['2', ...entries].join('.');
       params.set('p', pVal);
     }
 
@@ -166,14 +173,15 @@ export const planUrlQueryString = derived(
       params.set('x', base64UrlEncode(customEntries.join(entrySeparator)));
     }
 
-    if (!$settings.workWeekOnly) {
-      params.set('w', '7');
-    }
+    params.set('d', formatUrlDate(startDate));
+    params.set('w', durationDays.toString());
 
     if ($settings.activeTab === 'edit') {
       params.set('m', 'e');
     } else if ($settings.activeTab === 'shop') {
       params.set('m', 's');
+    } else if ($settings.activeTab === 'history') {
+      params.set('m', 'h');
     }
 
     return params.toString();
@@ -186,20 +194,136 @@ export function parsePlanUrlParams(
   searchString: string,
 ): {
   plan: PlannedItem[];
+  startDate: string;
+  durationDays: number;
   workWeekOnly: boolean;
-  activeTab: 'edit' | 'view' | 'shop';
+  activeTab: 'edit' | 'view' | 'shop' | 'history';
   hasValidParams: boolean;
 } {
   const params = new URLSearchParams(searchString);
   let hasValidParams = false;
   const newPlan: PlannedItem[] = [];
 
+  // Parse start date d=YYYYMMDD
+  let startDate = getMondayOfWeek();
+  if (params.has('d')) {
+    const parsedD = parseUrlDate(params.get('d') || '');
+    if (parsedD) {
+      startDate = parsedD;
+      hasValidParams = true;
+    }
+  }
+
+  // Parse duration w=1..21
+  let durationDays = 5; // Default workweek
+  let workWeekOnly = true;
+  if (params.has('w') || params.has('week')) {
+    hasValidParams = true;
+    const wVal = params.get('w') || params.get('week');
+    if (wVal === '7') {
+      durationDays = 7;
+      workWeekOnly = false;
+    } else {
+      const parsedW = parseInt(wVal || '', 10);
+      if (!isNaN(parsedW) && parsedW >= 1 && parsedW <= 21) {
+        durationDays = parsedW;
+        workWeekOnly = durationDays === 5;
+      }
+    }
+  }
+
   if (params.has('p')) {
     const pVal = params.get('p') || '';
     const parts = pVal.split('.');
     const version = parts[0];
 
-    if (version === '1') {
+    if (version === '2') {
+      hasValidParams = true;
+      const entries = parts.slice(1);
+      entries.forEach((entry) => {
+        if (!entry) {
+          return;
+        }
+
+        let dayCodeStr: string;
+        let restStr: string;
+
+        if (entry.startsWith('S') || entry.startsWith('s')) {
+          dayCodeStr = 'S';
+          restStr = entry.slice(1);
+        } else {
+          let letterIdx = -1;
+          for (let i = 0; i < entry.length; i++) {
+            const ch = entry.charAt(i);
+            if (
+              (ch >= 'a' && ch <= 'z') ||
+              (ch >= 'A' && ch <= 'Z') ||
+              ch === '/'
+            ) {
+              letterIdx = i;
+              break;
+            }
+          }
+
+          if (letterIdx !== -1) {
+            dayCodeStr = entry.slice(0, letterIdx);
+            restStr = entry.slice(letterIdx);
+          } else {
+            dayCodeStr = entry.charAt(0);
+            restStr = entry.slice(1);
+          }
+        }
+
+        if (!restStr) {
+          return;
+        }
+
+        let targetDateStr = 'supplemental';
+        if (dayCodeStr !== 'S') {
+          const offsetDays = parseInt(dayCodeStr, 10);
+          if (!isNaN(offsetDays)) {
+            targetDateStr = formatIsoDate(addDays(startDate, offsetDays));
+          }
+        }
+
+        let digitIndex = -1;
+        for (let i = 0; i < restStr.length; i++) {
+          const char = restStr.charAt(i);
+          if (char >= '0' && char <= '9') {
+            digitIndex = i;
+            break;
+          }
+        }
+
+        let code = restStr;
+        let portions: number | null = null;
+        if (digitIndex !== -1) {
+          code = restStr.slice(0, digitIndex);
+          portions = parseInt(restStr.slice(digitIndex), 10);
+        }
+
+        const isCustomCode = code === 'c' || code === 'custom';
+        const permalink = isCustomCode
+          ? undefined
+          : codeToPermalink(code, recipes);
+        const rec = permalink
+          ? recipes.find((r) => r.permalink === permalink)
+          : undefined;
+
+        const defaultServings = rec ? rec.servings : 4;
+        let scale = 1.0;
+        if (portions !== null && !isNaN(portions)) {
+          scale = portions / defaultServings;
+        }
+
+        newPlan.push({
+          instanceId: generateInstanceId(),
+          permalink: permalink || undefined,
+          scale,
+          date: targetDateStr,
+        });
+      });
+    } else if (version === '1') {
       hasValidParams = true;
       const entries = parts.slice(1);
       entries.forEach((entry) => {
@@ -208,8 +332,8 @@ export function parsePlanUrlParams(
         }
 
         const dayCode = entry.charAt(0);
-        const day = CODE_TO_DAYS[dayCode];
-        if (!day) {
+        const dayAbbrev = CODE_TO_DAYS[dayCode];
+        if (!dayAbbrev) {
           console.warn(`[URL Parser] Invalid day code: ${dayCode}`);
           return;
         }
@@ -249,16 +373,31 @@ export function parsePlanUrlParams(
           scale = portions / defaultServings;
         }
 
+        let targetDateStr = 'supplemental';
+        if (dayAbbrev !== 'supplemental') {
+          const dayOffsetMap: Record<string, number> = {
+            mon: 0,
+            tue: 1,
+            wed: 2,
+            thu: 3,
+            fri: 4,
+            sat: 5,
+            sun: 6,
+          };
+          const offset = dayOffsetMap[dayAbbrev] ?? 0;
+          targetDateStr = formatIsoDate(addDays(startDate, offset));
+        }
+
         newPlan.push({
           instanceId: generateInstanceId(),
           permalink: permalink || undefined,
           scale,
-          day,
+          date: targetDateStr,
         });
       });
     }
   } else {
-    // Legacy fallback
+    // Legacy fallback for query params like ?mon=rec1
     const DAYS_LIST = [
       'mon',
       'tue',
@@ -269,8 +408,17 @@ export function parsePlanUrlParams(
       'sun',
       'supplemental',
     ];
-    DAYS_LIST.forEach((day) => {
-      const values = params.getAll(day);
+    const dayOffsetMap: Record<string, number> = {
+      mon: 0,
+      tue: 1,
+      wed: 2,
+      thu: 3,
+      fri: 4,
+      sat: 5,
+      sun: 6,
+    };
+    DAYS_LIST.forEach((dayAbbrev) => {
+      const values = params.getAll(dayAbbrev);
       if (values.length > 0) {
         hasValidParams = true;
         values.forEach((val) => {
@@ -287,11 +435,18 @@ export function parsePlanUrlParams(
           const permalink = isCustomCode
             ? undefined
             : codeToPermalink(code, recipes);
+
+          let targetDateStr = 'supplemental';
+          if (dayAbbrev !== 'supplemental') {
+            const offset = dayOffsetMap[dayAbbrev] ?? 0;
+            targetDateStr = formatIsoDate(addDays(startDate, offset));
+          }
+
           newPlan.push({
             instanceId: generateInstanceId(),
             permalink: permalink || undefined,
             scale: isNaN(scale) ? 1.0 : scale,
-            day: day === 'supplemental' ? 'supplemental' : day,
+            date: targetDateStr,
           });
         });
       }
@@ -379,16 +534,22 @@ export function parsePlanUrlParams(
     }
   }
 
-  let workWeekOnly = true;
-  if (params.has('w') || params.has('week')) {
-    hasValidParams = true;
-    const wVal = params.get('w') || params.get('week');
-    workWeekOnly = wVal !== '7';
-  }
-
   const rawMode = params.get('m') || params.get('mode');
-  const activeTab: 'edit' | 'view' | 'shop' =
-    rawMode === 'e' ? 'edit' : rawMode === 's' ? 'shop' : 'view';
+  const activeTab: 'edit' | 'view' | 'shop' | 'history' =
+    rawMode === 'e'
+      ? 'edit'
+      : rawMode === 's'
+        ? 'shop'
+        : rawMode === 'h'
+          ? 'history'
+          : 'view';
 
-  return { plan: newPlan, workWeekOnly, activeTab, hasValidParams };
+  return {
+    plan: newPlan,
+    startDate: formatIsoDate(startDate),
+    durationDays,
+    workWeekOnly,
+    activeTab,
+    hasValidParams,
+  };
 }

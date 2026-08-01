@@ -22,7 +22,6 @@
   body.meal-planner-layout main #meal-planner {
     display: grid;
     flex: 1;
-    gap: 0.75rem;
     grid-template-areas:
       'banner'
       'header'

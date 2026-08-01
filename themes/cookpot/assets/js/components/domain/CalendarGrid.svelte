@@ -6,6 +6,7 @@
   import DayColumn from './DayColumn.svelte';
   import DietBreakdownPanel from './DietBreakdownPanel.svelte';
   import TrashIcon from '../primitives/icons/TrashIcon.svelte';
+  import { formatDayTitle, getDateSequence, formatIsoDate, getMondayOfWeek } from '../../utils/dates';
 
   interface Props {
     /** Whether the meal planner is currently in edit mode (allowing adding/moving/removing/editing recipes). */
@@ -20,20 +21,14 @@
 
   let { editMode, onAddRecipe, onSwapRecipe, onEditDetails }: Props = $props();
 
-  const DAYS_ALL = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-  const DAY_NAMES: Record<string, string> = {
-    sun: 'Sunday',
-    mon: 'Monday',
-    tue: 'Tuesday',
-    wed: 'Wednesday',
-    thu: 'Thursday',
-    fri: 'Friday',
-    sat: 'Saturday',
-  };
+  let startDateStr = $derived($settingsStore.startDate || formatIsoDate(getMondayOfWeek()));
+  let durationDays = $derived($settingsStore.durationDays || 5);
 
-  let activeDays = $derived($settingsStore.workWeekOnly ? DAYS_ALL.slice(0, 5) : DAYS_ALL);
+  let activeDays = $derived(getDateSequence(startDateStr, durationDays));
 
-  let supplementalItems = $derived($plannerStore.plan.filter((p) => p.day === 'supplemental'));
+  let supplementalItems = $derived(
+    $plannerStore.plan.filter((p) => (p.date || p.day) === 'supplemental'),
+  );
 
   let isDragOverTrash = $state(false);
 </script>
@@ -47,13 +42,17 @@
   role="region"
   aria-label="Meal Planner Calendar"
 >
-  <div id="planned-recipes-list-grid" class="planned-recipes-grid" class:grid-5day={$settingsStore.workWeekOnly}>
-    {#each activeDays as day}
+  <div
+    id="planned-recipes-list-grid"
+    class="planned-recipes-grid"
+    class:grid-5day={$settingsStore.workWeekOnly}
+  >
+    {#each activeDays as dateStr}
       <DayColumn
-        {day}
-        dayName={DAY_NAMES[day]}
+        day={dateStr}
+        dayName={formatDayTitle(dateStr)}
         {editMode}
-        onAddRecipe={() => onAddRecipe(day)}
+        onAddRecipe={() => onAddRecipe(dateStr)}
         {onSwapRecipe}
         {onEditDetails}
       />
@@ -130,11 +129,12 @@
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
-    .planned-recipes-grid :global(.day-column[data-day="supplemental"]) {
-      grid-column: 3 / span 3;
+    .planned-recipes-grid :global(.day-column[data-day='supplemental']) {
+      grid-column: 1 / span 5;
     }
 
-    .planned-recipes-grid.grid-5day :global(.day-column[data-day="supplemental"]) {
+    .planned-recipes-grid.grid-5day
+      :global(.day-column[data-day='supplemental']) {
       grid-column: 1 / span 5;
     }
   }
@@ -160,4 +160,3 @@
     transform: scale(1.01);
   }
 </style>
-

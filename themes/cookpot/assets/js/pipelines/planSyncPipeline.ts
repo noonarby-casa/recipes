@@ -6,8 +6,10 @@ export interface PlanUrlSyncData {
   searchString: string;
   recipes: Recipe[];
   parsedPlan?: PlannedItem[];
+  startDate?: string;
+  durationDays?: number;
   workWeekOnly?: boolean;
-  activeTab?: 'edit' | 'view' | 'shop';
+  activeTab?: 'edit' | 'view' | 'shop' | 'history';
   hasValidParams?: boolean;
 }
 
@@ -20,6 +22,8 @@ export class ParsePlanUrlStep implements RuleStep<PlanUrlSyncData> {
       return {
         ...item,
         parsedPlan: parsed.plan,
+        startDate: parsed.startDate,
+        durationDays: parsed.durationDays,
         workWeekOnly: parsed.workWeekOnly,
         activeTab: parsed.activeTab,
         hasValidParams: parsed.hasValidParams,
@@ -36,8 +40,10 @@ export function executePlanUrlSync(
   recipes: Recipe[],
 ): {
   plan: PlannedItem[];
+  startDate?: string;
+  durationDays?: number;
   workWeekOnly: boolean;
-  activeTab: 'edit' | 'view' | 'shop';
+  activeTab: 'edit' | 'view' | 'shop' | 'history';
   hasValidParams: boolean;
 } {
   const pipeline = new RulePipeline<PlanUrlSyncData>().use(
@@ -49,6 +55,8 @@ export function executePlanUrlSync(
 
   return {
     plan: data?.parsedPlan ?? [],
+    startDate: data?.startDate,
+    durationDays: data?.durationDays,
     workWeekOnly: data?.workWeekOnly ?? true,
     activeTab: data?.activeTab ?? 'view',
     hasValidParams: data?.hasValidParams ?? false,

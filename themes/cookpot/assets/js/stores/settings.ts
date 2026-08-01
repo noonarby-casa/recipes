@@ -1,18 +1,42 @@
 import { writable } from 'svelte/store';
 import type { FontSizeOption, SettingsState } from '../types';
 import { ls } from '../utils/storage';
+import { formatIsoDate, getMondayOfWeek } from '../utils/dates';
 
 const SETTINGS_KEY = 'noonarby-meal-plan-settings';
 const FONT_SIZE_KEY = 'recipe-instructions-font-size';
 
 function loadSettings(): SettingsState {
   let workWeekOnly = true;
-  const parsed = ls.getJson<{ workWeekOnly?: unknown }>(SETTINGS_KEY);
+  let durationDays = 5;
+  let startDate = formatIsoDate(getMondayOfWeek());
+
+  const parsed = ls.getJson<{
+    workWeekOnly?: unknown;
+    durationDays?: unknown;
+    startDate?: unknown;
+  }>(SETTINGS_KEY);
+
   if (parsed?.workWeekOnly !== undefined) {
     workWeekOnly = !!parsed.workWeekOnly;
+    durationDays = workWeekOnly ? 5 : 7;
   }
+  if (
+    typeof parsed?.durationDays === 'number' &&
+    parsed.durationDays >= 1 &&
+    parsed.durationDays <= 21
+  ) {
+    durationDays = parsed.durationDays;
+    workWeekOnly = durationDays === 5;
+  }
+  if (typeof parsed?.startDate === 'string' && parsed.startDate.length === 10) {
+    startDate = parsed.startDate;
+  }
+
   return {
     activeTab: 'view',
+    startDate,
+    durationDays,
     workWeekOnly,
   };
 }
@@ -20,7 +44,11 @@ function loadSettings(): SettingsState {
 export const settingsStore = writable<SettingsState>(loadSettings());
 
 settingsStore.subscribe((state) => {
-  ls.setJson(SETTINGS_KEY, { workWeekOnly: state.workWeekOnly });
+  ls.setJson(SETTINGS_KEY, {
+    workWeekOnly: state.workWeekOnly,
+    durationDays: state.durationDays,
+    startDate: state.startDate,
+  });
 });
 
 // ---------------------------------------------------------------------------

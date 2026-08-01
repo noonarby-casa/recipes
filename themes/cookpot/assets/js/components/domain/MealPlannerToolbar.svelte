@@ -2,22 +2,36 @@
   import ToggleGroup from '../primitives/ToggleGroup.svelte';
   import FilterIcon from '../primitives/icons/FilterIcon.svelte';
   import DiceIcon from '../primitives/icons/DiceIcon.svelte';
+  import DateRangePicker from './DateRangePicker.svelte';
+  import MonthYearPicker from './MonthYearPicker.svelte';
 
   interface Props {
-    /** Currently active tab ('edit', 'view', or 'shop'). */
-    activeTab: 'edit' | 'view' | 'shop';
-    /** Whether 5-day work week mode is enabled. */
-    workWeekOnly: boolean;
+    /** Currently active tab ('edit', 'view', 'shop', or 'history'). */
+    activeTab: 'edit' | 'view' | 'shop' | 'history';
+    /** Start date string ISO 'YYYY-MM-DD'. */
+    startDate: string;
+    /** Duration in days (1..21). */
+    durationDays: number;
     /** Total number of items in shopping list. */
     shoppingCount?: number;
     /** Whether at least one meal is currently scheduled in the plan. */
     hasPlan?: boolean;
     /** Label text for copy menu button (e.g. 'Copy Menu' or 'Copied!'). */
     copyMenuLabel?: string;
+    /** Year for history view. */
+    historyYear?: number;
+    /** Month (0-indexed) for history view. */
+    historyMonth?: number;
+    /** KB used for history storage. */
+    storageKb?: number;
+    /** Storage percentage used. */
+    storagePercent?: number;
+    /** Total meals logged in current month. */
+    totalMonthMeals?: number;
 
     // Event callbacks
-    onTabChange?: (tab: 'edit' | 'view' | 'shop') => void;
-    onWorkWeekChange?: (workWeekOnly: boolean) => void;
+    onTabChange?: (tab: 'edit' | 'view' | 'shop' | 'history') => void;
+    onRangeChange?: (startDate: string, durationDays: number) => void;
     onAdjustPortions?: (delta: number) => void;
     onOpenFilters?: () => void;
     onGenerateDinnerPlan?: () => void;
@@ -26,16 +40,28 @@
     onExportList?: () => void;
     onCopyMenu?: () => void;
     onResetCheckboxes?: () => void;
+    onPrevHistoryMonth?: () => void;
+    onNextHistoryMonth?: () => void;
+    onJumpHistoryToday?: () => void;
+    onSelectHistoryMonthYear?: (year: number, month: number) => void;
+    onOpenStorageModal?: () => void;
+    onJumpActivePlan?: () => void;
   }
 
   let {
     activeTab,
-    workWeekOnly,
+    startDate,
+    durationDays,
     shoppingCount = 0,
     hasPlan = false,
     copyMenuLabel = 'Copy Menu',
+    historyYear = new Date().getFullYear(),
+    historyMonth = new Date().getMonth(),
+    storageKb = 0,
+    storagePercent = 0,
+    totalMonthMeals = 1,
     onTabChange,
-    onWorkWeekChange,
+    onRangeChange,
     onAdjustPortions,
     onOpenFilters,
     onGenerateDinnerPlan,
@@ -43,7 +69,13 @@
     onSharePlan,
     onExportList,
     onCopyMenu,
-    onResetCheckboxes
+    onResetCheckboxes,
+    onPrevHistoryMonth,
+    onNextHistoryMonth,
+    onJumpHistoryToday,
+    onSelectHistoryMonthYear,
+    onOpenStorageModal,
+    onJumpActivePlan,
   }: Props = $props();
 </script>
 
@@ -53,16 +85,20 @@
     <div class="mode-toggle-group">
       <ToggleGroup
         options={[
-          { id: 'edit', label: 'Edit Plan', idAttr: 'mode-edit-btn' },
           { id: 'view', label: 'View Plan', idAttr: 'mode-view-btn' },
+          { id: 'edit', label: 'Edit Plan', idAttr: 'mode-edit-btn' },
           {
             id: 'shop',
-            label: `Shopping List` + (shoppingCount > 0 ? ` (${shoppingCount})` : ''),
+            label:
+              `Shopping List` +
+              (shoppingCount > 0 ? ` (${shoppingCount})` : ''),
             idAttr: 'mode-shop-btn',
           },
+          { id: 'history', label: 'History', idAttr: 'mode-history-btn' },
         ]}
         selectedId={activeTab}
-        onChange={(id) => onTabChange?.(id as 'edit' | 'view' | 'shop')}
+        onChange={(id) =>
+          onTabChange?.(id as 'edit' | 'view' | 'shop' | 'history')}
       />
     </div>
   </div>
@@ -73,14 +109,11 @@
     class:visible={activeTab === 'edit'}
     id="toolbar-edit"
   >
-    <div class="week-toggle-group" id="week-toggle-group">
-      <ToggleGroup
-        options={[
-          { id: '7day', label: '7-Day Week', idAttr: 'week-7day-btn' },
-          { id: '5day', label: '5-Day Week', idAttr: 'week-5day-btn' },
-        ]}
-        selectedId={workWeekOnly ? '5day' : '7day'}
-        onChange={(id) => onWorkWeekChange?.(id === '5day')}
+    <div class="date-picker-toolbar-wrapper">
+      <DateRangePicker
+        {startDate}
+        {durationDays}
+        onChangeRange={(s, d) => onRangeChange?.(s, d)}
       />
     </div>
 
@@ -134,9 +167,10 @@
         type="button"
         id="btn-clear-plan"
         class="planner-clear-btn"
+        title="Clear recipes from the active date window"
         onclick={() => onClearPlan?.()}
       >
-        Clear Plan
+        Clear Range
       </button>
     </div>
   </div>
@@ -147,6 +181,14 @@
     class:visible={activeTab === 'view'}
     id="toolbar-view"
   >
+    <div class="date-picker-toolbar-wrapper">
+      <DateRangePicker
+        {startDate}
+        {durationDays}
+        onChangeRange={(s, d) => onRangeChange?.(s, d)}
+      />
+    </div>
+
     <div class="planner-top-actions">
       <button
         type="button"
@@ -191,6 +233,53 @@
         onclick={() => onResetCheckboxes?.()}
       >
         Reset Checkboxes
+      </button>
+    </div>
+  </div>
+
+  <!-- History Toolbar -->
+  <div
+    class="planner-controls-toolbar"
+    class:visible={activeTab === 'history'}
+    id="toolbar-history"
+  >
+    <div class="history-left-controls">
+      <MonthYearPicker
+        year={historyYear}
+        month={historyMonth}
+        onChangeMonthYear={(y, m) => onSelectHistoryMonthYear?.(y, m)}
+        onPrevMonth={() => onPrevHistoryMonth?.()}
+        onNextMonth={() => onNextHistoryMonth?.()}
+        onJumpToday={() => onJumpHistoryToday?.()}
+      />
+
+      {#if totalMonthMeals === 0}
+        <button
+          type="button"
+          class="history-empty-alert-pill"
+          onclick={() => onJumpActivePlan?.()}
+        >
+          🗓️ Empty Month — Plan Now
+        </button>
+      {/if}
+    </div>
+
+    <div class="planner-top-actions">
+      <button
+        type="button"
+        class="history-storage-toolbar-btn"
+        title="View Storage & Backup Details"
+        onclick={() => onOpenStorageModal?.()}
+      >
+        💾 {storageKb} KB ({storagePercent}%)
+      </button>
+
+      <button
+        type="button"
+        class="history-active-shortcut-btn"
+        onclick={() => onJumpActivePlan?.()}
+      >
+        Jump to Active Plan View →
       </button>
     </div>
   </div>
@@ -252,6 +341,72 @@
     letter-spacing: 0.05em;
     padding-left: 0.5rem;
     text-transform: uppercase;
+  }
+
+
+
+  .history-left-controls {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .history-empty-alert-pill {
+    align-items: center;
+    background: var(--noonblue-bg-light);
+    border: 1px solid var(--noonblue-border-light);
+    border-radius: 8px;
+    color: var(--noonblue);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.825rem;
+    font-weight: 600;
+    height: 36px;
+    padding: 0 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .history-empty-alert-pill:hover {
+    background: var(--noonblue);
+    color: #ffffff;
+  }
+
+  .history-storage-toolbar-btn {
+    align-items: center;
+    background: var(--font-controls-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    color: var(--text-color);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.825rem;
+    font-weight: 600;
+    height: 36px;
+    padding: 0 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .history-storage-toolbar-btn:hover {
+    background: var(--noonblue-bg-light);
+    color: var(--noonblue);
+  }
+
+  .history-active-shortcut-btn {
+    background: var(--noonblue-bg-light);
+    border: 1px solid var(--noonblue);
+    border-radius: 8px;
+    color: var(--noonblue);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.45rem 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .history-active-shortcut-btn:hover {
+    background: var(--noonblue);
+    color: #ffffff;
   }
 
   @media (max-width: 767px) {

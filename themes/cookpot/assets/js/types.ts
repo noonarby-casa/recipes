@@ -23,7 +23,9 @@ export interface PlannedItem {
   customTitle?: string;
   icon?: string;
   scale: number;
-  day: string; // 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', or 'supplemental'
+  date: string; // ISO 'YYYY-MM-DD' or 'supplemental'
+  day?: string; // Legacy day string ('mon', 'tue', etc.) for migration fallback
+  createdAt?: string; // ISO date string when created (useful for supplemental items)
   extraIngredients?: IngredientInput[];
 }
 
@@ -223,8 +225,15 @@ export interface PlannerState {
   lastRemovedIndex: number | null;
 }
 
+export interface DateRange {
+  startDate: string; // ISO 'YYYY-MM-DD'
+  durationDays: number; // 1 to 21
+}
+
 export interface SettingsState {
-  activeTab: 'edit' | 'view' | 'shop';
+  activeTab: 'edit' | 'view' | 'shop' | 'history';
+  startDate: string; // ISO 'YYYY-MM-DD'
+  durationDays: number; // 1 to 21
   workWeekOnly: boolean;
 }
 
