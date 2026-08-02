@@ -407,6 +407,25 @@
   .recipe-drag-handle:active {
     cursor: grabbing;
   }
+  .recipe-card-unified.edit-mode .recipe-card-header,
+  .recipe-card-unified.edit-mode .recipe-card-media-wrapper,
+  .recipe-card-unified.edit-mode .recipe-card-img,
+  .recipe-card-unified.edit-mode .recipe-card-title {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .recipe-card-unified.edit-mode .recipe-card-header:active,
+  .recipe-card-unified.edit-mode .recipe-card-media-wrapper:active,
+  .recipe-card-unified.edit-mode .recipe-card-img:active,
+  .recipe-card-unified.edit-mode .recipe-card-title:active {
+    cursor: grabbing;
+  }
+  .recipe-card-unified.edit-mode .planner-edit-controls-stacked {
+    cursor: default;
+  }
+
   .browse-img-wrapper {
     position: relative;
     flex-shrink: 0;

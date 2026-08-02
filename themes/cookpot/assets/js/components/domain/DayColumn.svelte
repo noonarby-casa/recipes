@@ -3,6 +3,11 @@
   import { plannerStore } from '../../stores/planner';
   import RecipeCard from './RecipeCard.svelte';
   import { recipesStore } from '../../stores/recipes';
+  import {
+    isControlTarget,
+    movePlannedItem,
+    handlePointerDragStart,
+  } from '../../utils/plannerDrag';
 
   interface Props {
     /** The abbreviation of the day of the week (e.g. 'mon', 'tue'). */
@@ -26,6 +31,11 @@
   let isDragOver = $state(false);
 
   function handleDragStart(e: DragEvent, item: PlannedItem) {
+    const target = e.target as HTMLElement;
+    if (isControlTarget(target)) {
+      e.preventDefault();
+      return;
+    }
     if (e.dataTransfer) {
       e.dataTransfer.setData('text/plain', item.instanceId);
       e.dataTransfer.effectAllowed = 'move';
@@ -67,25 +77,13 @@
     const draggedId = e.dataTransfer?.getData('text/plain');
     if (!draggedId) {return;}
 
-    const allItems = [...$plannerStore.plan];
-    const draggedIdx = allItems.findIndex((p) => p.instanceId === draggedId);
-    if (draggedIdx === -1) {return;}
-
-    const item = { ...allItems[draggedIdx], day };
-    allItems.splice(draggedIdx, 1);
-
-    if (targetItem) {
-      const targetIdx = allItems.findIndex((p) => p.instanceId === targetItem.instanceId);
-      if (targetIdx !== -1) {
-        allItems.splice(targetIdx, 0, item);
-      } else {
-        allItems.push(item);
-      }
-    } else {
-      allItems.push(item);
-    }
-
-    plannerStore.reorderRecipes(allItems);
+    const nextPlan = movePlannedItem(
+      $plannerStore.plan,
+      draggedId,
+      day,
+      targetItem?.instanceId
+    );
+    plannerStore.reorderRecipes(nextPlan);
   }
 
   let dayTotalMin = $derived.by(() => {
@@ -125,12 +123,31 @@
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div
         class="drag-wrapper"
+        data-instance-id={item.instanceId}
         draggable={editMode ? "true" : "false"}
         ondragstart={(e) => handleDragStart(e, item)}
         ondragend={handleDragEnd}
         ondragover={handleDragOver}
         ondragleave={handleDragLeave}
         ondrop={(e) => { e.stopPropagation(); handleDrop(e, item); }}
+        onpointerdown={(e) => {
+          handlePointerDragStart(e, {
+            item,
+            editMode,
+            onMove: (draggedId, targetDayKey, targetCardId) => {
+              const nextPlan = movePlannedItem(
+                $plannerStore.plan,
+                draggedId,
+                targetDayKey,
+                targetCardId
+              );
+              plannerStore.reorderRecipes(nextPlan);
+            },
+            onRemove: (draggedId) => {
+              plannerStore.removeRecipe(draggedId);
+            },
+          });
+        }}
       >
         <RecipeCard
           {item}
