@@ -1,63 +1,74 @@
-# Grill Session: Ensuring Favorite Recipes Can Be Filtered in Meal Planner Edit UX
+# Grill Session: Market Basket PNH Store Layout
 
 ## Closed Decisions
 
-### Q1. Primary UX Entry Point for Favorites Filtering
+### Q1. Store Section Sequence & Missing Categories Placement
 
-- **Question:** Where should the UI control for filtering by favorite recipes be exposed within the Meal Planner edit experience?
-- **Decision:** Both `RecipeSelectorModal.svelte` (inline heart button next to search input) and `FiltersModal.svelte` (dedicated toggle row).
-- **Details:**
-  - Inline heart button in `RecipeSelectorModal.svelte` allows zero-click toggling while browsing/adding recipes to a day.
-  - Toggle in `FiltersModal.svelte` provides consistency when configuring broader recipe search filters for the planner.
+- **Question:** How should Market Basket PNH's sections be ordered and where do missing recipe categories map?
+- **Decision:** Explicit 20-section sequence plus Section 99 (Other):
+  - **1:** Left Wall (Cheese, Yogurt/Sour Cream/Ricotta, Butter/Biscuits/Dairy)
+  - **2:** Deli & Seafood (Deli, Rotisserie Chicken, Fresh Seafood)
+  - **3:** Aisle 1 (Frozen Meats, Breakfast Meats, Bacon & Eggs)
+  - **4:** Aisle 2 (Cooking Oil, Vinegars & Specialty Oils, Asian & Hispanic Foods, Tortillas/Wraps/Pitas end-cap, Salad Dressings, Condiments, Pickles, Tuna Fish, Baked Beans, Ketchup, Salsa)
+  - **5:** Aisle 3 (Cereal, Fruit Snacks, Organic Cereal, Oatmeal, Granola Bars, Rice Cakes, Raisins, Pop Tarts)
+  - **6:** Aisle 4 (Pasta, Spaghetti Sauce, Tomato Paste, Mac n Cheese, Ramen Noodles, Soup, Broths, Rice)
+  - **7:** Aisle 5 (Coffee, Tea, Cocoa, Evaporated Milk, Spices, Flour & Sugar, Baking Needs, Jello & Pudding)
+  - **8:** Aisle 6 (Apple Juice, Cranberry Juice, Gatorade, Vegetable Juice, Dried Beans, Can Vegetables, Kool Aid, Gravy)
+  - **9:** Aisle 7 (Applesauce, Natural Chips, Candy, Can Fruit, Coke, Pepsi, Soda)
+  - **10:** Back Wall (Breakfast Meats, Sausage, Lamb, Ground Beef, Ground Turkey, Ground Pork, Beef Cuts, Chicken)
+  - **11:** Aisle 8 (Hair Care, Health Care, Vitamins, Energy Bars, Dental Care, Baby Care, Batteries, Lightbulbs)
+  - **12:** Aisle 9 (Paper Towels, Paper Plates, Automotive, Laundry Basket, Facial Tissue, Bath Tissue, Dinner Napkins, Stationary)
+  - **13:** Aisle 10 (Bleach, Fabric Softener, Laundry Detergent, Candles, Dish Detergent, Household Cleaners, Air Fresheners, Brooms & Mops)
+  - **14:** Aisle 11 (Dog food, Cat food, Pet needs, Foils & wraps, Food storage, Cat litter, Storage containers)
+  - **15:** Aisle 12 (Sparkling water, Bottled water, Iced coffee, Seltzer water, Flavored water, Gallon water, Iced tea)
+  - **16:** Aisle 13 (Imported alcohol, Snacks, Champagne, Wine, Cheese puffs, Domestic alcohol)
+  - **17:** Aisle 14 (Bread, Rolls, Peanut butter, Jams & jellies, Cookies, Crackers, Oyster crackers, Saltines)
+  - **18:** Aisle 15 (Frozen pizza, Frozen fish, Frozen pot pies, Imported cookies, Frozen vegetables, Frozen entrees, Frozen pasta, French fries)
+  - **19:** Aisle 16 (Produce, Fresh produce & herbs, Tofu/Plant-based, Cooking & baking nuts, Floral, Ice cream, Frozen juice, Frozen waffles, Frozen bagels, Frozen desserts, Popcorn & peanuts)
+  - **20:** Bakery & Front Checkout (Bakery, Front Checkout Ice)
+  - **99:** Other / Uncategorized
 
-### Q2. Scope & Persistence of Favorites Filter
+### Q2. Category-to-Section Mapping Engine & Schema
 
-- **Question:** How should the "Favorites Only" state behave regarding persistence and scope across the application?
-- **Decision:** Bind directly to `$filtersStore.favoritesOnly` (Option A).
-- **Details:**
-  - Persisted in `localStorage` (`noonarby-meal-plan-filters`) and synchronized with URL search params (`?favorites=1`).
-  - Single global store guarantees consistent behavior between homepage search and meal planner modal views.
+- **Question:** How should categories be mapped to sections for Market Basket PNH?
+- **Decision:** Keep category-to-section routing clean and simple. Map `ItemCategory` values directly into the `categories` array of the 20 Market Basket PNH `StoreSection` definitions.
 
-### Q3. Handling Empty Favorites State & Active Filter Notice Banner
+### Q3 & Q4. Schema Expansion & Complete Category Allocation
 
-- **Question:** How should the UX communicate active favorite filtering and zero-result states in the recipe selector?
-- **Decision:** Option A (enhanced notice banner + targeted empty state with recovery action).
-- **Details:**
-  - Include `Favorites only` in `filtersNotice` within `RecipeSelectorModal.svelte` when active.
-  - When 0 results match with `favoritesOnly` active, display targeted `EmptyState` text ("No favorite recipes match your search") and a direct action button ("Show All Recipes") to disable the filter in one click.
+- **Question:** Should new `ItemCategory` values be defined, and how do categories map to Market Basket PNH sections?
+- **Decision:** Define 6 new `ItemCategory` values: `cereal-breakfast`, `coffee-tea`, `canned-fruit`, `household-paper`, `alcohol`, `bread-spreads`. Map all 29 categories into Market Basket PNH's 20 sections as follows:
+  - **Section 1 (Left Wall):** `milk-cream`, `butter-cheese`, `eggs`
+  - **Section 2 (Deli & Seafood):** `deli`, `seafood`
+  - **Section 3 (Aisle 1):** _(Frozen breakfast meats / specialty)_
+  - **Section 4 (Aisle 2):** `condiments`, `oils-vinegars`
+  - **Section 5 (Aisle 3):** `cereal-breakfast`
+  - **Section 6 (Aisle 4):** `pasta-grains`, `canned-tomatoes`
+  - **Section 7 (Aisle 5):** `baking`, `spices-seasonings`, `coffee-tea`
+  - **Section 8 (Aisle 6):** `canned-beans`, `canned-other`
+  - **Section 9 (Aisle 7):** `canned-fruit`, `snacks`
+  - **Section 10 (Back Wall):** `meat`, `poultry`
+  - **Section 11 (Aisle 8):** `household-paper` _(health/wellness)_
+  - **Section 12 (Aisle 9):** `household-paper` _(paper goods)_
+  - **Section 13 (Aisle 10):** `household-paper` _(cleaning)_
+  - **Section 14 (Aisle 11):** `household-paper` _(pet/storage/foils)_
+  - **Section 15 (Aisle 12):** `beverages` _(water/seltzer)_
+  - **Section 16 (Aisle 13):** `alcohol`
+  - **Section 17 (Aisle 14):** `bread-spreads`
+  - **Section 18 (Aisle 15):** `frozen`
+  - **Section 19 (Aisle 16):** `fresh-produce`, `fresh-herbs`, `tofu-tempeh`
+  - **Section 20 (Bakery & Front):** `bakery`
+  - **Section 99 (Other):** `other`
+  - _Backward compatibility:_ Update `STANDARD_SECTIONS` so the 6 new categories fall into `bakery`/`pasta-grains`/`beverages`/`canned-other`/`other`.
 
-### Q4. Visual Control Style & Micro-Interactions
+### Q5. Store Layout Metadata & Default Store Selection
 
-- **Question:** How should the Favorites Filter controls be styled visually in `RecipeSelectorModal.svelte` and `FiltersModal.svelte`?
-- **Decision:** Option A (circular heart button in selector + dedicated tally pill in filters modal).
-- **Details:**
-  - In `RecipeSelectorModal.svelte`: Circular heart icon button beside search input, using `--heart-color` fill and `pop-anim` micro-animation matching `FavoriteButton.svelte`.
-  - In `FiltersModal.svelte`: Top-level toggle pill (`♥ Favorites Only`) with tally count of favorited recipes.
-
-### Q5. Auto-Planner ("Generate Dinner Plan") Feedback & Edge Cases
-
-- **Question:** How should the auto-planner handle cases where `favoritesOnly` is active but no favorited dinner recipes are available?
-- **Decision:** Option A (replace native `alert()` with in-app banner/toast offering fallback).
-- **Details:**
-  - Replaces native browser `alert()` with a smooth in-app notice banner/toast.
-  - Offers single-click action button ("Generate from All Recipes") to proceed without getting blocked.
-
-### Q7. Automated Testing Strategy (Vitest Unit & Playwright E2E Specs)
-
-- **Question:** How will automated tests verify the favorites filtering feature across unit logic and UI workflows?
-- **Decision:** Implement a dual-layer test suite using Vitest (store/filtering logic) and Playwright (E2E browser interactions).
-- **Details:**
-  - **Unit & Store Tests (`themes/cookpot/assets/js/stores/filters.test.ts` & `planner.test.ts`):**
-    - Verify `filterRecipes()` filters recipes correctly when `favoritesOnly: true`.
-    - Verify `plannerStore.generateDinnerPlan()` pools favorited dinner recipes and returns `false` when no favorited dinner recipes exist.
-    - Verify URL query param synchronization (`?favorites=1`) and `localStorage` persistence.
-  - **E2E Playwright Tests (`tests/e2e/meal-plan.spec.ts`):**
-    - Test inline heart toggle in `RecipeSelectorModal.svelte` and verify `filtersNotice` updates.
-    - Test empty state recovery ("Show All Recipes" button) when zero favorited recipes match a search query.
-    - Test top-level `♥ Favorites Only` toggle pill and tally count in `FiltersModal.svelte`.
-    - Test auto-planner fallback banner ("Generate from All Recipes") when generating with 0 favorited recipes.
-  - **Verification:** Validated using `pnpm run test`, `pnpm run test:e2e`, and `pnpm run ci`.
+- **Question:** What ID, display label, description, and default layout preference should be set?
+- **Decision:**
+  - **ID:** `market-basket-pnh`
+  - **Name:** `Market Basket PNH`
+  - **Description:** `Market Basket in Portsmouth NH`
+  - **Default:** `market-basket-pnh` is now the primary and default store layout project-wide (placed first in `STORE_LAYOUTS` and returned by default in `getActiveStoreLayoutId()`).
 
 ## Open Questions
 
-_(All design decisions resolved)_
+_(None — Design grilling complete! Ready for implementation.)_

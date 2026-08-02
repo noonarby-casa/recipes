@@ -72,7 +72,9 @@ describe('processShoppingList', () => {
     );
     expect(carrot).toBeDefined();
     expect(carrot?.category).toBe('fresh-produce');
-    expect(getSectionForCategory(carrot!.category).id).toBe('produce');
+    expect(getSectionForCategory(carrot!.category, STORE_LAYOUTS[1]).id).toBe(
+      'produce',
+    );
 
     // Salmon should be in Meat
     const salmon = result.buyItems.find(
@@ -80,7 +82,9 @@ describe('processShoppingList', () => {
     );
     expect(salmon).toBeDefined();
     expect(salmon?.category).toBe('seafood');
-    expect(getSectionForCategory(salmon!.category).id).toBe('meat');
+    expect(getSectionForCategory(salmon!.category, STORE_LAYOUTS[1]).id).toBe(
+      'meat',
+    );
   });
 
   test('handles Chorizo Roasted Red Pepper Spinach Gnocchi recipe ingredients correctly', () => {

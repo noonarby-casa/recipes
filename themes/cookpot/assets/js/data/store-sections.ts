@@ -90,7 +90,12 @@ export const STANDARD_SECTIONS: StoreSection[] = [
     id: 'canned',
     name: '🥫 Canned & Jarred',
     order: 8,
-    categories: ['canned-tomatoes', 'canned-beans', 'canned-other'],
+    categories: [
+      'canned-tomatoes',
+      'canned-beans',
+      'canned-fruit',
+      'canned-other',
+    ],
   },
   {
     id: 'condiments',
@@ -126,7 +131,136 @@ export const STANDARD_SECTIONS: StoreSection[] = [
     id: 'beverages',
     name: '🥤 Beverages',
     order: 14,
-    categories: ['beverages'],
+    categories: ['beverages', 'alcohol', 'coffee-tea'],
+  },
+  {
+    id: 'other',
+    name: '📦 Other',
+    order: 99,
+    categories: ['other', 'household-paper'],
+  },
+];
+
+export const MARKET_BASKET_PNH_SECTIONS: StoreSection[] = [
+  {
+    id: 'left-wall',
+    name: '🧀 Left Wall: Dairy & Cheese',
+    order: 1,
+    categories: ['milk-cream', 'butter-cheese', 'eggs'],
+  },
+  {
+    id: 'deli-seafood',
+    name: '🥪 Back Left: Deli & Seafood',
+    order: 2,
+    categories: ['deli', 'seafood'],
+  },
+  {
+    id: 'aisle-1',
+    name: '🥓 Aisle 1: Breakfast Meats',
+    order: 3,
+    categories: [],
+  },
+  {
+    id: 'aisle-2',
+    name: '🫙 Aisle 2: Condiments, Oils & Ethnic Foods',
+    order: 4,
+    categories: ['condiments', 'oils-vinegars'],
+  },
+  {
+    id: 'aisle-3',
+    name: '🥣 Aisle 3: Cereal & Breakfast',
+    order: 5,
+    categories: [],
+  },
+  {
+    id: 'aisle-4',
+    name: '🍝 Aisle 4: Pasta, Sauce, Soup & Tomatoes',
+    order: 6,
+    categories: ['pasta-grains', 'canned-tomatoes'],
+  },
+  {
+    id: 'aisle-5',
+    name: '☕ Aisle 5: Coffee, Tea, Baking & Spices',
+    order: 7,
+    categories: ['baking', 'spices-seasonings'],
+  },
+  {
+    id: 'aisle-6',
+    name: '🥫 Aisle 6: Canned Vegetables & Beans',
+    order: 8,
+    categories: ['canned-beans', 'canned-other'],
+  },
+  {
+    id: 'aisle-7',
+    name: '🍿 Aisle 7: Snacks & Soda',
+    order: 9,
+    categories: ['snacks'],
+  },
+  {
+    id: 'back-wall',
+    name: '🥩 Back Wall: Fresh Meat & Poultry',
+    order: 10,
+    categories: ['meat', 'poultry'],
+  },
+  {
+    id: 'aisle-8',
+    name: '💊 Aisle 8: Health & Personal Care',
+    order: 11,
+    categories: [],
+  },
+  {
+    id: 'aisle-9',
+    name: '🧻 Aisle 9: Paper Goods & Stationary',
+    order: 12,
+    categories: [],
+  },
+  {
+    id: 'aisle-10',
+    name: '🧹 Aisle 10: Cleaning & Household',
+    order: 13,
+    categories: [],
+  },
+  {
+    id: 'aisle-11',
+    name: '🐾 Aisle 11: Pet Needs, Foils & Storage',
+    order: 14,
+    categories: ['household-paper'],
+  },
+  {
+    id: 'aisle-12',
+    name: '🥤 Aisle 12: Water, Seltzer & Beverages',
+    order: 15,
+    categories: ['beverages', 'alcohol'],
+  },
+  {
+    id: 'aisle-13',
+    name: '🍷 Aisle 13: Wine, Beer & Spirits',
+    order: 16,
+    categories: [],
+  },
+  {
+    id: 'aisle-14',
+    name: '🍞 Aisle 14: Bread, Rolls & Spreads',
+    order: 17,
+    categories: ['bread-spreads'],
+  },
+  {
+    id: 'aisle-15',
+    name: '❄️ Aisle 15: Frozen Entrees, Pizza & Veggies',
+    order: 18,
+    categories: ['frozen'],
+  },
+  {
+    id: 'aisle-16',
+    name: '🥬 Aisle 16: Produce, Herbs, Tofu & Nuts',
+    order: 19,
+    categories: ['fresh-produce', 'fresh-herbs', 'tofu-tempeh'],
+  },
+  {
+    id: 'front-bakery',
+    name: '🎂 Front Right: Bakery & Ice',
+    order: 20,
+    categories: ['bakery'],
   },
   {
     id: 'other',
@@ -164,6 +298,12 @@ export const MEAT_FIRST_SECTIONS: StoreSection[] = STANDARD_SECTIONS.map(
 
 export const STORE_LAYOUTS: StoreLayout[] = [
   {
+    id: 'market-basket-pnh',
+    name: 'Market Basket PNH',
+    sections: MARKET_BASKET_PNH_SECTIONS,
+    itemSizes: usGrocerySizes as unknown as Record<string, [number, string][]>,
+  },
+  {
     id: 'standard',
     name: 'Standard Layout (Produce First)',
     sections: STANDARD_SECTIONS,
@@ -187,9 +327,11 @@ export const STORAGE_KEY_STORE_LAYOUT = 'noonarby-store-layout';
 
 export function getActiveStoreLayoutId(): string {
   if (typeof window !== 'undefined' && window.localStorage) {
-    return localStorage.getItem(STORAGE_KEY_STORE_LAYOUT) || 'standard';
+    return (
+      localStorage.getItem(STORAGE_KEY_STORE_LAYOUT) || 'market-basket-pnh'
+    );
   }
-  return 'standard';
+  return 'market-basket-pnh';
 }
 
 export function setActiveStoreLayoutId(id: string): void {
