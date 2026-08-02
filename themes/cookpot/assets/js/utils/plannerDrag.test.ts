@@ -1,7 +1,17 @@
 // @vitest-environment jsdom
-import { describe, expect, test } from 'vitest';
-import { isControlTarget, movePlannedItem } from './plannerDrag';
+import { describe, expect, test, beforeAll } from 'vitest';
+import {
+  isControlTarget,
+  movePlannedItem,
+  findTargetDayColumn,
+} from './plannerDrag';
 import type { PlannedItem } from '../types';
+
+beforeAll(() => {
+  if (typeof document.elementFromPoint !== 'function') {
+    document.elementFromPoint = () => null;
+  }
+});
 
 describe('plannerDrag utils', () => {
   describe('isControlTarget', () => {
@@ -43,6 +53,32 @@ describe('plannerDrag utils', () => {
       expect(isControlTarget(img)).toBe(false);
 
       document.body.removeChild(wrapper);
+    });
+  });
+
+  describe('findTargetDayColumn', () => {
+    test('finds day column by proximity when point is slightly outside rect', () => {
+      const dayCol = document.createElement('div');
+      dayCol.className = 'day-column';
+      dayCol.dataset.day = 'tue';
+      dayCol.getBoundingClientRect = () => ({
+        top: 100,
+        left: 100,
+        bottom: 300,
+        right: 250,
+        width: 150,
+        height: 200,
+        x: 100,
+        y: 100,
+        toJSON: () => {},
+      });
+      document.body.appendChild(dayCol);
+
+      // Point at (260, 150) is 10px right of dayCol
+      const result = findTargetDayColumn(260, 150, 40);
+      expect(result.dayCol).toBe(dayCol);
+
+      document.body.removeChild(dayCol);
     });
   });
 

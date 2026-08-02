@@ -187,6 +187,12 @@
     border-color: var(--border-color);
   }
 
+  .day-column.drag-over {
+    background-color: var(--noonblue-bg-light);
+    border-color: var(--noonblue);
+    box-shadow: inset 0 0 0 1px var(--noonblue);
+  }
+
   .day-header {
     align-items: baseline;
     border-bottom: 1px solid var(--border-ultra-subtle);
@@ -211,7 +217,9 @@
   .day-recipes-list {
     display: flex;
     flex-direction: column;
+    flex: 1;
     gap: 0.6rem;
+    min-height: 80px;
   }
 
   @media (min-width: 768px) {

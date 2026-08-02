@@ -14,6 +14,64 @@ export function isControlTarget(el: HTMLElement | null): boolean {
 }
 
 /**
+ * Finds the target day column for coordinates (x, y) using direct hit-test,
+ * elementsFromPoint, and a generous proximity fallback so narrow gaps or edges
+ * easily register as drop targets.
+ */
+export function findTargetDayColumn(
+  x: number,
+  y: number,
+  proximityPx = 40,
+): { dayCol: HTMLElement | null; targetCard: HTMLElement | null } {
+  const dropEl = document.elementFromPoint(x, y) as HTMLElement | null;
+  if (dropEl) {
+    const directCol = dropEl.closest('.day-column') as HTMLElement | null;
+    if (directCol) {
+      const targetCard = dropEl.closest('.drag-wrapper') as HTMLElement | null;
+      return { dayCol: directCol, targetCard };
+    }
+  }
+
+  if (
+    typeof document !== 'undefined' &&
+    typeof document.elementsFromPoint === 'function'
+  ) {
+    const elements = document.elementsFromPoint(x, y);
+    for (const el of elements) {
+      const col = el.closest('.day-column') as HTMLElement | null;
+      if (col) {
+        const targetCard = el.closest('.drag-wrapper') as HTMLElement | null;
+        return { dayCol: col, targetCard };
+      }
+    }
+  }
+
+  if (typeof document !== 'undefined') {
+    let closestCol: HTMLElement | null = null;
+    let closestDistance = Infinity;
+
+    const allCols = document.querySelectorAll<HTMLElement>('.day-column');
+    allCols.forEach((col) => {
+      const rect = col.getBoundingClientRect();
+      const dx = Math.max(rect.left - x, 0, x - rect.right);
+      const dy = Math.max(rect.top - y, 0, y - rect.bottom);
+      const dist = Math.hypot(dx, dy);
+
+      if (dist <= proximityPx && dist < closestDistance) {
+        closestDistance = dist;
+        closestCol = col;
+      }
+    });
+
+    if (closestCol) {
+      return { dayCol: closestCol, targetCard: null };
+    }
+  }
+
+  return { dayCol: null, targetCard: null };
+}
+
+/**
  * Reorders/moves a planned recipe item to a target day and position.
  */
 export function movePlannedItem(
@@ -178,21 +236,14 @@ export function handlePointerDragStart(
         activeAvatar.style.top = `${moveY}px`;
       }
 
-      // Hit testing element under pointer/finger
+      clearHighlights();
+
       const dropEl = document.elementFromPoint(
         moveX,
         moveY,
       ) as HTMLElement | null;
-      clearHighlights();
+      const trashEl = dropEl?.closest('#planner-trash-zone');
 
-      if (!dropEl) {
-        currentTargetDay = null;
-        currentTargetCardId = undefined;
-        isOverTrash = false;
-        return;
-      }
-
-      const trashEl = dropEl.closest('#planner-trash-zone');
       if (trashEl) {
         isOverTrash = true;
         currentTargetDay = null;
@@ -202,12 +253,9 @@ export function handlePointerDragStart(
       }
       isOverTrash = false;
 
-      const dayCol = dropEl.closest('.day-column') as HTMLElement | null;
+      const { dayCol, targetCard } = findTargetDayColumn(moveX, moveY);
       if (dayCol) {
         currentTargetDay = dayCol.dataset.day || null;
-        const targetCard = dropEl.closest(
-          '.drag-wrapper',
-        ) as HTMLElement | null;
         currentTargetCardId = targetCard?.dataset.instanceId;
 
         dayCol.classList.add('drag-over');
