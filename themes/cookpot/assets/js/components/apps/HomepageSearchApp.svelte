@@ -362,6 +362,7 @@
     gap: 1rem;
     margin-bottom: 1rem;
     padding: 0.75rem 1rem;
+    position: relative;
   }
 
   .planner-callout-content {
@@ -398,6 +399,7 @@
     font-size: 0.85rem;
     font-weight: 700;
     gap: 0.35rem;
+    justify-content: center;
     padding: 0.4rem 0.8rem;
     text-decoration: none;
     transition: all 0.2s ease;
@@ -420,6 +422,7 @@
     font-family: inherit;
     font-size: 0.85rem;
     font-weight: 600;
+    justify-content: center;
     padding: 0.4rem 0.8rem;
     text-decoration: none;
     transition: all 0.2s ease;
@@ -445,5 +448,35 @@
   .planner-callout-close:hover {
     background-color: rgba(0, 0, 0, 0.06);
     color: var(--text-color);
+  }
+
+  @media (max-width: 767px) {
+    .planner-callout-banner {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+    }
+
+    .planner-callout-content {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding-right: 1.75rem;
+    }
+
+    .planner-callout-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .planner-callout-close {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.6rem;
+    }
   }
 </style>

@@ -727,6 +727,7 @@
     justify-content: space-between;
     margin-top: 0.5rem;
     padding: 0.75rem 1rem;
+    position: relative;
   }
 
   @keyframes slideIn {
@@ -764,6 +765,28 @@
   .plan-toast-notification .toast-undo-btn:hover {
     background-color: var(--border-ultra-subtle);
     color: var(--noonblue);
+  }
+
+  @media (max-width: 767px) {
+    .plan-toast-notification {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.6rem;
+      padding-right: 2.25rem;
+    }
+
+    .plan-toast-notification .toast-body {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .plan-toast-notification .icon-close-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+    }
   }
 
   #plan-conflict-banner,
