@@ -36,7 +36,11 @@
   {{ end }}
 {{ end }}
 {{ if not $ogImage }}
-  {{ $ogImage = "icon-600.png" | absURL }}
+  {{ if eq .Type "plan" }}
+    {{ $ogImage = "icons/meal-plan.webp" | absURL }}
+  {{ else }}
+    {{ $ogImage = "icon-600.png" | absURL }}
+  {{ end }}
 {{ end }}
 
 
