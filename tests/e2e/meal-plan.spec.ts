@@ -58,7 +58,7 @@ test.describe('Meal Planner favorites filtering UX', () => {
     await page.click('#mode-edit-btn');
 
     // Click "Add Recipe" slot for Monday
-    const addMonBtn = page.locator('.empty-slot-box[data-day="mon"]');
+    const addMonBtn = page.locator('.empty-slot-box').first();
     await addMonBtn.click();
 
     // Verify recipe selector modal opens
@@ -91,7 +91,7 @@ test.describe('Meal Planner favorites filtering UX', () => {
 
     await page.click('#mode-edit-btn');
 
-    const addMonBtn = page.locator('.empty-slot-box[data-day="mon"]');
+    const addMonBtn = page.locator('.empty-slot-box').first();
     await addMonBtn.click();
 
     const modal = page.locator('.selector-modal-content');
