@@ -29,7 +29,6 @@
 
   let searchQuery = $state('');
   let keyboardFocusedIndex = $state(-1);
-  let searchInput = $state<HTMLInputElement | null>(null);
   let shelfElement = $state<HTMLElement | null>(null);
   let activeMobileTab = $state<'browse' | 'custom'>('browse');
 
@@ -79,9 +78,6 @@
       customIcon = 'utensils';
       customServings = 4;
       customIngredients = [];
-      setTimeout(() => {
-        searchInput?.focus();
-      }, 50);
     }
   });
 
@@ -201,7 +197,6 @@
         <div class="modal-search-wrapper">
           <input
             type="text"
-            bind:this={searchInput}
             bind:value={searchQuery}
             onkeydown={handleKeydown}
             placeholder="Search available recipes by title..."
