@@ -44,7 +44,7 @@ To add or modify recipes, follow the workspace skill instructions in **[.agents/
 
 ## 🤖 AI Assistant Workflows & Rules
 
-1. **Version Control Protocol (`jj`):** Refer to the global `jj` skill. Always use `jj describe -m "description"` to log work descriptions. Do not use git.
+1. **Version Control Protocol (`jj`):** Always consult and adhere to the global `jj` skill before running any `jj` command. Always use `--no-pager --color=never` for read-only commands and `jj describe -m "description"` to log work descriptions inline. Do not use git.
 2. **TypeScript & Code Quality:**
    - Avoid non-null assertions (`!`) or type assertions (`as Type`) when narrowing via runtime checks (`if (!x) return;`) is possible.
    - Use `CONSTANT_CASE` for deeply immutable exported constants and `camelCase` for local variables and mutable state.

@@ -3680,6 +3680,74 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'fresh-produce',
     },
   },
+  {
+    input: {
+      item: 'white vinegar',
+      qty: 1,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'white vinegar',
+      qty: 1,
+      unit: 'tablespoon',
+      category: 'oils-vinegars',
+    },
+  },
+  {
+    input: {
+      item: 'sweet potato',
+      qty: 2,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'sweet potato',
+      qty: 2,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'taco seasoning',
+      qty: 2,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'taco seasoning',
+      qty: 2,
+      unit: 'tablespoon',
+      category: 'spices-seasonings',
+    },
+  },
+  {
+    input: {
+      item: 'chicken meatball',
+      qty: 1,
+      unit: 'pound',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'chicken meatball',
+      qty: 1,
+      unit: 'pound',
+      category: 'poultry',
+    },
+  },
+  {
+    input: {
+      item: 'rotisserie chicken',
+      qty: 1,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'rotisserie chicken',
+      qty: 1,
+      unit: '',
+      category: 'poultry',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
