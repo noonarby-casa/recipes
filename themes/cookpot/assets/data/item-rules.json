@@ -434,6 +434,7 @@
       "orzo pasta",
       "rigatoni pasta",
       "ramen noodles",
+      "ramen noodle",
       "steamed rice"
     ],
     "unitEquivalences": {
@@ -1575,6 +1576,32 @@
       {
         "singular": "Japanese cucumber",
         "plural": "Japanese cucumbers"
+      }
+    ]
+  },
+  {
+    "canonicalName": "cremini mushroom",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "cremini mushroom",
+        "plural": "cremini mushrooms"
+      }
+    ]
+  },
+  {
+    "canonicalName": "fish sauce",
+    "category": "condiments",
+    "items": ["fish sauce"]
+  },
+  {
+    "canonicalName": "peanuts",
+    "category": "fresh-produce",
+    "pluralByDefault": true,
+    "items": [
+      {
+        "singular": "peanut",
+        "plural": "peanuts"
       }
     ]
   }

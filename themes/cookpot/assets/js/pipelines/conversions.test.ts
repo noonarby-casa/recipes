@@ -3624,6 +3624,62 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'pasta-grains',
     },
   },
+  {
+    input: {
+      item: 'fish sauce',
+      qty: 2,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'fish sauce',
+      qty: 2,
+      unit: 'tablespoons',
+      category: 'condiments',
+    },
+  },
+  {
+    input: {
+      item: 'cremini mushroom',
+      qty: 8,
+      unit: 'ounce',
+      prep: 'sliced',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'cremini mushroom',
+      qty: 8,
+      unit: 'ounces',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'ramen noodle',
+      qty: 2,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'ramen noodle',
+      qty: 2,
+      unit: '',
+      category: 'pasta-grains',
+    },
+  },
+  {
+    input: {
+      item: 'peanuts',
+      optional: true,
+      prep: 'chopped',
+    },
+    expectedList: 'optional',
+    expectedItem: {
+      item: 'peanuts',
+      qty: null,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
