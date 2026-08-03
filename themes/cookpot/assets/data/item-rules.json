@@ -1531,5 +1531,42 @@
         "plural": "green beans"
       }
     ]
+  },
+  {
+    "canonicalName": "walnut",
+    "category": "fresh-produce",
+    "pluralByDefault": true,
+    "items": [
+      {
+        "singular": "walnut",
+        "plural": "walnuts"
+      }
+    ]
+  },
+  {
+    "canonicalName": "pistachio",
+    "category": "fresh-produce",
+    "pluralByDefault": true,
+    "items": [
+      {
+        "singular": "pistachio",
+        "plural": "pistachios"
+      }
+    ]
+  },
+  {
+    "canonicalName": "sumac",
+    "category": "spices-seasonings",
+    "items": ["sumac"]
+  },
+  {
+    "canonicalName": "Japanese cucumber",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "Japanese cucumber",
+        "plural": "Japanese cucumbers"
+      }
+    ]
   }
 ]

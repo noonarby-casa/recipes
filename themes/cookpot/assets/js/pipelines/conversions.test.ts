@@ -3551,6 +3551,63 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'pasta-grains',
     },
   },
+  {
+    input: {
+      item: 'Japanese cucumber',
+      qty: 3,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'Japanese cucumber',
+      qty: 3,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'walnut',
+      qty: 2,
+      unit: 'tablespoon',
+      desc: 'roasted',
+      prep: 'chopped',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'walnut',
+      qty: 2,
+      unit: 'tablespoons',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'pistachio',
+      qty: 2,
+      unit: 'tablespoon',
+      desc: 'roasted',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'pistachio',
+      qty: 2,
+      unit: 'tablespoons',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'sumac',
+      optional: true,
+    },
+    expectedList: 'optional',
+    expectedItem: {
+      item: 'sumac',
+      qty: null,
+      unit: '',
+      category: 'spices-seasonings',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
