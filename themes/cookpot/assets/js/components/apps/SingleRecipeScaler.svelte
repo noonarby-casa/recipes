@@ -2,8 +2,14 @@
   import { onMount } from 'svelte';
   import { formatRecipeIngredientHTML } from '../../units';
   import { ITEM_RULES } from '../../data/rules';
-  import { recipeScaleStore } from '../../stores/settings';
+  import { recipeScaleStore, settingsStore } from '../../stores/settings';
   import { plannerStore } from '../../stores/planner';
+  import {
+    addDays,
+    formatIsoDate,
+    getMondayOfWeek,
+    parseIsoDate,
+  } from '../../utils/dates';
   import FavoriteButton from '../domain/FavoriteButton.svelte';
   import ServingsPicker from '../domain/ServingsPicker.svelte';
 
@@ -15,19 +21,34 @@
   }
 
   const WEEKDAYS = [
-    { key: 'mon', label: 'M', full: 'Monday' },
-    { key: 'tue', label: 'T', full: 'Tuesday' },
-    { key: 'wed', label: 'W', full: 'Wednesday' },
-    { key: 'thu', label: 'T', full: 'Thursday' },
-    { key: 'fri', label: 'F', full: 'Friday' },
-    { key: 'sat', label: 'S', full: 'Saturday' },
-    { key: 'sun', label: 'S', full: 'Sunday' },
+    { key: 'mon', label: 'M', full: 'Monday', offset: 0 },
+    { key: 'tue', label: 'T', full: 'Tuesday', offset: 1 },
+    { key: 'wed', label: 'W', full: 'Wednesday', offset: 2 },
+    { key: 'thu', label: 'T', full: 'Thursday', offset: 3 },
+    { key: 'fri', label: 'F', full: 'Friday', offset: 4 },
+    { key: 'sat', label: 'S', full: 'Saturday', offset: 5 },
+    { key: 'sun', label: 'S', full: 'Sunday', offset: 6 },
   ] as const;
 
   let { baseServings, shortId }: Props = $props();
 
   let portions = $state(0);
   let currentPermalink = $state('');
+
+  let mondayDate = $derived(
+    getMondayOfWeek(
+      $settingsStore.startDate
+        ? parseIsoDate($settingsStore.startDate)
+        : undefined,
+    ),
+  );
+
+  let formattedMondayDate = $derived(
+    mondayDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    }),
+  );
 
   onMount(() => {
     portions = baseServings;
@@ -51,30 +72,34 @@
     );
   });
 
-  function isScheduledOn(dayKey: string): boolean {
+  function isScheduledOn(dayKey: string, targetIsoDate: string): boolean {
     if (!currentPermalink) {
       return false;
     }
     return $plannerStore.plan.some(
       (item) =>
         item.permalink === currentPermalink &&
-        (item.date || item.day) === dayKey,
+        (item.date === targetIsoDate ||
+          item.date === dayKey ||
+          item.day === dayKey),
     );
   }
 
-  function toggleDay(dayKey: string) {
+  function toggleDay(dayKey: string, targetIsoDate: string) {
     if (!currentPermalink) {
       return;
     }
     const existing = $plannerStore.plan.find(
       (item) =>
         item.permalink === currentPermalink &&
-        (item.date || item.day) === dayKey,
+        (item.date === targetIsoDate ||
+          item.date === dayKey ||
+          item.day === dayKey),
     );
     if (existing) {
       plannerStore.removeRecipe(existing.instanceId);
     } else {
-      plannerStore.addRecipe(dayKey, currentPermalink);
+      plannerStore.addRecipe(targetIsoDate, currentPermalink);
     }
   }
 
@@ -182,21 +207,30 @@
 
   <!-- Row 2: Full-width Weekday Meal Plan Row -->
   <div class="recipe-meal-plan-row">
-    <span class="meal-plan-row-label">Plan:</span>
+    <span class="meal-plan-row-label">
+      <span class="meal-plan-label-full">Plan ({formattedMondayDate}):</span>
+      <span class="meal-plan-label-short">{formattedMondayDate}:</span>
+    </span>
     <div class="weekday-pill-group">
       {#each WEEKDAYS as day}
-        {@const active = isScheduledOn(day.key)}
+        {@const targetDate = addDays(mondayDate, day.offset)}
+        {@const targetIsoDate = formatIsoDate(targetDate)}
+        {@const dateLabel = targetDate.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        })}
+        {@const active = isScheduledOn(day.key, targetIsoDate)}
         <button
           type="button"
           class="weekday-pill"
           class:active
-          onclick={() => toggleDay(day.key)}
+          onclick={() => toggleDay(day.key, targetIsoDate)}
           title={active
-            ? `Scheduled for ${day.full} (Click to remove)`
-            : `Add to ${day.full}`}
+            ? `Scheduled for ${day.full}, ${dateLabel} (Click to remove)`
+            : `Add to ${day.full}, ${dateLabel}`}
           aria-label={active
-            ? `Scheduled for ${day.full}`
-            : `Add to ${day.full}`}
+            ? `Scheduled for ${day.full}, ${dateLabel}`
+            : `Add to ${day.full}, ${dateLabel}`}
         >
           {day.label}
         </button>

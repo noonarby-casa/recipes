@@ -209,10 +209,12 @@
   transition: all 0.2s ease;
 }
 
+.meal-plan-label-full,
 .view-plan-full {
   display: inline;
 }
 
+.meal-plan-label-short,
 .view-plan-short {
   display: none;
 }
@@ -240,10 +242,12 @@
     width: 28px;
   }
 
+  .meal-plan-label-full,
   .view-plan-full {
     display: none;
   }
 
+  .meal-plan-label-short,
   .view-plan-short {
     display: inline;
   }
