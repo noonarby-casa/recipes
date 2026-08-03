@@ -1069,6 +1069,10 @@
       {
         "singular": "Persian cucumber",
         "plural": "Persian cucumbers"
+      },
+      {
+        "singular": "mini cucumber",
+        "plural": "mini cucumbers"
       }
     ]
   },
@@ -1235,6 +1239,11 @@
     "canonicalName": "rice",
     "category": "pasta-grains",
     "items": ["rice", "white rice", "basmati rice"]
+  },
+  {
+    "canonicalName": "quinoa",
+    "category": "pasta-grains",
+    "items": ["quinoa"]
   },
   {
     "canonicalName": "sliced bread",

@@ -3608,6 +3608,22 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'spices-seasonings',
     },
   },
+  {
+    input: {
+      item: 'quinoa',
+      qty: 1.5,
+      unit: 'cup',
+      desc: 'cooked',
+      prep: 'cooled',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'quinoa',
+      qty: 1.5,
+      unit: 'cups',
+      category: 'pasta-grains',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
