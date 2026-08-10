@@ -3748,6 +3748,48 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'poultry',
     },
   },
+  {
+    input: {
+      item: 'butternut squash',
+      qty: 3,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'butternut squash',
+      qty: 3,
+      unit: 'cups',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'gruyere cheese',
+      qty: 1,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'gruyere cheese',
+      qty: 1,
+      unit: 'cup',
+      category: 'butter-cheese',
+    },
+  },
+  {
+    input: {
+      item: 'swiss cheese',
+      qty: 1,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'swiss cheese',
+      qty: 1,
+      unit: 'cup',
+      category: 'butter-cheese',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

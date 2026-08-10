@@ -1359,7 +1359,23 @@
   {
     "canonicalName": "cheddar cheese",
     "category": "butter-cheese",
-    "items": ["cheddar cheese", "cheddar", "sharp cheddar", "sharp Cheddar"]
+    "items": [
+      "cheddar cheese",
+      "cheddar",
+      "sharp cheddar",
+      "sharp Cheddar",
+      "sharp cheddar cheese"
+    ]
+  },
+  {
+    "canonicalName": "gruyere cheese",
+    "category": "butter-cheese",
+    "items": ["gruyere cheese", "gruyere", "Gruyere"]
+  },
+  {
+    "canonicalName": "swiss cheese",
+    "category": "butter-cheese",
+    "items": ["swiss cheese", "Swiss cheese", "Swiss"]
   },
   {
     "canonicalName": "Italian seasoning",
