@@ -1103,6 +1103,21 @@
     ]
   },
   {
+    "canonicalName": "cauliflower",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "cauliflower",
+        "plural": "cauliflower",
+        "aliases": [
+          "cauliflower floret",
+          "cauliflower florets",
+          "head cauliflower"
+        ]
+      }
+    ]
+  },
+  {
     "canonicalName": "shallot",
     "category": "fresh-produce",
     "items": [

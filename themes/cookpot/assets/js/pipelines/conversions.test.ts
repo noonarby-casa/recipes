@@ -218,6 +218,20 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
+      item: 'cauliflower',
+      qty: 6,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'cauliflower',
+      qty: 6,
+      unit: 'cups',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
       item: 'coconut milk',
       qty: 4,
       unit: 'ounce',
