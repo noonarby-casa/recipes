@@ -39,7 +39,8 @@ ingredients = [
   ] },
   { category = "Marinade", items = [
     { qty = 0.5, unit = "cup", item = "lime juice", desc = "fresh" },
-    { qty = 4, unit = "clove", item = "garlic", prep = "finely chopped" }
+    { qty = 4, unit = "clove", item = "garlic", prep = "finely chopped" },
+    { item = "cilantro", desc = "fresh", prep = "chopped", optional = true }
   ] }
 ]
 +++
@@ -54,6 +55,7 @@ ingredients = [
    - `unit`: Standard unit from UNIT_DEFINITIONS in [constants.ts](../../../themes/cookpot/assets/js/constants.ts) (`"pound"`, `"cup"`, `"clove"`, `"can"`, etc.).
    - `item`: Use standard names in **singular form** (e.g. `"garlic"`, `"egg"`, `"grape tomato"`). The client engine handles pluralization dynamically on display.
    - `desc` / `prep`: Optional descriptors (e.g. `"fresh"`, `"minced"`).
+   - `optional`: (Optional) Set to `true` for optional garnishes, toppings, or seasonings (e.g. `optional = true`).
    - `alt`: (Optional) Alternative item or measurement (e.g. `alt = { item = "soy sauce" }`).
 
 ## ✍️ 3. Instructions & Shortcodes
