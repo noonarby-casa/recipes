@@ -12,11 +12,15 @@ describe('GroupCanonicalIngredientsStep', () => {
     ];
 
     const groups = step.group(ingredients);
-    expect(groups).toHaveLength(2);
+    expect(groups).toHaveLength(3);
 
-    const onionGroup = groups.find((g) => g.key === 'onion');
-    expect(onionGroup).toBeDefined();
-    expect(onionGroup?.ingredients).toHaveLength(2);
+    const yellowOnionGroup = groups.find((g) => g.key === 'yellow onion');
+    expect(yellowOnionGroup).toBeDefined();
+    expect(yellowOnionGroup?.ingredients).toHaveLength(1);
+
+    const redOnionGroup = groups.find((g) => g.key === 'red onion');
+    expect(redOnionGroup).toBeDefined();
+    expect(redOnionGroup?.ingredients).toHaveLength(1);
 
     const carrotGroup = groups.find((g) => g.key === 'carrot');
     expect(carrotGroup).toBeDefined();

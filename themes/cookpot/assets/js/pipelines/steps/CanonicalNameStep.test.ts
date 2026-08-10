@@ -8,7 +8,7 @@ describe('CanonicalNameStep', () => {
     const items = [{ item: 'yellow onion' }, { item: 'kosher salt' }];
 
     const result = step.process(items);
-    expect(result[0].canonicalName).toBe('onion');
+    expect(result[0].canonicalName).toBe('yellow onion');
     expect(result[1].canonicalName).toBe('salt');
   });
 

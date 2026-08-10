@@ -1,47 +1,89 @@
-# Grill Session: Single Recipe Plan Bar Week Date Display
+# Grill Session: Shopping List Ingredient Normalization & Merging Rules
 
 ## Closed Decisions
 
-### Q1. Label Wording & Placement
+### Q1. Onion Specifiers & Variant Separation
 
-- **Question:** How should the Monday date be phrased and placed within the plan bar?
-- **Decision:** Use `Plan (MMM D):` on desktop and collapse to `MMM D:` on mobile screens (e.g. `Plan (Aug 3):` -> `Aug 3:`).
+- **Question:** Should plain "onion" automatically alias/canonicalize to "yellow onion", while keeping distinct varieties (red onion, white onion, sweet onion) as separate canonical items?
+- **Decision:** Split onions into multiple canonical rules. Plain "onion" defaults to "yellow onion" (canonicalName: "yellow onion" with "onion" as alias). "red onion", "white onion", and "sweet onion" become distinct canonical items.
 - **Details:**
-  - Replaces static `Plan:` label in [`SingleRecipeScaler.svelte`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/components/apps/SingleRecipeScaler.svelte#L185).
+  - "onion" & "yellow onion" merge into "yellow onion".
+  - "red onion" remains a separate item on the shopping list.
+  - "white onion" remains a separate item.
+  - "sweet onion" remains a separate item.
 
-### Q2. Active Week Source of Truth
+### Q2. Bell Pepper Variants & Default Grouping
 
-- **Question:** Should the displayed Monday track `settingsStore.startDate` or the current real-world calendar week's Monday?
-- **Decision:** Track `$settingsStore.startDate` (the active meal plan week).
+- **Question:** Should color-specific bell peppers (red, green, yellow bell pepper) remain separate canonical items while generic "bell pepper" acts as an alias or separate item?
+- **Decision:** Split bell peppers by color into separate canonical items ("red bell pepper", "green bell pepper", "yellow bell pepper"). Maintain plain "bell pepper" as a generic canonical fallback item.
 - **Details:**
-  - Computes Monday using `getMondayOfWeek(parseIsoDate($settingsStore.startDate))` from [`utils/dates.ts`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/themes/cookpot/assets/js/utils/dates.ts#L64).
+  - "red bell pepper" remains separate.
+  - "green bell pepper" remains separate.
+  - "yellow bell pepper" remains separate.
+  - Unspecified "bell pepper" remains generic.
 
-### Q3. Non-Monday Start Dates & Date Precision
+### Q3. Fresh vs. Dried Herbs
 
-- **Question:** How should weekday pills behave and display dates if `settingsStore.startDate` is a non-Monday date?
-- **Decision:** Keep UI as compact weekday circle pills `[M] [T] [W] [T] [F] [S] [S]`. Update underlying data mapping to store exact ISO dates (`YYYY-MM-DD`).
+- **Question:** Should fresh herbs (e.g., "fresh basil", "fresh thyme") be kept distinct from their dried spice aisle counterparts ("dried basil", "dried thyme")?
+- **Decision:** Separate fresh herbs from dried herbs into distinct produce vs. spice canonical items.
 - **Details:**
-  - The label header shows the Monday date (e.g. `Plan (Aug 3):`).
-  - The 7 circle pills `[M]`, `[T]`, etc., remain visually identical (`M`, `T`, `W`, `T`, `F`, `S`, `S`).
-  - Under the hood, clicking `M` resolves to `addDays(mondayDate, 0)` (`2026-08-03`), `T` resolves to `addDays(mondayDate, 1)` (`2026-08-04`), etc.
-  - Tooltips reflect the full day and date (e.g., `Add to Monday, Aug 3`).
+  - Plain herb names (e.g. "thyme", "oregano", "parsley", "sage") alias to **dried** herbs by default (`spices-baking` aisle).
+  - Exception: Plain **"basil"** aliases to **fresh basil** (`fresh-produce` aisle).
+  - Explicit "fresh" or "dried" prefixes dictate the exact category/item.
 
-### Q4. Date Format Style
+### Q4. Stock & Broth Types / Sodium Content
 
-- **Question:** How should the month and day be formatted in the date string?
-- **Decision:** `MMM D` format (e.g., `Aug 3`), using `toLocaleDateString('en-US', { month: 'short', day: 'numeric' })`.
+- **Question:** How should broth vs. stock and low-sodium variants be merged (e.g., "chicken broth" vs "low-sodium chicken broth" vs "chicken stock" vs "vegetable broth")?
+- **Decision:** Separate broth/stock by protein/base type, merge broth & stock for the same protein, and alias low-sodium to standard broth.
 - **Details:**
-  - Consistent with existing date formatting across the application.
+  - `chicken broth` & `chicken stock` merge into `chicken broth`.
+  - `vegetable broth` & `vegetable stock` merge into `vegetable broth`.
+  - `beef broth` & `beef stock` merge into `beef broth`.
+  - `low-sodium` versions alias to their respective base broth item.
 
-### Q5. Plan Interactions & Backwards Compatibility
+### Q5. Oil & Vinegar Varieties
 
-- **Question:** How should multi-day scheduling, legacy plans, reactivity, and plan navigation interact?
-- **Decision:**
-  - `isScheduledOn` checks both exact ISO date (`YYYY-MM-DD`) and legacy day keys (`"mon"`).
-  - Pill active states and Monday dates react dynamically to `$settingsStore` changes.
-  - Pills evaluate independently for multi-day scheduling.
-  - `View Plan →` link navigates to `/plan/`.
+- **Question:** How should specialty oils (sesame oil, coconut oil, avocado oil) and vinegars (apple cider vinegar, red wine vinegar, rice vinegar, white vinegar) be handled?
+- **Decision:** Separate specialty oils and distinct vinegar varieties into individual canonical items.
+- **Details:**
+  - `olive oil` & `extra virgin olive oil` merge into `olive oil`.
+  - `canola oil` & `vegetable oil` merge into `vegetable oil`.
+  - `sesame oil`, `coconut oil`, and `avocado oil` become separate canonical items.
+  - `apple cider vinegar`, `red wine vinegar`, `rice vinegar`, `white vinegar`, and `balsamic vinegar` become separate canonical items.
+
+### Q6. Cheese Forms & Varieties
+
+- **Question:** How should generic terms ("cheese", "sliced cheese"), block vs shredded cheese, and sharp vs mild cheddar be handled?
+- **Decision:** Clean up generic cheese aliases, separate fresh mozzarella, and maintain cheddar grouping.
+- **Details:**
+  - Remove `"cheese"` and `"sliced cheese"` from `mozzarella ball`.
+  - Separate `fresh mozzarella / mozzarella ball` from standard `mozzarella`.
+  - Merge `sharp cheddar`, `white cheddar`, and `mild cheddar` into `cheddar cheese`.
+
+### Q7. Sugar & Flour Varieties
+
+- **Question:** How should baking sugars (brown sugar, powdered/confectioners sugar, granulated sugar) and flours (all-purpose, cake flour, bread flour) be handled?
+- **Decision:** Fix powdered sugar separation and separate specialty flours.
+- **Details:**
+  - Separate `powdered sugar` / `confectioners' sugar` from brown sugar into its own item.
+  - Alias plain `"sugar"` and `"granulated sugar"` to `granulated sugar`.
+  - Alias plain `"flour"` and `"all-purpose flour"` to `all-purpose flour`.
+  - Keep `cake flour`, `bread flour`, and `whole wheat flour` as separate canonical items.
+
+### Q8. Garlic Forms
+
+- **Question:** Should fresh garlic cloves vs garlic powder vs jarred minced garlic be kept distinct or merged?
+- **Decision:** Keep fresh garlic, garlic powder, and jarred minced garlic as three distinct canonical items.
+- **Details:**
+  - Fresh `garlic` (cloves/heads) stays in `fresh-produce`.
+  - `garlic powder` stays in `spices-baking`.
+  - `minced garlic` (jarred) becomes a separate canonical item.
+
+### Q9. Implementation Strategy & Next Steps
+
+- **Question:** Shall we now update `item-rules.json` and unit test suites with all agreed decisions, and execute `pnpm run ci` to verify?
+- **Decision:** Proceed with implementation in `item-rules.json`, add/update unit tests, and verify via `pnpm run ci`.
 
 ## Open Questions
 
-_(None. All design decisions resolved and approved for implementation!)_
+_(All questions resolved)_

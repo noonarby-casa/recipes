@@ -133,11 +133,11 @@ describe('processShoppingList', () => {
     expect(pepper?.unit).toBe('8-oz jar');
     expect(pepper?.note?.sizeNote).toBe('6 oz needed');
 
-    // 4. Onion -> 1 onion (not 1 cup onion)
-    const onion = result.buyItems.find((i) => i.item === 'onion');
+    // 4. Onion -> 1 yellow onion (not 1 cup onion)
+    const onion = result.buyItems.find((i) => i.item === 'yellow onion');
     expect(onion).toBeDefined();
     expect(onion?.qty).toBe(1);
-    expect(onion?.unit).toBe('onion');
+    expect(onion?.unit).toBe('yellow onion');
     expect(onion?.note?.sizeNote).toBeUndefined();
 
     // 5. Kosher salt -> identified as pantry staple
@@ -154,7 +154,7 @@ describe('processShoppingList', () => {
     expect(spinach?.note?.sizeNote).toBe('3 oz needed');
   });
 
-  test('combining Indian Butter Chickpeas and Bolognese yields 2 onions and 2 (15 oz) cans tomato sauce', () => {
+  test('combining Indian Butter Chickpeas and Bolognese yields 2 yellow onions and 2 (15 oz) cans tomato sauce', () => {
     const ingredients: IngredientInput[] = [
       // Indian Butter Chickpeas ingredients
       {
@@ -189,8 +189,8 @@ describe('processShoppingList', () => {
 
     const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
 
-    // Case 1: 1.5 cups onion (alt: 1 large) + 1 large onion = 2 large onions
-    const onion = result.buyItems.find((i) => i.item === 'onion');
+    // Case 1: 1.5 cups onion (alt: 1 large) + 1 large onion = 2 large yellow onions
+    const onion = result.buyItems.find((i) => i.item === 'yellow onion');
     expect(onion).toBeDefined();
     expect(onion?.qty).toBe(2);
 
@@ -199,5 +199,65 @@ describe('processShoppingList', () => {
     expect(tomatoSauce).toBeDefined();
     expect(tomatoSauce?.qty).toBe(2);
     expect(tomatoSauce?.unit).toBe('cans (15 oz)');
+  });
+
+  test('verifies edge cases for ingredient rule improvements', () => {
+    const ingredients: IngredientInput[] = [
+      { item: 'onion', qty: 1 },
+      { item: 'yellow onion', qty: 2 },
+      { item: 'red onion', qty: 1 },
+      { item: 'red bell pepper', qty: 1 },
+      { item: 'green bell pepper', qty: 1 },
+      { item: 'vegetable broth', qty: 2, unit: 'cup' },
+      { item: 'chicken broth', qty: 2, unit: 'cup' },
+      { item: 'sesame oil', qty: 1, unit: 'tbsp' },
+      { item: 'coconut oil', qty: 1, unit: 'tbsp' },
+      { item: 'fresh basil', qty: 1, unit: 'bunch' },
+      { item: 'dried basil', qty: 1, unit: 'tsp' },
+      { item: 'minced garlic', qty: 1, unit: 'tbsp' },
+      { item: 'garlic', qty: 3, unit: 'clove' },
+    ];
+
+    const result = processShoppingList(ingredients);
+
+    // 1. Yellow onion (1 plain + 2 yellow = 3 yellow onions), red onion separate
+    const yellowOnion = result.buyItems.find((i) => i.item === 'yellow onion');
+    const redOnion = result.buyItems.find((i) => i.item === 'red onion');
+    expect(yellowOnion).toBeDefined();
+    expect(yellowOnion?.qty).toBe(3);
+    expect(redOnion).toBeDefined();
+    expect(redOnion?.qty).toBe(1);
+
+    // 2. Bell peppers split by color
+    const redPepper = result.buyItems.find((i) => i.item === 'red bell pepper');
+    const greenPepper = result.buyItems.find(
+      (i) => i.item === 'green bell pepper',
+    );
+    expect(redPepper).toBeDefined();
+    expect(greenPepper).toBeDefined();
+
+    // 3. Vegetable broth & chicken broth separate
+    const vegBroth = result.buyItems.find((i) => i.item === 'vegetable broth');
+    const chkBroth = result.buyItems.find((i) => i.item === 'chicken broth');
+    expect(vegBroth).toBeDefined();
+    expect(chkBroth).toBeDefined();
+
+    // 4. Oils separate
+    const sesameOil = result.buyItems.find((i) => i.item === 'sesame oil');
+    const coconutOil = result.buyItems.find((i) => i.item === 'coconut oil');
+    expect(sesameOil).toBeDefined();
+    expect(coconutOil).toBeDefined();
+
+    // 5. Fresh basil in buyItems, dried basil in stapleItems
+    const freshBasil = result.buyItems.find((i) => i.item === 'fresh basil');
+    const driedBasil = result.stapleItems.find((i) => i.item === 'dried basil');
+    expect(freshBasil).toBeDefined();
+    expect(driedBasil).toBeDefined();
+
+    // 6. Minced garlic in buyItems, fresh garlic in buyItems
+    const mincedG = result.buyItems.find((i) => i.item === 'minced garlic');
+    const freshG = result.buyItems.find((i) => i.item === 'garlic');
+    expect(mincedG).toBeDefined();
+    expect(freshG).toBeDefined();
   });
 });

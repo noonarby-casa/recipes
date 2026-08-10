@@ -210,9 +210,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'buy',
     expectedItem: {
-      item: 'onion',
+      item: 'yellow onion',
       qty: 1.5,
-      unit: 'onions',
+      unit: 'yellow onions',
       category: 'fresh-produce',
     },
   },
@@ -728,7 +728,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'onion powder',
       qty: 1,
       unit: 'teaspoon',
-      category: 'fresh-produce',
+      category: 'spices-seasonings',
       staple: 'in-pantry',
     },
   },
@@ -765,7 +765,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'tablespoon',
     },
-    expectedList: 'buy',
+    expectedList: 'staple',
     expectedItem: {
       item: 'brown sugar',
       qty: 1,
@@ -975,17 +975,16 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
-      item: 'basil',
+      item: 'dried basil',
       qty: 1,
       unit: 'teaspoon',
-      desc: 'dried',
     },
     expectedList: 'staple',
     expectedItem: {
-      item: 'basil',
+      item: 'dried basil',
       qty: 1,
       unit: 'teaspoon',
-      category: 'fresh-herbs',
+      category: 'spices-seasonings',
       staple: 'in-pantry',
     },
   },
@@ -1094,7 +1093,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'yellow onion',
       qty: 1,
-      unit: 'onion',
+      unit: 'yellow onion',
       category: 'fresh-produce',
     },
   },
@@ -1409,9 +1408,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'buy',
     expectedItem: {
-      item: 'onion',
+      item: 'yellow onion',
       qty: 1,
-      unit: 'onion',
+      unit: 'yellow onion',
       category: 'fresh-produce',
     },
   },
@@ -2314,9 +2313,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       unit: 'cup',
       prep: 'packed',
     },
-    expectedList: 'buy',
+    expectedList: 'staple',
     expectedItem: {
-      item: 'light brown sugar',
+      item: 'brown sugar',
       qty: 4,
       unit: 'tablespoons',
       category: 'baking',
@@ -2344,13 +2343,12 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 2.5,
       unit: 'cup',
     },
-    expectedList: 'staple',
+    expectedList: 'buy',
     expectedItem: {
       item: 'cake flour',
       qty: 2.5,
       unit: 'cups',
       category: 'baking',
-      staple: 'in-pantry',
     },
   },
   {
@@ -2411,7 +2409,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'sweet onion',
       qty: 1,
-      unit: 'onion',
+      unit: 'sweet onion',
       category: 'fresh-produce',
     },
   },
@@ -2432,18 +2430,16 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
-      item: 'thyme',
+      item: 'fresh thyme',
       qty: 1,
       unit: 'tablespoon',
-      desc: 'fresh',
     },
-    expectedList: 'staple',
+    expectedList: 'buy',
     expectedItem: {
-      item: 'thyme',
+      item: 'fresh thyme',
       qty: 1,
       unit: 'tablespoon',
       category: 'fresh-herbs',
-      staple: 'in-pantry',
     },
   },
   {
@@ -2711,7 +2707,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'red onion',
       qty: 0.34,
-      unit: 'onion',
+      unit: 'red onion',
       category: 'fresh-produce',
     },
   },
@@ -2830,7 +2826,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'chia seed',
       qty: 1.5,
       unit: 'teaspoons',
-      category: 'other',
+      category: 'baking',
     },
   },
   {
@@ -3917,6 +3913,166 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       unit: 'teaspoon',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+    },
+  },
+  {
+    input: { item: 'minced garlic', qty: 1, unit: 'tbsp' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'minced garlic',
+      qty: 1,
+      unit: 'tbsp',
+      category: 'canned-other',
+    },
+  },
+  {
+    input: { item: 'beef broth', qty: 1, unit: 'cup' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'beef broth',
+      qty: 1,
+      unit: 'cup',
+      category: 'canned-other',
+    },
+  },
+  {
+    input: { item: 'white onion', qty: 1 },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'white onion',
+      qty: 1,
+      unit: 'white onion',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: { item: 'yellow bell pepper', qty: 1 },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'yellow bell pepper',
+      qty: 1,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: { item: 'fresh thyme', qty: 1, unit: 'tbsp' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'fresh thyme',
+      qty: 1,
+      unit: 'tbsp',
+      category: 'fresh-herbs',
+    },
+  },
+  {
+    input: { item: 'dried sage', qty: 1, unit: 'tsp' },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'dried sage',
+      qty: 1,
+      unit: 'tsp',
+      category: 'spices-seasonings',
+    },
+  },
+  {
+    input: { item: 'bread flour', qty: 1, unit: 'cup' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'bread flour',
+      qty: 1,
+      unit: 'cup',
+      category: 'baking',
+    },
+  },
+  {
+    input: { item: 'cornstarch', qty: 1, unit: 'tbsp' },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'cornstarch',
+      qty: 1,
+      unit: 'tbsp',
+      category: 'baking',
+    },
+  },
+  {
+    input: { item: 'yeast', qty: 1, unit: 'package' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'yeast',
+      qty: 1,
+      unit: 'package',
+      category: 'baking',
+    },
+  },
+  {
+    input: { item: 'dried thyme', qty: 1, unit: 'tsp' },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'dried thyme',
+      qty: 1,
+      unit: 'tsp',
+      category: 'spices-seasonings',
+    },
+  },
+  {
+    input: { item: 'mozzarella', qty: 1, unit: 'cup' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'mozzarella',
+      qty: 1,
+      unit: 'cup',
+      category: 'butter-cheese',
+    },
+  },
+  {
+    input: { item: 'apple cider vinegar', qty: 1, unit: 'tbsp' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'apple cider vinegar',
+      qty: 1,
+      unit: 'tbsp',
+      category: 'oils-vinegars',
+    },
+  },
+  {
+    input: { item: 'balsamic vinegar', qty: 1, unit: 'tbsp' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'balsamic vinegar',
+      qty: 1,
+      unit: 'tbsp',
+      category: 'oils-vinegars',
+    },
+  },
+  {
+    input: { item: 'fresh oregano', qty: 1, unit: 'tbsp' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'fresh oregano',
+      qty: 1,
+      unit: 'tbsp',
+      category: 'fresh-herbs',
+    },
+  },
+  {
+    input: { item: 'dried basil', qty: 1, unit: 'tsp' },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'dried basil',
+      qty: 1,
+      unit: 'tsp',
+      category: 'spices-seasonings',
+    },
+  },
+  {
+    input: { item: 'fresh basil', qty: 1, unit: 'bunch' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'fresh basil',
+      qty: 1,
+      unit: 'bunch',
+      category: 'fresh-herbs',
     },
   },
 ];

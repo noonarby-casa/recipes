@@ -21,6 +21,11 @@
     }
   },
   {
+    "canonicalName": "minced garlic",
+    "category": "canned-other",
+    "items": ["minced garlic", "jarred minced garlic"]
+  },
+  {
     "canonicalName": "butter",
     "category": "butter-cheese",
     "items": [
@@ -213,12 +218,68 @@
     "canonicalName": "chicken broth",
     "category": "canned-other",
     "items": [
-      "broth",
-      "stock",
       "chicken broth",
       "chicken stock",
+      "low-sodium chicken broth",
+      "low-sodium chicken stock",
+      "broth",
+      "stock"
+    ],
+    "unitEquivalences": {
+      "pint (16 fl oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "quart (32 fl oz)": {
+        "base": "cup",
+        "factor": 4
+      },
+      "pint (16 oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "quart (32 oz)": {
+        "base": "cup",
+        "factor": 4
+      }
+    }
+  },
+  {
+    "canonicalName": "vegetable broth",
+    "category": "canned-other",
+    "items": [
       "vegetable broth",
-      "vegetable stock"
+      "vegetable stock",
+      "low-sodium vegetable broth",
+      "low-sodium vegetable stock"
+    ],
+    "unitEquivalences": {
+      "pint (16 fl oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "quart (32 fl oz)": {
+        "base": "cup",
+        "factor": 4
+      },
+      "pint (16 oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "quart (32 oz)": {
+        "base": "cup",
+        "factor": 4
+      }
+    }
+  },
+  {
+    "canonicalName": "beef broth",
+    "category": "canned-other",
+    "items": [
+      "beef broth",
+      "beef stock",
+      "low-sodium beef broth",
+      "low-sodium beef stock"
     ],
     "unitEquivalences": {
       "pint (16 fl oz)": {
@@ -302,25 +363,58 @@
     }
   },
   {
-    "canonicalName": "onion",
+    "canonicalName": "yellow onion",
     "category": "fresh-produce",
     "items": [
       {
-        "singular": "onion",
-        "plural": "onions"
-      },
-      {
         "singular": "yellow onion",
-        "plural": "yellow onions"
-      },
+        "plural": "yellow onions",
+        "aliases": ["onion", "onions"]
+      }
+    ],
+    "unitEquivalences": {
+      "cup": {
+        "base": "yellow onion",
+        "factor": 1
+      }
+    }
+  },
+  {
+    "canonicalName": "red onion",
+    "category": "fresh-produce",
+    "items": [
       {
         "singular": "red onion",
         "plural": "red onions"
-      },
+      }
+    ],
+    "unitEquivalences": {
+      "cup": {
+        "base": "red onion",
+        "factor": 1
+      }
+    }
+  },
+  {
+    "canonicalName": "white onion",
+    "category": "fresh-produce",
+    "items": [
       {
         "singular": "white onion",
         "plural": "white onions"
-      },
+      }
+    ],
+    "unitEquivalences": {
+      "cup": {
+        "base": "white onion",
+        "factor": 1
+      }
+    }
+  },
+  {
+    "canonicalName": "sweet onion",
+    "category": "fresh-produce",
+    "items": [
       {
         "singular": "sweet onion",
         "plural": "sweet onions"
@@ -328,7 +422,7 @@
     ],
     "unitEquivalences": {
       "cup": {
-        "base": "onion",
+        "base": "sweet onion",
         "factor": 1
       }
     }
@@ -1185,17 +1279,36 @@
   {
     "canonicalName": "bell pepper",
     "category": "fresh-produce",
+    "items": ["bell pepper", "poblano pepper"]
+  },
+  {
+    "canonicalName": "red bell pepper",
+    "category": "fresh-produce",
     "items": [
-      "bell pepper",
       {
         "singular": "red bell pepper",
         "plural": "red bell peppers"
-      },
+      }
+    ]
+  },
+  {
+    "canonicalName": "green bell pepper",
+    "category": "fresh-produce",
+    "items": [
       {
         "singular": "green bell pepper",
         "plural": "green bell peppers"
-      },
-      "poblano pepper"
+      }
+    ]
+  },
+  {
+    "canonicalName": "yellow bell pepper",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "yellow bell pepper",
+        "plural": "yellow bell peppers"
+      }
     ]
   },
   {
@@ -1246,15 +1359,26 @@
     "items": ["Italian parsley", "dill", "fresh dill"]
   },
   {
-    "canonicalName": "thyme",
+    "canonicalName": "fresh thyme",
     "category": "fresh-herbs",
-    "staple": true,
-    "items": ["thyme", "fresh thyme", "dried thyme"]
+    "items": ["fresh thyme"]
   },
   {
-    "canonicalName": "sage",
+    "canonicalName": "dried thyme",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["thyme", "dried thyme"]
+  },
+  {
+    "canonicalName": "fresh sage",
     "category": "fresh-herbs",
-    "items": ["sage", "fresh sage", "dried sage", "sage leaf", "sage leaves"]
+    "items": ["fresh sage", "sage leaf", "sage leaves"]
+  },
+  {
+    "canonicalName": "dried sage",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["sage", "dried sage"]
   },
   {
     "canonicalName": "Kalamata olive",
@@ -1294,22 +1418,49 @@
     "items": ["tortilla chips", "tortilla chip"]
   },
   {
-    "canonicalName": "flour",
+    "canonicalName": "all-purpose flour",
     "category": "baking",
     "staple": true,
-    "items": ["flour", "all-purpose flour", "cake flour"]
+    "items": ["flour", "all-purpose flour"]
+  },
+  {
+    "canonicalName": "cake flour",
+    "category": "baking",
+    "items": ["cake flour"]
+  },
+  {
+    "canonicalName": "bread flour",
+    "category": "baking",
+    "items": ["bread flour"]
   },
   {
     "canonicalName": "baking powder",
     "category": "baking",
     "staple": true,
-    "items": [
-      "baking powder",
-      "baking soda",
-      "vanilla extract",
-      "cornstarch",
-      "yeast"
-    ]
+    "items": ["baking powder"]
+  },
+  {
+    "canonicalName": "baking soda",
+    "category": "baking",
+    "staple": true,
+    "items": ["baking soda"]
+  },
+  {
+    "canonicalName": "vanilla extract",
+    "category": "baking",
+    "staple": true,
+    "items": ["vanilla extract", "vanilla"]
+  },
+  {
+    "canonicalName": "cornstarch",
+    "category": "baking",
+    "staple": true,
+    "items": ["cornstarch"]
+  },
+  {
+    "canonicalName": "yeast",
+    "category": "baking",
+    "items": ["yeast", "active dry yeast", "instant yeast"]
   },
   {
     "canonicalName": "lemon extract",
@@ -1324,15 +1475,33 @@
   {
     "canonicalName": "brown sugar",
     "category": "baking",
+    "staple": true,
+    "items": ["brown sugar", "light brown sugar", "dark brown sugar"]
+  },
+  {
+    "canonicalName": "powdered sugar",
+    "category": "baking",
+    "items": ["powdered sugar", "confectioners' sugar", "confectioner's sugar"]
+  },
+  {
+    "canonicalName": "raisin",
+    "category": "baking",
     "items": [
-      "brown sugar",
-      "confectioners' sugar",
-      "powdered sugar",
-      "light brown sugar",
-      "pound cake mix",
-      "raisin",
-      "chia seeds"
+      {
+        "singular": "raisin",
+        "plural": "raisins"
+      }
     ]
+  },
+  {
+    "canonicalName": "pound cake mix",
+    "category": "baking",
+    "items": ["pound cake mix"]
+  },
+  {
+    "canonicalName": "chia seeds",
+    "category": "baking",
+    "items": ["chia seed", "chia seeds"]
   },
   {
     "canonicalName": "almond",
@@ -1384,9 +1553,19 @@
     "items": ["orange juice"]
   },
   {
-    "canonicalName": "mozzarella ball",
+    "canonicalName": "fresh mozzarella",
     "category": "butter-cheese",
-    "items": ["mozzarella ball", "mozzarella", "cheese", "sliced cheese"]
+    "items": ["mozzarella ball", "fresh mozzarella"]
+  },
+  {
+    "canonicalName": "mozzarella",
+    "category": "butter-cheese",
+    "items": ["mozzarella", "shredded mozzarella"]
+  },
+  {
+    "canonicalName": "cheese",
+    "category": "butter-cheese",
+    "items": ["cheese", "sliced cheese"]
   },
   {
     "canonicalName": "cheddar cheese",
@@ -1396,7 +1575,9 @@
       "cheddar",
       "sharp cheddar",
       "sharp Cheddar",
-      "sharp cheddar cheese"
+      "sharp cheddar cheese",
+      "mild cheddar",
+      "white cheddar"
     ]
   },
   {
@@ -1484,22 +1665,44 @@
     "items": ["vegetable oil", "canola oil", "cooking spray"]
   },
   {
-    "canonicalName": "specialty oils",
+    "canonicalName": "sesame oil",
     "category": "oils-vinegars",
-    "items": ["coconut oil", "avocado oil", "sesame oil"]
+    "items": ["sesame oil", "toasted sesame oil"]
+  },
+  {
+    "canonicalName": "coconut oil",
+    "category": "oils-vinegars",
+    "items": ["coconut oil"]
+  },
+  {
+    "canonicalName": "avocado oil",
+    "category": "oils-vinegars",
+    "items": ["avocado oil"]
   },
   {
     "canonicalName": "rice vinegar",
     "category": "oils-vinegars",
-    "items": [
-      "rice vinegar",
-      "white vinegar",
-      "vinegar",
-      "red wine vinegar",
-      "rice wine vinegar",
-      "apple cider vinegar",
-      "cider vinegar"
-    ]
+    "items": ["rice vinegar", "rice wine vinegar"]
+  },
+  {
+    "canonicalName": "apple cider vinegar",
+    "category": "oils-vinegars",
+    "items": ["apple cider vinegar"]
+  },
+  {
+    "canonicalName": "red wine vinegar",
+    "category": "oils-vinegars",
+    "items": ["red wine vinegar"]
+  },
+  {
+    "canonicalName": "white vinegar",
+    "category": "oils-vinegars",
+    "items": ["white vinegar", "vinegar"]
+  },
+  {
+    "canonicalName": "balsamic vinegar",
+    "category": "oils-vinegars",
+    "items": ["balsamic vinegar"]
   },
   {
     "canonicalName": "sweet potato",
@@ -1573,14 +1776,19 @@
     "items": ["cumin powder", "coriander powder", "kasoori methi"]
   },
   {
-    "canonicalName": "oregano",
+    "canonicalName": "dried oregano",
     "category": "spices-seasonings",
     "staple": true,
     "items": ["oregano", "dried oregano"]
   },
   {
+    "canonicalName": "fresh oregano",
+    "category": "fresh-herbs",
+    "items": ["fresh oregano"]
+  },
+  {
     "canonicalName": "onion powder",
-    "category": "fresh-produce",
+    "category": "spices-seasonings",
     "staple": true,
     "items": ["onion powder"]
   },
@@ -1597,10 +1805,15 @@
     ]
   },
   {
-    "canonicalName": "basil",
+    "canonicalName": "fresh basil",
     "category": "fresh-herbs",
+    "items": ["basil", "fresh basil"]
+  },
+  {
+    "canonicalName": "dried basil",
+    "category": "spices-seasonings",
     "staple": true,
-    "items": ["basil", "fresh basil", "dried basil"]
+    "items": ["dried basil"]
   },
   {
     "canonicalName": "low-fat plain kefir",
