@@ -3790,6 +3790,20 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'butter-cheese',
     },
   },
+  {
+    input: {
+      item: 'chili pepper',
+      qty: 1,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'chili pepper',
+      qty: 1,
+      unit: '',
+      category: 'fresh-produce',
+      sizeNote: '1 needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

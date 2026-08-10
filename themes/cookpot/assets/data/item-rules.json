@@ -857,7 +857,11 @@
       {
         "singular": "chicken thigh",
         "plural": "chicken thighs",
-        "aliases": ["boneless chicken thighs"]
+        "aliases": [
+          "boneless chicken thighs",
+          "boneless skinless chicken thigh",
+          "boneless skinless chicken thighs"
+        ]
       }
     ]
   },
@@ -967,7 +971,7 @@
   {
     "canonicalName": "red curry paste",
     "category": "condiments",
-    "items": ["red curry paste"]
+    "items": ["red curry paste", "Thai red curry paste"]
   },
   {
     "canonicalName": "spicy mayonnaise",
@@ -1114,6 +1118,7 @@
     "items": [
       "squash",
       "butternut squash",
+      "kabocha squash",
       {
         "singular": "summer squash",
         "plural": "summer squashes"
@@ -1121,6 +1126,18 @@
       {
         "singular": "zucchini",
         "plural": "zucchinis"
+      }
+    ]
+  },
+  {
+    "canonicalName": "chili pepper",
+    "category": "fresh-produce",
+    "pluralByDefault": true,
+    "items": [
+      {
+        "singular": "chili pepper",
+        "plural": "chili peppers",
+        "aliases": ["chili", "chilis", "chilli pepper", "chilli peppers"]
       }
     ]
   },
@@ -1239,7 +1256,7 @@
   {
     "canonicalName": "rice",
     "category": "pasta-grains",
-    "items": ["rice", "white rice", "basmati rice"]
+    "items": ["rice", "white rice", "basmati rice", "jasmine rice"]
   },
   {
     "canonicalName": "quinoa",
