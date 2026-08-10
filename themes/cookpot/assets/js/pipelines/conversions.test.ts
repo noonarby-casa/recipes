@@ -3818,6 +3818,107 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '1 needed',
     },
   },
+  {
+    input: {
+      item: 'kidney bean',
+      qty: 1,
+      unit: 'can (15-ounce)',
+      prep: 'drained and rinsed',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'kidney bean',
+      qty: 1,
+      unit: 'can (15-ounce)',
+      category: 'canned-beans',
+    },
+  },
+  {
+    input: {
+      item: 'crushed tomato',
+      qty: 1,
+      unit: 'can (28-ounce)',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'crushed tomato',
+      qty: 1,
+      unit: 'can (28-ounce)',
+      category: 'canned-tomatoes',
+    },
+  },
+  {
+    input: {
+      item: 'greek yogurt',
+      prep: 'for serving',
+      optional: true,
+    },
+    expectedList: 'optional',
+    expectedItem: {
+      item: 'greek yogurt',
+      qty: null,
+      unit: '',
+      category: 'milk-cream',
+    },
+  },
+  {
+    input: {
+      item: 'mexican cheese',
+      desc: 'shredded',
+      prep: 'for serving',
+      optional: true,
+    },
+    expectedList: 'optional',
+    expectedItem: {
+      item: 'mexican cheese',
+      qty: null,
+      unit: '',
+      category: 'butter-cheese',
+    },
+  },
+  {
+    input: {
+      item: 'tortilla chips',
+      prep: 'for serving',
+      optional: true,
+    },
+    expectedList: 'optional',
+    expectedItem: {
+      item: 'tortilla chips',
+      qty: null,
+      unit: '',
+      category: 'snacks',
+    },
+  },
+  {
+    input: {
+      item: 'cornbread',
+      prep: 'for serving',
+      optional: true,
+    },
+    expectedList: 'optional',
+    expectedItem: {
+      item: 'cornbread',
+      qty: null,
+      unit: '',
+      category: 'bakery',
+    },
+  },
+  {
+    input: {
+      item: 'cayenne',
+      qty: 1,
+      unit: 'teaspoon',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'cayenne',
+      qty: 1,
+      unit: 'teaspoon',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

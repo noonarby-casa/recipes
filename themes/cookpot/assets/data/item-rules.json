@@ -1281,7 +1281,7 @@
   {
     "canonicalName": "sliced bread",
     "category": "bakery",
-    "items": ["sliced bread", "bread", "brioche"]
+    "items": ["sliced bread", "bread", "brioche", "cornbread"]
   },
   {
     "canonicalName": "rolled oats",
@@ -1408,6 +1408,11 @@
     "canonicalName": "swiss cheese",
     "category": "butter-cheese",
     "items": ["swiss cheese", "Swiss cheese", "Swiss"]
+  },
+  {
+    "canonicalName": "mexican cheese",
+    "category": "butter-cheese",
+    "items": ["mexican cheese", "Mexican cheese", "shredded mexican cheese"]
   },
   {
     "canonicalName": "Italian seasoning",
@@ -1553,6 +1558,7 @@
       "garam masala",
       "garam masala powder",
       "cayenne pepper",
+      "cayenne",
       "cayenne pepper powder",
       "chili powder",
       "cinnamon",
