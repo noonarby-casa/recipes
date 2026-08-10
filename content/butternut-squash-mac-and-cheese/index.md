@@ -30,10 +30,10 @@ ingredients = [
     { qty = 2, unit = "tablespoon", item = "greek yogurt", desc = "low-fat 1% plain" },
     { qty = 1, unit = "cup", item = "gruyere cheese", prep = "shredded", alt = { item = "swiss cheese" } },
     { qty = 1, unit = "cup", item = "cheddar cheese", desc = "sharp", prep = "shredded" },
-    { item = "sea salt", desc = "optional, to taste" },
-    { item = "black pepper", desc = "optional, ground, to taste" },
+    { item = "sea salt", desc = "to taste", optional = true },
+    { item = "black pepper", desc = "ground, to taste", optional = true },
     { item = "cooking spray", desc = "nonstick" },
-    { item = "parsley", desc = "fresh, optional", prep = "finely chopped" }
+    { item = "parsley", desc = "fresh", prep = "finely chopped, for garnish", optional = true }
   ] }
 ]
 +++
