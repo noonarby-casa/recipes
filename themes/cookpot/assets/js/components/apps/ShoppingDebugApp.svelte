@@ -16,12 +16,11 @@
     getSectionForCategory,
     getActiveStoreLayoutId,
   } from '../../data/store-sections';
-  import { formatItemQuantity } from '../../units';
-  import { getGroupedNotes } from '../../pipelines/shoppingExportPipeline';
   import StorePicker from '../domain/StorePicker.svelte';
   import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
   import EmptyState from '../primitives/EmptyState.svelte';
   import HeartIcon from '../primitives/icons/HeartIcon.svelte';
+  import ShoppingListItemRow from '../domain/ShoppingListItemRow.svelte';
 
   import { getUrlParams, updateUrlParams, onUrlChange } from '../../utils/urlSync';
   import {
@@ -35,6 +34,7 @@
   let selectedRecipeServings = $state<Record<string, number>>({});
   let isolatedStoreLayoutId = $state<string>(getActiveStoreLayoutId());
   let isolatedCheckedStates = $state<Record<string, boolean>>({});
+  let isolatedAltSelections = $state<Record<string, string>>({});
   let activeMobileTab = $state<'recipes' | 'shopping'>('recipes');
   let isInitialized = false;
 
@@ -55,6 +55,9 @@
       }
       if (parsed.layoutId) {
         isolatedStoreLayoutId = parsed.layoutId;
+      }
+      if (parsed.altSelections) {
+        isolatedAltSelections = parsed.altSelections;
       }
     }
     isInitialized = true;
@@ -83,6 +86,9 @@
       if (parsed.layoutId) {
         isolatedStoreLayoutId = parsed.layoutId;
       }
+      if (parsed.altSelections) {
+        isolatedAltSelections = parsed.altSelections;
+      }
     });
 
     return () => {
@@ -94,10 +100,16 @@
     const servings = selectedRecipeServings;
     const layoutId = isolatedStoreLayoutId;
     const recipeList = recipes;
+    const altSelections = isolatedAltSelections;
 
     if (isInitialized && recipeList.length > 0) {
-      const { r, l } = serializeRecipeUrlParams(servings, recipeList, layoutId);
-      updateUrlParams({ r, l }, 'replace');
+      const { r, l, alt } = serializeRecipeUrlParams(
+        servings,
+        recipeList,
+        layoutId,
+        altSelections,
+      );
+      updateUrlParams({ r, l, alt }, 'replace');
     }
   });
 
@@ -121,6 +133,18 @@
     STORE_LAYOUTS.find((l) => l.id === isolatedStoreLayoutId) ||
       STORE_LAYOUTS[0],
   );
+
+  // Toggle alternate selection in isolated state
+  function toggleAlt(recipeShortId: string, altItemSlug: string) {
+    const current = isolatedAltSelections[recipeShortId];
+    const next = { ...isolatedAltSelections };
+    if (current === altItemSlug) {
+      delete next[recipeShortId];
+    } else {
+      next[recipeShortId] = altItemSlug;
+    }
+    isolatedAltSelections = next;
+  }
 
   // Toggle single recipe selection
   function toggleRecipe(r: Recipe) {
@@ -185,6 +209,7 @@
           scale,
         );
         parsed.recipe = rec.title;
+        parsed.recipeShortId = rec.shortId;
         list.push(parsed);
       });
     });
@@ -205,6 +230,7 @@
     const { buyItems, optionalItems, stapleItems } = processShoppingList(
       aggregatedIngredients,
       activeLayout,
+      isolatedAltSelections,
     );
 
     const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {
@@ -480,38 +506,12 @@
                     {@const isStaple = item.staple === 'in-pantry'}
                     {@const key = getIngredientKey(isStaple, item.unit, item.item)}
                     {@const isChecked = isItemChecked(key, isStaple, isolatedCheckedStates)}
-                    {@const notes = getGroupedNotes(item)}
-                    {@const formatted = formatItemQuantity(item.qty, item.unit, item.item)}
-                    <li class="checklist-item {isChecked ? 'checked' : ''}">
-                      <label class="checklist-item-label">
-                        <input
-                          type="checkbox"
-                          class="checklist-item-checkbox"
-                          checked={isChecked}
-                          onchange={() => toggleItemChecked(key, isStaple)}
-                        />
-                        <span>
-                          {formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{formatted.itemStr}
-
-                          {#if notes.sizeNote || notes.details.length > 0 || notes.fallbackRecipes.length > 0}
-                            <div class="checklist-item-details">
-                              {#if notes.sizeNote}
-                                <span class="checklist-item-note">{notes.sizeNote}</span>
-                              {/if}
-                              {#each notes.details as detail}
-                                {@const detailText = `${detail.descriptor || ''} ${detail.altItem ? 'or ' + detail.altItem : ''}`.trim()}
-                                <span class="checklist-item-note">
-                                  {detailText} {detail.recipes.length > 0 ? 'for ' + detail.recipes.join(', ') : ''}
-                                </span>
-                              {/each}
-                              {#if notes.fallbackRecipes.length > 0}
-                                <span class="checklist-item-note muted">for {notes.fallbackRecipes.join(', ')}</span>
-                              {/if}
-                            </div>
-                          {/if}
-                        </span>
-                      </label>
-                    </li>
+                    <ShoppingListItemRow
+                      {item}
+                      {isChecked}
+                      onToggleChecked={() => toggleItemChecked(key, isStaple)}
+                      onToggleAlt={toggleAlt}
+                    />
                   {/each}
                 {/each}
               {/if}
@@ -525,38 +525,12 @@
                 {#each optionalItems as item}
                   {@const key = getIngredientKey(false, item.unit, item.item)}
                   {@const isChecked = isItemChecked(key, false, isolatedCheckedStates)}
-                  {@const notes = getGroupedNotes(item)}
-                  {@const formatted = formatItemQuantity(item.qty, item.unit, item.item)}
-                  <li class="checklist-item {isChecked ? 'checked' : ''}">
-                    <label class="checklist-item-label">
-                      <input
-                        type="checkbox"
-                        class="checklist-item-checkbox"
-                        checked={isChecked}
-                        onchange={() => toggleItemChecked(key, false)}
-                      />
-                      <span>
-                        {formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{formatted.itemStr}
-
-                        {#if notes.sizeNote || notes.details.length > 0 || notes.fallbackRecipes.length > 0}
-                          <div class="checklist-item-details">
-                            {#if notes.sizeNote}
-                              <span class="checklist-item-note">{notes.sizeNote}</span>
-                            {/if}
-                            {#each notes.details as detail}
-                              {@const detailText = `${detail.descriptor || ''} ${detail.altItem ? 'or ' + detail.altItem : ''}`.trim()}
-                              <span class="checklist-item-note">
-                                {detailText} {detail.recipes.length > 0 ? 'for ' + detail.recipes.join(', ') : ''}
-                              </span>
-                            {/each}
-                            {#if notes.fallbackRecipes.length > 0}
-                              <span class="checklist-item-note muted">for {notes.fallbackRecipes.join(', ')}</span>
-                            {/if}
-                          </div>
-                        {/if}
-                      </span>
-                    </label>
-                  </li>
+                  <ShoppingListItemRow
+                    {item}
+                    {isChecked}
+                    onToggleChecked={() => toggleItemChecked(key, false)}
+                    onToggleAlt={toggleAlt}
+                  />
                 {/each}
               </ul>
             </div>

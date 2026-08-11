@@ -54,6 +54,9 @@ export interface IngredientInputAlt {
   // If an ingredient can be prepared multiple ways, this prep provides the
   // alternate, e.g. 'fresh baby spinach' or 'spinach, chopped'.
   prep?: string;
+
+  // Whether this alternate ingredient has been actively selected by the user.
+  isSwapped?: boolean;
 }
 
 /** Fully structured recipe ingredient — no runtime parsing needed. */
@@ -72,15 +75,21 @@ export interface IngredientInput {
   optional?: boolean;
   // Alternate information about the ingredient.
   alt?: IngredientInputAlt;
-  // The name of the recipe this ingreident comes from, populated in the
+  // The shortId of the recipe this ingredient comes from.
+  recipeShortId?: string;
+  // The name of the recipe this ingredient comes from, populated in the
   // pipeline for combined shopping lists.
   recipe?: string;
 }
 
 export interface IngredientNote {
   recipe?: string;
+  recipeShortId?: string;
+  qty?: number | null;
+  unit?: string;
   altItem?: string;
   descriptor?: string;
+  isSwapped?: boolean;
 }
 
 export interface ShoppingItemNote {

@@ -1,5 +1,5 @@
 import type { ShoppingItem, IngredientNote } from '../types';
-import { formatItemQuantity } from '../units';
+import { formatItemQuantity, abbreviateUnit } from '../units';
 import {
   getSectionForCategory,
   getActiveStoreLayout,
@@ -169,7 +169,22 @@ export function formatShoppingListExport(
         item.item,
       );
       const checkMarker = item.isChecked ? '[x]' : '[ ]';
-      text += `- ${checkMarker} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${formatShoppingItemNotes(item, false)}\n`;
+      text += `- ${checkMarker} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}\n`;
+      if (item.note?.sizeNote) {
+        text += `  - Note: ${item.note.sizeNote}\n`;
+      }
+      (item.note?.ingredientNotes || []).forEach((n) => {
+        if (n.recipe) {
+          const abbrev = n.unit ? abbreviateUnit(n.unit) : '';
+          const qtyPart =
+            n.qty !== null && n.qty !== undefined
+              ? `${n.qty} ${abbrev}`.trim() + ' '
+              : '';
+          const descPart = n.descriptor ? `[${n.descriptor}] ` : '';
+          const altPart = n.altItem ? `(alt: ${n.altItem}) ` : '';
+          text += `  - ${qtyPart}${descPart}${altPart}— ${n.recipe}\n`;
+        }
+      });
     }
   }
 
@@ -182,7 +197,22 @@ export function formatShoppingListExport(
         item.item,
       );
       const checkMarker = item.isChecked ? '[x]' : '[ ]';
-      text += `- ${checkMarker} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}${formatShoppingItemNotes(item, false)}\n`;
+      text += `- ${checkMarker} ${qtyStr ? qtyStr + ' ' : ''}${itemStr}\n`;
+      if (item.note?.sizeNote) {
+        text += `  - Note: ${item.note.sizeNote}\n`;
+      }
+      (item.note?.ingredientNotes || []).forEach((n) => {
+        if (n.recipe) {
+          const abbrev = n.unit ? abbreviateUnit(n.unit) : '';
+          const qtyPart =
+            n.qty !== null && n.qty !== undefined
+              ? `${n.qty} ${abbrev}`.trim() + ' '
+              : '';
+          const descPart = n.descriptor ? `[${n.descriptor}] ` : '';
+          const altPart = n.altItem ? `(alt: ${n.altItem}) ` : '';
+          text += `  - ${qtyPart}${descPart}${altPart}— ${n.recipe}\n`;
+        }
+      });
     }
   }
 

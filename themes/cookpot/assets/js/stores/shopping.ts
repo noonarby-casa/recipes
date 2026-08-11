@@ -52,6 +52,35 @@ export const shoppingCheckedStore = {
   },
 };
 
+const ALT_SELECTIONS_STORAGE_KEY = 'noonarby-shopping-alt-selections-v1';
+
+function loadAltSelections(): Record<string, string> {
+  return ls.getJson<Record<string, string>>(ALT_SELECTIONS_STORAGE_KEY) ?? {};
+}
+
+const altSelections = writable<Record<string, string>>(loadAltSelections());
+
+export const shoppingAltSelectionsStore = {
+  subscribe: altSelections.subscribe,
+  toggleAlt(recipeShortIdOrSlug: string, altItemSlug: string) {
+    altSelections.update((states) => {
+      const current = states[recipeShortIdOrSlug];
+      const next = { ...states };
+      if (current === altItemSlug) {
+        delete next[recipeShortIdOrSlug];
+      } else {
+        next[recipeShortIdOrSlug] = altItemSlug;
+      }
+      ls.setJson(ALT_SELECTIONS_STORAGE_KEY, next);
+      return next;
+    });
+  },
+  clearAltSelections() {
+    altSelections.set({});
+    ls.remove(ALT_SELECTIONS_STORAGE_KEY);
+  },
+};
+
 export function getIngredientKey(
   isStaple: boolean,
   unit: string,
@@ -97,8 +126,8 @@ export function scaleIngredient(
 }
 
 export const combinedShoppingList = derived(
-  [plannerStore, recipesStore, storeLayout],
-  ([$planner, $recipes, $layoutId]) => {
+  [plannerStore, recipesStore, storeLayout, shoppingAltSelectionsStore],
+  ([$planner, $recipes, $layoutId, $altSelections]) => {
     const planItems = $planner.plan;
     if (planItems.length === 0) {
       return {
@@ -122,6 +151,7 @@ export const combinedShoppingList = derived(
             item.scale,
           );
           parsed.recipe = rec.title;
+          parsed.recipeShortId = rec.shortId;
           ingredients.push(parsed);
         });
       }
@@ -130,6 +160,7 @@ export const combinedShoppingList = derived(
         item.extraIngredients.forEach((ing) => {
           const parsed = scaleIngredient(ing, item.scale);
           parsed.recipe = item.customTitle || (rec ? rec.title : 'Custom Item');
+          parsed.recipeShortId = rec?.shortId;
           ingredients.push(parsed);
         });
       }
@@ -140,6 +171,7 @@ export const combinedShoppingList = derived(
     const { buyItems, optionalItems, stapleItems } = processShoppingList(
       ingredients,
       activeLayout,
+      $altSelections,
     );
 
     const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {

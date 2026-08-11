@@ -128,14 +128,26 @@ export class AggregateQuantityStep implements RuleStep<IngredientGroup> {
 
       let totalQty: QtyValue | undefined = undefined;
       let unquantified = false;
+
       const ingredientNotes: IngredientNote[] = [];
 
       for (const ing of group.ingredients) {
-        if (ing.recipe || ing.alt?.item || ing.desc) {
+        const ingQty: number | null =
+          ing.qty === undefined
+            ? null
+            : Array.isArray(ing.qty)
+              ? ing.qty[1]
+              : ing.qty;
+
+        if (ing.recipe || ing.alt?.item || ing.desc || ing.prep) {
           ingredientNotes.push({
             recipe: ing.recipe || undefined,
+            recipeShortId: ing.recipeShortId || undefined,
+            qty: ingQty,
+            unit: ing.unit || undefined,
             altItem: ing.alt?.item || undefined,
             descriptor: ing.desc || undefined,
+            isSwapped: (ing.alt as { isSwapped?: boolean })?.isSwapped || false,
           });
         }
 

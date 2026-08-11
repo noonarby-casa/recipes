@@ -31,9 +31,14 @@
   }: Props = $props();
 
   let rootElement = $state<HTMLElement>();
+  let selectedState = $state<string | null>(null);
+  let internalSelectedId = $derived(selectedState ?? selectedId);
 
   function handleSelect(id: string) {
-    onChange(id);
+    selectedState = id;
+    if (onChange) {
+      onChange(id);
+    }
     if (rootElement) {
       rootElement.dispatchEvent(
         new CustomEvent('change', {
@@ -54,7 +59,7 @@
   {#each options as opt}
     <Button
       id={opt.idAttr}
-      class="toggle-btn {opt.id === selectedId ? 'active btn-brand' : ''} {opt.description ? 'has-description' : ''}"
+      class="toggle-btn {opt.id === internalSelectedId ? 'active btn-brand' : ''} {opt.description ? 'has-description' : ''}"
       onclick={() => handleSelect(opt.id)}
     >
       <div class="toggle-btn-content">
@@ -135,6 +140,17 @@
 
   :global(.toggle-btn:hover) {
     color: var(--noonblue);
+  }
+
+  :global(.toggle-btn.active) {
+    background: var(--btn-brand-bg);
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  }
+
+  :global(.toggle-btn.active:hover) {
+    background: var(--btn-brand-bg-hover);
+    color: #ffffff;
   }
 
   :global(.toggle-btn:active) {

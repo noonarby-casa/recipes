@@ -12,15 +12,72 @@ import { PackageMatcherStep } from './steps/PackageMatcherStep';
 import { getSectionForCategory } from '../data/store-sections';
 import type { StoreLayout } from '../types';
 
+export type AltSelectionsMap = Record<string, string>;
+
+export function toSlug(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-');
+}
+
+export function applyAltSelections(
+  ingredients: IngredientInput[],
+  altSelections?: AltSelectionsMap,
+): IngredientInput[] {
+  if (!altSelections || Object.keys(altSelections).length === 0) {
+    return ingredients;
+  }
+
+  return ingredients.map((ing) => {
+    if (!ing.alt?.item) {
+      return ing;
+    }
+
+    const recKey =
+      ing.recipeShortId || (ing.recipe ? toSlug(ing.recipe) : 'recipe');
+    const altSlug = toSlug(ing.alt.item);
+
+    const activeAlt = altSelections[recKey];
+    if (activeAlt && toSlug(activeAlt) === altSlug) {
+      return {
+        ...ing,
+        item: ing.alt.item,
+        unit: ing.alt.unit !== undefined ? ing.alt.unit : ing.unit,
+        qty: ing.alt.qty !== undefined ? ing.alt.qty : ing.qty,
+        desc: ing.alt.desc !== undefined ? ing.alt.desc : ing.desc,
+        prep: ing.alt.prep !== undefined ? ing.alt.prep : ing.prep,
+        alt: {
+          item: ing.item,
+          unit: ing.unit,
+          qty: ing.qty,
+          desc: ing.desc,
+          prep: ing.prep,
+          isSwapped: true,
+        },
+      };
+    }
+
+    return ing;
+  });
+}
+
 export function processShoppingList(
   ingredients: IngredientInput[],
   layout?: StoreLayout,
+  altSelections?: AltSelectionsMap,
 ): ProcessedShoppingList {
+  // Step 0: Apply alternate ingredient selections
+  const preprocessedIngredients = applyAltSelections(
+    ingredients,
+    altSelections,
+  );
+
   // Step 1: Filter water
   const filterStep = new FilterIngredientsStep<IngredientInput>(
     (ing) => ing.item.toLowerCase().trim() !== 'water',
   );
-  const filteredIngredients = filterStep.process(ingredients);
+  const filteredIngredients = filterStep.process(preprocessedIngredients);
 
   // Step 2: Group canonical ingredients
   const groupingStep = new GroupCanonicalIngredientsStep();
@@ -136,6 +193,9 @@ export function extractIngredientsFromDOM(
       alt,
       recipe:
         document.querySelector('.recipe-title-bar h1')?.textContent ||
+        undefined,
+      recipeShortId:
+        document.getElementById('recipe-scale-mount')?.dataset['shortId'] ||
         undefined,
     });
   });

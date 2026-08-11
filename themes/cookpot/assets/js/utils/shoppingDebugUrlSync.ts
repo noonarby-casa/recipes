@@ -9,18 +9,34 @@ export function parseRecipeUrlParams(
 ): {
   selectedRecipeServings: Record<string, number>;
   layoutId: string | null;
+  altSelections: Record<string, string>;
   hasValidParams: boolean;
 } {
   const params = new URLSearchParams(searchString);
   let hasValidParams = false;
   const selectedRecipeServings: Record<string, number> = {};
   let layoutId: string | null = null;
+  const altSelections: Record<string, string> = {};
 
   if (params.has('l')) {
     const lVal = params.get('l');
     if (lVal && STORE_LAYOUTS.some((layout) => layout.id === lVal)) {
       layoutId = lVal;
       hasValidParams = true;
+    }
+  }
+
+  if (params.has('alt')) {
+    const altVal = (params.get('alt') || '').trim();
+    if (altVal) {
+      hasValidParams = true;
+      const tokens = altVal.split('.').filter(Boolean);
+      tokens.forEach((token) => {
+        const [recShortId, altItemSlug] = token.split(':');
+        if (recShortId && altItemSlug) {
+          altSelections[recShortId] = altItemSlug;
+        }
+      });
     }
   }
 
@@ -68,6 +84,7 @@ export function parseRecipeUrlParams(
   return {
     selectedRecipeServings,
     layoutId,
+    altSelections,
     hasValidParams,
   };
 }
@@ -76,9 +93,11 @@ export function serializeRecipeUrlParams(
   selectedRecipeServings: Record<string, number>,
   recipes: Recipe[],
   layoutId: string,
+  altSelections?: Record<string, string>,
 ): {
   r: string | null;
   l: string | null;
+  alt: string | null;
 } {
   const selectedPermalinks = Object.keys(selectedRecipeServings);
 
@@ -99,25 +118,32 @@ export function serializeRecipeUrlParams(
     } else {
       const entries: string[] = [];
       recipes.forEach((rec) => {
-        if (rec.permalink in selectedRecipeServings && rec.shortId) {
+        if (rec.permalink in selectedRecipeServings) {
           const servings = selectedRecipeServings[rec.permalink];
           const baseYield = rec.servings || 4;
-          let entry = rec.shortId;
-          if (servings !== baseYield) {
-            entry += servings.toString();
+          const code = rec.shortId || rec.permalink;
+          if (servings === baseYield) {
+            entries.push(code);
+          } else {
+            entries.push(`${code}${servings}`);
           }
-          entries.push(entry);
         }
       });
-      rVal = entries.length > 0 ? entries.join('.') : null;
+      rVal = entries.join('.');
     }
   }
 
-  const lVal =
-    layoutId && layoutId !== DEFAULT_STORE_LAYOUT_ID ? layoutId : null;
+  const lVal = layoutId !== DEFAULT_STORE_LAYOUT_ID ? layoutId : null;
 
-  return {
-    r: rVal,
-    l: lVal,
-  };
+  let altVal: string | null = null;
+  if (altSelections && Object.keys(altSelections).length > 0) {
+    const tokens = Object.entries(altSelections)
+      .filter(([_, altSlug]) => Boolean(altSlug))
+      .map(([recShortId, altSlug]) => `${recShortId}:${altSlug}`);
+    if (tokens.length > 0) {
+      altVal = tokens.join('.');
+    }
+  }
+
+  return { r: rVal, l: lVal, alt: altVal };
 }

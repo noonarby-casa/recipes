@@ -1,11 +1,19 @@
 <script lang="ts">
-  import { combinedShoppingList, shoppingCheckedStore, getIngredientKey, isItemChecked } from '../../stores/shopping';
-  import { formatItemQuantity } from '../../units';
+  import {
+    combinedShoppingList,
+    shoppingCheckedStore,
+    shoppingAltSelectionsStore,
+    getIngredientKey,
+    isItemChecked,
+  } from '../../stores/shopping';
   import { scrollable } from '../../actions/scrollable';
   import type { ShoppingItem } from '../../types';
-  import { STORE_LAYOUTS, getSectionForCategory } from '../../data/store-sections';
-  import { getGroupedNotes } from '../../pipelines/shoppingExportPipeline';
+  import {
+    STORE_LAYOUTS,
+    getSectionForCategory,
+  } from '../../data/store-sections';
   import { storeLayout } from '../../stores/shopping';
+  import ShoppingListItemRow from './ShoppingListItemRow.svelte';
 
   let items = $derived($combinedShoppingList.combinedBuyItems);
   let optionalItems = $derived($combinedShoppingList.optionalItems);
@@ -13,8 +21,9 @@
   let groupedBuyItems = $derived.by(() => {
     const sections: { id: string; name: string; items: ShoppingItem[] }[] = [];
     let currentSectionId = '';
-    let currentSection: typeof sections[0] | null = null;
-    const activeLayout = STORE_LAYOUTS.find((l) => l.id === $storeLayout) || STORE_LAYOUTS[0];
+    let currentSection: (typeof sections)[0] | null = null;
+    const activeLayout =
+      STORE_LAYOUTS.find((l) => l.id === $storeLayout) || STORE_LAYOUTS[0];
 
     items.forEach((item) => {
       const section = getSectionForCategory(item.category, activeLayout);
@@ -60,40 +69,13 @@
               {@const isStaple = item.staple === 'in-pantry'}
               {@const key = getIngredientKey(isStaple, item.unit, item.item)}
               {@const isChecked = isItemChecked(key, isStaple, $shoppingCheckedStore)}
-              {@const notes = getGroupedNotes(item)}
-              {@const formatted = formatItemQuantity(item.qty, item.unit, item.item)}
-              <li class="checklist-item {isChecked ? 'checked' : ''}">
-                <label class="checklist-item-label">
-                  <input
-                    type="checkbox"
-                    class="checklist-item-checkbox"
-                    data-key={key}
-                    data-item={item.item}
-                    checked={isChecked}
-                    onchange={() => shoppingCheckedStore.toggle(key, isStaple)}
-                  />
-                  <span>
-                    {formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{formatted.itemStr}
-                    
-                    {#if notes.sizeNote || notes.details.length > 0 || notes.fallbackRecipes.length > 0}
-                      <div class="checklist-item-details">
-                        {#if notes.sizeNote}
-                          <span class="checklist-item-note">{notes.sizeNote}</span>
-                        {/if}
-                        {#each notes.details as detail}
-                          {@const detailText = `${detail.descriptor || ''} ${detail.altItem ? 'or ' + detail.altItem : ''}`.trim()}
-                          <span class="checklist-item-note">
-                            {detailText} {detail.recipes.length > 0 ? 'for ' + detail.recipes.join(', ') : ''}
-                          </span>
-                        {/each}
-                        {#if notes.fallbackRecipes.length > 0}
-                          <span class="checklist-item-note muted">for {notes.fallbackRecipes.join(', ')}</span>
-                        {/if}
-                      </div>
-                    {/if}
-                  </span>
-                </label>
-              </li>
+              <ShoppingListItemRow
+                {item}
+                {isChecked}
+                onToggleChecked={() => shoppingCheckedStore.toggle(key, isStaple)}
+                onToggleAlt={(recId, altSlug) =>
+                  shoppingAltSelectionsStore.toggleAlt(recId, altSlug)}
+              />
             {/each}
           {/each}
         {/if}
@@ -107,40 +89,13 @@
           {#each optionalItems as item}
             {@const key = getIngredientKey(false, item.unit, item.item)}
             {@const isChecked = isItemChecked(key, false, $shoppingCheckedStore)}
-            {@const notes = getGroupedNotes(item)}
-            {@const formatted = formatItemQuantity(item.qty, item.unit, item.item)}
-            <li class="checklist-item {isChecked ? 'checked' : ''}">
-              <label class="checklist-item-label">
-                <input
-                  type="checkbox"
-                  class="checklist-item-checkbox"
-                  data-key={key}
-                  data-item={item.item}
-                  checked={isChecked}
-                  onchange={() => shoppingCheckedStore.toggle(key, false)}
-                />
-                <span>
-                  {formatted.qtyStr ? formatted.qtyStr + ' ' : ''}{formatted.itemStr}
-                  
-                  {#if notes.sizeNote || notes.details.length > 0 || notes.fallbackRecipes.length > 0}
-                    <div class="checklist-item-details">
-                      {#if notes.sizeNote}
-                        <span class="checklist-item-note">{notes.sizeNote}</span>
-                      {/if}
-                      {#each notes.details as detail}
-                        {@const detailText = `${detail.descriptor || ''} ${detail.altItem ? 'or ' + detail.altItem : ''}`.trim()}
-                        <span class="checklist-item-note">
-                          {detailText} {detail.recipes.length > 0 ? 'for ' + detail.recipes.join(', ') : ''}
-                        </span>
-                      {/each}
-                      {#if notes.fallbackRecipes.length > 0}
-                        <span class="checklist-item-note muted">for {notes.fallbackRecipes.join(', ')}</span>
-                      {/if}
-                    </div>
-                  {/if}
-                </span>
-              </label>
-            </li>
+            <ShoppingListItemRow
+              {item}
+              {isChecked}
+              onToggleChecked={() => shoppingCheckedStore.toggle(key, false)}
+              onToggleAlt={(recId, altSlug) =>
+                shoppingAltSelectionsStore.toggleAlt(recId, altSlug)}
+            />
           {/each}
         </ul>
       </div>

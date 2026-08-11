@@ -2,7 +2,6 @@
   import {onMount, tick} from 'svelte';
   import {SvelteMap} from 'svelte/reactivity';
   import {recipeScaleStore} from '../../stores/settings';
-  import {formatItemQuantity} from '../../units';
   import {
     processShoppingList,
     extractIngredientsFromDOM,
@@ -12,9 +11,13 @@
     getSectionForCategory,
     getActiveStoreLayout,
   } from '../../data/store-sections';
-  import { getIngredientKey } from '../../stores/shopping';
+  import {
+    getIngredientKey,
+    shoppingAltSelectionsStore,
+  } from '../../stores/shopping';
 
   import ExportModal from './ExportModal.svelte';
+  import ShoppingListItemRow from './ShoppingListItemRow.svelte';
   import type { ExportItem } from '../../pipelines/shoppingExportPipeline';
 
   type Tab = 'recipe' | 'shopping';
@@ -60,9 +63,16 @@
     const elements = document.querySelectorAll<HTMLElement>('.recipe-ingredient');
     const ingredients = extractIngredientsFromDOM(scale, elements);
     const activeLayout = getActiveStoreLayout();
+    let currentAltSelections: Record<string, string> = {};
+    const unsub = shoppingAltSelectionsStore.subscribe((val) => {
+      currentAltSelections = val;
+    });
+    unsub();
+
     const {buyItems, stapleItems, optionalItems} = processShoppingList(
       ingredients,
       activeLayout,
+      currentAltSelections,
     );
 
     // Merge staples into buy and sort by store section order then name
@@ -89,6 +99,11 @@
     checklistStates.set(key, checked);
     // Force reactivity by reassigning computed (items re-render)
     computed = {...computed};
+  }
+
+  function toggleAlt(recShortId: string, altSlug: string) {
+    shoppingAltSelectionsStore.toggleAlt(recShortId, altSlug);
+    recompute($recipeScaleStore);
   }
 
   // --------------------------------------------------------------------------
@@ -179,47 +194,26 @@
 <div class="shopping-section buy-section" style:display={computed.buyItems.length ? 'block' : 'none'}>
   <h4 class="shopping-section-title">Need to Buy</h4>
   <ul class="shopping-buy-list compound-list">
-    {#each computed.buyItems as item (item.item + item.unit)}
+    {#each computed.buyItems as item, index (item.item + item.unit + index)}
       {@const isStaple = item.staple === 'in-pantry'}
       {@const key = getIngredientKey(isStaple, item.unit, item.item)}
       {@const checked = isChecked(key, isStaple)}
-      {@const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item)}
-      {@const notesArr = item.note?.ingredientNotes ?? []}
-      {@const alts = [...new Set(notesArr.map((n) => n.altItem).filter(Boolean))]}
-      {@const descs = [...new Set(notesArr.map((n) => n.descriptor).filter(Boolean))]}
-      {#if item.category !== computed.buyItems[computed.buyItems.indexOf(item) - 1]?.category}
+      {@const currentSec = getSectionForCategory(item.category)}
+      {@const prevSec =
+        index > 0
+          ? getSectionForCategory(computed.buyItems[index - 1].category)
+          : null}
+      {#if !prevSec || currentSec.id !== prevSec.id}
         <li class="shopping-section-header compound-list-header">
-          {getSectionForCategory(item.category).name}
+          {currentSec.name}
         </li>
       {/if}
-      <li class="checklist-item" class:checked>
-        <label class="checklist-item-label">
-          <input
-            type="checkbox"
-            class="checklist-item-checkbox"
-            data-key={key}
-            data-item={item.item}
-            {checked}
-            onchange={(e) => toggleChecked(key, isStaple, (e.currentTarget as HTMLInputElement).checked)}
-          />
-          <span>
-            {qtyStr ? qtyStr + ' ' : ''}{itemStr}
-            {#if item.note?.sizeNote || descs.length || alts.length}
-              <div class="checklist-item-details">
-                {#if item.note?.sizeNote}
-                  <span class="checklist-item-note">{item.note.sizeNote}</span>
-                {/if}
-                {#if descs.length}
-                  <span class="checklist-item-note">{descs.join(', ')}</span>
-                {/if}
-                {#if alts.length}
-                  <span class="checklist-item-note">or {alts.join(' or ')}</span>
-                {/if}
-              </div>
-            {/if}
-          </span>
-        </label>
-      </li>
+      <ShoppingListItemRow
+        {item}
+        isChecked={checked}
+        onToggleChecked={(c) => toggleChecked(key, isStaple, c)}
+        onToggleAlt={toggleAlt}
+      />
     {/each}
   </ul>
 </div>
@@ -230,20 +224,12 @@
     {#each computed.optionalItems as item (item.item + item.unit)}
       {@const key = getIngredientKey(false, item.unit, item.item)}
       {@const checked = isChecked(key, false)}
-      {@const {qtyStr, itemStr} = formatItemQuantity(item.qty, item.unit, item.item)}
-      <li class="checklist-item" class:checked>
-        <label class="checklist-item-label">
-          <input
-            type="checkbox"
-            class="checklist-item-checkbox"
-            data-key={key}
-            data-item={item.item}
-            {checked}
-            onchange={(e) => toggleChecked(key, false, (e.currentTarget as HTMLInputElement).checked)}
-          />
-          <span>{qtyStr ? qtyStr + ' ' : ''}{itemStr}</span>
-        </label>
-      </li>
+      <ShoppingListItemRow
+        {item}
+        isChecked={checked}
+        onToggleChecked={(c) => toggleChecked(key, false, c)}
+        onToggleAlt={toggleAlt}
+      />
     {/each}
   </ul>
 </div>

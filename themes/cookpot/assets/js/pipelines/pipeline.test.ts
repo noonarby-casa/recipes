@@ -260,4 +260,62 @@ describe('processShoppingList', () => {
     expect(mincedG).toBeDefined();
     expect(freshG).toBeDefined();
   });
+
+  test('swaps alternate ingredients dynamically and attaches structured notes', () => {
+    const ingredients: IngredientInput[] = [
+      {
+        qty: 4,
+        unit: 'tbsp',
+        item: 'butter',
+        recipe: 'Lemon Thyme Summer Squash Soup',
+        recipeShortId: 'ltss',
+        alt: { item: 'olive oil', qty: 4, unit: 'tbsp' },
+      },
+      {
+        qty: 2,
+        unit: 'tbsp',
+        item: 'butter',
+        recipe: 'Breakfast Casserole',
+        recipeShortId: 'bc',
+      },
+    ];
+
+    // Default (no swap): butter has 2 recipe notes
+    const defaultResult = processShoppingList(ingredients);
+    const defaultButter =
+      defaultResult.buyItems.find((i) =>
+        i.item.toLowerCase().includes('butter'),
+      ) ||
+      defaultResult.stapleItems.find((i) =>
+        i.item.toLowerCase().includes('butter'),
+      );
+    expect(defaultButter).toBeDefined();
+    expect(defaultButter?.note?.ingredientNotes.length).toBe(2);
+
+    // With swap on ltss -> olive oil
+    const swappedResult = processShoppingList(ingredients, undefined, {
+      ltss: 'olive-oil',
+    });
+    const swappedButter =
+      swappedResult.buyItems.find((i) =>
+        i.item.toLowerCase().includes('butter'),
+      ) ||
+      swappedResult.stapleItems.find((i) =>
+        i.item.toLowerCase().includes('butter'),
+      );
+    const swappedOliveOil =
+      swappedResult.buyItems.find((i) =>
+        i.item.toLowerCase().includes('olive oil'),
+      ) ||
+      swappedResult.stapleItems.find((i) =>
+        i.item.toLowerCase().includes('olive oil'),
+      );
+
+    expect(swappedButter?.note?.ingredientNotes.length).toBe(1);
+    expect(swappedOliveOil).toBeDefined();
+    expect(swappedOliveOil?.note?.ingredientNotes[0].recipe).toBe(
+      'Lemon Thyme Summer Squash Soup',
+    );
+    expect(swappedOliveOil?.note?.ingredientNotes[0].altItem).toBe('butter');
+  });
 });

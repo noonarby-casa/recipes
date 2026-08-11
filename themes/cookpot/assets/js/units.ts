@@ -513,6 +513,41 @@ export function formatQty(qty: import('./types').QtyValue): string {
   return formatCookingNumber(qty);
 }
 
+const UNIT_ABBREVIATIONS: Record<string, string> = {
+  tablespoon: 'tbsp',
+  tablespoons: 'tbsp',
+  tbs: 'tbsp',
+  tbsp: 'tbsp',
+  teaspoon: 'tsp',
+  teaspoons: 'tsp',
+  tsp: 'tsp',
+  ounce: 'oz',
+  ounces: 'oz',
+  oz: 'oz',
+  pound: 'lb',
+  pounds: 'lb',
+  lb: 'lb',
+  lbs: 'lb',
+  gram: 'g',
+  grams: 'g',
+  g: 'g',
+  milliliter: 'ml',
+  milliliters: 'ml',
+  ml: 'ml',
+  package: 'pkg',
+  packages: 'pkg',
+  pkg: 'pkg',
+  pkgs: 'pkg',
+};
+
+export function abbreviateUnit(unit: string): string {
+  if (!unit) {
+    return '';
+  }
+  const trimmed = unit.trim().toLowerCase();
+  return UNIT_ABBREVIATIONS[trimmed] || unit;
+}
+
 export function pluralizeUnit(
   unit: string,
   qty: import('./types').QtyValue,

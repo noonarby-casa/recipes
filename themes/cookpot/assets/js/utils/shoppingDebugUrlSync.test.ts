@@ -123,5 +123,25 @@ describe('shoppingDebugUrlSync', () => {
       expect(result.r).toBeNull();
       expect(result.l).toBeNull();
     });
+
+    test('parses and serializes alt parameter using shortId Scheme B', () => {
+      const parsed = parseRecipeUrlParams(
+        MOCK_RECIPES,
+        '?r=ltss4&alt=ltss:olive-oil.vbc:vegan-cheese',
+      );
+      expect(parsed.hasValidParams).toBe(true);
+      expect(parsed.altSelections).toEqual({
+        ltss: 'olive-oil',
+        vbc: 'vegan-cheese',
+      });
+
+      const serialized = serializeRecipeUrlParams(
+        { '/vegetable-bean-chili/': 4 },
+        MOCK_RECIPES,
+        'market-basket-pnh',
+        { ltss: 'olive-oil', vbc: 'vegan-cheese' },
+      );
+      expect(serialized.alt).toBe('ltss:olive-oil.vbc:vegan-cheese');
+    });
   });
 });
