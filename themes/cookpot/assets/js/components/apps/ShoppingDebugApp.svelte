@@ -23,6 +23,12 @@
   import EmptyState from '../primitives/EmptyState.svelte';
   import HeartIcon from '../primitives/icons/HeartIcon.svelte';
 
+  import { getUrlParams, updateUrlParams, onUrlChange } from '../../utils/urlSync';
+  import {
+    parseRecipeUrlParams,
+    serializeRecipeUrlParams,
+  } from '../../utils/shoppingDebugUrlSync';
+
   // 1. Isolated Svelte State
   let searchQuery = $state('');
   // Map of permalink -> selectedServings
@@ -30,20 +36,68 @@
   let isolatedStoreLayoutId = $state<string>(getActiveStoreLayoutId());
   let isolatedCheckedStates = $state<Record<string, boolean>>({});
   let activeMobileTab = $state<'recipes' | 'shopping'>('recipes');
+  let isInitialized = false;
 
   let recipes = $derived($recipesStore);
 
-  onMount(async () => {
-    if ($recipesStore.length === 0) {
-      try {
-        const res = await fetch('/index.json');
-        if (res.ok) {
-          const data: Recipe[] = await res.json();
-          recipesStore.set(data);
-        }
-      } catch (e) {
-        console.error('Failed to fetch recipes index:', e);
+  function applyUrlParams() {
+    if (recipes.length === 0) {
+      return;
+    }
+    const searchStr = getUrlParams().toString();
+    const parsed = parseRecipeUrlParams(recipes, searchStr);
+    if (parsed.hasValidParams) {
+      if (
+        Object.keys(parsed.selectedRecipeServings).length > 0 ||
+        searchStr.includes('r=')
+      ) {
+        selectedRecipeServings = parsed.selectedRecipeServings;
       }
+      if (parsed.layoutId) {
+        isolatedStoreLayoutId = parsed.layoutId;
+      }
+    }
+    isInitialized = true;
+  }
+
+  onMount(() => {
+    if ($recipesStore.length === 0) {
+      fetch('/index.json')
+        .then((res) => (res.ok ? res.json() : []))
+        .then((data: Recipe[]) => {
+          if (data.length > 0) {
+            recipesStore.set(data);
+            applyUrlParams();
+          }
+        })
+        .catch((e) => {
+          console.error('Failed to fetch recipes index:', e);
+        });
+    } else {
+      applyUrlParams();
+    }
+
+    const unsubscribeUrl = onUrlChange((params) => {
+      const parsed = parseRecipeUrlParams(recipes, params.toString());
+      selectedRecipeServings = parsed.selectedRecipeServings;
+      if (parsed.layoutId) {
+        isolatedStoreLayoutId = parsed.layoutId;
+      }
+    });
+
+    return () => {
+      unsubscribeUrl();
+    };
+  });
+
+  $effect(() => {
+    const servings = selectedRecipeServings;
+    const layoutId = isolatedStoreLayoutId;
+    const recipeList = recipes;
+
+    if (isInitialized && recipeList.length > 0) {
+      const { r, l } = serializeRecipeUrlParams(servings, recipeList, layoutId);
+      updateUrlParams({ r, l }, 'replace');
     }
   });
 

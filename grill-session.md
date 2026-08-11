@@ -1,60 +1,61 @@
-# Grill Session: Shopping List Debug Page
+# Grill Session: Shopping List Selected Recipes URL Parameter
 
 ## Closed Decisions
 
-### Q1. Page Route & Title
+### Q1. Target Page & Route Scope
 
-- **Question:** What should the URL route path and page title be for this debug page?
-- **Decision:** Route path `/shopping-debug/`, title "Shopping List Debugger", template layout `shopping-debug`, added to `_content.gotmpl`.
-- **Details:** Accessible directly via URL like `/timers/`, included in sitemap, excluded from primary nav bar.
+- **Question:** Which page(s) and application views should parse and support this new URL parameter shortcut for selected recipes?
+- **Decision:** Scope strictly to the `/shopping-debug/` page.
+- **Details:** Main `/planner/` and single recipe pages will not process this shortcut parameter. The URL shortcut is dedicated to driving and sharing selections on `/shopping-debug/`.
 
-### Q2. Selection State Scope
+### Q2. Query Parameter Name & Shorthand Syntax
 
-- **Question:** Should recipe selection state sync with `plannerStore` or be isolated?
-- **Decision:** Isolated local Svelte state.
-- **Details:** Debug selections are in-memory and will not mutate or overwrite the active user meal plan in localStorage.
+- **Question:** What query parameter name should we use on `/shopping-debug/`, and what exact shorthand syntax should represent selecting "all recipes" vs a subset of recipes?
+- **Decision:** Parameter name `r`. Use `r=all` for all recipes, otherwise dot-separated shortIds (e.g., `r=chili.tacos.curry`).
+- **Details:** Parsing is case-insensitive for `all`. Unknown shortIds in a list are gracefully skipped.
 
-### Q3. Recipe Servings & Scaling Controls
+### Q3. Serving Sizes & Portion Overrides in URL
 
-- **Question:** Should each selected recipe row include inline servings stepper controls?
-- **Decision:** Yes, include inline servings adjustment controls (`+`/`-` or stepper).
-- **Details:** Allows quick testing of unit scaling & quantity aggregation algorithms.
+- **Question:** How should serving sizes / portion counts be handled in the URL query parameter?
+- **Decision:** Match the `p` parameter encoding from `planUrlSync.ts`: `shortId` directly followed by total portion count digits for non-default servings (e.g., `r=vbc6.crg.tcc8`).
+- **Details:**
+  - Real catalog `shortId`s are 3-4 letter codes (e.g., `vbc` for Vegetable Bean Chili, `crg` for Chorizo Gnocchi, `tcc` for Thai Chicken Curry).
+  - If digits follow the `shortId` (e.g., `vbc6`), portions are set to 6.
+  - If no digits are attached (e.g., `crg`), it defaults to the recipe's base yield.
+  - `r=all` selects all recipes at their default base yield.
 
-### Q4. Custom Left Panel Recipe Row Layout
+### Q4. Bidirectional URL Synchronization & `r=all` Compression
 
-- **Question:** What should the custom left-panel recipe row layout look like?
-- **Decision:** Icon on far left, card/row border highlighting when selected (no checkbox), title in middle, inline serving controls on right.
-- **Details:** Clicking a row toggles selection with active border styles matching the recipe selector modal (`isPlanned` style).
+- **Question:** How should interactive recipe selection changes in `ShoppingDebugApp` update the browser address bar?
+- **Decision:** Bi-directional, real-time sync via `history.replaceState`.
+- **Details:**
+  - Toggling recipes or adjusting serving steppers immediately updates `r=` in the URL.
+  - If all catalog recipes are selected at default yields, automatically compress `r=` to `r=all`.
+  - If no recipes are selected, remove `r=` from the query parameters.
 
-### Q5. "Select All" & "Clear All" Scope & Header Counter
+### Q5. Strict shortId Resolution & Invalid Entry Handling
 
-- **Question:** How should "Select All" interact with active filters, and what should the left panel header display?
-- **Decision:** "Select All" selects all currently visible/filtered recipes; "Clear All" deselects all recipes. Header displays a badge showing total count of selected recipes (e.g., "Recipes (3 selected)").
-- **Details:** Added selection counter badge to left panel header.
+- **Question:** How should the URL parser handle unrecognized codes or permalinks passed in parameter `r`?
+- **Decision:** Strictly use `shortId`s. No fallback to permalinks. Gracefully ignore invalid/unrecognized entries. Always serialize `shortId`s to URL.
+- **Details:** Any token in parameter `r` that is not a valid `shortId` (or `all`) is discarded during URL parsing.
 
-### Q6. Store Picker Modal & Layout Scope
+### Q6. Interaction with Search / Tag Filters & "Select All"
 
-- **Question:** Should store layout selection on the debug page mutate global store settings or be isolated?
-- **Decision:** Isolated debug store layout state.
-- **Details:** Changing store layout in the debug page's StorePicker modal updates the debug list view in-memory without altering the user's global settings in localStorage.
+- **Question:** How should `r=all` interact with active UI search filters or category/favorite toggles, and how should "Select All" update the URL when filters are active?
+- **Decision:** `r=all` represents all catalog recipes. "Select All" with no filters sets `r=all`. "Select All" with active filters selects visible recipes and serializes explicit shortIds.
+- **Details:**
+  - Opening `r=all` selects all catalog recipes regardless of initial filter state.
+  - Clicking "Select All" when a filter is applied adds only the filtered recipes to selection and serializes explicit `shortId`s to `r=`.
+  - If the resulting selection equals all catalog recipes at base yields, it auto-compresses back to `r=all`.
 
-### Q7. Responsive Mobile Layout
+### Q7. Optional Store Layout Query Parameter (`l`)
 
-- **Question:** How should the two-column view adjust on small/mobile screens?
-- **Decision:** Re-use the primitive `ToggleGroup` component for mobile segmented tabs (`[ Recipes (3) ] | [ Shopping List (12) ]`).
-- **Details:** Uses `ToggleGroup` with `badgeCount` on viewports `<768px`.
-
-### Q8. Shopping List Interactivity & Parity
-
-- **Question:** How should checked state behave, and how should display logic align with the live meal plan page?
-- **Decision:** Isolated checked item toggle state; exact identical display logic as `ShoppingListColumn` / `processShoppingList`.
-- **Details:** Guaranteed 1:1 display parity so selecting identical recipes in the debug page produces the exact output shown on the live meal planner.
-
-### Q9. Custom Dishes & Ingredients Scope
-
-- **Question:** Should custom dishes or custom ingredient entry be supported on the debug page?
-- **Decision:** No, exclude custom features from the debug page.
-- **Details:** Focus purely on catalog recipes from `recipesStore`.
+- **Question:** Should `/shopping-debug/` also support an optional store layout parameter (e.g. `l=standard` or `l=market-basket-pnh`)?
+- **Decision:** Yes, support parameter `l` for store layout syncing on `/shopping-debug/`.
+- **Details:**
+  - Valid layout IDs: `market-basket-pnh` (default), `standard`, `dairy-first`, `meat-first`.
+  - Reading `l=` sets the store layout state. If omitted, uses default layout `market-basket-pnh`.
+  - Writing `l=` updates URL state via `history.replaceState`. Default layout `market-basket-pnh` is omitted from URL for clean links.
 
 ## Open Questions
 
