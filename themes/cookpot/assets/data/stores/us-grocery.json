@@ -61,5 +61,14 @@
     [1, "28-oz can"]
   ],
   "kale": [[1, "5-oz package"]],
-  "parmesan": [[1, "wedge"]]
+  "parmesan": [[1, "wedge"]],
+  "mexican cheese": [
+    [1, "8-oz package"],
+    [1, "package"]
+  ],
+  "sliced cheese": [[1, "package"]],
+  "cheddar cheese": [
+    [1, "8-oz package"],
+    [1, "package"]
+  ]
 }

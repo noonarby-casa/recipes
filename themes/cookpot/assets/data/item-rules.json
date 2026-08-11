@@ -1565,7 +1565,22 @@
   {
     "canonicalName": "cheese",
     "category": "butter-cheese",
-    "items": ["cheese", "sliced cheese"]
+    "items": ["cheese"]
+  },
+  {
+    "canonicalName": "sliced cheese",
+    "category": "butter-cheese",
+    "items": ["sliced cheese"],
+    "unitEquivalences": {
+      "8-oz package": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "package": {
+        "base": "ounce",
+        "factor": 8
+      }
+    }
   },
   {
     "canonicalName": "cheddar cheese",
@@ -1578,7 +1593,17 @@
       "sharp cheddar cheese",
       "mild cheddar",
       "white cheddar"
-    ]
+    ],
+    "unitEquivalences": {
+      "8-oz package": {
+        "base": "cup",
+        "factor": 2
+      },
+      "package": {
+        "base": "cup",
+        "factor": 2
+      }
+    }
   },
   {
     "canonicalName": "gruyere cheese",
@@ -1593,7 +1618,17 @@
   {
     "canonicalName": "mexican cheese",
     "category": "butter-cheese",
-    "items": ["mexican cheese", "Mexican cheese", "shredded mexican cheese"]
+    "items": ["mexican cheese", "Mexican cheese", "shredded mexican cheese"],
+    "unitEquivalences": {
+      "8-oz package": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "package": {
+        "base": "ounce",
+        "factor": 8
+      }
+    }
   },
   {
     "canonicalName": "Italian seasoning",

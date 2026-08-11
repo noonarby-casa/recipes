@@ -416,8 +416,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'cheddar cheese',
-      qty: 2,
-      unit: 'cups',
+      qty: 1,
+      unit: '8-oz package',
       category: 'butter-cheese',
     },
   },

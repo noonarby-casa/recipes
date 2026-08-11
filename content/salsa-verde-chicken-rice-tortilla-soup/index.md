@@ -40,7 +40,7 @@ ingredients = [
     { item = "tortilla chips", prep = "for serving" },
     { item = "yogurt", prep = "for serving" },
     { item = "avocado", prep = "for serving" },
-    { item = "cheese", prep = "for serving" },
+    { item = "mexican cheese", desc = "shredded", prep = "for serving", optional = true },
     { item = "green onion", prep = "for serving" }
   ] }
 ]
