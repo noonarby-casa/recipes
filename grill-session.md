@@ -1,89 +1,61 @@
-# Grill Session: Shopping List Ingredient Normalization & Merging Rules
+# Grill Session: Shopping List Debug Page
 
 ## Closed Decisions
 
-### Q1. Onion Specifiers & Variant Separation
+### Q1. Page Route & Title
 
-- **Question:** Should plain "onion" automatically alias/canonicalize to "yellow onion", while keeping distinct varieties (red onion, white onion, sweet onion) as separate canonical items?
-- **Decision:** Split onions into multiple canonical rules. Plain "onion" defaults to "yellow onion" (canonicalName: "yellow onion" with "onion" as alias). "red onion", "white onion", and "sweet onion" become distinct canonical items.
-- **Details:**
-  - "onion" & "yellow onion" merge into "yellow onion".
-  - "red onion" remains a separate item on the shopping list.
-  - "white onion" remains a separate item.
-  - "sweet onion" remains a separate item.
+- **Question:** What should the URL route path and page title be for this debug page?
+- **Decision:** Route path `/shopping-debug/`, title "Shopping List Debugger", template layout `shopping-debug`, added to `_content.gotmpl`.
+- **Details:** Accessible directly via URL like `/timers/`, included in sitemap, excluded from primary nav bar.
 
-### Q2. Bell Pepper Variants & Default Grouping
+### Q2. Selection State Scope
 
-- **Question:** Should color-specific bell peppers (red, green, yellow bell pepper) remain separate canonical items while generic "bell pepper" acts as an alias or separate item?
-- **Decision:** Split bell peppers by color into separate canonical items ("red bell pepper", "green bell pepper", "yellow bell pepper"). Maintain plain "bell pepper" as a generic canonical fallback item.
-- **Details:**
-  - "red bell pepper" remains separate.
-  - "green bell pepper" remains separate.
-  - "yellow bell pepper" remains separate.
-  - Unspecified "bell pepper" remains generic.
+- **Question:** Should recipe selection state sync with `plannerStore` or be isolated?
+- **Decision:** Isolated local Svelte state.
+- **Details:** Debug selections are in-memory and will not mutate or overwrite the active user meal plan in localStorage.
 
-### Q3. Fresh vs. Dried Herbs
+### Q3. Recipe Servings & Scaling Controls
 
-- **Question:** Should fresh herbs (e.g., "fresh basil", "fresh thyme") be kept distinct from their dried spice aisle counterparts ("dried basil", "dried thyme")?
-- **Decision:** Separate fresh herbs from dried herbs into distinct produce vs. spice canonical items.
-- **Details:**
-  - Plain herb names (e.g. "thyme", "oregano", "parsley", "sage") alias to **dried** herbs by default (`spices-baking` aisle).
-  - Exception: Plain **"basil"** aliases to **fresh basil** (`fresh-produce` aisle).
-  - Explicit "fresh" or "dried" prefixes dictate the exact category/item.
+- **Question:** Should each selected recipe row include inline servings stepper controls?
+- **Decision:** Yes, include inline servings adjustment controls (`+`/`-` or stepper).
+- **Details:** Allows quick testing of unit scaling & quantity aggregation algorithms.
 
-### Q4. Stock & Broth Types / Sodium Content
+### Q4. Custom Left Panel Recipe Row Layout
 
-- **Question:** How should broth vs. stock and low-sodium variants be merged (e.g., "chicken broth" vs "low-sodium chicken broth" vs "chicken stock" vs "vegetable broth")?
-- **Decision:** Separate broth/stock by protein/base type, merge broth & stock for the same protein, and alias low-sodium to standard broth.
-- **Details:**
-  - `chicken broth` & `chicken stock` merge into `chicken broth`.
-  - `vegetable broth` & `vegetable stock` merge into `vegetable broth`.
-  - `beef broth` & `beef stock` merge into `beef broth`.
-  - `low-sodium` versions alias to their respective base broth item.
+- **Question:** What should the custom left-panel recipe row layout look like?
+- **Decision:** Icon on far left, card/row border highlighting when selected (no checkbox), title in middle, inline serving controls on right.
+- **Details:** Clicking a row toggles selection with active border styles matching the recipe selector modal (`isPlanned` style).
 
-### Q5. Oil & Vinegar Varieties
+### Q5. "Select All" & "Clear All" Scope & Header Counter
 
-- **Question:** How should specialty oils (sesame oil, coconut oil, avocado oil) and vinegars (apple cider vinegar, red wine vinegar, rice vinegar, white vinegar) be handled?
-- **Decision:** Separate specialty oils and distinct vinegar varieties into individual canonical items.
-- **Details:**
-  - `olive oil` & `extra virgin olive oil` merge into `olive oil`.
-  - `canola oil` & `vegetable oil` merge into `vegetable oil`.
-  - `sesame oil`, `coconut oil`, and `avocado oil` become separate canonical items.
-  - `apple cider vinegar`, `red wine vinegar`, `rice vinegar`, `white vinegar`, and `balsamic vinegar` become separate canonical items.
+- **Question:** How should "Select All" interact with active filters, and what should the left panel header display?
+- **Decision:** "Select All" selects all currently visible/filtered recipes; "Clear All" deselects all recipes. Header displays a badge showing total count of selected recipes (e.g., "Recipes (3 selected)").
+- **Details:** Added selection counter badge to left panel header.
 
-### Q6. Cheese Forms & Varieties
+### Q6. Store Picker Modal & Layout Scope
 
-- **Question:** How should generic terms ("cheese", "sliced cheese"), block vs shredded cheese, and sharp vs mild cheddar be handled?
-- **Decision:** Clean up generic cheese aliases, separate fresh mozzarella, and maintain cheddar grouping.
-- **Details:**
-  - Remove `"cheese"` and `"sliced cheese"` from `mozzarella ball`.
-  - Separate `fresh mozzarella / mozzarella ball` from standard `mozzarella`.
-  - Merge `sharp cheddar`, `white cheddar`, and `mild cheddar` into `cheddar cheese`.
+- **Question:** Should store layout selection on the debug page mutate global store settings or be isolated?
+- **Decision:** Isolated debug store layout state.
+- **Details:** Changing store layout in the debug page's StorePicker modal updates the debug list view in-memory without altering the user's global settings in localStorage.
 
-### Q7. Sugar & Flour Varieties
+### Q7. Responsive Mobile Layout
 
-- **Question:** How should baking sugars (brown sugar, powdered/confectioners sugar, granulated sugar) and flours (all-purpose, cake flour, bread flour) be handled?
-- **Decision:** Fix powdered sugar separation and separate specialty flours.
-- **Details:**
-  - Separate `powdered sugar` / `confectioners' sugar` from brown sugar into its own item.
-  - Alias plain `"sugar"` and `"granulated sugar"` to `granulated sugar`.
-  - Alias plain `"flour"` and `"all-purpose flour"` to `all-purpose flour`.
-  - Keep `cake flour`, `bread flour`, and `whole wheat flour` as separate canonical items.
+- **Question:** How should the two-column view adjust on small/mobile screens?
+- **Decision:** Re-use the primitive `ToggleGroup` component for mobile segmented tabs (`[ Recipes (3) ] | [ Shopping List (12) ]`).
+- **Details:** Uses `ToggleGroup` with `badgeCount` on viewports `<768px`.
 
-### Q8. Garlic Forms
+### Q8. Shopping List Interactivity & Parity
 
-- **Question:** Should fresh garlic cloves vs garlic powder vs jarred minced garlic be kept distinct or merged?
-- **Decision:** Keep fresh garlic, garlic powder, and jarred minced garlic as three distinct canonical items.
-- **Details:**
-  - Fresh `garlic` (cloves/heads) stays in `fresh-produce`.
-  - `garlic powder` stays in `spices-baking`.
-  - `minced garlic` (jarred) becomes a separate canonical item.
+- **Question:** How should checked state behave, and how should display logic align with the live meal plan page?
+- **Decision:** Isolated checked item toggle state; exact identical display logic as `ShoppingListColumn` / `processShoppingList`.
+- **Details:** Guaranteed 1:1 display parity so selecting identical recipes in the debug page produces the exact output shown on the live meal planner.
 
-### Q9. Implementation Strategy & Next Steps
+### Q9. Custom Dishes & Ingredients Scope
 
-- **Question:** Shall we now update `item-rules.json` and unit test suites with all agreed decisions, and execute `pnpm run ci` to verify?
-- **Decision:** Proceed with implementation in `item-rules.json`, add/update unit tests, and verify via `pnpm run ci`.
+- **Question:** Should custom dishes or custom ingredient entry be supported on the debug page?
+- **Decision:** No, exclude custom features from the debug page.
+- **Details:** Focus purely on catalog recipes from `recipesStore`.
 
 ## Open Questions
 
-_(All questions resolved)_
+_(All design decisions resolved!)_

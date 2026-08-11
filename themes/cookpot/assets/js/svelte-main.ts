@@ -12,6 +12,7 @@ import ToggleGroup from './components/primitives/ToggleGroup.svelte';
 import FontSizeController from './components/primitives/FontSizeController.svelte';
 import SettingsModal from './components/domain/SettingsModal.svelte';
 import RecipeShoppingList from './components/domain/RecipeShoppingList.svelte';
+import ShoppingDebugApp from './components/apps/ShoppingDebugApp.svelte';
 
 /** Registry mapping component names to Svelte component definitions. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,6 +27,7 @@ const COMPONENT_REGISTRY: Record<string, Component<any>> = {
   FontSizeController,
   SettingsModal,
   RecipeShoppingList,
+  ShoppingDebugApp,
 };
 
 interface MountConfig {
@@ -39,6 +41,7 @@ interface MountConfig {
 /** Pre-configured legacy DOM mounting targets mapped to registry components. */
 const LEGACY_ISLAND_CONFIGS: MountConfig[] = [
   { component: 'MealPlannerApp', selector: '#meal-planner' },
+  { component: 'ShoppingDebugApp', selector: '#shopping-debug-app' },
   { component: 'HomepageSearchApp', selector: '#homepage-search-mount' },
   {
     component: 'SingleRecipeScaler',
