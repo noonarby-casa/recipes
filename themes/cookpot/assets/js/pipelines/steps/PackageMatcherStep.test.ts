@@ -55,8 +55,8 @@ describe('PackageMatcherStep', () => {
 
     const result = eggMatcher.process(items);
     expect(result).toHaveLength(1);
-    expect(result[0].qty).toBe(7);
-    expect(result[0].unit).toBe('cartons (6 eggs)');
+    expect(result[0].qty).toBe(3);
+    expect(result[0].unit).toBe('cartons (18 eggs)');
     expect(result[0].note?.sizeNote).toBe('37 eggs needed');
   });
 });

@@ -291,7 +291,8 @@
       "beef broth",
       "beef stock",
       "low-sodium beef broth",
-      "low-sodium beef stock"
+      "low-sodium beef stock",
+      "beef bone broth"
     ],
     "unitEquivalences": {
       "pint (16 fl oz)": {
@@ -338,7 +339,7 @@
   {
     "canonicalName": "heavy cream",
     "category": "milk-cream",
-    "items": ["heavy cream", "whipping cream", "yogurt"],
+    "items": ["heavy cream", "whipping cream"],
     "unitEquivalences": {
       "pint (16 fl oz)": {
         "base": "cup",
@@ -479,6 +480,22 @@
       "cup": {
         "base": "head",
         "factor": 0.125
+      },
+      "g": {
+        "base": "head",
+        "factor": 0.001111
+      },
+      "gram": {
+        "base": "head",
+        "factor": 0.001111
+      },
+      "oz": {
+        "base": "head",
+        "factor": 0.0315
+      },
+      "pound": {
+        "base": "head",
+        "factor": 0.5
       }
     }
   },
@@ -565,54 +582,113 @@
     "items": [
       {
         "singular": "chickpea",
-        "plural": "chickpeas"
-      },
+        "plural": "chickpeas",
+        "aliases": ["garbanzo bean", "garbanzo beans"]
+      }
+    ],
+    "unitEquivalences": {
+      "can (14 oz)": { "base": "ounce", "factor": 14 },
+      "can (15 oz)": { "base": "ounce", "factor": 15 },
+      "can (400 g)": { "base": "ounce", "factor": 14.1 },
+      "can": { "base": "ounce", "factor": 15 },
+      "pound": { "base": "ounce", "factor": 16 },
+      "lb": { "base": "ounce", "factor": 16 }
+    }
+  },
+  {
+    "canonicalName": "black beans",
+    "category": "canned-beans",
+    "pluralByDefault": true,
+    "items": [
       {
         "singular": "black bean",
         "plural": "black beans"
-      },
+      }
+    ],
+    "unitEquivalences": {
+      "can (14 oz)": { "base": "ounce", "factor": 14 },
+      "can (15 oz)": { "base": "ounce", "factor": 15 },
+      "can (400 g)": { "base": "ounce", "factor": 14.1 },
+      "can": { "base": "ounce", "factor": 15 },
+      "pound": { "base": "ounce", "factor": 16 },
+      "lb": { "base": "ounce", "factor": 16 }
+    }
+  },
+  {
+    "canonicalName": "kidney beans",
+    "category": "canned-beans",
+    "pluralByDefault": true,
+    "items": [
       {
         "singular": "kidney bean",
         "plural": "kidney beans"
-      },
+      }
+    ],
+    "unitEquivalences": {
+      "can (14 oz)": { "base": "ounce", "factor": 14 },
+      "can (15 oz)": { "base": "ounce", "factor": 15 },
+      "can (400 g)": { "base": "ounce", "factor": 14.1 },
+      "can": { "base": "ounce", "factor": 15 },
+      "pound": { "base": "ounce", "factor": 16 },
+      "lb": { "base": "ounce", "factor": 16 }
+    }
+  },
+  {
+    "canonicalName": "cannellini beans",
+    "category": "canned-beans",
+    "pluralByDefault": true,
+    "items": [
       {
         "singular": "cannellini bean",
-        "plural": "cannellini beans"
-      },
+        "plural": "cannellini beans",
+        "aliases": ["white bean", "white beans"]
+      }
+    ],
+    "unitEquivalences": {
+      "can (14 oz)": { "base": "ounce", "factor": 14 },
+      "can (15 oz)": { "base": "ounce", "factor": 15 },
+      "can (400 g)": { "base": "ounce", "factor": 14.1 },
+      "can": { "base": "ounce", "factor": 15 },
+      "pound": { "base": "ounce", "factor": 16 },
+      "lb": { "base": "ounce", "factor": 16 }
+    }
+  },
+  {
+    "canonicalName": "pinto beans",
+    "category": "canned-beans",
+    "pluralByDefault": true,
+    "items": [
       {
         "singular": "pinto bean",
         "plural": "pinto beans"
-      },
+      }
+    ],
+    "unitEquivalences": {
+      "can (14 oz)": { "base": "ounce", "factor": 14 },
+      "can (15 oz)": { "base": "ounce", "factor": 15 },
+      "can (400 g)": { "base": "ounce", "factor": 14.1 },
+      "can": { "base": "ounce", "factor": 15 },
+      "pound": { "base": "ounce", "factor": 16 },
+      "lb": { "base": "ounce", "factor": 16 }
+    }
+  },
+  {
+    "canonicalName": "refried beans",
+    "category": "canned-beans",
+    "pluralByDefault": true,
+    "items": [
       {
         "singular": "refried bean",
         "plural": "refried beans"
       }
     ],
     "unitEquivalences": {
-      "can (14 oz)": {
-        "base": "ounce",
-        "factor": 14
-      },
-      "can (15 oz)": {
-        "base": "ounce",
-        "factor": 15
-      },
-      "can (400 g)": {
-        "base": "ounce",
-        "factor": 14.1
-      },
-      "can": {
-        "base": "ounce",
-        "factor": 15
-      },
-      "pound": {
-        "base": "ounce",
-        "factor": 16
-      },
-      "lb": {
-        "base": "ounce",
-        "factor": 16
-      }
+      "can (14 oz)": { "base": "ounce", "factor": 14 },
+      "can (15 oz)": { "base": "ounce", "factor": 15 },
+      "can (400 g)": { "base": "ounce", "factor": 14.1 },
+      "can": { "base": "ounce", "factor": 15 },
+      "pound": { "base": "ounce", "factor": 16 },
+      "lb": { "base": "ounce", "factor": 16 }
     }
   },
   {
@@ -709,9 +785,15 @@
     }
   },
   {
-    "canonicalName": "jarred roasted red pepper",
+    "canonicalName": "roasted red pepper",
     "category": "spices-seasonings",
-    "items": ["jarred roasted red pepper", "roasted red pepper"],
+    "items": [
+      {
+        "singular": "roasted red pepper",
+        "plural": "roasted red peppers",
+        "aliases": ["jarred roasted red pepper", "jarred roasted red peppers"]
+      }
+    ],
     "unitEquivalences": {
       "8-oz jar": {
         "base": "ounce",
@@ -993,18 +1075,57 @@
     "items": ["salmon", "salmon fillet", "fish"]
   },
   {
-    "canonicalName": "beef",
+    "canonicalName": "ground beef",
+    "category": "meat",
+    "items": ["ground beef", "beef"]
+  },
+  {
+    "canonicalName": "ground pork",
+    "category": "meat",
+    "items": ["ground pork", "pork"]
+  },
+  {
+    "canonicalName": "chuck roast",
+    "category": "meat",
+    "items": ["chuck roast", "beef chuck roast"]
+  },
+  {
+    "canonicalName": "bacon",
+    "category": "meat",
+    "items": ["bacon"]
+  },
+  {
+    "canonicalName": "Italian sausage",
+    "category": "meat",
+    "items": ["Italian sausage", "sausage", "mild sausage", "hot sausage"]
+  },
+  {
+    "canonicalName": "hot dog",
     "category": "meat",
     "items": [
-      "beef",
-      "ground beef",
-      "ground pork",
-      "beef chuck roast",
-      "beef bone broth",
-      "pork",
-      "bacon",
-      "Italian sausage",
-      "cocktail weenies"
+      "hot dog",
+      "hot dogs",
+      "frankfurter",
+      "frankfurters",
+      "wiener",
+      "wieners"
+    ]
+  },
+  {
+    "canonicalName": "cocktail wiener",
+    "category": "meat",
+    "items": [
+      {
+        "singular": "cocktail wiener",
+        "plural": "cocktail wieners",
+        "aliases": [
+          "cocktail weenie",
+          "cocktail weenies",
+          "cocktail frank",
+          "cocktail franks",
+          "little smokies"
+        ]
+      }
     ]
   },
   {
@@ -1043,15 +1164,25 @@
     "items": ["cracker crumb", "cracker crumbs", "grain-free cracker crumb"]
   },
   {
-    "canonicalName": "sweet chilli sauce",
+    "canonicalName": "sweet chili sauce",
     "category": "condiments",
-    "items": [
-      "sweet chilli sauce",
-      "sweet chili sauce",
-      "hot chilli sauce",
-      "sriracha",
-      "honey"
-    ]
+    "items": ["sweet chili sauce", "sweet chilli sauce"],
+    "aliases": ["sweet chilli sauce"]
+  },
+  {
+    "canonicalName": "sriracha",
+    "category": "condiments",
+    "items": ["sriracha", "sriracha sauce", "sriracha hot chili sauce"]
+  },
+  {
+    "canonicalName": "honey",
+    "category": "condiments",
+    "items": ["honey"]
+  },
+  {
+    "canonicalName": "hot chili sauce",
+    "category": "condiments",
+    "items": ["hot chili sauce", "hot chilli sauce"]
   },
   {
     "canonicalName": "soy sauce",
@@ -1291,7 +1422,16 @@
   {
     "canonicalName": "bell pepper",
     "category": "fresh-produce",
-    "items": ["bell pepper", "poblano pepper"]
+    "items": [
+      {
+        "singular": "bell pepper",
+        "plural": "bell peppers"
+      },
+      {
+        "singular": "poblano pepper",
+        "plural": "poblano peppers"
+      }
+    ]
   },
   {
     "canonicalName": "red bell pepper",
@@ -1660,13 +1800,22 @@
   {
     "canonicalName": "whipped cream",
     "category": "milk-cream",
-    "items": [
-      "whipped cream",
-      "Greek yogurt",
-      "plain Greek yogurt",
-      "almond milk",
-      "half and half"
-    ]
+    "items": ["whipped cream"]
+  },
+  {
+    "canonicalName": "Greek yogurt",
+    "category": "milk-cream",
+    "items": ["Greek yogurt", "plain Greek yogurt", "yogurt", "plain yogurt"]
+  },
+  {
+    "canonicalName": "almond milk",
+    "category": "milk-cream",
+    "items": ["almond milk", "unsweetened almond milk"]
+  },
+  {
+    "canonicalName": "half and half",
+    "category": "milk-cream",
+    "items": ["half and half", "half-and-half"]
   },
   {
     "canonicalName": "salt",
@@ -1796,31 +1945,89 @@
     "canonicalName": "paprika",
     "category": "spices-seasonings",
     "staple": true,
-    "items": [
-      "paprika",
-      "smoked paprika",
-      "turmeric",
-      "cardamom",
-      "cloves powder",
-      "allspice",
-      "mustard powder",
-      "curry powder",
-      "garam masala",
-      "garam masala powder",
-      "cayenne pepper",
-      "cayenne",
-      "cayenne pepper powder",
-      "chili powder",
-      "cinnamon",
-      "bay leaf",
-      "cumin",
-      "coriander"
-    ]
+    "items": ["paprika", "sweet paprika"]
   },
   {
-    "canonicalName": "specialty spices",
+    "canonicalName": "smoked paprika",
     "category": "spices-seasonings",
-    "items": ["cumin powder", "coriander powder", "kasoori methi"]
+    "staple": true,
+    "items": ["smoked paprika"]
+  },
+  {
+    "canonicalName": "cinnamon",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["cinnamon", "ground cinnamon"]
+  },
+  {
+    "canonicalName": "chili powder",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["chili powder"]
+  },
+  {
+    "canonicalName": "cumin",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["cumin", "ground cumin", "cumin powder"]
+  },
+  {
+    "canonicalName": "turmeric",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["turmeric", "ground turmeric"]
+  },
+  {
+    "canonicalName": "curry powder",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["curry powder"]
+  },
+  {
+    "canonicalName": "cayenne",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["cayenne", "cayenne pepper", "cayenne pepper powder"]
+  },
+  {
+    "canonicalName": "bay leaf",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["bay leaf", "bay leaves"]
+  },
+  {
+    "canonicalName": "cardamom",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["cardamom"]
+  },
+  {
+    "canonicalName": "cloves",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["cloves", "ground cloves", "cloves powder"]
+  },
+  {
+    "canonicalName": "coriander",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["coriander", "coriander powder", "ground coriander"]
+  },
+  {
+    "canonicalName": "garam masala",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["garam masala", "garam masala powder"]
+  },
+  {
+    "canonicalName": "fenugreek",
+    "category": "spices-seasonings",
+    "items": [
+      "kasoori methi",
+      "kasuri methi",
+      "fenugreek",
+      "dried fenugreek leaves"
+    ]
   },
   {
     "canonicalName": "dried oregano",

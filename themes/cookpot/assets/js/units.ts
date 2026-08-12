@@ -48,6 +48,13 @@ export function getAdaptiveUnit(qty: number | null, unit: string): string {
 
   const lower = base.toLowerCase();
 
+  if (base.includes('(')) {
+    const parts = base.split('(');
+    const firstWord = parts[0].trim();
+    const rest = parts.slice(1).join('(');
+    return `${prefix}${getAdaptiveUnit(qty, firstWord)} (${rest}`;
+  }
+
   if (qty <= 1) {
     const singularBase = PLURAL_TO_SINGULAR[lower] || base;
     return prefix + singularBase;
@@ -268,6 +275,19 @@ export function formatItemQuantity(
   let displayItem = item.trim();
   const shouldPluralize = !disablePluralization && qty !== null && qty > 1;
 
+  if (displayUnit.includes('(')) {
+    const itemSingular = singularizeWord(displayItem).toLowerCase();
+    displayUnit = displayUnit.replace(
+      /\((\d+(?:\/\d+|\.\d+)?)\s+([a-zA-Z]+)\)/g,
+      (match, countNum, unitNoun) => {
+        if (singularizeWord(unitNoun).toLowerCase() === itemSingular) {
+          return `(${countNum} count)`;
+        }
+        return match;
+      },
+    );
+  }
+
   if (displayUnit) {
     const isSubstring =
       displayUnit !== '' &&
@@ -307,7 +327,6 @@ export function formatItemQuantity(
       displayUnit = getAdaptiveUnit(qty, displayUnit);
     }
 
-    // Rule 2 & 3: Collection items vs Mass nouns
     const lowerItem = displayItem.toLowerCase();
     const isCollection =
       itemRule?.pluralByDefault ??
@@ -315,16 +334,25 @@ export function formatItemQuantity(
         PLURAL_BY_DEFAULT_ITEMS.has(pluralizeWord(lowerItem)) ||
         PLURAL_BY_DEFAULT_ITEMS.has(singularizeWord(lowerItem)));
 
-    if (isCollection) {
+    const isWeightOrPackage =
+      isWeightUnit(displayUnit) || isPackageUnit(displayUnit);
+
+    if (
+      isCollection ||
+      (isWeightOrPackage &&
+        pluralizeWord(displayItem) !== singularizeWord(displayItem))
+    ) {
       displayItem = pluralizeWord(displayItem);
     } else if (shouldPluralize && !isVolumeWeightUnit(displayUnit, itemRule)) {
       displayItem = pluralizeWord(displayItem);
     }
   }
 
+  const needsOf =
+    displayUnit && displayItem.trim() !== '' && unitNeedsOf(displayUnit);
   const formattedQty = qty !== null ? formatCookingNumber(qty) : '';
   const qtyStr = formattedQty
-    ? `${formattedQty}${displayUnit ? ' ' + displayUnit : ''}`
+    ? `${formattedQty}${displayUnit ? ' ' + displayUnit : ''}${needsOf ? ' of' : ''}`
     : '';
 
   return { qtyStr, itemStr: displayItem };
@@ -719,6 +747,34 @@ export function isWeightUnit(unit: string): boolean {
     return false;
   }
   return UNIT_LOOKUP[sing]?.category === 'WEIGHT';
+}
+
+export function isPackageUnit(unit: string): boolean {
+  const sing = getSingularUnit(unit);
+  if (!sing) {
+    return false;
+  }
+  return UNIT_LOOKUP[sing.toLowerCase()]?.category === 'PACKAGE';
+}
+
+export function unitNeedsOf(unit: string): boolean {
+  if (!unit || unit.includes('(') || unit.toLowerCase().trim().endsWith('of')) {
+    return false;
+  }
+  const sing = getSingularUnit(unit);
+  const def = UNIT_LOOKUP[sing.toLowerCase()];
+  if (!def) {
+    return false;
+  }
+
+  if (def.category === 'PACKAGE') {
+    return true;
+  }
+  if (def.category === 'COUNTABLE' && def.singular !== def.plural) {
+    return true;
+  }
+
+  return false;
 }
 
 export function formatQtyValueWithUnit(

@@ -34,11 +34,19 @@ export class PackageMatcherStep implements RuleStep<ShoppingItem> {
       const itemSizes =
         this.layout?.itemSizes?.[shopItem.item.toLowerCase()] ||
         (rule
+          ? this.layout?.itemSizes?.[rule.canonicalName.toLowerCase()]
+          : undefined) ||
+        (rule
           ? rule.items
-              .map((i) =>
+              .flatMap((i) =>
                 typeof i === 'string'
-                  ? this.layout?.itemSizes?.[i.toLowerCase()]
-                  : this.layout?.itemSizes?.[i.singular.toLowerCase()],
+                  ? [this.layout?.itemSizes?.[i.toLowerCase()]]
+                  : [
+                      this.layout?.itemSizes?.[i.singular.toLowerCase()],
+                      ...(i.aliases?.map(
+                        (a) => this.layout?.itemSizes?.[a.toLowerCase()],
+                      ) || []),
+                    ],
               )
               .find(Boolean)
           : undefined);
@@ -137,11 +145,21 @@ export class PackageMatcherStep implements RuleStep<ShoppingItem> {
       }
 
       candidates.sort((a, b) => {
+        if (originalQty > 0 && a.count !== b.count) {
+          const [smaller, larger] = a.count > b.count ? [a, b] : [b, a];
+          const containerRedPct =
+            (smaller.count - larger.count) / smaller.count;
+          const wasteIncPct = (larger.waste - smaller.waste) / originalQty;
+
+          if (containerRedPct > wasteIncPct) {
+            return a === larger ? -1 : 1;
+          } else {
+            return a === smaller ? -1 : 1;
+          }
+        }
+
         if (Math.abs(a.waste - b.waste) > 0.001) {
           return a.waste - b.waste;
-        }
-        if (a.count !== b.count) {
-          return a.count - b.count;
         }
         return b.sizeInBase - a.sizeInBase;
       });

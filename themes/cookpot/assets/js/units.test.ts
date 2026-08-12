@@ -118,14 +118,18 @@ describe('formatItemQuantity', () => {
       itemStr: 'limes',
     });
     expect(formatItemQuantity(2, 'heads', 'garlic')).toEqual({
-      qtyStr: '2 heads',
+      qtyStr: '2 heads of',
       itemStr: 'garlic',
+    });
+    expect(formatItemQuantity(7, 'carton (6 eggs)', 'eggs')).toEqual({
+      qtyStr: '7 cartons (6 count)',
+      itemStr: 'eggs',
     });
   });
 
   test('forces collection items to be plural regardless of unit quantity', () => {
     expect(formatItemQuantity(1, 'can', 'black bean')).toEqual({
-      qtyStr: '1 can',
+      qtyStr: '1 can of',
       itemStr: 'black beans',
     });
     expect(formatItemQuantity(0.5, 'cup', 'Kalamata olive')).toEqual({

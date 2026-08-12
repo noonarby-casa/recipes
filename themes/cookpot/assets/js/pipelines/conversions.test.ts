@@ -329,7 +329,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'buy',
     expectedItem: {
-      item: 'jarred roasted red pepper',
+      item: 'roasted red pepper',
       qty: 1,
       unit: '8-oz jar',
       category: 'spices-seasonings',
@@ -854,9 +854,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'buy',
     expectedItem: {
-      item: 'red cabbage',
-      qty: 75,
-      unit: 'grams',
+      item: 'cabbage',
+      qty: 1,
+      unit: 'head',
       category: 'fresh-produce',
     },
   },
@@ -1394,7 +1394,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'buy',
     expectedItem: {
-      item: 'jarred roasted red pepper',
+      item: 'roasted red pepper',
       qty: 1,
       unit: '8-oz jar',
       category: 'spices-seasonings',
@@ -1956,12 +1956,13 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 0.25,
       unit: 'teaspoon',
     },
-    expectedList: 'buy',
+    expectedList: 'staple',
     expectedItem: {
-      item: 'cumin powder',
+      item: 'cumin',
       qty: 0.25,
       unit: 'teaspoon',
       category: 'spices-seasonings',
+      staple: 'in-pantry',
     },
   },
   {
@@ -1973,7 +1974,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'optional',
     expectedItem: {
-      item: 'kasoori methi',
+      item: 'fenugreek',
       qty: 2,
       unit: 'tablespoons',
       category: 'spices-seasonings',
@@ -1985,12 +1986,13 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 2.5,
       unit: 'teaspoon',
     },
-    expectedList: 'buy',
+    expectedList: 'staple',
     expectedItem: {
-      item: 'coriander powder',
+      item: 'coriander',
       qty: 2.5,
       unit: 'teaspoons',
       category: 'spices-seasonings',
+      staple: 'in-pantry',
     },
   },
   {
@@ -2001,7 +2003,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'staple',
     expectedItem: {
-      item: 'cayenne pepper powder',
+      item: 'cayenne',
       qty: 0.5,
       unit: 'teaspoon',
       category: 'spices-seasonings',
@@ -2016,7 +2018,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'staple',
     expectedItem: {
-      item: 'garam masala powder',
+      item: 'garam masala',
       qty: 0.25,
       unit: 'teaspoon',
       category: 'spices-seasonings',
@@ -2633,10 +2635,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'buy',
     expectedItem: {
-      item: 'beef bone broth',
+      item: 'beef broth',
       qty: 1,
       unit: 'cup',
-      category: 'meat',
+      category: 'canned-other',
     },
   },
   {
@@ -2869,10 +2871,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
     expectedList: 'buy',
     expectedItem: {
-      item: 'cocktail weenie',
+      item: 'cocktail wiener',
       qty: 1,
       unit: 'package',
-      category: 'other',
+      category: 'meat',
     },
   },
   {
@@ -3445,8 +3447,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'tortillas',
-      qty: 2,
-      unit: 'package of 10',
+      qty: 1,
+      unit: 'package of 24',
       category: 'bakery',
       sizeNote: '12 tortillas needed',
     },
@@ -4077,6 +4079,79 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'bunch',
       category: 'fresh-herbs',
+    },
+  },
+  {
+    input: { item: 'hot dog', qty: 1, unit: 'package' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'hot dog',
+      qty: 1,
+      unit: 'package',
+      category: 'meat',
+    },
+  },
+  {
+    input: { item: 'cocktail wiener', qty: 1, unit: 'package' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'cocktail wiener',
+      qty: 1,
+      unit: 'package',
+      category: 'meat',
+    },
+  },
+  {
+    input: { item: 'cannellini beans', qty: 1, unit: 'can' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'cannellini beans',
+      qty: 1,
+      unit: 'can (15 oz)',
+      category: 'canned-beans',
+    },
+  },
+  {
+    input: { item: 'pinto beans', qty: 1, unit: 'can' },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'pinto beans',
+      qty: 1,
+      unit: 'can (15 oz)',
+      category: 'canned-beans',
+    },
+  },
+  {
+    input: { item: 'turmeric', qty: 1, unit: 'tsp' },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'turmeric',
+      qty: 1,
+      unit: 'tsp',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
+    },
+  },
+  {
+    input: { item: 'cardamom', qty: 1, unit: 'tsp' },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'cardamom',
+      qty: 1,
+      unit: 'tsp',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
+    },
+  },
+  {
+    input: { item: 'cloves', qty: 1, unit: 'tsp' },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'cloves',
+      qty: 1,
+      unit: 'tsp',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
     },
   },
 ];

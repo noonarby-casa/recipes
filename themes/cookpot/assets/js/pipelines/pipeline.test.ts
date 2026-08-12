@@ -9,7 +9,7 @@ const mockGnocchiLayout: StoreLayout = {
   sections: [],
   itemSizes: {
     'potato gnocchi': [[1, '17.5-oz package']],
-    'jarred roasted red pepper': [[1, '8-oz jar']],
+    'roasted red pepper': [[1, '8-oz jar']],
     'baby spinach': [[1, '8 oz bag']],
   },
 };
@@ -28,7 +28,7 @@ describe('processShoppingList', () => {
     expect(result.buyItems[0].unit).toBe('pounds');
   });
 
-  test('processes 37 eggs into 7 cartons (6 eggs) with large or count unit', () => {
+  test('processes 37 eggs into 3 cartons (18 eggs) with large or count unit', () => {
     const ingredients: IngredientInput[] = [
       { item: 'egg', qty: 25, unit: 'large' },
       { item: 'egg', qty: 12, unit: 'egg' },
@@ -36,8 +36,18 @@ describe('processShoppingList', () => {
     const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
     expect(result.buyItems).toHaveLength(1);
     expect(result.buyItems[0].item).toBe('egg');
-    expect(result.buyItems[0].qty).toBe(7);
-    expect(result.buyItems[0].unit).toBe('cartons (6 eggs)');
+    expect(result.buyItems[0].qty).toBe(3);
+    expect(result.buyItems[0].unit).toBe('cartons (18 eggs)');
+  });
+
+  test('processes heavy cream into 1 pint (16 oz)', () => {
+    const ingredients: IngredientInput[] = [
+      { item: 'heavy cream', qty: 1.5, unit: 'cup' },
+    ];
+    const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
+    expect(result.buyItems).toHaveLength(1);
+    expect(result.buyItems[0].qty).toBe(1);
+    expect(result.buyItems[0].unit).toBe('pint (16 oz)');
   });
 
   test('handles volume units with no package size by moving them to notes', () => {
@@ -137,9 +147,7 @@ describe('processShoppingList', () => {
     expect(chorizo?.note?.sizeNote).toBeUndefined();
 
     // 3. Jarred roasted red pepper -> 1 8-oz jar (with sizeNote "6 oz needed")
-    const pepper = result.buyItems.find(
-      (i) => i.item === 'jarred roasted red pepper',
-    );
+    const pepper = result.buyItems.find((i) => i.item === 'roasted red pepper');
     expect(pepper).toBeDefined();
     expect(pepper?.qty).toBe(1);
     expect(pepper?.unit).toBe('8-oz jar');

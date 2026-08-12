@@ -64,7 +64,7 @@ describe('export-formatter', () => {
     expect(text).toContain('## SHOPPING LIST: Test Recipe');
     expect(text).toContain('### Need to Buy');
     expect(text).toContain('- [ ] 2 cups flour');
-    expect(text).toContain('- [x] 1 can black beans');
+    expect(text).toContain('- [x] 1 can of black beans');
     expect(text).toContain('### Optional');
     expect(text).toContain('- [ ] 1/2 tsp salt');
   });

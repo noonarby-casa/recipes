@@ -127,7 +127,6 @@ export class AggregateQuantityStep implements RuleStep<IngredientGroup> {
       const targetUnit = determineTargetUnit(units, rule);
 
       let totalQty: QtyValue | undefined = undefined;
-      let unquantified = false;
 
       const ingredientNotes: IngredientNote[] = [];
 
@@ -164,8 +163,6 @@ export class AggregateQuantityStep implements RuleStep<IngredientGroup> {
               );
             }
             totalQty = addQtyValues(totalQty, converted);
-          } else {
-            unquantified = true;
           }
         } else {
           const unit = ing.unit || '';
@@ -192,7 +189,7 @@ export class AggregateQuantityStep implements RuleStep<IngredientGroup> {
       }
 
       const finalQty: number | null =
-        unquantified || totalQty === undefined
+        totalQty === undefined
           ? null
           : Array.isArray(totalQty)
             ? totalQty[1]

@@ -3,6 +3,8 @@
   import { formatItemQuantity, formatQty, abbreviateUnit } from '../../units';
   import { toSlug } from '../../pipelines/pipeline';
 
+  import { PROMOTABLE_DESCRIPTORS } from '../../constants';
+
   interface Props {
     item: ShoppingItem;
     isChecked: boolean;
@@ -27,9 +29,23 @@
       return undefined;
     }
     const first = descs[0];
-    return descs.every((d) => d.toLowerCase() === first.toLowerCase())
-      ? first
-      : undefined;
+    const isSame = descs.every((d) => d.toLowerCase() === first.toLowerCase());
+    if (!isSame) {
+      return undefined;
+    }
+
+    const lowerFirst = first.toLowerCase().trim();
+    if (!PROMOTABLE_DESCRIPTORS.has(lowerFirst)) {
+      return undefined;
+    }
+
+    const lowerItem = formatted.itemStr.toLowerCase();
+    const lowerQtyUnit = formatted.qtyStr.toLowerCase();
+    if (lowerItem.includes(lowerFirst) || lowerQtyUnit.includes(lowerFirst)) {
+      return undefined;
+    }
+
+    return first;
   });
 
   function formatSubnoteQty(
