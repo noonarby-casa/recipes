@@ -317,6 +317,8 @@ export function formatItemQuantity(
 
     if (isCollection) {
       displayItem = pluralizeWord(displayItem);
+    } else if (shouldPluralize && !isVolumeWeightUnit(displayUnit, itemRule)) {
+      displayItem = pluralizeWord(displayItem);
     }
   }
 
@@ -617,7 +619,7 @@ export function getConversionFactor(
       const eq = rule.unitEquivalences[fromEqKey];
       if (
         getSingularUnit(eq.base) === toSing ||
-        (!toSing &&
+        ((!toSing || isSizeOnlyUnit(toSing)) &&
           getSingularUnit(eq.base) === rule.canonicalName.toLowerCase())
       ) {
         return eq.factor;
@@ -629,7 +631,11 @@ export function getConversionFactor(
     );
     if (toEqKey) {
       const eq = rule.unitEquivalences[toEqKey];
-      if (getSingularUnit(eq.base) === fromSing) {
+      if (
+        getSingularUnit(eq.base) === fromSing ||
+        ((!fromSing || isSizeOnlyUnit(fromSing)) &&
+          getSingularUnit(eq.base) === rule.canonicalName.toLowerCase())
+      ) {
         return 1 / eq.factor;
       }
     }

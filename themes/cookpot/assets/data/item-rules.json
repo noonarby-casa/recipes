@@ -62,6 +62,18 @@
       "yolk": {
         "base": "egg",
         "factor": 1
+      },
+      "carton (6 eggs)": {
+        "base": "egg",
+        "factor": 6
+      },
+      "carton (12 eggs)": {
+        "base": "egg",
+        "factor": 12
+      },
+      "carton (18 eggs)": {
+        "base": "egg",
+        "factor": 18
       }
     }
   },

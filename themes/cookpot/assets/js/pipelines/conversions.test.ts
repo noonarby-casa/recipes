@@ -106,9 +106,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'egg',
-      qty: 4,
-      unit: 'eggs',
+      qty: 1,
+      unit: 'carton (6 eggs)',
       category: 'eggs',
+      sizeNote: '4 eggs needed',
     },
   },
   {
@@ -120,9 +121,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'egg yolk',
-      qty: 14,
-      unit: 'eggs',
+      qty: 1,
+      unit: 'carton (18 eggs)',
       category: 'eggs',
+      sizeNote: '14 eggs needed',
     },
   },
   {
@@ -1469,9 +1471,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'egg',
-      qty: 3,
-      unit: 'eggs',
+      qty: 1,
+      unit: 'carton (6 eggs)',
       category: 'eggs',
+      sizeNote: '3 large needed',
     },
   },
   {
@@ -1575,8 +1578,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'egg yolk',
       qty: 1,
-      unit: 'egg',
+      unit: 'carton (6 eggs)',
       category: 'eggs',
+      sizeNote: '1 large needed',
     },
   },
   {

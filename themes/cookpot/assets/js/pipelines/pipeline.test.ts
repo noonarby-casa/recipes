@@ -28,6 +28,18 @@ describe('processShoppingList', () => {
     expect(result.buyItems[0].unit).toBe('pounds');
   });
 
+  test('processes 37 eggs into 7 cartons (6 eggs) with large or count unit', () => {
+    const ingredients: IngredientInput[] = [
+      { item: 'egg', qty: 25, unit: 'large' },
+      { item: 'egg', qty: 12, unit: 'egg' },
+    ];
+    const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
+    expect(result.buyItems).toHaveLength(1);
+    expect(result.buyItems[0].item).toBe('egg');
+    expect(result.buyItems[0].qty).toBe(7);
+    expect(result.buyItems[0].unit).toBe('cartons (6 eggs)');
+  });
+
   test('handles volume units with no package size by moving them to notes', () => {
     const ingredients: IngredientInput[] = [
       { item: 'soy sauce', qty: 2, unit: 'tablespoon' },

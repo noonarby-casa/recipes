@@ -155,7 +155,11 @@ export class PackageMatcherStep implements RuleStep<ShoppingItem> {
         !getSingularUnit(originalUnit) ||
         getSingularUnit(originalUnit) !== getSingularUnit(best.sizeUnit)
       ) {
-        sizeNote = `${formatQtyValueWithUnit(originalQty, originalUnit)} needed`;
+        const noteUnit =
+          originalUnit && isSizeOnlyUnit(originalUnit)
+            ? pluralizeUnit(shopItem.item, originalQty)
+            : originalUnit;
+        sizeNote = `${formatQtyValueWithUnit(originalQty, noteUnit)} needed`;
       }
 
       const note: ShoppingItemNote = {

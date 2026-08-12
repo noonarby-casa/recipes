@@ -1,1 +1,8 @@
-<script src="{{ "dist/meal-planner.js" | relURL }}" defer></script>
+{{ if eq hugo.Environment "development" }}
+  <script
+    src="{{ "dist/meal-planner.js" | relURL }}?v={{ now.UnixNano }}"
+    defer
+  ></script>
+{{ else }}
+  <script src="{{ "dist/meal-planner.js" | relURL }}" defer></script>
+{{ end }}

@@ -2,9 +2,9 @@
   "garlic": [[1, "head"]],
   "butter": [[1, "box (4 sticks)"]],
   "egg": [
-    [6, "egg"],
-    [12, "egg"],
-    [18, "egg"]
+    [1, "carton (6 eggs)"],
+    [1, "carton (12 eggs)"],
+    [1, "carton (18 eggs)"]
   ],
   "sour cream": [
     [1, "half-pint (8 oz)"],

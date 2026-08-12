@@ -84,6 +84,7 @@ export const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
   // Package Units
   { singular: 'can', plural: 'cans', category: 'PACKAGE' },
   { singular: 'box', plural: 'boxes', category: 'PACKAGE' },
+  { singular: 'carton', plural: 'cartons', category: 'PACKAGE' },
   { singular: 'jar', plural: 'jars', category: 'PACKAGE' },
   { singular: 'bottle', plural: 'bottles', category: 'PACKAGE' },
   { singular: 'package', plural: 'packages', category: 'PACKAGE' },

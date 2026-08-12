@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   build: {
     outDir: 'themes/cookpot/static/dist',
-    emptyOutDir: true,
+    emptyOutDir: false,
     lib: {
       entry: 'themes/cookpot/assets/js/svelte-main.ts',
       name: 'MealPlanner',

@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite build --watch & hugo server",
+    "dev": "node scripts/dev.js",
     "build": "vite build",
     "typecheck": "svelte-check --tsconfig tsconfig.json && tsc --noEmit -p tsconfig.json",
     "lint": "eslint \"themes/cookpot/assets/js/**/*.{ts,svelte}\"",
