@@ -9,7 +9,7 @@ import { StapleNormalizationStep } from './steps/StapleNormalizationStep';
 import { GroupCanonicalIngredientsStep } from './steps/GroupCanonicalIngredientsStep';
 import { AggregateQuantityStep } from './steps/AggregateQuantityStep';
 import { PackageMatcherStep } from './steps/PackageMatcherStep';
-import { getSectionForCategory } from '../data/store-sections';
+import { compareShoppingItems } from '../data/store-sections';
 import type { StoreLayout } from '../types';
 
 export type AltSelectionsMap = Record<string, string>;
@@ -115,17 +115,9 @@ export function processShoppingList(
     }
   });
 
-  // Step 6: Sort by store aisle order
-  const sorter = (a: ShoppingItem, b: ShoppingItem) => {
-    const secA = getSectionForCategory(a.category, layout);
-    const secB = getSectionForCategory(b.category, layout);
-    const orderA = secA?.order ?? 999;
-    const orderB = secB?.order ?? 999;
-    if (orderA !== orderB) {
-      return orderA - orderB;
-    }
-    return a.item.localeCompare(b.item);
-  };
+  // Step 6: Sort by store aisle order and category sequence
+  const sorter = (a: ShoppingItem, b: ShoppingItem) =>
+    compareShoppingItems(a, b, layout);
 
   buyItems.sort(sorter);
   optionalItems.sort(sorter);

@@ -1,6 +1,6 @@
 import categoryKeywordsJson from '../../data/category-keywords.json';
 import usGrocerySizes from '../../data/stores/us-grocery.json';
-import type { StoreLayout, StoreSection } from '../types';
+import type { ShoppingItem, StoreLayout, StoreSection } from '../types';
 
 export const CATEGORY_KEYWORDS: { category: string; keywords: string[] }[] =
   categoryKeywordsJson;
@@ -368,4 +368,26 @@ export function getStoreSection(
 ): StoreSection {
   const category = classifyItemToCategory(itemItem || itemRestOrName);
   return getSectionForCategory(category);
+}
+
+export function compareShoppingItems(
+  a: ShoppingItem,
+  b: ShoppingItem,
+  layout?: StoreLayout,
+): number {
+  const secA = getSectionForCategory(a.category, layout);
+  const secB = getSectionForCategory(b.category, layout);
+  const orderA = secA?.order ?? 999;
+  const orderB = secB?.order ?? 999;
+  if (orderA !== orderB) {
+    return orderA - orderB;
+  }
+  const idxA = secA ? secA.categories.indexOf(a.category) : -1;
+  const idxB = secB ? secB.categories.indexOf(b.category) : -1;
+  const catOrderA = idxA !== -1 ? idxA : 999;
+  const catOrderB = idxB !== -1 ? idxB : 999;
+  if (catOrderA !== catOrderB) {
+    return catOrderA - catOrderB;
+  }
+  return a.item.localeCompare(b.item);
 }

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { SvelteSet } from 'svelte/reactivity';
   import { recipesStore } from '../../stores/recipes';
   import { filtersStore, filterRecipes } from '../../stores/filters';
   import { favoritesStore } from '../../stores/favorites';
@@ -15,6 +16,7 @@
     STORE_LAYOUTS,
     getSectionForCategory,
     getActiveStoreLayoutId,
+    compareShoppingItems,
   } from '../../data/store-sections';
   import StorePicker from '../domain/StorePicker.svelte';
   import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
@@ -233,14 +235,9 @@
       isolatedAltSelections,
     );
 
-    const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {
-      const secA = getSectionForCategory(a.category, activeLayout);
-      const secB = getSectionForCategory(b.category, activeLayout);
-      if (secA.order !== secB.order) {
-        return secA.order - secB.order;
-      }
-      return a.item.localeCompare(b.item);
-    });
+    const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) =>
+      compareShoppingItems(a, b, activeLayout),
+    );
 
     return { buyItems, optionalItems, stapleItems, combinedBuyItems };
   });
@@ -248,7 +245,19 @@
   let buyItems = $derived(processedShopping.combinedBuyItems);
   let optionalItems = $derived(processedShopping.optionalItems);
 
-  let totalShoppingItemCount = $derived(buyItems.length + optionalItems.length);
+  let totalShoppingItemCount = $derived(
+    buyItems.length + optionalItems.length,
+  );
+
+  const collapsedSections = new SvelteSet<string>();
+
+  function toggleSection(sectionId: string) {
+    if (collapsedSections.has(sectionId)) {
+      collapsedSections.delete(sectionId);
+    } else {
+      collapsedSections.add(sectionId);
+    }
+  }
 
   // Group buy items by store section
   let groupedBuyItems = $derived.by(() => {
@@ -268,6 +277,37 @@
 
     return sections;
   });
+
+  let totalSectionsCount = $derived(
+    groupedBuyItems.length + (optionalItems.length > 0 ? 1 : 0),
+  );
+
+  let allCollapsed = $derived(
+    totalSectionsCount > 0 &&
+      groupedBuyItems.every((sec) => collapsedSections.has(sec.id)) &&
+      (optionalItems.length === 0 || collapsedSections.has('optional')),
+  );
+
+  function toggleAllSections() {
+    if (allCollapsed) {
+      collapsedSections.clear();
+    } else {
+      groupedBuyItems.forEach((sec) => collapsedSections.add(sec.id));
+      if (optionalItems.length > 0) {
+        collapsedSections.add('optional');
+      }
+    }
+  }
+
+  function getSectionCheckedInfo(sectionItems: ShoppingItem[]) {
+    const total = sectionItems.length;
+    const checked = sectionItems.filter((item) => {
+      const isStaple = item.staple === 'in-pantry';
+      const key = getIngredientKey(isStaple, item.unit, item.item);
+      return isItemChecked(key, isStaple, isolatedCheckedStates);
+    }).length;
+    return { checked, total, isComplete: total > 0 && checked === total };
+  }
 
   // Checked state toggling
   function toggleItemChecked(key: string, isStaple: boolean) {
@@ -465,10 +505,21 @@
     >
       <div class="debug-col-header shopping-col-header">
         <div class="shopping-header-title-bar">
-          <h2>Dynamic Combined Shopping List</h2>
-          <span class="shopping-count-subtitle"
-            >{buyItems.length} items needed</span
-          >
+          <div>
+            <h2>Dynamic Combined Shopping List</h2>
+            <span class="shopping-count-subtitle"
+              >{buyItems.length} items needed</span
+            >
+          </div>
+          {#if totalSectionsCount > 0}
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              onclick={toggleAllSections}
+            >
+              {allCollapsed ? 'Expand All' : 'Collapse All'}
+            </button>
+          {/if}
         </div>
 
         <div class="store-picker-container">
@@ -499,39 +550,111 @@
                 </li>
               {:else}
                 {#each groupedBuyItems as section}
+                  {@const info = getSectionCheckedInfo(section.items)}
+                  {@const isCollapsed = collapsedSections.has(section.id)}
                   <li class="shopping-section-header compound-list-header">
-                    {section.name}
+                    <button
+                      type="button"
+                      class="section-toggle-btn"
+                      aria-expanded={!isCollapsed}
+                      aria-controls={`debug-section-buy-${section.id}`}
+                      onclick={() => toggleSection(section.id)}
+                    >
+                      <span class="section-toggle-title">
+                        <span
+                          class="section-chevron"
+                          class:collapsed={isCollapsed}
+                          aria-hidden="true">▼</span
+                        >
+                        <span>{section.name}</span>
+                      </span>
+                      <span
+                        class="section-count"
+                        class:completed={info.isComplete}
+                      >
+                        {#if info.isComplete}
+                          ✓ {info.total}/{info.total}
+                        {:else}
+                          {info.checked}/{info.total}
+                        {/if}
+                      </span>
+                    </button>
                   </li>
-                  {#each section.items as item}
-                    {@const isStaple = item.staple === 'in-pantry'}
-                    {@const key = getIngredientKey(isStaple, item.unit, item.item)}
-                    {@const isChecked = isItemChecked(key, isStaple, isolatedCheckedStates)}
-                    <ShoppingListItemRow
-                      {item}
-                      {isChecked}
-                      onToggleChecked={() => toggleItemChecked(key, isStaple)}
-                      onToggleAlt={toggleAlt}
-                    />
-                  {/each}
+                  {#if !isCollapsed}
+                    {#each section.items as item}
+                      {@const isStaple = item.staple === 'in-pantry'}
+                      {@const key = getIngredientKey(
+                        isStaple,
+                        item.unit,
+                        item.item,
+                      )}
+                      {@const isChecked = isItemChecked(
+                        key,
+                        isStaple,
+                        isolatedCheckedStates,
+                      )}
+                      <ShoppingListItemRow
+                        {item}
+                        {isChecked}
+                        onToggleChecked={() => toggleItemChecked(key, isStaple)}
+                        onToggleAlt={toggleAlt}
+                      />
+                    {/each}
+                  {/if}
                 {/each}
               {/if}
             </ul>
           </div>
 
           {#if optionalItems.length > 0}
+            {@const info = getSectionCheckedInfo(optionalItems)}
+            {@const isCollapsed = collapsedSections.has('optional')}
             <div class="shopping-section optional-section">
-              <h3 class="optional-section-title">Optional Ingredients</h3>
               <ul class="compound-list">
-                {#each optionalItems as item}
-                  {@const key = getIngredientKey(false, item.unit, item.item)}
-                  {@const isChecked = isItemChecked(key, false, isolatedCheckedStates)}
-                  <ShoppingListItemRow
-                    {item}
-                    {isChecked}
-                    onToggleChecked={() => toggleItemChecked(key, false)}
-                    onToggleAlt={toggleAlt}
-                  />
-                {/each}
+                <li class="shopping-section-header compound-list-header">
+                  <button
+                    type="button"
+                    class="section-toggle-btn"
+                    aria-expanded={!isCollapsed}
+                    aria-controls="debug-optional-items"
+                    onclick={() => toggleSection('optional')}
+                  >
+                    <span class="section-toggle-title">
+                      <span
+                        class="section-chevron"
+                        class:collapsed={isCollapsed}
+                        aria-hidden="true">▼</span
+                      >
+                      <span>Optional</span>
+                    </span>
+                    <span
+                      class="section-count"
+                      class:completed={info.isComplete}
+                    >
+                      {#if info.isComplete}
+                        ✓ {info.total}/{info.total}
+                      {:else}
+                        {info.checked}/{info.total}
+                      {/if}
+                    </span>
+                  </button>
+                </li>
+                {#if !isCollapsed}
+                  {#each optionalItems as item}
+                    {@const key = getIngredientKey(false, item.unit, item.item)}
+                    {@const isChecked = isItemChecked(
+                      key,
+                      false,
+                      isolatedCheckedStates,
+                    )}
+                    <ShoppingListItemRow
+                      {item}
+                      {isChecked}
+                      onToggleChecked={() => toggleItemChecked(key, false)}
+                      onToggleAlt={toggleAlt}
+                    />
+                  {/each}
+                {/if}
               </ul>
             </div>
           {/if}
@@ -809,15 +932,6 @@
 
   .store-picker-container {
     margin-top: 0.25rem;
-  }
-
-  .optional-section-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin: 1.5rem 0 0.5rem;
-    padding-top: 1rem;
-    border-top: 1px dashed var(--border-color, #cbd5e1);
-    color: var(--text-title, var(--text-color));
   }
 
   @media (max-width: 767px) {

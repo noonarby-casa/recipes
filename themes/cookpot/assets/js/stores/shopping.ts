@@ -5,7 +5,7 @@ import type { IngredientInput } from '../types';
 import { processShoppingList } from '../pipelines/pipeline';
 import {
   getActiveStoreLayoutId,
-  getSectionForCategory,
+  compareShoppingItems,
   STORE_LAYOUTS,
 } from '../data/store-sections';
 import { ls } from '../utils/storage';
@@ -174,14 +174,9 @@ export const combinedShoppingList = derived(
       $altSelections,
     );
 
-    const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) => {
-      const secA = getSectionForCategory(a.category, activeLayout);
-      const secB = getSectionForCategory(b.category, activeLayout);
-      if (secA.order !== secB.order) {
-        return secA.order - secB.order;
-      }
-      return a.item.localeCompare(b.item);
-    });
+    const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) =>
+      compareShoppingItems(a, b, activeLayout),
+    );
 
     return { buyItems, optionalItems, stapleItems, combinedBuyItems };
   },

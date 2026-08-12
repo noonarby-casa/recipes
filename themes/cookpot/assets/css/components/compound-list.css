@@ -36,3 +36,48 @@ li.compound-list-header:first-child {
   margin-top: 0.5rem;
   padding-left: 1.25rem;
 }
+
+.section-toggle-btn {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  justify-content: space-between;
+  letter-spacing: inherit;
+  padding: 0;
+  text-align: left;
+  text-transform: inherit;
+  width: 100%;
+}
+
+.section-toggle-title {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.4rem;
+}
+
+.section-chevron {
+  display: inline-block;
+  font-size: 0.65rem;
+  transition: transform 0.2s ease;
+}
+
+.section-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
+.section-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.section-count.completed {
+  color: var(--success-color, #10b981);
+  opacity: 1;
+}

@@ -1,61 +1,49 @@
-# Grill Session: Shopping List Selected Recipes URL Parameter
+# Grill Session: Shopping List Collapsible Sections & Category Sorting
 
 ## Closed Decisions
 
-### Q1. Target Page & Route Scope
+### Q1. Scope & Default Expansion State
 
-- **Question:** Which page(s) and application views should parse and support this new URL parameter shortcut for selected recipes?
-- **Decision:** Scope strictly to the `/shopping-debug/` page.
-- **Details:** Main `/planner/` and single recipe pages will not process this shortcut parameter. The URL shortcut is dedicated to driving and sharing selections on `/shopping-debug/`.
-
-### Q2. Query Parameter Name & Shorthand Syntax
-
-- **Question:** What query parameter name should we use on `/shopping-debug/`, and what exact shorthand syntax should represent selecting "all recipes" vs a subset of recipes?
-- **Decision:** Parameter name `r`. Use `r=all` for all recipes, otherwise dot-separated shortIds (e.g., `r=chili.tacos.curry`).
-- **Details:** Parsing is case-insensitive for `all`. Unknown shortIds in a list are gracefully skipped.
-
-### Q3. Serving Sizes & Portion Overrides in URL
-
-- **Question:** How should serving sizes / portion counts be handled in the URL query parameter?
-- **Decision:** Match the `p` parameter encoding from `planUrlSync.ts`: `shortId` directly followed by total portion count digits for non-default servings (e.g., `r=vbc6.crg.tcc8`).
+- **Question:** Which shopping list views should feature collapsible sections, and what should their initial expansion state be when the page or list loads?
+- **Decision:** Scope to both `ShoppingListColumn.svelte` (Meal Planner / Shopping Debug) and `RecipeShoppingList.svelte` (Single recipe view). All active sections are expanded by default when loaded.
 - **Details:**
-  - Real catalog `shortId`s are 3-4 letter codes (e.g., `vbc` for Vegetable Bean Chili, `crg` for Chorizo Gnocchi, `tcc` for Thai Chicken Curry).
-  - If digits follow the `shortId` (e.g., `vbc6`), portions are set to 6.
-  - If no digits are attached (e.g., `crg`), it defaults to the recipe's base yield.
-  - `r=all` selects all recipes at their default base yield.
+  - Non-empty store sections load expanded so users see all needed items immediately.
+  - Sections can be manually collapsed by clicking their header.
 
-### Q4. Bidirectional URL Synchronization & `r=all` Compression
+### Q2. Category Sorting & Sub-sorting Rules within Sections
 
-- **Question:** How should interactive recipe selection changes in `ShoppingDebugApp` update the browser address bar?
-- **Decision:** Bi-directional, real-time sync via `history.replaceState`.
+- **Question:** How should items inside a store section be ordered when a section contains multiple category types (for example, Produce containing `fresh-produce`, `fresh-herbs`, and `tofu-tempeh`)?
+- **Decision:** Order by category index in `StoreSection.categories`, then alphabetically by item name. No extra visual sub-headers.
 - **Details:**
-  - Toggling recipes or adjusting serving steppers immediately updates `r=` in the URL.
-  - If all catalog recipes are selected at default yields, automatically compress `r=` to `r=all`.
-  - If no recipes are selected, remove `r=` from the query parameters.
+  - Items are sorted first by the order of `item.category` in `section.categories`.
+  - Ties are broken by `a.item.localeCompare(b.item)`.
+  - Maintains a clean single list under each section header.
 
-### Q5. Strict shortId Resolution & Invalid Entry Handling
+### Q3. Visual Header & Interaction Pattern for Collapsible Sections
 
-- **Question:** How should the URL parser handle unrecognized codes or permalinks passed in parameter `r`?
-- **Decision:** Strictly use `shortId`s. No fallback to permalinks. Gracefully ignore invalid/unrecognized entries. Always serialize `shortId`s to URL.
-- **Details:** Any token in parameter `r` that is not a valid `shortId` (or `all`) is discarded during URL parsing.
-
-### Q6. Interaction with Search / Tag Filters & "Select All"
-
-- **Question:** How should `r=all` interact with active UI search filters or category/favorite toggles, and how should "Select All" update the URL when filters are active?
-- **Decision:** `r=all` represents all catalog recipes. "Select All" with no filters sets `r=all`. "Select All" with active filters selects visible recipes and serializes explicit shortIds.
+- **Question:** What visual design and interaction pattern should we use for the collapsible section headers?
+- **Decision:** Interactive `<button>` inside `.shopping-section-header` matching existing minimal column header styling, with an inline chevron indicator, item count badge, and `aria-expanded` attributes.
 - **Details:**
-  - Opening `r=all` selects all catalog recipes regardless of initial filter state.
-  - Clicking "Select All" when a filter is applied adds only the filtered recipes to selection and serializes explicit `shortId`s to `r=`.
-  - If the resulting selection equals all catalog recipes at base yields, it auto-compresses back to `r=all`.
+  - Maintains the existing minimal typography and subtle aesthetic of `.compound-list-header`.
+  - Accessible `<button type="button">` toggles collapse state via keyboard/mouse.
+  - Subtle rotating chevron and item count (e.g., `(3)`).
 
-### Q7. Optional Store Layout Query Parameter (`l`)
+### Q4. Global Controls & State Persistence
 
-- **Question:** Should `/shopping-debug/` also support an optional store layout parameter (e.g. `l=standard` or `l=market-basket-pnh`)?
-- **Decision:** Yes, support parameter `l` for store layout syncing on `/shopping-debug/`.
+- **Question:** Should we add global "Expand All / Collapse All" toggle controls, and how should section collapse states persist across session navigation?
+- **Decision:** Add a subtle "Expand All / Collapse All" action button in the list titlebar/toolbar. Collapse state persists in session reactivity state.
 - **Details:**
-  - Valid layout IDs: `market-basket-pnh` (default), `standard`, `dairy-first`, `meat-first`.
-  - Reading `l=` sets the store layout state. If omitted, uses default layout `market-basket-pnh`.
-  - Writing `l=` updates URL state via `history.replaceState`. Default layout `market-basket-pnh` is omitted from URL for clean links.
+  - Standardizes quick expand/collapse across all sections.
+  - State is held in Svelte component `$state` per session, preserving section states across layout switches.
+
+### Q5. Checked Items & Optional Sections Behavior
+
+- **Question:** How should section collapse states interact when items are checked off, and should the Optional items section also be collapsible with category sorting?
+- **Decision:** Sections remain open when fully checked off (showing `✓ x/x` indicator). Optional items section is also collapsible and category-sorted.
+- **Details:**
+  - Sections do not auto-collapse when completed; users retain manual collapse control.
+  - Completed count (`✓ x/x`) updates dynamically.
+  - The Optional section adopts the same collapsible header and category sorting logic.
 
 ## Open Questions
 
