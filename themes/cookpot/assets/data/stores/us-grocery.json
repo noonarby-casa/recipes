@@ -20,18 +20,81 @@
     [1, "pint (16 fl oz)"],
     [1, "quart (32 fl oz)"]
   ],
+  "vegetable broth": [
+    [1, "pint (16 fl oz)"],
+    [1, "quart (32 fl oz)"]
+  ],
+  "beef broth": [
+    [1, "pint (16 fl oz)"],
+    [1, "quart (32 fl oz)"]
+  ],
   "milk": [
-    [1, "pint (16 oz)"],
-    [1, "quart (32 oz)"]
+    [1, "pint (16 fl oz)"],
+    [1, "quart (32 fl oz)"],
+    [1, "half-gallon (64 fl oz)"]
   ],
   "heavy cream": [
-    [1, "pint (16 oz)"],
-    [1, "quart (32 oz)"]
+    [1, "pint (16 fl oz)"],
+    [1, "quart (32 fl oz)"]
+  ],
+  "half and half": [
+    [1, "pint (16 fl oz)"],
+    [1, "quart (32 fl oz)"]
+  ],
+  "almond milk": [[1, "half-gallon (64 fl oz)"]],
+  "Greek yogurt": [[1, "tub (32 oz)"]],
+  "low-fat plain kefir": [[1, "bottle (32 fl oz)"]],
+  "whipped cream": [[1, "can (13 oz)"]],
+  "sweetened condensed milk": [[1, "can (14 oz)"]],
+  "cheddar cheese": [
+    [1, "package (8 oz)"],
+    [1, "package (16 oz)"],
+    [1, "package"]
+  ],
+  "mexican cheese": [
+    [1, "package (8 oz)"],
+    [1, "package (16 oz)"],
+    [1, "package"]
+  ],
+  "mozzarella": [
+    [1, "package (8 oz)"],
+    [1, "package (16 oz)"],
+    [1, "package"]
+  ],
+  "fresh mozzarella": [[1, "package (8 oz)"]],
+  "gruyere cheese": [[1, "package (8 oz)"]],
+  "swiss cheese": [[1, "package (8 oz)"]],
+  "feta cheese": [[1, "package (8 oz)"]],
+  "cream cheese": [[1, "package (8 oz)"]],
+  "sliced cheese": [[1, "package"]],
+  "parmesan": [
+    [1, "wedge (8 oz)"],
+    [1, "wedge"]
   ],
   "ginger": [[1, "root"]],
   "coconut milk": [[1, "can (13.5 oz)"]],
   "scallion": [[1, "bundle"]],
   "pasta": [[1, "box (16 oz)"]],
+  "potato gnocchi": [[1, "package (17.5 oz)"]],
+  "panko": [[1, "box (8 oz)"]],
+  "rice": [
+    [1, "bag (2 lb)"],
+    [1, "bag (5 lb)"]
+  ],
+  "quinoa": [[1, "bag (16 oz)"]],
+  "rolled oats": [[1, "tub (42 oz)"]],
+  "all-purpose flour": [[1, "bag (5 lb)"]],
+  "bread flour": [[1, "bag (5 lb)"]],
+  "cake flour": [[1, "box (32 oz)"]],
+  "granulated sugar": [[1, "bag (4 lb)"]],
+  "sugar": [[1, "bag (4 lb)"]],
+  "brown sugar": [[1, "bag (2 lb)"]],
+  "powdered sugar": [[1, "bag (2 lb)"]],
+  "baking powder": [[1, "can (8.1 oz)"]],
+  "baking soda": [[1, "box (16 oz)"]],
+  "cornstarch": [[1, "box (16 oz)"]],
+  "vanilla extract": [[1, "bottle (2 fl oz)"]],
+  "chocolate chips": [[1, "bag (12 oz)"]],
   "chickpeas": [[1, "can (15 oz)"]],
   "black beans": [[1, "can (15 oz)"]],
   "kidney beans": [[1, "can (15 oz)"]],
@@ -48,12 +111,45 @@
     [1, "can (28 oz)"]
   ],
   "tomato paste": [[1, "can (6 oz)"]],
-  "roasted red pepper": [[1, "8-oz jar"]],
-  "potato gnocchi": [[1, "17.5-oz package"]],
-  "baby spinach": [[1, "8 oz bag"]],
-  "cream cheese": [[1, "8-oz package"]],
-  "feta cheese": [[1, "8-oz package"]],
-  "chocolate chips": [[1, "12-oz bag"]],
+  "green enchilada sauce": [
+    [1, "can (10 oz)"],
+    [1, "can (28 oz)"]
+  ],
+  "roasted red pepper": [[1, "jar (8 oz)"]],
+  "bacon": [[1, "package (16 oz)"]],
+  "Italian sausage": [[1, "package (19 oz)"]],
+  "breakfast sausage": [[1, "package (12 oz)"]],
+  "hot dog": [
+    [1, "package (8 hot dogs)"],
+    [1, "package (16 oz)"]
+  ],
+  "cocktail wiener": [[1, "package (14 oz)"]],
+  "chorizo": [[1, "package (12 oz)"]],
+  "chicken meatball": [[1, "package (12 oz)"]],
+  "Pillsbury crescent rolls": [[1, "can (8 oz)"]],
+  "olive oil": [[1, "bottle (16.9 fl oz)"]],
+  "vegetable oil": [[1, "bottle (48 fl oz)"]],
+  "sesame oil": [[1, "bottle (5 fl oz)"]],
+  "avocado oil": [[1, "bottle (16.9 fl oz)"]],
+  "coconut oil": [[1, "jar (14 oz)"]],
+  "apple cider vinegar": [[1, "bottle (16 fl oz)"]],
+  "rice vinegar": [[1, "bottle (12 fl oz)"]],
+  "balsamic vinegar": [[1, "bottle (16.9 fl oz)"]],
+  "white vinegar": [[1, "bottle (32 fl oz)"]],
+  "red wine vinegar": [[1, "bottle (16 fl oz)"]],
+  "soy sauce": [[1, "bottle (15 fl oz)"]],
+  "tamari": [[1, "bottle (10 fl oz)"]],
+  "sriracha": [[1, "bottle (17 oz)"]],
+  "honey": [[1, "bottle (12 oz)"]],
+  "maple syrup": [[1, "bottle (12 fl oz)"]],
+  "ketchup": [[1, "bottle (20 oz)"]],
+  "Dijon mustard": [[1, "jar (8 oz)"]],
+  "peanut butter": [[1, "jar (16 oz)"]],
+  "whole-egg mayonnaise": [[1, "jar (30 fl oz)"]],
+  "spicy mayonnaise": [[1, "bottle (12 oz)"]],
+  "red curry paste": [[1, "jar (4 oz)"]],
+  "miso": [[1, "tub (17.6 oz)"]],
+  "fish sauce": [[1, "bottle (7 fl oz)"]],
   "lemon juice": [[1, "bottle (16 fl oz)"]],
   "lime juice": [[1, "bottle (16 fl oz)"]],
   "tortilla": [
@@ -61,19 +157,6 @@
     [1, "package of 24"],
     [1, "package of 30"]
   ],
-  "green enchilada sauce": [
-    [1, "10-oz can"],
-    [1, "28-oz can"]
-  ],
-  "kale": [[1, "5-oz package"]],
-  "parmesan": [[1, "wedge"]],
-  "mexican cheese": [
-    [1, "8-oz package"],
-    [1, "package"]
-  ],
-  "sliced cheese": [[1, "package"]],
-  "cheddar cheese": [
-    [1, "8-oz package"],
-    [1, "package"]
-  ]
+  "baby spinach": [[1, "bag (8 oz)"]],
+  "kale": [[1, "package (5 oz)"]]
 }

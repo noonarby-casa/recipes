@@ -8,7 +8,7 @@ describe('PackageMatcherStep', () => {
     name: 'Test Store',
     sections: [],
     itemSizes: {
-      'potato gnocchi': [[1, '17.5-oz package']],
+      'potato gnocchi': [[1, 'package (17.5 oz)']],
     },
   };
 
@@ -22,7 +22,7 @@ describe('PackageMatcherStep', () => {
     const result = matcher.process(items);
     expect(result).toHaveLength(1);
     expect(result[0].qty).toBe(1);
-    expect(result[0].unit).toBe('17.5-oz package');
+    expect(result[0].unit).toBe('package (17.5 oz)');
     expect(result[0].note?.sizeNote).toBe('16 oz needed');
   });
 

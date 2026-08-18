@@ -184,9 +184,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'heavy cream',
       qty: 1,
-      unit: 'quart (32 oz)',
+      unit: 'quart (32 fl oz)',
       category: 'milk-cream',
-      sizeNote: '24 oz needed',
+      sizeNote: '3 cups needed',
     },
   },
   {
@@ -213,7 +213,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'yellow onion',
-      qty: 1.5,
+      qty: 2,
       unit: 'yellow onions',
       category: 'fresh-produce',
     },
@@ -227,9 +227,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'cauliflower',
-      qty: 6,
-      unit: 'cups',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '6 cups needed',
     },
   },
   {
@@ -256,7 +257,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'green cabbage',
-      qty: 0.5,
+      qty: 1,
       unit: 'head',
       category: 'fresh-produce',
     },
@@ -331,7 +332,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'roasted red pepper',
       qty: 1,
-      unit: '8-oz jar',
+      unit: 'jar (8 oz)',
       category: 'spices-seasonings',
       sizeNote: '6 oz needed',
     },
@@ -346,7 +347,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'potato gnocchi',
       qty: 1,
-      unit: '17.5-oz package',
+      unit: 'package (17.5 oz)',
       category: 'pasta-grains',
       sizeNote: '16 oz needed',
     },
@@ -361,7 +362,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'baby spinach',
       qty: 1,
-      unit: '8 oz bag',
+      unit: 'bag (8 oz)',
       category: 'fresh-produce',
       sizeNote: '3 oz needed',
     },
@@ -375,10 +376,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'vegetable oil',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (48 fl oz)',
       category: 'oils-vinegars',
       staple: 'in-pantry',
+      sizeNote: '1/8 cup needed',
     },
   },
   {
@@ -390,9 +392,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'breakfast sausage',
-      qty: 1,
-      unit: 'pound',
+      qty: 2,
+      unit: 'packages (12 oz)',
       category: 'meat',
+      sizeNote: '10 2/3 link needed',
     },
   },
   {
@@ -419,8 +422,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'cheddar cheese',
       qty: 1,
-      unit: '8-oz package',
+      unit: 'package (8 oz)',
       category: 'butter-cheese',
+      sizeNote: '2 cups needed',
     },
   },
   {
@@ -432,9 +436,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Italian seasoning',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -446,9 +451,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'chive',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -461,9 +467,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'almond',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'snacks',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -475,10 +482,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'sesame seed',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -493,7 +501,6 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 8,
       unit: '',
       category: 'fresh-produce',
-      sizeNote: '8 needed',
     },
   },
   {
@@ -537,9 +544,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'chicken',
-      qty: 2,
-      unit: 'cups',
+      qty: null,
+      unit: '',
       category: 'poultry',
+      sizeNote: '2 cups needed',
     },
   },
   {
@@ -551,10 +559,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'sugar',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bag (4 lb)',
       category: 'baking',
       staple: 'in-pantry',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -566,10 +575,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'black pepper',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -581,10 +591,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'salt',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -596,9 +607,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'rice vinegar',
-      qty: 6,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (12 fl oz)',
       category: 'oils-vinegars',
+      sizeNote: '3/8 cup needed',
     },
   },
   {
@@ -611,8 +623,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'whole-egg mayonnaise',
       qty: 1,
-      unit: 'cup',
+      unit: 'jar (30 fl oz)',
       category: 'condiments',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -624,9 +637,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'sweet chilli sauce',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'condiments',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -640,8 +654,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'sriracha',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'bottle (17 oz)',
       category: 'condiments',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
@@ -667,8 +682,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'honey',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'bottle (12 oz)',
       category: 'condiments',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
@@ -713,10 +729,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'paprika',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -728,10 +745,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'onion powder',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -744,8 +762,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'tamari',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'bottle (10 fl oz)',
       category: 'condiments',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
@@ -771,8 +790,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'brown sugar',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'bag (2 lb)',
       category: 'baking',
+      sizeNote: '0.06 cup needed',
     },
   },
   {
@@ -785,9 +805,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'olive oil',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'bottle (16.9 fl oz)',
       category: 'oils-vinegars',
       staple: 'in-pantry',
+      sizeNote: '0.06 cup needed',
     },
   },
   {
@@ -802,7 +823,6 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: '',
       category: 'fresh-produce',
-      sizeNote: '1 needed',
     },
   },
   {
@@ -827,9 +847,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'green bean',
-      qty: 1,
-      unit: 'cup',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -942,9 +963,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'parmesan',
       qty: 1,
-      unit: 'wedge',
+      unit: 'wedge (8 oz)',
       category: 'butter-cheese',
-      sizeNote: '3 tbsp needed',
+      sizeNote: '7/8 oz needed',
     },
   },
   {
@@ -973,6 +994,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'box (16 oz)',
       category: 'pasta-grains',
+      sizeNote: '16 oz needed',
     },
   },
   {
@@ -984,10 +1006,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'dried basil',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -1000,8 +1023,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'low-fat plain kefir',
       qty: 1,
-      unit: 'cup',
+      unit: 'bottle (32 fl oz)',
       category: 'milk-cream',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -1013,9 +1037,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'frozen mixed berries',
-      qty: 1,
-      unit: 'cup',
+      qty: null,
+      unit: '',
       category: 'frozen',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -1027,9 +1052,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'orange juice',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'beverages',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -1041,9 +1067,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'fresh mint',
-      qty: 1.5,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -1095,7 +1122,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'yellow onion',
       qty: 1,
-      unit: 'yellow onion',
+      unit: '',
       category: 'fresh-produce',
     },
   },
@@ -1125,8 +1152,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'coconut oil',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'jar (14 oz)',
       category: 'oils-vinegars',
+      sizeNote: '0.06 cup needed',
     },
   },
   {
@@ -1141,7 +1169,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'baby spinach',
       qty: 1,
-      unit: '8 oz bag',
+      unit: 'bag (8 oz)',
       category: 'fresh-produce',
       sizeNote: '5 oz needed',
     },
@@ -1171,6 +1199,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'can (28 oz)',
       category: 'canned-tomatoes',
+      sizeNote: '28 oz needed',
     },
   },
   {
@@ -1182,10 +1211,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'curry powder',
-      qty: 1,
-      unit: 'tablespoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
@@ -1197,10 +1227,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'cumin',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -1212,10 +1243,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'coriander',
-      qty: 0.5,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1/2 tsp needed',
     },
   },
   {
@@ -1227,10 +1259,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'kosher salt',
-      qty: 0.75,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '3/4 tsp needed',
     },
   },
   {
@@ -1304,7 +1337,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'lime zest',
-      qty: 0.5,
+      qty: 1,
       unit: 'lime',
       category: 'fresh-produce',
     },
@@ -1320,9 +1353,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'cilantro',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '4 tbsp needed',
     },
   },
   {
@@ -1348,10 +1382,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'chili powder',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -1364,7 +1399,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'potato gnocchi',
       qty: 1,
-      unit: '17.5-oz package',
+      unit: 'package (17.5 oz)',
       category: 'pasta-grains',
       sizeNote: '16 oz needed',
     },
@@ -1380,9 +1415,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'chorizo',
-      qty: 0.5,
-      unit: 'pound',
+      qty: 1,
+      unit: 'package (12 oz)',
       category: 'meat',
+      sizeNote: '8 oz needed',
     },
   },
   {
@@ -1396,7 +1432,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'roasted red pepper',
       qty: 1,
-      unit: '8-oz jar',
+      unit: 'jar (8 oz)',
       category: 'spices-seasonings',
       sizeNote: '6 oz needed',
     },
@@ -1457,8 +1493,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Italian sausage',
-      qty: 1,
-      unit: 'pound',
+      qty: 5,
+      unit: 'link',
       category: 'meat',
     },
   },
@@ -1474,7 +1510,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'carton (6 eggs)',
       category: 'eggs',
-      sizeNote: '3 large needed',
+      sizeNote: '3 eggs needed',
     },
   },
   {
@@ -1487,9 +1523,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'vanilla extract',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'bottle (2 fl oz)',
       category: 'baking',
       staple: 'in-pantry',
+      sizeNote: '3 tsp needed',
     },
   },
   {
@@ -1502,10 +1539,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'cinnamon',
-      qty: 1.5,
-      unit: 'teaspoons',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 1/2 tsp needed',
     },
   },
   {
@@ -1518,9 +1556,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'milk',
       qty: 1,
-      unit: 'pint (16 oz)',
+      unit: 'pint (16 fl oz)',
       category: 'milk-cream',
-      sizeNote: '6 oz needed',
+      sizeNote: '3/4 cup needed',
     },
   },
   {
@@ -1563,9 +1601,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'heavy cream',
       qty: 1,
-      unit: 'pint (16 oz)',
+      unit: 'pint (16 fl oz)',
       category: 'milk-cream',
-      sizeNote: '12 oz needed',
+      sizeNote: '1 1/2 cups needed',
     },
   },
   {
@@ -1580,7 +1618,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'carton (6 eggs)',
       category: 'eggs',
-      sizeNote: '1 large needed',
+      sizeNote: '1 egg needed',
     },
   },
   {
@@ -1610,9 +1648,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'Parmigiano-Reggiano',
       qty: 1,
-      unit: 'wedge',
+      unit: 'wedge (8 oz)',
       category: 'butter-cheese',
-      sizeNote: '1 cup needed',
+      sizeNote: '4 oz needed',
     },
   },
   {
@@ -1643,8 +1681,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'peanut butter',
       qty: 1,
-      unit: 'cup',
+      unit: 'jar (16 oz)',
       category: 'condiments',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -1656,10 +1695,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'baking powder',
-      qty: 1.5,
-      unit: 'teaspoons',
+      qty: 1,
+      unit: 'can (8.1 oz)',
       category: 'baking',
       staple: 'in-pantry',
+      sizeNote: '1 1/2 tsp needed',
     },
   },
   {
@@ -1671,10 +1711,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'sea salt',
-      qty: 0.5,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1/2 tsp needed',
     },
   },
   {
@@ -1688,7 +1729,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'chocolate chip',
       qty: 1,
-      unit: '12-oz bag',
+      unit: 'bag (12 oz)',
       category: 'baking',
       sizeNote: '3 oz needed',
     },
@@ -1704,9 +1745,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'optional',
     expectedItem: {
       item: 'berry',
-      qty: 1,
-      unit: 'cup',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -1719,9 +1761,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'optional',
     expectedItem: {
       item: 'raisin',
-      qty: 8,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'baking',
+      sizeNote: '1/2 cup needed',
     },
   },
   {
@@ -1761,9 +1804,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'powdered sugar',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bag (2 lb)',
       category: 'baking',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -1776,9 +1820,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'blueberry',
-      qty: 1,
-      unit: 'cup',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -1791,9 +1836,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'raspberry',
-      qty: 1,
-      unit: 'cup',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -1822,6 +1868,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'package',
       category: 'butter-cheese',
+      sizeNote: '8 oz needed',
     },
   },
   {
@@ -1834,8 +1881,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'mayo',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'jar (30 fl oz)',
       category: 'condiments',
+      sizeNote: '0.06 cup needed',
     },
   },
   {
@@ -1876,9 +1924,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'cracker crumb',
-      qty: 1,
-      unit: 'cup',
+      qty: null,
+      unit: '',
       category: 'snacks',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -1903,9 +1952,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'coconut amino',
-      qty: 1.5,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'condiments',
+      sizeNote: '1 1/2 tbsp needed',
     },
   },
   {
@@ -1918,8 +1968,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'red curry paste',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'jar (4 oz)',
       category: 'condiments',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
@@ -1931,9 +1982,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'avocado oil',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (16.9 fl oz)',
       category: 'oils-vinegars',
+      sizeNote: '1/8 cup needed',
     },
   },
   {
@@ -1959,10 +2011,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'cumin',
-      qty: 0.25,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1/4 tsp needed',
     },
   },
   {
@@ -1975,9 +2028,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'optional',
     expectedItem: {
       item: 'fenugreek',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -1989,10 +2043,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'coriander',
-      qty: 2.5,
-      unit: 'teaspoons',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '2 1/2 tsp needed',
     },
   },
   {
@@ -2004,10 +2059,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'cayenne',
-      qty: 0.5,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1/2 tsp needed',
     },
   },
   {
@@ -2019,10 +2075,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'garam masala',
-      qty: 0.25,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1/4 tsp needed',
     },
   },
   {
@@ -2037,6 +2094,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'can (15 oz)',
       category: 'canned-tomatoes',
+      sizeNote: '15 oz needed',
     },
   },
   {
@@ -2051,6 +2109,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'can (6 oz)',
       category: 'canned-tomatoes',
+      sizeNote: '6 oz needed',
     },
   },
   {
@@ -2062,9 +2121,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'cashew powder',
-      qty: 3,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'snacks',
+      sizeNote: '3 tbsp needed',
     },
   },
   {
@@ -2078,8 +2138,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'chickpeas',
       qty: 2,
-      unit: 'cans (15-ounce)',
+      unit: 'cans (15 oz)',
       category: 'canned-beans',
+      sizeNote: '30 oz needed',
     },
   },
   {
@@ -2091,9 +2152,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'maple syrup',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (12 fl oz)',
       category: 'condiments',
+      sizeNote: '1/8 cup needed',
     },
   },
   {
@@ -2133,9 +2195,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'panko',
-      qty: 8,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'box (8 oz)',
       category: 'pasta-grains',
+      sizeNote: '1 oz needed',
     },
   },
   {
@@ -2148,9 +2211,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'soy sauce',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (15 fl oz)',
       category: 'condiments',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -2192,10 +2256,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'all-purpose flour',
-      qty: 1.5,
-      unit: 'cups',
+      qty: 1,
+      unit: 'bag (5 lb)',
       category: 'baking',
       staple: 'in-pantry',
+      sizeNote: '1 1/2 cups needed',
     },
   },
   {
@@ -2207,10 +2272,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'baking soda',
-      qty: 0.25,
-      unit: 'teaspoon',
+      qty: 1,
+      unit: 'box (16 oz)',
       category: 'baking',
       staple: 'in-pantry',
+      sizeNote: '1/4 tsp needed',
     },
   },
   {
@@ -2225,7 +2291,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'half-pint (8 oz)',
       category: 'milk-cream',
-      sizeNote: '4 oz needed',
+      sizeNote: '1/2 cup needed',
     },
   },
   {
@@ -2250,7 +2316,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'lemon zest',
-      qty: 0.67,
+      qty: 1,
       unit: 'lemon',
       category: 'fresh-produce',
     },
@@ -2264,9 +2330,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'shortbread cookie',
-      qty: 1.13,
-      unit: 'cups',
+      qty: null,
+      unit: '',
       category: 'bakery',
+      sizeNote: '9 oz needed',
     },
   },
   {
@@ -2279,9 +2346,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'granulated sugar',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bag (4 lb)',
       category: 'baking',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -2294,8 +2362,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'sweetened condensed milk',
       qty: 1,
-      unit: 'can (14-ounce)',
+      unit: 'can (14 oz)',
       category: 'milk-cream',
+      sizeNote: '14 oz needed',
     },
   },
   {
@@ -2322,9 +2391,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'brown sugar',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bag (2 lb)',
       category: 'baking',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -2338,9 +2408,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'optional',
     expectedItem: {
       item: 'lemon extract',
-      qty: 0.5,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '1/2 tsp needed',
     },
   },
   {
@@ -2352,9 +2423,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'cake flour',
-      qty: 2.5,
-      unit: 'cups',
+      qty: 1,
+      unit: 'box (32 oz)',
       category: 'baking',
+      sizeNote: '2 1/2 cups needed',
     },
   },
   {
@@ -2369,7 +2441,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'cream cheese',
       qty: 1,
-      unit: '8-oz package',
+      unit: 'package (8 oz)',
       category: 'butter-cheese',
       sizeNote: '8 oz needed',
     },
@@ -2384,9 +2456,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: "confectioners' sugar",
-      qty: 4,
-      unit: 'cups',
+      qty: 1,
+      unit: 'bag (2 lb)',
       category: 'baking',
+      sizeNote: '4 cups needed',
     },
   },
   {
@@ -2399,9 +2472,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'raspberry preserve',
-      qty: 8,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '1/2 cup needed',
     },
   },
   {
@@ -2443,9 +2517,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'fresh thyme',
-      qty: 1,
-      unit: 'tablespoon',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
@@ -2473,9 +2548,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'bread-and-butter pickle',
-      qty: 10.66,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'condiments',
+      sizeNote: '2/3 cup needed',
     },
   },
   {
@@ -2487,9 +2563,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'mayonnaise',
-      qty: 12,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'jar (30 fl oz)',
       category: 'condiments',
+      sizeNote: '3/4 cup needed',
     },
   },
   {
@@ -2503,9 +2580,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Italian parsley',
-      qty: 5.33,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '1/3 cup needed',
     },
   },
   {
@@ -2519,9 +2597,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'dill',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -2533,9 +2612,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Dijon mustard',
-      qty: 1.34,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'condiments',
+      sizeNote: '1 1/3 tbsp needed',
     },
   },
   {
@@ -2592,9 +2672,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'miso',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'tub (17.6 oz)',
       category: 'condiments',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -2606,9 +2687,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'rice wine vinegar',
-      qty: 1.34,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (12 fl oz)',
       category: 'oils-vinegars',
+      sizeNote: '1/8 cup needed',
     },
   },
   {
@@ -2620,10 +2702,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'red pepper flakes',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -2637,8 +2720,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'beef broth',
       qty: 1,
-      unit: 'cup',
+      unit: 'pint (16 fl oz)',
       category: 'canned-other',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -2681,9 +2765,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'cherry tomato',
-      qty: 2,
-      unit: 'cups',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '2 cups needed',
     },
   },
   {
@@ -2697,7 +2782,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'feta cheese',
       qty: 1,
-      unit: '8-oz package',
+      unit: 'package (8 oz)',
       category: 'butter-cheese',
       sizeNote: '4 oz needed',
     },
@@ -2712,7 +2797,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'red onion',
-      qty: 0.34,
+      qty: 1,
       unit: 'red onion',
       category: 'fresh-produce',
     },
@@ -2728,9 +2813,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Kalamata olive',
-      qty: 8,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'condiments',
+      sizeNote: '1/2 cup needed',
     },
   },
   {
@@ -2743,9 +2829,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'basil leaf',
-      qty: 1,
-      unit: 'cup',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -2770,9 +2857,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'red wine vinegar',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (16 fl oz)',
       category: 'oils-vinegars',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -2785,10 +2873,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'oregano',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
@@ -2801,9 +2890,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Greek yogurt',
-      qty: 5.33,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'milk-cream',
+      sizeNote: '1/3 cup needed',
     },
   },
   {
@@ -2816,9 +2906,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'almond milk',
-      qty: 10.66,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'half-gallon (64 fl oz)',
       category: 'milk-cream',
+      sizeNote: '2/3 cup needed',
     },
   },
   {
@@ -2830,9 +2921,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'chia seed',
-      qty: 1.5,
-      unit: 'teaspoons',
+      qty: null,
+      unit: '',
       category: 'baking',
+      sizeNote: '1/2 tbsp needed',
     },
   },
   {
@@ -2844,9 +2936,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'rolled oat',
-      qty: 8,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'tub (42 oz)',
       category: 'pasta-grains',
+      sizeNote: '1/2 cup needed',
     },
   },
   {
@@ -2858,9 +2951,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Pillsbury crescent roll',
-      qty: 1,
-      unit: 'can',
+      qty: null,
+      unit: '',
       category: 'bakery',
+      sizeNote: '8 oz needed',
     },
   },
   {
@@ -2873,8 +2967,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'cocktail wiener',
       qty: 1,
-      unit: 'package',
+      unit: 'package (14 oz)',
       category: 'meat',
+      sizeNote: '14 oz needed',
     },
   },
   {
@@ -2927,10 +3022,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'smoked paprika',
-      qty: 2,
-      unit: 'teaspoons',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '2 tsp needed',
     },
   },
   {
@@ -2956,9 +3052,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'salsa verde',
-      qty: 2,
-      unit: 'cups',
+      qty: null,
+      unit: '',
       category: 'condiments',
+      sizeNote: '2 cups needed',
     },
   },
   {
@@ -2974,7 +3071,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 3,
       unit: 'pints (16 fl oz)',
       category: 'canned-other',
-      sizeNote: '48 oz needed',
+      sizeNote: '6 cups needed',
     },
   },
   {
@@ -2990,7 +3087,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'can (15 oz)',
       category: 'canned-beans',
-      sizeNote: '1 can (14 oz) needed',
+      sizeNote: '14 oz needed',
     },
   },
   {
@@ -3003,9 +3100,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'rice',
-      qty: 3,
-      unit: 'cups',
+      qty: 1,
+      unit: 'bag (2 lb)',
       category: 'pasta-grains',
+      sizeNote: '3 cups needed',
     },
   },
   {
@@ -3086,9 +3184,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'tequila',
-      qty: 1.5,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'beverages',
+      sizeNote: '1 1/2 tbsp needed',
     },
   },
   {
@@ -3114,9 +3213,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'oyster sauce',
-      qty: 4,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'condiments',
+      sizeNote: '1/4 cup needed',
     },
   },
   {
@@ -3128,10 +3228,11 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'canola oil',
-      qty: 3,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (48 fl oz)',
       category: 'oils-vinegars',
       staple: 'in-pantry',
+      sizeNote: '0.19 cup needed',
     },
   },
   {
@@ -3145,9 +3246,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'snow peas or sugar snap peas',
-      qty: 8,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '4 oz needed',
     },
   },
   {
@@ -3159,9 +3261,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'sesame oil',
-      qty: 2,
-      unit: 'teaspoons',
+      qty: 1,
+      unit: 'bottle (5 fl oz)',
       category: 'oils-vinegars',
+      sizeNote: '2/3 tbsp needed',
     },
   },
   {
@@ -3188,9 +3291,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'bacon',
-      qty: 2,
-      unit: 'strips',
+      qty: 1,
+      unit: 'package (16 oz)',
       category: 'meat',
+      sizeNote: '2 oz needed',
     },
   },
   {
@@ -3290,8 +3394,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'half and half',
       qty: 1,
-      unit: 'cup',
+      unit: 'pint (16 fl oz)',
       category: 'milk-cream',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -3376,9 +3481,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'kale',
       qty: 1,
-      unit: '5-oz package',
+      unit: 'package (5 oz)',
       category: 'fresh-produce',
-      sizeNote: '1 cup needed',
+      sizeNote: '1 oz needed',
     },
   },
   {
@@ -3404,9 +3509,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'frozen corn',
-      qty: 1,
-      unit: 'cup',
+      qty: null,
+      unit: '',
       category: 'frozen',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -3421,6 +3527,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'can (15 oz)',
       category: 'canned-beans',
+      sizeNote: '15 oz needed',
     },
   },
   {
@@ -3434,9 +3541,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'green enchilada sauce',
       qty: 2,
-      unit: '10-oz cans',
+      unit: 'cans (10 oz)',
       category: 'condiments',
-      sizeNote: '1 1/2 cups needed',
+      sizeNote: '12 oz needed',
     },
   },
   {
@@ -3450,7 +3557,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'package of 24',
       category: 'bakery',
-      sizeNote: '12 tortillas needed',
+      sizeNote: '12 needed',
     },
   },
   {
@@ -3477,8 +3584,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'vegan cream cheese',
       qty: 1,
-      unit: '8-oz package',
+      unit: 'package (8 oz)',
       category: 'butter-cheese',
+      sizeNote: '8 oz needed',
     },
   },
   {
@@ -3493,6 +3601,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: 'half-pint (8 oz)',
       category: 'butter-cheese',
+      sizeNote: '1 cup needed',
     },
   },
   {
@@ -3546,7 +3655,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'ricotta',
-      qty: 0.5,
+      qty: 1,
       unit: 'half-pint (8 oz)',
       category: 'butter-cheese',
       sizeNote: '1/2 cup needed',
@@ -3562,9 +3671,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'bread crumbs',
-      qty: 0.5,
-      unit: 'cups',
+      qty: 1,
+      unit: 'box (8 oz)',
       category: 'pasta-grains',
+      sizeNote: '1 oz needed',
     },
   },
   {
@@ -3591,9 +3701,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'walnut',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -3606,9 +3717,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'pistachio',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -3635,9 +3747,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'quinoa',
-      qty: 1.5,
-      unit: 'cups',
+      qty: 1,
+      unit: 'bag (16 oz)',
       category: 'pasta-grains',
+      sizeNote: '1 1/2 cups needed',
     },
   },
   {
@@ -3649,9 +3762,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'fish sauce',
-      qty: 2,
-      unit: 'tablespoons',
+      qty: 1,
+      unit: 'bottle (7 fl oz)',
       category: 'condiments',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -3664,9 +3778,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'cremini mushroom',
-      qty: 8,
-      unit: 'ounces',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '8 oz needed',
     },
   },
   {
@@ -3706,8 +3821,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'white vinegar',
       qty: 1,
-      unit: 'tablespoon',
+      unit: 'bottle (32 fl oz)',
       category: 'oils-vinegars',
+      sizeNote: '0.06 cup needed',
     },
   },
   {
@@ -3732,9 +3848,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'taco seasoning',
-      qty: 2,
-      unit: 'tablespoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
+      sizeNote: '2 tbsp needed',
     },
   },
   {
@@ -3773,9 +3890,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'butternut squash',
-      qty: 3,
-      unit: 'cups',
+      qty: null,
+      unit: '',
       category: 'fresh-produce',
+      sizeNote: '3 cups needed',
     },
   },
   {
@@ -3788,8 +3906,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'gruyere cheese',
       qty: 1,
-      unit: 'cup',
+      unit: 'package (8 oz)',
       category: 'butter-cheese',
+      sizeNote: '4 oz needed',
     },
   },
   {
@@ -3802,8 +3921,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'swiss cheese',
       qty: 1,
-      unit: 'cup',
+      unit: 'package (8 oz)',
       category: 'butter-cheese',
+      sizeNote: '4 oz needed',
     },
   },
   {
@@ -3817,7 +3937,6 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       qty: 1,
       unit: '',
       category: 'fresh-produce',
-      sizeNote: '1 needed',
     },
   },
   {
@@ -3831,8 +3950,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'kidney bean',
       qty: 1,
-      unit: 'can (15-ounce)',
+      unit: 'can (15 oz)',
       category: 'canned-beans',
+      sizeNote: '15 oz needed',
     },
   },
   {
@@ -3845,8 +3965,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedItem: {
       item: 'crushed tomato',
       qty: 1,
-      unit: 'can (28-ounce)',
+      unit: 'can (28 oz)',
       category: 'canned-tomatoes',
+      sizeNote: '28 oz needed',
     },
   },
   {
@@ -3915,44 +4036,61 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'staple',
     expectedItem: {
       item: 'cayenne',
-      qty: 1,
-      unit: 'teaspoon',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
-    input: { item: 'minced garlic', qty: 1, unit: 'tbsp' },
-    expectedList: 'buy',
-    expectedItem: {
+    input: {
       item: 'minced garlic',
       qty: 1,
       unit: 'tbsp',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'minced garlic',
+      qty: null,
+      unit: '',
       category: 'canned-other',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
-    input: { item: 'beef broth', qty: 1, unit: 'cup' },
+    input: {
+      item: 'beef broth',
+      qty: 1,
+      unit: 'cup',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'beef broth',
       qty: 1,
-      unit: 'cup',
+      unit: 'pint (16 fl oz)',
       category: 'canned-other',
+      sizeNote: '1 cup needed',
     },
   },
   {
-    input: { item: 'white onion', qty: 1 },
+    input: {
+      item: 'white onion',
+      qty: 1,
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'white onion',
       qty: 1,
-      unit: 'white onion',
+      unit: '',
       category: 'fresh-produce',
     },
   },
   {
-    input: { item: 'yellow bell pepper', qty: 1 },
+    input: {
+      item: 'yellow bell pepper',
+      qty: 1,
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'yellow bell pepper',
@@ -3962,47 +4100,71 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
   },
   {
-    input: { item: 'fresh thyme', qty: 1, unit: 'tbsp' },
-    expectedList: 'buy',
-    expectedItem: {
+    input: {
       item: 'fresh thyme',
       qty: 1,
       unit: 'tbsp',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'fresh thyme',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
-    input: { item: 'dried sage', qty: 1, unit: 'tsp' },
-    expectedList: 'staple',
-    expectedItem: {
+    input: {
       item: 'dried sage',
       qty: 1,
       unit: 'tsp',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'dried sage',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
+      sizeNote: '1 tsp needed',
     },
   },
   {
-    input: { item: 'bread flour', qty: 1, unit: 'cup' },
+    input: {
+      item: 'bread flour',
+      qty: 1,
+      unit: 'cup',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'bread flour',
       qty: 1,
-      unit: 'cup',
+      unit: 'bag (5 lb)',
       category: 'baking',
+      sizeNote: '1 cup needed',
     },
   },
   {
-    input: { item: 'cornstarch', qty: 1, unit: 'tbsp' },
+    input: {
+      item: 'cornstarch',
+      qty: 1,
+      unit: 'tbsp',
+    },
     expectedList: 'staple',
     expectedItem: {
       item: 'cornstarch',
       qty: 1,
-      unit: 'tbsp',
+      unit: 'box (16 oz)',
       category: 'baking',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
-    input: { item: 'yeast', qty: 1, unit: 'package' },
+    input: {
+      item: 'yeast',
+      qty: 1,
+      unit: 'package',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'yeast',
@@ -4012,67 +4174,101 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
   },
   {
-    input: { item: 'dried thyme', qty: 1, unit: 'tsp' },
-    expectedList: 'staple',
-    expectedItem: {
+    input: {
       item: 'dried thyme',
       qty: 1,
       unit: 'tsp',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'dried thyme',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
+      sizeNote: '1 tsp needed',
     },
   },
   {
-    input: { item: 'mozzarella', qty: 1, unit: 'cup' },
+    input: {
+      item: 'mozzarella',
+      qty: 1,
+      unit: 'cup',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'mozzarella',
       qty: 1,
-      unit: 'cup',
+      unit: 'package (8 oz)',
       category: 'butter-cheese',
+      sizeNote: '1 cup needed',
     },
   },
   {
-    input: { item: 'apple cider vinegar', qty: 1, unit: 'tbsp' },
+    input: {
+      item: 'apple cider vinegar',
+      qty: 1,
+      unit: 'tbsp',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'apple cider vinegar',
       qty: 1,
-      unit: 'tbsp',
+      unit: 'bottle (16 fl oz)',
       category: 'oils-vinegars',
+      sizeNote: '0.06 cup needed',
     },
   },
   {
-    input: { item: 'balsamic vinegar', qty: 1, unit: 'tbsp' },
+    input: {
+      item: 'balsamic vinegar',
+      qty: 1,
+      unit: 'tbsp',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'balsamic vinegar',
       qty: 1,
-      unit: 'tbsp',
+      unit: 'bottle (16.9 fl oz)',
       category: 'oils-vinegars',
+      sizeNote: '0.06 cup needed',
     },
   },
   {
-    input: { item: 'fresh oregano', qty: 1, unit: 'tbsp' },
-    expectedList: 'buy',
-    expectedItem: {
+    input: {
       item: 'fresh oregano',
       qty: 1,
       unit: 'tbsp',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'fresh oregano',
+      qty: null,
+      unit: '',
       category: 'fresh-herbs',
+      sizeNote: '1 tbsp needed',
     },
   },
   {
-    input: { item: 'dried basil', qty: 1, unit: 'tsp' },
-    expectedList: 'staple',
-    expectedItem: {
+    input: {
       item: 'dried basil',
       qty: 1,
       unit: 'tsp',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'dried basil',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
+      sizeNote: '1 tsp needed',
     },
   },
   {
-    input: { item: 'fresh basil', qty: 1, unit: 'bunch' },
+    input: {
+      item: 'fresh basil',
+      qty: 1,
+      unit: 'bunch',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'fresh basil',
@@ -4082,76 +4278,111 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     },
   },
   {
-    input: { item: 'hot dog', qty: 1, unit: 'package' },
+    input: {
+      item: 'hot dog',
+      qty: 1,
+      unit: 'package',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'hot dog',
       qty: 1,
-      unit: 'package',
+      unit: 'package (8 hot dogs)',
       category: 'meat',
+      sizeNote: '8 hot dog needed',
     },
   },
   {
-    input: { item: 'cocktail wiener', qty: 1, unit: 'package' },
+    input: {
+      item: 'cocktail wiener',
+      qty: 1,
+      unit: 'package',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'cocktail wiener',
       qty: 1,
-      unit: 'package',
+      unit: 'package (14 oz)',
       category: 'meat',
+      sizeNote: '14 oz needed',
     },
   },
   {
-    input: { item: 'cannellini beans', qty: 1, unit: 'can' },
+    input: {
+      item: 'cannellini beans',
+      qty: 1,
+      unit: 'can',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'cannellini beans',
       qty: 1,
       unit: 'can (15 oz)',
       category: 'canned-beans',
+      sizeNote: '15 oz needed',
     },
   },
   {
-    input: { item: 'pinto beans', qty: 1, unit: 'can' },
+    input: {
+      item: 'pinto beans',
+      qty: 1,
+      unit: 'can',
+    },
     expectedList: 'buy',
     expectedItem: {
       item: 'pinto beans',
       qty: 1,
       unit: 'can (15 oz)',
       category: 'canned-beans',
+      sizeNote: '15 oz needed',
     },
   },
   {
-    input: { item: 'turmeric', qty: 1, unit: 'tsp' },
-    expectedList: 'staple',
-    expectedItem: {
+    input: {
       item: 'turmeric',
       qty: 1,
       unit: 'tsp',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'turmeric',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
-    input: { item: 'cardamom', qty: 1, unit: 'tsp' },
-    expectedList: 'staple',
-    expectedItem: {
+    input: {
       item: 'cardamom',
       qty: 1,
       unit: 'tsp',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'cardamom',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
   {
-    input: { item: 'cloves', qty: 1, unit: 'tsp' },
-    expectedList: 'staple',
-    expectedItem: {
+    input: {
       item: 'cloves',
       qty: 1,
       unit: 'tsp',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'cloves',
+      qty: null,
+      unit: '',
       category: 'spices-seasonings',
       staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
     },
   },
 ];

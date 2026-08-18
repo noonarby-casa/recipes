@@ -8,9 +8,10 @@ const mockGnocchiLayout: StoreLayout = {
   name: 'Test Layout',
   sections: [],
   itemSizes: {
-    'potato gnocchi': [[1, '17.5-oz package']],
-    'roasted red pepper': [[1, '8-oz jar']],
-    'baby spinach': [[1, '8 oz bag']],
+    'potato gnocchi': [[1, 'package (17.5 oz)']],
+    'roasted red pepper': [[1, 'jar (8 oz)']],
+    'baby spinach': [[1, 'bag (8 oz)']],
+    chorizo: [[1, 'package (12 oz)']],
   },
 };
 
@@ -40,24 +41,25 @@ describe('processShoppingList', () => {
     expect(result.buyItems[0].unit).toBe('cartons (18 eggs)');
   });
 
-  test('processes heavy cream into 1 pint (16 oz)', () => {
+  test('processes heavy cream into 1 pint (16 fl oz)', () => {
     const ingredients: IngredientInput[] = [
       { item: 'heavy cream', qty: 1.5, unit: 'cup' },
     ];
     const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
     expect(result.buyItems).toHaveLength(1);
     expect(result.buyItems[0].qty).toBe(1);
-    expect(result.buyItems[0].unit).toBe('pint (16 oz)');
+    expect(result.buyItems[0].unit).toBe('pint (16 fl oz)');
   });
 
   test('handles volume units with no package size by moving them to notes', () => {
     const ingredients: IngredientInput[] = [
-      { item: 'soy sauce', qty: 2, unit: 'tablespoon' },
-      { item: 'soy sauce', qty: 2, unit: 'tablespoon' },
+      { item: 'lemon extract', qty: 2, unit: 'tablespoon' },
+      { item: 'lemon extract', qty: 2, unit: 'tablespoon' },
     ];
 
     const result = processShoppingList(ingredients);
     expect(result.buyItems).toHaveLength(1);
+    expect(result.buyItems[0].item).toBe('lemon extract');
     expect(result.buyItems[0].qty).toBeNull();
     expect(result.buyItems[0].unit).toBe('');
     expect(result.buyItems[0].note?.sizeNote).toBe('4 tbsp needed');
@@ -132,25 +134,25 @@ describe('processShoppingList', () => {
 
     const result = processShoppingList(ingredients, mockGnocchiLayout);
 
-    // 1. Potato gnocchi -> 1 17.5-oz package (with sizeNote "16 oz needed")
+    // 1. Potato gnocchi -> 1 package (17.5 oz) (with sizeNote "16 oz needed")
     const gnocchi = result.buyItems.find((i) => i.item === 'potato gnocchi');
     expect(gnocchi).toBeDefined();
     expect(gnocchi?.qty).toBe(1);
-    expect(gnocchi?.unit).toBe('17.5-oz package');
+    expect(gnocchi?.unit).toBe('package (17.5 oz)');
     expect(gnocchi?.note?.sizeNote).toBe('16 oz needed');
 
-    // 2. Chorizo -> 0.5 pound (stays by weight)
+    // 2. Chorizo -> 1 package (12 oz) (with sizeNote "8 oz needed")
     const chorizo = result.buyItems.find((i) => i.item === 'chorizo');
     expect(chorizo).toBeDefined();
-    expect(chorizo?.qty).toBe(0.5);
-    expect(chorizo?.unit).toBe('pound');
-    expect(chorizo?.note?.sizeNote).toBeUndefined();
+    expect(chorizo?.qty).toBe(1);
+    expect(chorizo?.unit).toBe('package (12 oz)');
+    expect(chorizo?.note?.sizeNote).toBe('8 oz needed');
 
-    // 3. Jarred roasted red pepper -> 1 8-oz jar (with sizeNote "6 oz needed")
+    // 3. Jarred roasted red pepper -> 1 jar (8 oz) (with sizeNote "6 oz needed")
     const pepper = result.buyItems.find((i) => i.item === 'roasted red pepper');
     expect(pepper).toBeDefined();
     expect(pepper?.qty).toBe(1);
-    expect(pepper?.unit).toBe('8-oz jar');
+    expect(pepper?.unit).toBe('jar (8 oz)');
     expect(pepper?.note?.sizeNote).toBe('6 oz needed');
 
     // 4. Onion -> 1 yellow onion (not 1 cup onion)
@@ -166,11 +168,11 @@ describe('processShoppingList', () => {
     );
     expect(salt).toBeDefined();
 
-    // 6. Baby spinach -> 1 8 oz bag (with sizeNote "3 oz needed")
+    // 6. Baby spinach -> 1 bag (8 oz) (with sizeNote "3 oz needed")
     const spinach = result.buyItems.find((i) => i.item === 'baby spinach');
     expect(spinach).toBeDefined();
     expect(spinach?.qty).toBe(1);
-    expect(spinach?.unit).toBe('8 oz bag');
+    expect(spinach?.unit).toBe('bag (8 oz)');
     expect(spinach?.note?.sizeNote).toBe('3 oz needed');
   });
 

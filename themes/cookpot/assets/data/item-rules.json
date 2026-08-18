@@ -333,6 +333,14 @@
       "quart (32 oz)": {
         "base": "cup",
         "factor": 4
+      },
+      "half-gallon (64 fl oz)": {
+        "base": "cup",
+        "factor": 8
+      },
+      "half-gallon": {
+        "base": "cup",
+        "factor": 8
       }
     }
   },
@@ -537,7 +545,21 @@
   {
     "canonicalName": "panko",
     "category": "pasta-grains",
-    "items": ["panko", "bread crumbs", "breadcrumbs", "bread crumb"]
+    "items": ["panko", "bread crumbs", "breadcrumbs", "bread crumb"],
+    "unitEquivalences": {
+      "box (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "box": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 2
+      }
+    }
   },
   {
     "canonicalName": "pasta",
@@ -587,12 +609,30 @@
       }
     ],
     "unitEquivalences": {
-      "can (14 oz)": { "base": "ounce", "factor": 14 },
-      "can (15 oz)": { "base": "ounce", "factor": 15 },
-      "can (400 g)": { "base": "ounce", "factor": 14.1 },
-      "can": { "base": "ounce", "factor": 15 },
-      "pound": { "base": "ounce", "factor": 16 },
-      "lb": { "base": "ounce", "factor": 16 }
+      "can (14 oz)": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "can (15 oz)": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "can (400 g)": {
+        "base": "ounce",
+        "factor": 14.1
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      }
     }
   },
   {
@@ -606,12 +646,30 @@
       }
     ],
     "unitEquivalences": {
-      "can (14 oz)": { "base": "ounce", "factor": 14 },
-      "can (15 oz)": { "base": "ounce", "factor": 15 },
-      "can (400 g)": { "base": "ounce", "factor": 14.1 },
-      "can": { "base": "ounce", "factor": 15 },
-      "pound": { "base": "ounce", "factor": 16 },
-      "lb": { "base": "ounce", "factor": 16 }
+      "can (14 oz)": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "can (15 oz)": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "can (400 g)": {
+        "base": "ounce",
+        "factor": 14.1
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      }
     }
   },
   {
@@ -625,12 +683,30 @@
       }
     ],
     "unitEquivalences": {
-      "can (14 oz)": { "base": "ounce", "factor": 14 },
-      "can (15 oz)": { "base": "ounce", "factor": 15 },
-      "can (400 g)": { "base": "ounce", "factor": 14.1 },
-      "can": { "base": "ounce", "factor": 15 },
-      "pound": { "base": "ounce", "factor": 16 },
-      "lb": { "base": "ounce", "factor": 16 }
+      "can (14 oz)": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "can (15 oz)": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "can (400 g)": {
+        "base": "ounce",
+        "factor": 14.1
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      }
     }
   },
   {
@@ -645,12 +721,30 @@
       }
     ],
     "unitEquivalences": {
-      "can (14 oz)": { "base": "ounce", "factor": 14 },
-      "can (15 oz)": { "base": "ounce", "factor": 15 },
-      "can (400 g)": { "base": "ounce", "factor": 14.1 },
-      "can": { "base": "ounce", "factor": 15 },
-      "pound": { "base": "ounce", "factor": 16 },
-      "lb": { "base": "ounce", "factor": 16 }
+      "can (14 oz)": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "can (15 oz)": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "can (400 g)": {
+        "base": "ounce",
+        "factor": 14.1
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      }
     }
   },
   {
@@ -664,12 +758,30 @@
       }
     ],
     "unitEquivalences": {
-      "can (14 oz)": { "base": "ounce", "factor": 14 },
-      "can (15 oz)": { "base": "ounce", "factor": 15 },
-      "can (400 g)": { "base": "ounce", "factor": 14.1 },
-      "can": { "base": "ounce", "factor": 15 },
-      "pound": { "base": "ounce", "factor": 16 },
-      "lb": { "base": "ounce", "factor": 16 }
+      "can (14 oz)": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "can (15 oz)": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "can (400 g)": {
+        "base": "ounce",
+        "factor": 14.1
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      }
     }
   },
   {
@@ -683,12 +795,30 @@
       }
     ],
     "unitEquivalences": {
-      "can (14 oz)": { "base": "ounce", "factor": 14 },
-      "can (15 oz)": { "base": "ounce", "factor": 15 },
-      "can (400 g)": { "base": "ounce", "factor": 14.1 },
-      "can": { "base": "ounce", "factor": 15 },
-      "pound": { "base": "ounce", "factor": 16 },
-      "lb": { "base": "ounce", "factor": 16 }
+      "can (14 oz)": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "can (15 oz)": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "can (400 g)": {
+        "base": "ounce",
+        "factor": 14.1
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 15
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      }
     }
   },
   {
@@ -814,6 +944,10 @@
       "lb": {
         "base": "ounce",
         "factor": 16
+      },
+      "jar (8 oz)": {
+        "base": "ounce",
+        "factor": 8
       }
     }
   },
@@ -835,6 +969,14 @@
         "factor": 16
       },
       "lb": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "package (17.5 oz)": {
+        "base": "ounce",
+        "factor": 17.5
+      },
+      "lbs": {
         "base": "ounce",
         "factor": 16
       }
@@ -864,6 +1006,10 @@
       "lb": {
         "base": "ounce",
         "factor": 16
+      },
+      "bag (8 oz)": {
+        "base": "ounce",
+        "factor": 8
       }
     }
   },
@@ -879,6 +1025,22 @@
       "package": {
         "base": "ounce",
         "factor": 8
+      },
+      "package (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "tablespoon": {
+        "base": "ounce",
+        "factor": 0.5
+      },
+      "tbsp": {
+        "base": "ounce",
+        "factor": 0.5
       }
     }
   },
@@ -894,6 +1056,14 @@
       "package": {
         "base": "ounce",
         "factor": 8
+      },
+      "package (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 5.3
       }
     }
   },
@@ -923,6 +1093,10 @@
       "tablespoon": {
         "base": "ounce",
         "factor": 0.375
+      },
+      "bag (12 oz)": {
+        "base": "ounce",
+        "factor": 12
       }
     }
   },
@@ -975,6 +1149,14 @@
       "cup": {
         "base": "ounce",
         "factor": 8
+      },
+      "can (10 oz)": {
+        "base": "ounce",
+        "factor": 10
+      },
+      "can (28 oz)": {
+        "base": "ounce",
+        "factor": 28
       }
     }
   },
@@ -993,7 +1175,11 @@
       },
       "cup": {
         "base": "ounce",
-        "factor": 2
+        "factor": 1
+      },
+      "package (5 oz)": {
+        "base": "ounce",
+        "factor": 5
       }
     }
   },
@@ -1007,6 +1193,10 @@
       "parmigiano-reggiano"
     ],
     "unitEquivalences": {
+      "wedge (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
       "wedge": {
         "base": "ounce",
         "factor": 8
@@ -1092,12 +1282,68 @@
   {
     "canonicalName": "bacon",
     "category": "meat",
-    "items": ["bacon"]
+    "items": ["bacon"],
+    "unitEquivalences": {
+      "package (16 oz)": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "package": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "slice": {
+        "base": "ounce",
+        "factor": 1
+      },
+      "strip": {
+        "base": "ounce",
+        "factor": 1
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lbs": {
+        "base": "ounce",
+        "factor": 16
+      }
+    }
   },
   {
     "canonicalName": "Italian sausage",
     "category": "meat",
-    "items": ["Italian sausage", "sausage", "mild sausage", "hot sausage"]
+    "items": ["Italian sausage", "sausage", "mild sausage", "hot sausage"],
+    "unitEquivalences": {
+      "package (19 oz)": {
+        "base": "link",
+        "factor": 5
+      },
+      "package": {
+        "base": "link",
+        "factor": 5
+      },
+      "link": {
+        "base": "ounce",
+        "factor": 3.8
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lbs": {
+        "base": "ounce",
+        "factor": 16
+      }
+    }
   },
   {
     "canonicalName": "hot dog",
@@ -1109,7 +1355,21 @@
       "frankfurters",
       "wiener",
       "wieners"
-    ]
+    ],
+    "unitEquivalences": {
+      "package (8 hot dogs)": {
+        "base": "hot dog",
+        "factor": 8
+      },
+      "package (16 oz)": {
+        "base": "hot dog",
+        "factor": 8
+      },
+      "package": {
+        "base": "hot dog",
+        "factor": 8
+      }
+    }
   },
   {
     "canonicalName": "cocktail wiener",
@@ -1126,17 +1386,79 @@
           "little smokies"
         ]
       }
-    ]
+    ],
+    "unitEquivalences": {
+      "package (14 oz)": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "package": {
+        "base": "ounce",
+        "factor": 14
+      }
+    }
   },
   {
     "canonicalName": "breakfast sausage",
     "category": "meat",
-    "items": ["breakfast sausage", "sausage"]
+    "items": ["breakfast sausage", "sausage"],
+    "unitEquivalences": {
+      "package (12 oz)": {
+        "base": "link",
+        "factor": 8
+      },
+      "package": {
+        "base": "link",
+        "factor": 8
+      },
+      "link": {
+        "base": "ounce",
+        "factor": 1.5
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lbs": {
+        "base": "ounce",
+        "factor": 16
+      }
+    }
   },
   {
     "canonicalName": "chorizo",
     "category": "meat",
-    "items": ["chorizo"]
+    "items": ["chorizo"],
+    "unitEquivalences": {
+      "package (12 oz)": {
+        "base": "ounce",
+        "factor": 12
+      },
+      "package": {
+        "base": "ounce",
+        "factor": 12
+      },
+      "link": {
+        "base": "ounce",
+        "factor": 3
+      },
+      "pound": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lb": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "lbs": {
+        "base": "ounce",
+        "factor": 16
+      }
+    }
   },
   {
     "canonicalName": "Pillsbury crescent rolls",
@@ -1146,7 +1468,17 @@
       "Pillsbury crescent roll",
       "crescent roll",
       "crescent rolls"
-    ]
+    ],
+    "unitEquivalences": {
+      "can (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 8
+      }
+    }
   },
   {
     "canonicalName": "dumplings",
@@ -1172,12 +1504,32 @@
   {
     "canonicalName": "sriracha",
     "category": "condiments",
-    "items": ["sriracha", "sriracha sauce", "sriracha hot chili sauce"]
+    "items": ["sriracha", "sriracha sauce", "sriracha hot chili sauce"],
+    "unitEquivalences": {
+      "bottle (17 oz)": {
+        "base": "tablespoon",
+        "factor": 32
+      },
+      "bottle": {
+        "base": "tablespoon",
+        "factor": 32
+      }
+    }
   },
   {
     "canonicalName": "honey",
     "category": "condiments",
-    "items": ["honey"]
+    "items": ["honey"],
+    "unitEquivalences": {
+      "bottle (12 oz)": {
+        "base": "tablespoon",
+        "factor": 16
+      },
+      "bottle": {
+        "base": "tablespoon",
+        "factor": 16
+      }
+    }
   },
   {
     "canonicalName": "hot chili sauce",
@@ -1187,12 +1539,32 @@
   {
     "canonicalName": "soy sauce",
     "category": "condiments",
-    "items": ["soy sauce", "regular soy sauce"]
+    "items": ["soy sauce", "regular soy sauce"],
+    "unitEquivalences": {
+      "bottle (15 fl oz)": {
+        "base": "tablespoon",
+        "factor": 30
+      },
+      "bottle": {
+        "base": "tablespoon",
+        "factor": 30
+      }
+    }
   },
   {
     "canonicalName": "tamari",
     "category": "condiments",
-    "items": ["tamari"]
+    "items": ["tamari"],
+    "unitEquivalences": {
+      "bottle (10 fl oz)": {
+        "base": "tablespoon",
+        "factor": 20
+      },
+      "bottle": {
+        "base": "tablespoon",
+        "factor": 20
+      }
+    }
   },
   {
     "canonicalName": "coconut amino",
@@ -1208,12 +1580,32 @@
   {
     "canonicalName": "red curry paste",
     "category": "condiments",
-    "items": ["red curry paste", "Thai red curry paste"]
+    "items": ["red curry paste", "Thai red curry paste"],
+    "unitEquivalences": {
+      "jar (4 oz)": {
+        "base": "tablespoon",
+        "factor": 8
+      },
+      "jar": {
+        "base": "tablespoon",
+        "factor": 8
+      }
+    }
   },
   {
     "canonicalName": "spicy mayonnaise",
     "category": "condiments",
-    "items": ["spicy mayonnaise"]
+    "items": ["spicy mayonnaise"],
+    "unitEquivalences": {
+      "bottle (12 oz)": {
+        "base": "tablespoon",
+        "factor": 24
+      },
+      "bottle": {
+        "base": "tablespoon",
+        "factor": 24
+      }
+    }
   },
   {
     "canonicalName": "raspberry preserves",
@@ -1233,17 +1625,47 @@
   {
     "canonicalName": "Dijon mustard",
     "category": "condiments",
-    "items": ["Dijon mustard"]
+    "items": ["Dijon mustard"],
+    "unitEquivalences": {
+      "jar (8 oz)": {
+        "base": "tablespoon",
+        "factor": 16
+      },
+      "jar": {
+        "base": "tablespoon",
+        "factor": 16
+      }
+    }
   },
   {
     "canonicalName": "miso",
     "category": "condiments",
-    "items": ["miso"]
+    "items": ["miso"],
+    "unitEquivalences": {
+      "tub (17.6 oz)": {
+        "base": "tablespoon",
+        "factor": 32
+      },
+      "tub": {
+        "base": "tablespoon",
+        "factor": 32
+      }
+    }
   },
   {
     "canonicalName": "ketchup",
     "category": "condiments",
-    "items": ["ketchup"]
+    "items": ["ketchup"],
+    "unitEquivalences": {
+      "bottle (20 oz)": {
+        "base": "tablespoon",
+        "factor": 36
+      },
+      "bottle": {
+        "base": "tablespoon",
+        "factor": 36
+      }
+    }
   },
   {
     "canonicalName": "salsa verde",
@@ -1258,17 +1680,47 @@
   {
     "canonicalName": "peanut butter",
     "category": "condiments",
-    "items": ["peanut butter"]
+    "items": ["peanut butter"],
+    "unitEquivalences": {
+      "jar (16 oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "jar": {
+        "base": "cup",
+        "factor": 2
+      }
+    }
   },
   {
     "canonicalName": "maple syrup",
     "category": "condiments",
-    "items": ["maple syrup"]
+    "items": ["maple syrup"],
+    "unitEquivalences": {
+      "bottle (12 fl oz)": {
+        "base": "cup",
+        "factor": 1.5
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 1.5
+      }
+    }
   },
   {
     "canonicalName": "whole-egg mayonnaise",
     "category": "condiments",
-    "items": ["whole-egg mayonnaise", "mayonnaise", "mayo"]
+    "items": ["whole-egg mayonnaise", "mayonnaise", "mayo"],
+    "unitEquivalences": {
+      "jar (30 fl oz)": {
+        "base": "cup",
+        "factor": 3.75
+      },
+      "jar": {
+        "base": "cup",
+        "factor": 3.75
+      }
+    }
   },
   {
     "canonicalName": "banana",
@@ -1547,12 +1999,44 @@
   {
     "canonicalName": "rice",
     "category": "pasta-grains",
-    "items": ["rice", "white rice", "basmati rice", "jasmine rice"]
+    "items": ["rice", "white rice", "basmati rice", "jasmine rice"],
+    "unitEquivalences": {
+      "bag (2 lb)": {
+        "base": "cup",
+        "factor": 5
+      },
+      "bag (5 lb)": {
+        "base": "cup",
+        "factor": 12.5
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 5
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 6.5
+      }
+    }
   },
   {
     "canonicalName": "quinoa",
     "category": "pasta-grains",
-    "items": ["quinoa"]
+    "items": ["quinoa"],
+    "unitEquivalences": {
+      "bag (16 oz)": {
+        "base": "cup",
+        "factor": 2.67
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 2.67
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 6
+      }
+    }
   },
   {
     "canonicalName": "sliced bread",
@@ -1562,7 +2046,21 @@
   {
     "canonicalName": "rolled oats",
     "category": "pasta-grains",
-    "items": ["rolled oats", "rolled oat", "oat", "oats"]
+    "items": ["rolled oats", "rolled oat", "oat", "oats"],
+    "unitEquivalences": {
+      "tub (42 oz)": {
+        "base": "cup",
+        "factor": 14
+      },
+      "tub": {
+        "base": "cup",
+        "factor": 14
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 3
+      }
+    }
   },
   {
     "canonicalName": "tortilla chips",
@@ -1573,41 +2071,167 @@
     "canonicalName": "all-purpose flour",
     "category": "baking",
     "staple": true,
-    "items": ["flour", "all-purpose flour"]
+    "items": ["flour", "all-purpose flour"],
+    "unitEquivalences": {
+      "bag (5 lb)": {
+        "base": "cup",
+        "factor": 18.8
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 18.8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4.25
+      },
+      "tablespoon": {
+        "base": "ounce",
+        "factor": 0.265
+      },
+      "tbsp": {
+        "base": "ounce",
+        "factor": 0.265
+      }
+    }
   },
   {
     "canonicalName": "cake flour",
     "category": "baking",
-    "items": ["cake flour"]
+    "items": ["cake flour"],
+    "unitEquivalences": {
+      "box (32 oz)": {
+        "base": "cup",
+        "factor": 8
+      },
+      "box": {
+        "base": "cup",
+        "factor": 8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4
+      }
+    }
   },
   {
     "canonicalName": "bread flour",
     "category": "baking",
-    "items": ["bread flour"]
+    "items": ["bread flour"],
+    "unitEquivalences": {
+      "bag (5 lb)": {
+        "base": "cup",
+        "factor": 18.8
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 18.8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4.25
+      }
+    }
   },
   {
     "canonicalName": "baking powder",
     "category": "baking",
     "staple": true,
-    "items": ["baking powder"]
+    "items": ["baking powder"],
+    "unitEquivalences": {
+      "can (8.1 oz)": {
+        "base": "teaspoon",
+        "factor": 48
+      },
+      "can": {
+        "base": "teaspoon",
+        "factor": 48
+      },
+      "tablespoon": {
+        "base": "teaspoon",
+        "factor": 3
+      },
+      "tbsp": {
+        "base": "teaspoon",
+        "factor": 3
+      }
+    }
   },
   {
     "canonicalName": "baking soda",
     "category": "baking",
     "staple": true,
-    "items": ["baking soda"]
+    "items": ["baking soda"],
+    "unitEquivalences": {
+      "box (16 oz)": {
+        "base": "teaspoon",
+        "factor": 96
+      },
+      "box": {
+        "base": "teaspoon",
+        "factor": 96
+      },
+      "tablespoon": {
+        "base": "teaspoon",
+        "factor": 3
+      },
+      "tbsp": {
+        "base": "teaspoon",
+        "factor": 3
+      }
+    }
   },
   {
     "canonicalName": "vanilla extract",
     "category": "baking",
     "staple": true,
-    "items": ["vanilla extract", "vanilla"]
+    "items": ["vanilla extract", "vanilla"],
+    "unitEquivalences": {
+      "bottle (2 fl oz)": {
+        "base": "teaspoon",
+        "factor": 12
+      },
+      "bottle": {
+        "base": "teaspoon",
+        "factor": 12
+      },
+      "tablespoon": {
+        "base": "teaspoon",
+        "factor": 3
+      },
+      "tbsp": {
+        "base": "teaspoon",
+        "factor": 3
+      }
+    }
   },
   {
     "canonicalName": "cornstarch",
     "category": "baking",
     "staple": true,
-    "items": ["cornstarch"]
+    "items": ["cornstarch"],
+    "unitEquivalences": {
+      "box (16 oz)": {
+        "base": "tablespoon",
+        "factor": 58
+      },
+      "box": {
+        "base": "tablespoon",
+        "factor": 58
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4.4
+      },
+      "tablespoon": {
+        "base": "ounce",
+        "factor": 0.275
+      },
+      "tbsp": {
+        "base": "ounce",
+        "factor": 0.275
+      }
+    }
   },
   {
     "canonicalName": "yeast",
@@ -1622,18 +2246,76 @@
   {
     "canonicalName": "sweetened condensed milk",
     "category": "milk-cream",
-    "items": ["sweetened condensed milk"]
+    "items": ["sweetened condensed milk"],
+    "unitEquivalences": {
+      "can (14 oz)": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 14
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 10.5
+      }
+    }
   },
   {
     "canonicalName": "brown sugar",
     "category": "baking",
     "staple": true,
-    "items": ["brown sugar", "light brown sugar", "dark brown sugar"]
+    "items": ["brown sugar", "light brown sugar", "dark brown sugar"],
+    "unitEquivalences": {
+      "bag (2 lb)": {
+        "base": "cup",
+        "factor": 4.25
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 4.25
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 7.5
+      },
+      "tablespoon": {
+        "base": "ounce",
+        "factor": 0.47
+      },
+      "tbsp": {
+        "base": "ounce",
+        "factor": 0.47
+      }
+    }
   },
   {
     "canonicalName": "powdered sugar",
     "category": "baking",
-    "items": ["powdered sugar", "confectioners' sugar", "confectioner's sugar"]
+    "items": ["powdered sugar", "confectioners' sugar", "confectioner's sugar"],
+    "unitEquivalences": {
+      "bag (2 lb)": {
+        "base": "cup",
+        "factor": 8
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4
+      },
+      "tablespoon": {
+        "base": "ounce",
+        "factor": 0.25
+      },
+      "tbsp": {
+        "base": "ounce",
+        "factor": 0.25
+      }
+    }
   },
   {
     "canonicalName": "raisin",
@@ -1707,12 +2389,40 @@
   {
     "canonicalName": "fresh mozzarella",
     "category": "butter-cheese",
-    "items": ["mozzarella ball", "fresh mozzarella"]
+    "items": ["mozzarella ball", "fresh mozzarella"],
+    "unitEquivalences": {
+      "package (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "package": {
+        "base": "ounce",
+        "factor": 8
+      }
+    }
   },
   {
     "canonicalName": "mozzarella",
     "category": "butter-cheese",
-    "items": ["mozzarella", "shredded mozzarella"]
+    "items": ["mozzarella", "shredded mozzarella"],
+    "unitEquivalences": {
+      "package (8 oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "package (16 oz)": {
+        "base": "cup",
+        "factor": 4
+      },
+      "package": {
+        "base": "cup",
+        "factor": 2
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4
+      }
+    }
   },
   {
     "canonicalName": "cheese",
@@ -1754,18 +2464,54 @@
       "package": {
         "base": "cup",
         "factor": 2
+      },
+      "package (8 oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "package (16 oz)": {
+        "base": "cup",
+        "factor": 4
       }
     }
   },
   {
     "canonicalName": "gruyere cheese",
     "category": "butter-cheese",
-    "items": ["gruyere cheese", "gruyere", "Gruyere"]
+    "items": ["gruyere cheese", "gruyere", "Gruyere"],
+    "unitEquivalences": {
+      "package (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "package": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4
+      }
+    }
   },
   {
     "canonicalName": "swiss cheese",
     "category": "butter-cheese",
-    "items": ["swiss cheese", "Swiss cheese", "Swiss"]
+    "items": ["swiss cheese", "Swiss cheese", "Swiss"],
+    "unitEquivalences": {
+      "package (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "package": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4
+      }
+    }
   },
   {
     "canonicalName": "mexican cheese",
@@ -1779,6 +2525,18 @@
       "package": {
         "base": "ounce",
         "factor": 8
+      },
+      "package (8 oz)": {
+        "base": "ounce",
+        "factor": 8
+      },
+      "package (16 oz)": {
+        "base": "ounce",
+        "factor": 16
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4
       }
     }
   },
@@ -1800,22 +2558,78 @@
   {
     "canonicalName": "whipped cream",
     "category": "milk-cream",
-    "items": ["whipped cream"]
+    "items": ["whipped cream"],
+    "unitEquivalences": {
+      "can (13 oz)": {
+        "base": "ounce",
+        "factor": 13
+      },
+      "can": {
+        "base": "ounce",
+        "factor": 13
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 4
+      }
+    }
   },
   {
     "canonicalName": "Greek yogurt",
     "category": "milk-cream",
-    "items": ["Greek yogurt", "plain Greek yogurt", "yogurt", "plain yogurt"]
+    "items": ["Greek yogurt", "plain Greek yogurt", "yogurt", "plain yogurt"],
+    "unitEquivalences": {
+      "tub (32 oz)": {
+        "base": "cup",
+        "factor": 4
+      },
+      "tub": {
+        "base": "cup",
+        "factor": 4
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 8
+      }
+    }
   },
   {
     "canonicalName": "almond milk",
     "category": "milk-cream",
-    "items": ["almond milk", "unsweetened almond milk"]
+    "items": ["almond milk", "unsweetened almond milk"],
+    "unitEquivalences": {
+      "half-gallon (64 fl oz)": {
+        "base": "cup",
+        "factor": 8
+      },
+      "half-gallon": {
+        "base": "cup",
+        "factor": 8
+      }
+    }
   },
   {
     "canonicalName": "half and half",
     "category": "milk-cream",
-    "items": ["half and half", "half-and-half"]
+    "items": ["half and half", "half-and-half"],
+    "unitEquivalences": {
+      "pint (16 fl oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "quart (32 fl oz)": {
+        "base": "cup",
+        "factor": 4
+      },
+      "pint (16 oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "quart (32 oz)": {
+        "base": "cup",
+        "factor": 4
+      }
+    }
   },
   {
     "canonicalName": "salt",
@@ -1847,7 +2661,25 @@
     "canonicalName": "olive oil",
     "category": "oils-vinegars",
     "staple": true,
-    "items": ["olive oil", "extra virgin olive oil"]
+    "items": ["olive oil", "extra virgin olive oil"],
+    "unitEquivalences": {
+      "bottle (16.9 fl oz)": {
+        "base": "cup",
+        "factor": 2.1125
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 2.1125
+      },
+      "tablespoon": {
+        "base": "ounce",
+        "factor": 0.5
+      },
+      "tbsp": {
+        "base": "ounce",
+        "factor": 0.5
+      }
+    }
   },
   {
     "canonicalName": "balsamic glaze",
@@ -1858,47 +2690,137 @@
     "canonicalName": "vegetable oil",
     "category": "oils-vinegars",
     "staple": true,
-    "items": ["vegetable oil", "canola oil", "cooking spray"]
+    "items": ["vegetable oil", "canola oil", "cooking spray"],
+    "unitEquivalences": {
+      "bottle (48 fl oz)": {
+        "base": "cup",
+        "factor": 6
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 6
+      }
+    }
   },
   {
     "canonicalName": "sesame oil",
     "category": "oils-vinegars",
-    "items": ["sesame oil", "toasted sesame oil"]
+    "items": ["sesame oil", "toasted sesame oil"],
+    "unitEquivalences": {
+      "bottle (5 fl oz)": {
+        "base": "tablespoon",
+        "factor": 10
+      },
+      "bottle": {
+        "base": "tablespoon",
+        "factor": 10
+      }
+    }
   },
   {
     "canonicalName": "coconut oil",
     "category": "oils-vinegars",
-    "items": ["coconut oil"]
+    "items": ["coconut oil"],
+    "unitEquivalences": {
+      "jar (14 oz)": {
+        "base": "cup",
+        "factor": 1.75
+      },
+      "jar": {
+        "base": "cup",
+        "factor": 1.75
+      }
+    }
   },
   {
     "canonicalName": "avocado oil",
     "category": "oils-vinegars",
-    "items": ["avocado oil"]
+    "items": ["avocado oil"],
+    "unitEquivalences": {
+      "bottle (16.9 fl oz)": {
+        "base": "cup",
+        "factor": 2.1125
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 2.1125
+      }
+    }
   },
   {
     "canonicalName": "rice vinegar",
     "category": "oils-vinegars",
-    "items": ["rice vinegar", "rice wine vinegar"]
+    "items": ["rice vinegar", "rice wine vinegar"],
+    "unitEquivalences": {
+      "bottle (12 fl oz)": {
+        "base": "cup",
+        "factor": 1.5
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 1.5
+      }
+    }
   },
   {
     "canonicalName": "apple cider vinegar",
     "category": "oils-vinegars",
-    "items": ["apple cider vinegar"]
+    "items": ["apple cider vinegar"],
+    "unitEquivalences": {
+      "bottle (16 fl oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 2
+      }
+    }
   },
   {
     "canonicalName": "red wine vinegar",
     "category": "oils-vinegars",
-    "items": ["red wine vinegar"]
+    "items": ["red wine vinegar"],
+    "unitEquivalences": {
+      "bottle (16 fl oz)": {
+        "base": "cup",
+        "factor": 2
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 2
+      }
+    }
   },
   {
     "canonicalName": "white vinegar",
     "category": "oils-vinegars",
-    "items": ["white vinegar", "vinegar"]
+    "items": ["white vinegar", "vinegar"],
+    "unitEquivalences": {
+      "bottle (32 fl oz)": {
+        "base": "cup",
+        "factor": 4
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 4
+      }
+    }
   },
   {
     "canonicalName": "balsamic vinegar",
     "category": "oils-vinegars",
-    "items": ["balsamic vinegar"]
+    "items": ["balsamic vinegar"],
+    "unitEquivalences": {
+      "bottle (16.9 fl oz)": {
+        "base": "cup",
+        "factor": 2.1125
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 2.1125
+      }
+    }
   },
   {
     "canonicalName": "sweet potato",
@@ -1923,7 +2845,17 @@
         "singular": "chicken meatball",
         "plural": "chicken meatballs"
       }
-    ]
+    ],
+    "unitEquivalences": {
+      "package (12 oz)": {
+        "base": "meatball",
+        "factor": 12
+      },
+      "package": {
+        "base": "meatball",
+        "factor": 12
+      }
+    }
   },
   {
     "canonicalName": "rotisserie chicken",
@@ -1934,12 +2866,56 @@
     "canonicalName": "sugar",
     "category": "baking",
     "staple": true,
-    "items": ["sugar"]
+    "items": ["sugar"],
+    "unitEquivalences": {
+      "bag (4 lb)": {
+        "base": "cup",
+        "factor": 9.14
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 9.14
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 7
+      },
+      "tablespoon": {
+        "base": "ounce",
+        "factor": 0.44
+      },
+      "tbsp": {
+        "base": "ounce",
+        "factor": 0.44
+      }
+    }
   },
   {
     "canonicalName": "granulated sugar",
     "category": "baking",
-    "items": ["granulated sugar"]
+    "items": ["granulated sugar"],
+    "unitEquivalences": {
+      "bag (4 lb)": {
+        "base": "cup",
+        "factor": 9.14
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 9.14
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 7
+      },
+      "tablespoon": {
+        "base": "ounce",
+        "factor": 0.44
+      },
+      "tbsp": {
+        "base": "ounce",
+        "factor": 0.44
+      }
+    }
   },
   {
     "canonicalName": "paprika",
@@ -2072,7 +3048,17 @@
   {
     "canonicalName": "low-fat plain kefir",
     "category": "milk-cream",
-    "items": ["low-fat plain kefir", "kefir", "plain kefir"]
+    "items": ["low-fat plain kefir", "kefir", "plain kefir"],
+    "unitEquivalences": {
+      "bottle (32 fl oz)": {
+        "base": "cup",
+        "factor": 4
+      },
+      "bottle": {
+        "base": "cup",
+        "factor": 4
+      }
+    }
   },
   {
     "canonicalName": "water",
@@ -2146,7 +3132,17 @@
   {
     "canonicalName": "fish sauce",
     "category": "condiments",
-    "items": ["fish sauce"]
+    "items": ["fish sauce"],
+    "unitEquivalences": {
+      "bottle (7 fl oz)": {
+        "base": "tablespoon",
+        "factor": 14
+      },
+      "bottle": {
+        "base": "tablespoon",
+        "factor": 14
+      }
+    }
   },
   {
     "canonicalName": "peanuts",
