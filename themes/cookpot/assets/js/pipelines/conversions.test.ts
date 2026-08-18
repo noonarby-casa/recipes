@@ -4597,6 +4597,22 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'fresh-produce',
     },
   },
+  {
+    input: {
+      item: 'watermelon',
+      qty: 4,
+      unit: 'cup',
+      desc: 'seeded',
+      prep: 'cubed',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'watermelon',
+      qty: 4,
+      unit: 'cup',
+      category: 'fresh-produce',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

@@ -3186,6 +3186,16 @@
     ]
   },
   {
+    "canonicalName": "watermelon",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "watermelon",
+        "plural": "watermelons"
+      }
+    ]
+  },
+  {
     "canonicalName": "fennel seed",
     "category": "spices-seasonings",
     "staple": true,
