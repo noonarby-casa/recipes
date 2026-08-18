@@ -340,4 +340,71 @@ describe('processShoppingList', () => {
     );
     expect(swappedOliveOil?.note?.ingredientNotes[0].altItem).toBe('butter');
   });
+
+  test('combining quantified and unquantified items retains needed quantity and package conversion', () => {
+    const ingredients: IngredientInput[] = [
+      {
+        item: 'heavy cream',
+        qty: 1.5,
+        unit: 'cup',
+        recipe: 'Recipe A',
+      },
+      {
+        item: 'heavy cream',
+        prep: 'for serving',
+        recipe: 'Recipe B',
+      },
+    ];
+
+    const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
+    const heavyCream = result.buyItems.find((i) => i.item === 'heavy cream');
+    expect(heavyCream).toBeDefined();
+    expect(heavyCream?.qty).toBe(1);
+    expect(heavyCream?.unit).toBe('pint (16 fl oz)');
+    expect(heavyCream?.note?.sizeNote).toBe('1 1/2 cups needed');
+    expect(heavyCream?.note?.ingredientNotes).toHaveLength(2);
+  });
+
+  test('combining only unquantified items remains quantityless without package conversion', () => {
+    const ingredients: IngredientInput[] = [
+      {
+        item: 'heavy cream',
+        prep: 'for drizzling',
+        recipe: 'Recipe A',
+      },
+      {
+        item: 'heavy cream',
+        prep: 'for serving',
+        recipe: 'Recipe B',
+      },
+    ];
+
+    const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
+    const heavyCream = result.buyItems.find((i) => i.item === 'heavy cream');
+    expect(heavyCream).toBeDefined();
+    expect(heavyCream?.qty).toBeNull();
+    expect(heavyCream?.unit).toBe('');
+    expect(heavyCream?.note?.sizeNote).toBeUndefined();
+    expect(heavyCream?.note?.ingredientNotes).toHaveLength(2);
+  });
+
+  test('combines Greek yogurt correctly into 1 tub (32 oz) with needed quantity sizeNote', () => {
+    const ingredients: IngredientInput[] = [
+      { item: 'Greek yogurt', prep: 'for topping', recipe: 'Recipe 1' },
+      { item: 'Greek yogurt', qty: 2, unit: 'tbsp', recipe: 'Recipe 2' },
+      { item: 'Greek yogurt', qty: 2, unit: 'tbsp', recipe: 'Recipe 3' },
+      { item: 'Greek yogurt', qty: 1, unit: 'cup', recipe: 'Recipe 4' },
+      { item: 'Greek yogurt', qty: 1 / 3, unit: 'cup', recipe: 'Recipe 5' },
+      { item: 'Greek yogurt', prep: 'for soup', recipe: 'Recipe 6' },
+      { item: 'Greek yogurt', qty: 0.5, unit: 'cup', recipe: 'Recipe 7' },
+    ];
+
+    const result = processShoppingList(ingredients, STORE_LAYOUTS[0]);
+    const yogurt = result.buyItems.find((i) => i.item === 'Greek yogurt');
+    expect(yogurt).toBeDefined();
+    expect(yogurt?.qty).toBe(1);
+    expect(yogurt?.unit).toBe('tub (32 oz)');
+    expect(yogurt?.note?.sizeNote).toBe('2 1/8 cups needed');
+    expect(yogurt?.note?.ingredientNotes).toHaveLength(7);
+  });
 });

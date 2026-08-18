@@ -101,6 +101,11 @@ describe('pluralizeWord', () => {
     expect(pluralizeWord('can (15 oz)')).toBe('cans (15 oz)');
     expect(pluralizeWord('cans (15 oz)')).toBe('cans (15 oz)');
   });
+
+  test('keeps invariant item names singular', () => {
+    expect(pluralizeWord('half and half')).toBe('half and half');
+    expect(pluralizeWord('half-and-half')).toBe('half and half');
+  });
 });
 
 describe('formatItemQuantity', () => {

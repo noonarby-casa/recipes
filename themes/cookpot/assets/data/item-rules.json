@@ -1219,7 +1219,6 @@
     "canonicalName": "jalapeño",
     "category": "fresh-produce",
     "pluralByDefault": true,
-    "defaultQty": 1,
     "items": [
       {
         "singular": "jalapeño",
@@ -2611,7 +2610,13 @@
   {
     "canonicalName": "half and half",
     "category": "milk-cream",
-    "items": ["half and half", "half-and-half"],
+    "items": [
+      {
+        "singular": "half and half",
+        "plural": "half and half",
+        "aliases": ["half-and-half"]
+      }
+    ],
     "unitEquivalences": {
       "pint (16 fl oz)": {
         "base": "cup",

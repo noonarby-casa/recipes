@@ -1493,9 +1493,10 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Italian sausage',
-      qty: 5,
-      unit: 'link',
+      qty: 1,
+      unit: 'package (19 oz)',
       category: 'meat',
+      sizeNote: '16 oz needed',
     },
   },
   {
@@ -2612,8 +2613,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Dijon mustard',
-      qty: null,
-      unit: '',
+      qty: 1,
+      unit: 'jar (8 oz)',
       category: 'condiments',
       sizeNote: '1 1/3 tbsp needed',
     },
@@ -2890,8 +2891,8 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Greek yogurt',
-      qty: null,
-      unit: '',
+      qty: 1,
+      unit: 'tub (32 oz)',
       category: 'milk-cream',
       sizeNote: '1/3 cup needed',
     },
@@ -2951,10 +2952,9 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'buy',
     expectedItem: {
       item: 'Pillsbury crescent roll',
-      qty: null,
-      unit: '',
+      qty: 1,
+      unit: 'can (8 oz)',
       category: 'bakery',
-      sizeNote: '8 oz needed',
     },
   },
   {
@@ -3569,7 +3569,7 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
     expectedList: 'optional',
     expectedItem: {
       item: 'jalapeño',
-      qty: 1,
+      qty: null,
       unit: '',
       category: 'fresh-produce',
     },

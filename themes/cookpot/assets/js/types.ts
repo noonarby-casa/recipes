@@ -178,8 +178,6 @@ export interface ItemRule {
   // Item-specific unit conversions. Helps map between the amounts specified in
   // a recipe and the amounts you can purchase in a store.
   unitEquivalences?: Record<string, { base: string; factor: number }>;
-  // Default quantity to assume when an ingredient of this item has no quantity.
-  defaultQty?: number;
 }
 
 // The output of the pipeline, containing categorized shopping items

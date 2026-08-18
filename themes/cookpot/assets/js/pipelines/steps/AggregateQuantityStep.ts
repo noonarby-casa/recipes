@@ -116,7 +116,14 @@ export class AggregateQuantityStep implements RuleStep<IngredientGroup> {
       const rule = ITEM_RULES.find(
         (r) => r.canonicalName.toLowerCase() === group.key,
       );
-      const units = group.ingredients
+      const quantifiedIngredients = group.ingredients.filter(
+        (ing) => ing.qty != null || (ing.alt?.qty != null && ing.alt.unit),
+      );
+      const ingredientsForUnits =
+        quantifiedIngredients.length > 0
+          ? quantifiedIngredients
+          : group.ingredients;
+      const units = ingredientsForUnits
         .map((ing) => {
           if (ing.alt?.qty !== undefined && ing.alt.unit) {
             return ing.alt.unit;
@@ -132,7 +139,7 @@ export class AggregateQuantityStep implements RuleStep<IngredientGroup> {
 
       for (const ing of group.ingredients) {
         const ingQty: number | null =
-          ing.qty === undefined
+          ing.qty == null
             ? null
             : Array.isArray(ing.qty)
               ? ing.qty[1]
@@ -150,21 +157,7 @@ export class AggregateQuantityStep implements RuleStep<IngredientGroup> {
           });
         }
 
-        if (ing.qty === undefined) {
-          if (rule?.defaultQty !== undefined) {
-            const unit = ing.unit || '';
-            let converted: QtyValue = rule.defaultQty;
-            if (unit !== targetUnit) {
-              converted = convertQtyValue(
-                rule.defaultQty,
-                unit,
-                targetUnit,
-                rule,
-              );
-            }
-            totalQty = addQtyValues(totalQty, converted);
-          }
-        } else {
+        if (ing.qty != null) {
           const unit = ing.unit || '';
           let converted: QtyValue;
           const targetCategory = getUnitCategory(targetUnit, rule);
