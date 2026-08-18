@@ -1904,7 +1904,8 @@
     "items": [
       {
         "singular": "green bell pepper",
-        "plural": "green bell peppers"
+        "plural": "green bell peppers",
+        "aliases": ["green pepper", "green peppers"]
       }
     ]
   },
@@ -1936,6 +1937,16 @@
         "singular": "grape tomato",
         "plural": "grape tomatoes",
         "aliases": ["cherry tomato", "cherry tomatoes"]
+      }
+    ]
+  },
+  {
+    "canonicalName": "tomato",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "tomato",
+        "plural": "tomatoes"
       }
     ]
   },
@@ -3266,5 +3277,23 @@
         "factor": 1
       }
     }
+  },
+  {
+    "canonicalName": "celery seed",
+    "category": "spices-seasonings",
+    "staple": true,
+    "pluralByDefault": true,
+    "items": [
+      {
+        "singular": "celery seed",
+        "plural": "celery seeds"
+      }
+    ]
+  },
+  {
+    "canonicalName": "celery salt",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["celery salt"]
   }
 ]

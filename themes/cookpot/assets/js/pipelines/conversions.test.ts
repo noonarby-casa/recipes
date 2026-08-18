@@ -4535,6 +4535,68 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '1/4 tsp needed',
     },
   },
+  {
+    input: {
+      item: 'celery seed',
+      qty: 0.25,
+      unit: 'teaspoon',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'celery seed',
+      qty: null,
+      unit: '',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
+      sizeNote: '1/4 tsp needed',
+    },
+  },
+  {
+    input: {
+      item: 'celery salt',
+      qty: 0.25,
+      unit: 'teaspoon',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'celery salt',
+      qty: null,
+      unit: '',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
+      sizeNote: '1/4 tsp needed',
+    },
+  },
+  {
+    input: {
+      item: 'tomato',
+      qty: 1,
+      unit: 'large',
+      prep: 'diced',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'tomato',
+      qty: 1,
+      unit: 'large',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'green pepper',
+      qty: 2,
+      unit: 'tablespoon',
+      prep: 'chopped',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'green pepper',
+      qty: 2,
+      unit: 'tablespoon',
+      category: 'fresh-produce',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
