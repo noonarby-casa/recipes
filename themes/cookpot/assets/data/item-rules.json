@@ -2041,6 +2041,11 @@
     }
   },
   {
+    "canonicalName": "French bread",
+    "category": "bakery",
+    "items": ["French bread", "french bread"]
+  },
+  {
     "canonicalName": "sliced bread",
     "category": "bakery",
     "items": ["sliced bread", "bread", "brioche", "cornbread"]
@@ -2897,6 +2902,11 @@
         "factor": 0.44
       }
     }
+  },
+  {
+    "canonicalName": "raw sugar",
+    "category": "baking",
+    "items": ["raw sugar", "turbinado sugar", "demerara sugar"]
   },
   {
     "canonicalName": "granulated sugar",

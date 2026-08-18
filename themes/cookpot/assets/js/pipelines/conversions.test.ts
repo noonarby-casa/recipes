@@ -1859,6 +1859,20 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
+      item: 'French bread',
+      qty: 1,
+      unit: 'loaf',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'French bread',
+      qty: 1,
+      unit: 'loaf',
+      category: 'bakery',
+    },
+  },
+  {
+    input: {
       item: 'sliced cheese',
       qty: 1,
       unit: 'package',
@@ -2349,6 +2363,23 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       item: 'granulated sugar',
       qty: 1,
       unit: 'bag (4 lb)',
+      category: 'baking',
+      sizeNote: '1/4 cup needed',
+    },
+  },
+  {
+    input: {
+      item: 'raw sugar',
+      qty: 0.25,
+      unit: 'cup',
+      prep: 'for topping',
+      optional: true,
+    },
+    expectedList: 'optional',
+    expectedItem: {
+      item: 'raw sugar',
+      qty: null,
+      unit: '',
       category: 'baking',
       sizeNote: '1/4 cup needed',
     },
