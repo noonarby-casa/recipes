@@ -2959,6 +2959,20 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
+      item: 'crescent roll dough',
+      qty: 1,
+      unit: 'can',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'crescent roll dough',
+      qty: 1,
+      unit: 'can (8 oz)',
+      category: 'bakery',
+    },
+  },
+  {
+    input: {
       item: 'cocktail weenie',
       qty: 1,
       unit: 'package',
