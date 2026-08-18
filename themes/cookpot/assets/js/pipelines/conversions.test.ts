@@ -4613,6 +4613,33 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'fresh-produce',
     },
   },
+  {
+    input: {
+      item: 'salmon fillet',
+      qty: 4,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'salmon fillet',
+      qty: 4,
+      unit: '',
+      category: 'seafood',
+    },
+  },
+  {
+    input: {
+      item: 'red potato',
+      qty: 3,
+      unit: 'medium',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'red potato',
+      qty: 3,
+      unit: 'medium',
+      category: 'fresh-produce',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

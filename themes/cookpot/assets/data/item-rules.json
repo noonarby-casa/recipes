@@ -1262,7 +1262,14 @@
   {
     "canonicalName": "salmon",
     "category": "seafood",
-    "items": ["salmon", "salmon fillet", "fish"]
+    "items": [
+      "salmon",
+      {
+        "singular": "salmon fillet",
+        "plural": "salmon fillets"
+      },
+      "fish"
+    ]
   },
   {
     "canonicalName": "ground beef",
@@ -1851,7 +1858,7 @@
   {
     "canonicalName": "corn",
     "category": "fresh-produce",
-    "items": ["corn"]
+    "items": ["corn", "corn kernel", "corn kernels"]
   },
   {
     "canonicalName": "snow peas",
@@ -1871,6 +1878,10 @@
         "singular": "russet potato",
         "plural": "russet potatoes",
         "aliases": ["potato", "potatoes", "baby potato", "baby potatoes"]
+      },
+      {
+        "singular": "red potato",
+        "plural": "red potatoes"
       }
     ]
   },
