@@ -3159,5 +3159,46 @@
         "plural": "peanuts"
       }
     ]
+  },
+  {
+    "canonicalName": "fennel seed",
+    "category": "spices-seasonings",
+    "staple": true,
+    "pluralByDefault": true,
+    "items": [
+      {
+        "singular": "fennel seed",
+        "plural": "fennel seeds"
+      }
+    ]
+  },
+  {
+    "canonicalName": "Italian seasoning",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["Italian seasoning", "dried Italian seasoning"]
+  },
+  {
+    "canonicalName": "dry white wine",
+    "category": "beverages",
+    "items": ["dry white wine", "white wine"]
+  },
+  {
+    "canonicalName": "sub roll",
+    "category": "bakery",
+    "items": [
+      {
+        "singular": "sub roll",
+        "plural": "sub rolls"
+      },
+      {
+        "singular": "Italian sub roll",
+        "plural": "Italian sub rolls"
+      },
+      {
+        "singular": "hoagie roll",
+        "plural": "hoagie rolls"
+      }
+    ]
   }
 ]

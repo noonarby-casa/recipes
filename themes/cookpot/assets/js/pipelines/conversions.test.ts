@@ -4385,6 +4385,80 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '1 tsp needed',
     },
   },
+  {
+    input: {
+      item: 'fennel seed',
+      qty: 1,
+      unit: 'teaspoon',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'fennel seed',
+      qty: null,
+      unit: '',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
+      sizeNote: '1 tsp needed',
+    },
+  },
+  {
+    input: {
+      item: 'white wine',
+      qty: 1,
+      unit: 'cup',
+      desc: 'dry',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'dry white wine',
+      qty: 1,
+      unit: 'cup',
+      category: 'beverages',
+    },
+  },
+  {
+    input: {
+      item: 'chicken stock',
+      qty: 2.5,
+      unit: 'cup',
+      desc: 'low-sodium',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'chicken broth',
+      qty: 1,
+      unit: 'quart (32 fl oz)',
+      category: 'canned-other',
+      sizeNote: '2 1/2 cups needed',
+    },
+  },
+  {
+    input: {
+      item: 'Italian sub roll',
+      qty: 4,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'sub roll',
+      qty: 4,
+      unit: '',
+      category: 'bakery',
+    },
+  },
+  {
+    input: {
+      item: 'bell pepper',
+      qty: 3,
+      unit: 'medium',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'bell pepper',
+      qty: 3,
+      unit: 'medium',
+      category: 'fresh-produce',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
