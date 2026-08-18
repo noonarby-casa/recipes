@@ -163,7 +163,8 @@
     "items": [
       {
         "singular": "lime juice",
-        "plural": "lime juice"
+        "plural": "lime juice",
+        "aliases": ["key lime juice", "Key lime juice", "fresh lime juice"]
       }
     ],
     "unitEquivalences": {
@@ -3213,5 +3214,57 @@
         "plural": "hoagie rolls"
       }
     ]
+  },
+  {
+    "canonicalName": "graham cracker crumb",
+    "category": "baking",
+    "items": [
+      {
+        "singular": "graham cracker crumb",
+        "plural": "graham cracker crumbs",
+        "aliases": [
+          "graham-cracker crumb",
+          "graham-cracker crumbs",
+          "graham cracker crumbs",
+          "graham cracker",
+          "graham crackers"
+        ]
+      }
+    ],
+    "unitEquivalences": {
+      "box (13.5 oz)": {
+        "base": "cup",
+        "factor": 3
+      },
+      "box": {
+        "base": "cup",
+        "factor": 3
+      }
+    }
+  },
+  {
+    "canonicalName": "cream of tartar",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": [
+      {
+        "singular": "cream of tartar",
+        "plural": "cream of tartar"
+      }
+    ],
+    "unitEquivalences": {
+      "jar": {
+        "base": "teaspoon",
+        "factor": 12
+      },
+      "teaspoon": {
+        "base": "teaspoon",
+        "factor": 1
+      },
+      "tsp": {
+        "base": "teaspoon",
+        "factor": 1
+      }
+    }
   }
 ]

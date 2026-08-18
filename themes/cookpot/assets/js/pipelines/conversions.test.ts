@@ -4504,6 +4504,37 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'fresh-produce',
     },
   },
+  {
+    input: {
+      item: 'graham cracker crumb',
+      qty: 1.75,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'graham cracker crumb',
+      qty: 1,
+      unit: 'box (13.5 oz)',
+      category: 'baking',
+      sizeNote: '1 3/4 cups needed',
+    },
+  },
+  {
+    input: {
+      item: 'cream of tartar',
+      qty: 0.25,
+      unit: 'teaspoon',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'cream of tartar',
+      qty: null,
+      unit: '',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
+      sizeNote: '1/4 tsp needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
