@@ -175,6 +175,17 @@
     {{ $dateHuman := .Date | time.Format ":date_long" }}
     <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
 
-    {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+    {{ with .Params.tags }}
+      <div>
+        <span>Tags:</span>
+        <ul>
+          {{ range . }}
+            <li>
+              <span>{{ . }}</span>
+            </li>
+          {{ end }}
+        </ul>
+      </div>
+    {{ end }}
   </div>
 {{ end }}

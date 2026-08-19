@@ -409,19 +409,15 @@
   padding: 0;
 }
 
-.recipe-meta li a {
+.recipe-meta li span {
   background: var(--tag-bg);
+  border: 1px solid var(--border-subtle);
   border-radius: 4px;
   color: var(--tag-text);
+  display: inline-block;
   font-size: 0.75rem;
-  padding: 0.25rem 0.6rem;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.recipe-meta li a:hover {
-  background: var(--btn-brand-bg);
-  color: #fff;
+  font-weight: 500;
+  padding: 0.2rem 0.55rem;
 }
 
 /* Media query for standard tablet/desktop portrait modes */
