@@ -136,15 +136,6 @@
   vertical-align: middle;
 }
 
-.recipe-title-meta {
-  align-items: center;
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  justify-content: center;
-  margin-top: 0.35rem;
-}
-
 .recipe-metadata-items {
   align-items: center;
   display: flex;
@@ -218,10 +209,6 @@
   font-weight: 600;
   padding: 0.2rem 0.5rem;
   transition: all 0.2s ease;
-}
-
-.recipe-meta-separator {
-  display: none !important;
 }
 
 /* Card grid layout for search results and default list */

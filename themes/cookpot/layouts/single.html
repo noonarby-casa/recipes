@@ -2,22 +2,20 @@
   <div class="recipe-header">
     <div class="recipe-header-left">
       {{ with .Resources.GetMatch "featured-image*" }}
-        {{ $img110 := .Fill "110x110 Center webp" }}
-        {{ $img140 := .Fill "140x140 Center webp" }}
-        {{ $img220 := .Fill "220x220 Center webp" }}
-        {{ $img280 := .Fill "280x280 Center webp" }}
+        {{ $img80 := .Fill "80x80 Center webp" }}
+        {{ $img160 := .Fill "160x160 Center webp" }}
+        {{ $img240 := .Fill "240x240 Center webp" }}
         <div class="recipe-featured-image">
           <img
-            src="{{ $img140.RelPermalink }}"
+            src="{{ $img80.RelPermalink }}"
             srcset="
-              {{ $img110.RelPermalink }} 110w,
-              {{ $img140.RelPermalink }} 140w,
-              {{ $img220.RelPermalink }} 220w,
-              {{ $img280.RelPermalink }} 280w
+              {{ $img80.RelPermalink }}  80w,
+              {{ $img160.RelPermalink }} 160w,
+              {{ $img240.RelPermalink }} 240w
             "
-            sizes="(max-width: 767px) 140px, 110px"
-            width="140"
-            height="140"
+            sizes="80px"
+            width="80"
+            height="80"
             alt="{{ $.Title }}"
           />
         </div>
@@ -49,7 +47,6 @@
                 {{- end -}}
               </span>
             </div>
-            <span class="recipe-meta-separator">•</span>
           {{ end }}
           {{ $recipeSource := .Params.recipeSource | default "Noonarby" }}
           <div class="recipe-source">
