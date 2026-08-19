@@ -236,11 +236,16 @@
         </button>
       {/each}
     </div>
-    {#if hasAnyPlan}
-      <a href="/plan/" class="view-plan-link" title="Open Meal Planner">
-        <span class="view-plan-full">View Plan →</span>
-        <span class="view-plan-short">Plan →</span>
-      </a>
-    {/if}
+    <a
+      href="/plan/"
+      class="view-plan-link"
+      class:visible={hasAnyPlan}
+      title="Open Meal Planner"
+      aria-hidden={!hasAnyPlan}
+      tabindex={hasAnyPlan ? 0 : -1}
+    >
+      <span class="view-plan-full">View Plan →</span>
+      <span class="view-plan-short">Plan →</span>
+    </a>
   </div>
 </div>

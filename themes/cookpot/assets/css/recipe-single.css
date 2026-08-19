@@ -225,9 +225,21 @@
   font-size: 0.8rem;
   font-weight: 700;
   margin-left: auto;
+  opacity: 0;
   padding: 0.2rem 0.4rem;
+  pointer-events: none;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    background-color 0.2s ease;
+  visibility: hidden;
+}
+
+.view-plan-link.visible {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 
 .meal-plan-label-full,
@@ -437,7 +449,7 @@
   .recipe-header-left {
     align-items: center;
     display: flex;
-    flex: 1.1;
+    flex: 1 1 auto;
     flex-direction: row;
     gap: 0.85rem;
     min-width: 0;
@@ -446,7 +458,7 @@
   .recipe-header-right {
     align-items: flex-end;
     display: flex;
-    flex: 1;
+    flex: 0 0 auto;
     flex-direction: column;
     justify-content: center;
     min-width: 0;
