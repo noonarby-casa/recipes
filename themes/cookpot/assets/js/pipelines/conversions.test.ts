@@ -4743,6 +4743,36 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '1 cup needed',
     },
   },
+  {
+    input: {
+      item: 'penne pasta',
+      qty: 8,
+      unit: 'ounce',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'penne pasta',
+      qty: 1,
+      unit: 'box (16 oz)',
+      category: 'pasta-grains',
+      sizeNote: '8 oz needed',
+    },
+  },
+  {
+    input: {
+      item: 'spaghetti sauce',
+      qty: 3,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'spaghetti sauce',
+      qty: 1,
+      unit: 'can (28 oz)',
+      category: 'canned-tomatoes',
+      sizeNote: '24 oz needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

@@ -584,6 +584,7 @@
       "ramen noodle",
       "fresh egg pasta",
       "egg pasta",
+      "penne pasta",
       "steamed rice"
     ],
     "unitEquivalences": {
@@ -828,7 +829,13 @@
   {
     "canonicalName": "tomato sauce",
     "category": "canned-tomatoes",
-    "items": ["tomato sauce"],
+    "items": [
+      "tomato sauce",
+      "spaghetti sauce",
+      "marinara sauce",
+      "pasta sauce",
+      "marinara"
+    ],
     "unitEquivalences": {
       "can (8 oz)": {
         "base": "ounce",
