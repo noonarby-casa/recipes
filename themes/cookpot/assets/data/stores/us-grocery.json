@@ -159,5 +159,9 @@
     [1, "package of 30"]
   ],
   "baby spinach": [[1, "bag (8 oz)"]],
-  "kale": [[1, "package (5 oz)"]]
+  "kale": [[1, "package (5 oz)"]],
+  "swedish meatball": [[1, "bag (32 oz)"]],
+  "worcestershire sauce": [[1, "bottle (10 fl oz)"]],
+  "lingonberry jam": [[1, "jar (14 oz)"]],
+  "cranberry sauce": [[1, "can (14 oz)"]]
 }

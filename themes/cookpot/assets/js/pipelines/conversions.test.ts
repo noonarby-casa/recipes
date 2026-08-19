@@ -4640,6 +4640,66 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'fresh-produce',
     },
   },
+  {
+    input: {
+      item: 'Swedish meatball',
+      qty: 2,
+      unit: 'pound',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'Swedish meatball',
+      qty: 1,
+      unit: 'bag (32 oz)',
+      category: 'frozen',
+      sizeNote: '2 lbs needed',
+    },
+  },
+  {
+    input: {
+      item: 'Worcestershire sauce',
+      qty: 2,
+      unit: 'teaspoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'Worcestershire sauce',
+      qty: 1,
+      unit: 'bottle (10 fl oz)',
+      category: 'condiments',
+      sizeNote: '2 tsp needed',
+    },
+  },
+  {
+    input: {
+      item: 'lingonberry jam',
+      qty: 1,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'lingonberry jam',
+      qty: 1,
+      unit: 'jar (14 oz)',
+      category: 'condiments',
+      sizeNote: '1 tbsp needed',
+    },
+  },
+  {
+    input: {
+      item: 'cranberry sauce',
+      qty: 1,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'cranberry sauce',
+      qty: 1,
+      unit: 'can (14 oz)',
+      category: 'condiments',
+      sizeNote: '1 tbsp needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

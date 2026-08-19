@@ -581,6 +581,8 @@
       "rigatoni pasta",
       "ramen noodles",
       "ramen noodle",
+      "fresh egg pasta",
+      "egg pasta",
       "steamed rice"
     ],
     "unitEquivalences": {
@@ -3316,5 +3318,86 @@
     "category": "spices-seasonings",
     "staple": true,
     "items": ["celery salt"]
+  },
+  {
+    "canonicalName": "swedish meatball",
+    "category": "frozen",
+    "items": [
+      {
+        "singular": "swedish meatball",
+        "plural": "swedish meatballs"
+      },
+      "Swedish meatball",
+      "Swedish meatballs",
+      "frozen Swedish meatball",
+      "frozen Swedish meatballs"
+    ],
+    "unitEquivalences": {
+      "bag (32 oz)": {
+        "base": "pound",
+        "factor": 2
+      },
+      "package (32 oz)": {
+        "base": "pound",
+        "factor": 2
+      },
+      "package": {
+        "base": "pound",
+        "factor": 2
+      }
+    }
+  },
+  {
+    "canonicalName": "worcestershire sauce",
+    "category": "condiments",
+    "items": ["worcestershire sauce", "Worcestershire sauce"],
+    "unitEquivalences": {
+      "bottle (10 fl oz)": {
+        "base": "teaspoon",
+        "factor": 60
+      },
+      "bottle": {
+        "base": "teaspoon",
+        "factor": 60
+      }
+    }
+  },
+  {
+    "canonicalName": "lingonberry jam",
+    "category": "condiments",
+    "items": [
+      "lingonberry jam",
+      "lingonberry preserve",
+      "lingonberry preserves"
+    ],
+    "unitEquivalences": {
+      "jar (14 oz)": {
+        "base": "tablespoon",
+        "factor": 20
+      },
+      "jar": {
+        "base": "tablespoon",
+        "factor": 20
+      }
+    }
+  },
+  {
+    "canonicalName": "cranberry sauce",
+    "category": "condiments",
+    "items": [
+      "cranberry sauce",
+      "canned cranberry sauce",
+      "whole berry cranberry sauce"
+    ],
+    "unitEquivalences": {
+      "can (14 oz)": {
+        "base": "tablespoon",
+        "factor": 20
+      },
+      "can": {
+        "base": "tablespoon",
+        "factor": 20
+      }
+    }
   }
 ]
