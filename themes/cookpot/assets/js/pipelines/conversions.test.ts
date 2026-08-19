@@ -4700,6 +4700,34 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '1 tbsp needed',
     },
   },
+  {
+    input: {
+      item: 'fennel',
+      qty: 1,
+      unit: '',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'fennel',
+      qty: 1,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'leek',
+      qty: 1,
+      unit: '',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'leek',
+      qty: 1,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

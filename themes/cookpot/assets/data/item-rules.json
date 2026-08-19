@@ -577,6 +577,7 @@
       "lasagna",
       "elbow macaroni",
       "rigatoni",
+      "orzo",
       "orzo pasta",
       "rigatoni pasta",
       "ramen noodles",
@@ -3399,5 +3400,36 @@
         "factor": 20
       }
     }
+  },
+  {
+    "canonicalName": "fennel",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "fennel",
+        "plural": "fennel",
+        "aliases": ["fennel bulb"]
+      }
+    ],
+    "unitEquivalences": {
+      "bulb": {
+        "base": "fennel",
+        "factor": 1
+      },
+      "head": {
+        "base": "fennel",
+        "factor": 1
+      }
+    }
+  },
+  {
+    "canonicalName": "leek",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "leek",
+        "plural": "leeks"
+      }
+    ]
   }
 ]
