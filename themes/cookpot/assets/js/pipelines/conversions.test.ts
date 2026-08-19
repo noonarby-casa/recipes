@@ -4728,6 +4728,21 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'fresh-produce',
     },
   },
+  {
+    input: {
+      item: 'sushi rice',
+      qty: 1,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'rice',
+      qty: 1,
+      unit: 'bag (2 lb)',
+      category: 'pasta-grains',
+      sizeNote: '1 cup needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

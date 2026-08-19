@@ -2027,7 +2027,13 @@
   {
     "canonicalName": "rice",
     "category": "pasta-grains",
-    "items": ["rice", "white rice", "basmati rice", "jasmine rice"],
+    "items": [
+      "rice",
+      "white rice",
+      "basmati rice",
+      "jasmine rice",
+      "sushi rice"
+    ],
     "unitEquivalences": {
       "bag (2 lb)": {
         "base": "cup",
