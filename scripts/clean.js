@@ -9,7 +9,7 @@ const rootDir = path.resolve(__dirname, '..');
 const cleanTargets = [
   'public',
   'resources/_gen',
-  'themes/cookpot/static/dist',
+  'themes/cookpot/assets/dist',
   'playwright-report',
   'test-results',
   '.hugo_build.lock',

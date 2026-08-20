@@ -11,7 +11,7 @@ export default defineConfig({
     cssInjectedByJsPlugin(),
   ],
   build: {
-    outDir: 'themes/cookpot/static/dist',
+    outDir: 'themes/cookpot/assets/dist',
     emptyOutDir: false,
     lib: {
       entry: 'themes/cookpot/assets/js/svelte-main.ts',

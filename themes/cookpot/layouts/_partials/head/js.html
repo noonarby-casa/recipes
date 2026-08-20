@@ -1,8 +1,13 @@
-{{ if eq hugo.Environment "development" }}
-  <script
-    src="{{ "dist/meal-planner.js" | relURL }}?v={{ now.UnixNano }}"
-    defer
-  ></script>
-{{ else }}
-  <script src="{{ "dist/meal-planner.js" | relURL }}" defer></script>
-{{ end }}
+{{- with resources.Get "dist/meal-planner.js" }}
+  {{- if eq hugo.Environment "development" }}
+    <script src="{{ .RelPermalink }}?v={{ now.UnixNano }}" defer></script>
+  {{- else }}
+    {{- $fingerprinted := . | resources.Fingerprint "sha256" }}
+    <script
+      src="{{ $fingerprinted.RelPermalink }}"
+      integrity="{{ $fingerprinted.Data.Integrity }}"
+      defer
+      crossorigin="anonymous"
+    ></script>
+  {{- end }}
+{{- end }}
