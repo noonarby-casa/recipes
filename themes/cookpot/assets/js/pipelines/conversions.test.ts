@@ -4773,6 +4773,38 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '24 oz needed',
     },
   },
+  {
+    input: {
+      item: 'goat cheese',
+      qty: 300,
+      unit: 'gram',
+      desc: 'herbed',
+      prep: 'room temperature',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'goat cheese',
+      qty: 300,
+      unit: 'grams',
+      category: 'butter-cheese',
+    },
+  },
+  {
+    input: {
+      item: 'pumpkin seed',
+      qty: 1,
+      unit: 'cup',
+      desc: 'raw (pepitas)',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'pumpkin seed',
+      qty: null,
+      unit: '',
+      category: 'fresh-produce',
+      sizeNote: '1 cup needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

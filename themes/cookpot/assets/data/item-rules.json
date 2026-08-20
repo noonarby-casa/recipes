@@ -3444,5 +3444,22 @@
         "plural": "leeks"
       }
     ]
+  },
+  {
+    "canonicalName": "goat cheese",
+    "category": "butter-cheese",
+    "items": ["goat cheese", "herbed goat cheese"]
+  },
+  {
+    "canonicalName": "pumpkin seed",
+    "category": "fresh-produce",
+    "pluralByDefault": true,
+    "items": [
+      {
+        "singular": "pumpkin seed",
+        "plural": "pumpkin seeds",
+        "aliases": ["pepita", "pepitas"]
+      }
+    ]
   }
 ]
