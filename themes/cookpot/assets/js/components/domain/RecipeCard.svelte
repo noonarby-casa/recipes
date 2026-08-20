@@ -98,6 +98,14 @@
       plannerStore.updateScale(item.instanceId, nextPortions / defaultServings);
     }
   }
+
+  function handleToggleFavorite(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    if (shortId) {
+      favoritesStore.toggle(shortId);
+    }
+  }
 </script>
 
 {#if variant === 'standard' || variant === 'planner'}
@@ -151,7 +159,24 @@
           <div class="recipe-custom-badge" title="Custom Recipe">Custom</div>
         {/if}
 
-        {#if showFavorite && isFav}
+        {#if variant === 'standard' && showFavorite && shortId}
+          <button
+            type="button"
+            class="recipe-card-favorite-btn {isFav ? 'is-favorite' : ''}"
+            onclick={handleToggleFavorite}
+            aria-label={isFav ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
+            aria-pressed={isFav ? 'true' : 'false'}
+            title={isFav ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <HeartIcon
+              fill={isFav ? 'currentColor' : 'none'}
+              color="currentColor"
+              size={18}
+              strokeWidth={2.5}
+              class="recipe-card-heart-icon {isFav ? 'pop-anim' : ''}"
+            />
+          </button>
+        {:else if showFavorite && isFav}
           <div class="recipe-favorite-badge" title="Favorited recipe">
             <HeartIcon fill="currentColor" color="none" size={36} class="heart-icon-badge" />
           </div>

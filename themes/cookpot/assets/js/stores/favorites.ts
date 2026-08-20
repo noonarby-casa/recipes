@@ -15,6 +15,16 @@ const { subscribe, set, update } = writable<string[]>(
   getFavoritesFromStorage(),
 );
 
+function dispatchFavoritesChanged(shortId: string, isFavorite: boolean) {
+  if (typeof document !== 'undefined') {
+    document.dispatchEvent(
+      new CustomEvent('favoritesChanged', {
+        detail: { shortId, isFavorite },
+      }),
+    );
+  }
+}
+
 export const favoritesStore = {
   subscribe,
   add(shortId: string) {
@@ -25,11 +35,7 @@ export const favoritesStore = {
       if (!favs.includes(shortId)) {
         const next = [...favs, shortId];
         ls.setJson(LOCALSTORAGE_KEY, next);
-        document.dispatchEvent(
-          new CustomEvent('favoritesChanged', {
-            detail: { shortId, isFavorite: true },
-          }),
-        );
+        dispatchFavoritesChanged(shortId, true);
         return next;
       }
       return favs;
@@ -43,11 +49,7 @@ export const favoritesStore = {
       if (favs.includes(shortId)) {
         const next = favs.filter((id) => id !== shortId);
         ls.setJson(LOCALSTORAGE_KEY, next);
-        document.dispatchEvent(
-          new CustomEvent('favoritesChanged', {
-            detail: { shortId, isFavorite: false },
-          }),
-        );
+        dispatchFavoritesChanged(shortId, false);
         return next;
       }
       return favs;
@@ -63,25 +65,59 @@ export const favoritesStore = {
         const next = favs.filter((id) => id !== shortId);
         ls.setJson(LOCALSTORAGE_KEY, next);
         isFav = false;
-        document.dispatchEvent(
-          new CustomEvent('favoritesChanged', {
-            detail: { shortId, isFavorite: false },
-          }),
-        );
+        dispatchFavoritesChanged(shortId, false);
         return next;
       } else {
         const next = [...favs, shortId];
         ls.setJson(LOCALSTORAGE_KEY, next);
         isFav = true;
-        document.dispatchEvent(
-          new CustomEvent('favoritesChanged', {
-            detail: { shortId, isFavorite: true },
-          }),
-        );
+        dispatchFavoritesChanged(shortId, true);
         return next;
       }
     });
     return isFav;
+  },
+  addAll(shortIds: string[]): string[] {
+    const validIds = shortIds.filter(
+      (id) => typeof id === 'string' && id.length > 0,
+    );
+    if (validIds.length === 0) {
+      return [];
+    }
+    let newlyAdded: string[] = [];
+    update((favs) => {
+      newlyAdded = validIds.filter((id) => !favs.includes(id));
+      if (newlyAdded.length === 0) {
+        return favs;
+      }
+      const next = [...favs, ...newlyAdded];
+      ls.setJson(LOCALSTORAGE_KEY, next);
+      newlyAdded.forEach((shortId) => {
+        dispatchFavoritesChanged(shortId, true);
+      });
+      return next;
+    });
+    return newlyAdded;
+  },
+  removeAll(shortIds: string[]): void {
+    const validIds = new Set(
+      shortIds.filter((id) => typeof id === 'string' && id.length > 0),
+    );
+    if (validIds.size === 0) {
+      return;
+    }
+    update((favs) => {
+      const removed = favs.filter((id) => validIds.has(id));
+      if (removed.length === 0) {
+        return favs;
+      }
+      const next = favs.filter((id) => !validIds.has(id));
+      ls.setJson(LOCALSTORAGE_KEY, next);
+      removed.forEach((shortId) => {
+        dispatchFavoritesChanged(shortId, false);
+      });
+      return next;
+    });
   },
   refresh() {
     set(getFavoritesFromStorage());
