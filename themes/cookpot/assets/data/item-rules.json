@@ -1334,7 +1334,14 @@
   {
     "canonicalName": "Italian sausage",
     "category": "meat",
-    "items": ["Italian sausage", "sausage", "mild sausage", "hot sausage"],
+    "items": [
+      "Italian sausage",
+      "sausage",
+      "mild sausage",
+      "hot sausage",
+      "Italian turkey sausage",
+      "turkey sausage"
+    ],
     "unitEquivalences": {
       "package (19 oz)": {
         "base": "link",
@@ -2039,7 +2046,8 @@
       "white rice",
       "basmati rice",
       "jasmine rice",
-      "sushi rice"
+      "sushi rice",
+      "brown rice"
     ],
     "unitEquivalences": {
       "bag (2 lb)": {

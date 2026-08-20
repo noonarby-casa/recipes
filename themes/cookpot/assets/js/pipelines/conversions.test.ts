@@ -4805,6 +4805,53 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '1 cup needed',
     },
   },
+  {
+    input: {
+      item: 'Italian turkey sausage',
+      qty: 1,
+      unit: 'pound',
+      prep: 'casings removed',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'Italian turkey sausage',
+      qty: 1,
+      unit: 'package (19 oz)',
+      category: 'meat',
+      sizeNote: '16 oz needed',
+    },
+  },
+  {
+    input: {
+      item: 'marinara sauce',
+      qty: 2.5,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'marinara sauce',
+      qty: 1,
+      unit: 'can (28 oz)',
+      category: 'canned-tomatoes',
+      sizeNote: '20 oz needed',
+    },
+  },
+  {
+    input: {
+      item: 'brown rice',
+      qty: 2,
+      unit: 'cup',
+      prep: 'cooked',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'brown rice',
+      qty: 1,
+      unit: 'bag (2 lb)',
+      category: 'pasta-grains',
+      sizeNote: '2 cups needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
