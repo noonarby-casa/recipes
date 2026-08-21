@@ -21,7 +21,7 @@
   import StorePicker from '../domain/StorePicker.svelte';
   import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
   import EmptyState from '../primitives/EmptyState.svelte';
-  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
   import ShoppingListItemRow from '../domain/ShoppingListItemRow.svelte';
 
   import { getUrlParams, updateUrlParams, onUrlChange } from '../../utils/urlSync';
@@ -404,7 +404,8 @@
               ? 'Showing favorites only'
               : 'Filter favorites only'}
           >
-            <HeartIcon
+            <Icon
+              name="heart"
               class="heart-icon {$filtersStore.favoritesOnly ? 'pop-anim' : ''}"
             />
           </button>

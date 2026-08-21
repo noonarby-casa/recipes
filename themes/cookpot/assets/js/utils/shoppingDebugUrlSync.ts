@@ -1,5 +1,6 @@
 import type { Recipe } from '../types';
 import { STORE_LAYOUTS } from '../data/store-sections';
+import { parseRecipePortionToken, permalinkToCode } from './urlSync';
 
 const DEFAULT_STORE_LAYOUT_ID = 'market-basket-pnh';
 
@@ -51,22 +52,7 @@ export function parseRecipeUrlParams(
       } else {
         const tokens = rVal.split('.').filter(Boolean);
         tokens.forEach((entry) => {
-          let digitIndex = -1;
-          for (let i = 0; i < entry.length; i++) {
-            const char = entry.charAt(i);
-            if (char >= '0' && char <= '9') {
-              digitIndex = i;
-              break;
-            }
-          }
-
-          let code = entry;
-          let portions: number | null = null;
-          if (digitIndex !== -1) {
-            code = entry.slice(0, digitIndex);
-            portions = parseInt(entry.slice(digitIndex), 10);
-          }
-
+          const { code, portions } = parseRecipePortionToken(entry);
           const rec = recipes.find((r) => r.shortId === code);
           if (rec) {
             const baseYield = rec.servings || 4;
@@ -121,7 +107,7 @@ export function serializeRecipeUrlParams(
         if (rec.permalink in selectedRecipeServings) {
           const servings = selectedRecipeServings[rec.permalink];
           const baseYield = rec.servings || 4;
-          const code = rec.shortId || rec.permalink;
+          const code = permalinkToCode(rec.permalink, recipes);
           if (servings === baseYield) {
             entries.push(code);
           } else {

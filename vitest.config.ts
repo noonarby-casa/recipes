@@ -15,12 +15,20 @@ export default defineConfig({
       },
       {
         // Svelte component tests using @testing-library/svelte.
-        plugins: [svelte({ hot: false })],
+        plugins: [svelte()],
         test: {
           name: 'component',
           environment: 'jsdom',
           include: ['themes/cookpot/assets/js/**/*.svelte.test.ts'],
           setupFiles: ['themes/cookpot/assets/js/__test-setup__/svelte.ts'],
+          server: {
+            deps: {
+              inline: [/svelte/],
+            },
+          },
+        },
+        resolve: {
+          conditions: ['browser'],
         },
       },
     ],

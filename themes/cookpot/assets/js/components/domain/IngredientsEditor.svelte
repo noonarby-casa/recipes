@@ -2,7 +2,7 @@
   import type { IngredientInput } from '../../types';
   import { parseRawUserInput } from '../../simple-parser';
   import { formatItemQuantity } from '../../units';
-  import EditIcon from '../primitives/icons/EditIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
 
   interface Props {
     /** The list of ingredient inputs to manage. */
@@ -122,7 +122,7 @@
               title="Edit ingredient"
               class="action-btn edit-btn"
             >
-              <EditIcon size={14} strokeWidth={2.5} />
+              <Icon name="edit" size={14} strokeWidth={2.5} />
             </button>
             <button
               type="button"

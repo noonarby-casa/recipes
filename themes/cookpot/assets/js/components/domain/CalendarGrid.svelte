@@ -5,7 +5,7 @@
   import type { PlannedItem } from '../../types';
   import DayColumn from './DayColumn.svelte';
   import DietBreakdownPanel from './DietBreakdownPanel.svelte';
-  import TrashIcon from '../primitives/icons/TrashIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
   import { formatDayTitle, getDateSequence, formatIsoDate, getMondayOfWeek } from '../../utils/dates';
 
   interface Props {
@@ -100,7 +100,7 @@
       }
     }}
   >
-    <TrashIcon size={20} strokeWidth={2} />
+    <Icon name="trash" size={20} strokeWidth={2} />
     <span>Drop here to delete</span>
   </div>
 

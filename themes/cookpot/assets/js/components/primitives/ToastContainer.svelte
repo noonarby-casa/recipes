@@ -1,6 +1,6 @@
 <script lang="ts">
   import { toastStore } from '../../stores/toast';
-  import XIcon from './icons/XIcon.svelte';
+  import Icon from './Icon.svelte';
 
   const activeToast = $derived($toastStore);
 
@@ -93,7 +93,7 @@
         aria-label="Dismiss notification"
         onclick={handleDismissClick}
       >
-        <XIcon size={16} strokeWidth={2.5} />
+        <Icon name="x" size={16} strokeWidth={2.5} />
       </button>
     </div>
   </aside>

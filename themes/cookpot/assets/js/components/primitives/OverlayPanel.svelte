@@ -3,9 +3,7 @@
   import { overlayStore, overlayVisible } from '../../stores/overlay';
   import { timersStore } from '../../stores/timers';
   import TimersManager from '../apps/TimersManager.svelte';
-  import PlusIcon from './icons/PlusIcon.svelte';
-  import MinusIcon from './icons/MinusIcon.svelte';
-  import TimerIcon from './icons/TimerIcon.svelte';
+  import Icon from './Icon.svelte';
 
   const overlayState = $derived($overlayStore);
 
@@ -98,9 +96,9 @@
       onclick={() => overlayStore.toggle()}
     >
       {#if overlayState.isMinimized}
-        <PlusIcon size={16} strokeWidth={2.5} />
+        <Icon name="plus" size={16} strokeWidth={2.5} />
       {:else}
-        <MinusIcon size={16} strokeWidth={2.5} />
+        <Icon name="minus" size={16} strokeWidth={2.5} />
       {/if}
     </button>
 
@@ -116,7 +114,7 @@
         data-tooltip="Restore Cooking Dashboard"
         onclick={() => overlayStore.expand()}
       >
-        <TimerIcon size={20} strokeWidth={2.5} />
+        <Icon name="timer" size={20} strokeWidth={2.5} />
       </button>
     {/if}
 

@@ -100,3 +100,50 @@ export const ls = {
     URL.revokeObjectURL(url);
   },
 };
+
+import { writable, type Writable } from 'svelte/store';
+
+export interface PersistOptions<T> {
+  storageType?: 'json' | 'string';
+  serializer?: (value: T) => unknown;
+  deserializer?: (stored: unknown) => T;
+}
+
+/**
+ * Creates a Svelte Writable store initialized from localStorage and automatically
+ * persisting changes on update.
+ */
+export function persistedWritable<T>(
+  key: string,
+  defaultValue: T,
+  options: PersistOptions<T> = {},
+): Writable<T> {
+  const { storageType = 'json', serializer, deserializer } = options;
+
+  let initialValue = defaultValue;
+  if (storageType === 'string') {
+    const raw = ls.getString(key);
+    if (raw !== null) {
+      initialValue = deserializer ? deserializer(raw) : (raw as unknown as T);
+    }
+  } else {
+    const rawJson = ls.getJson<unknown>(key);
+    if (rawJson !== null) {
+      initialValue = deserializer ? deserializer(rawJson) : (rawJson as T);
+    }
+  }
+
+  const store = writable<T>(initialValue);
+
+  store.subscribe((val) => {
+    if (storageType === 'string') {
+      const stringVal = serializer ? String(serializer(val)) : String(val);
+      ls.setString(key, stringVal);
+    } else {
+      const jsonVal = serializer ? serializer(val) : val;
+      ls.setJson(key, jsonVal);
+    }
+  });
+
+  return store;
+}

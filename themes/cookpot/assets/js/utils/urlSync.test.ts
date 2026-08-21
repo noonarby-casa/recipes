@@ -1,6 +1,13 @@
 // @vitest-environment jsdom
 import { describe, expect, test, beforeEach, vi } from 'vitest';
-import { getUrlParams, updateUrlParams, onUrlChange } from './urlSync';
+import {
+  getUrlParams,
+  updateUrlParams,
+  onUrlChange,
+  parseRecipePortionToken,
+  permalinkToCode,
+  codeToPermalink,
+} from './urlSync';
 
 describe('urlSync utility', () => {
   beforeEach(() => {
@@ -42,5 +49,37 @@ describe('urlSync utility', () => {
     expect(params.get('test')).toBe('123');
 
     unsubscribe();
+  });
+
+  test('parseRecipePortionToken parses code and portions correctly', () => {
+    expect(parseRecipePortionToken('tacos2')).toEqual({
+      code: 'tacos',
+      portions: 2,
+    });
+    expect(parseRecipePortionToken('pasta12')).toEqual({
+      code: 'pasta',
+      portions: 12,
+    });
+    expect(parseRecipePortionToken('c4')).toEqual({
+      code: 'c',
+      portions: 4,
+    });
+    expect(parseRecipePortionToken('chicken-soup')).toEqual({
+      code: 'chicken-soup',
+      portions: null,
+    });
+  });
+
+  test('permalinkToCode and codeToPermalink map recipes correctly', () => {
+    const recipes = [
+      { permalink: '/recipes/chicken-tacos/', shortId: 'rec1' },
+      { permalink: '/recipes/pasta/' },
+    ];
+
+    expect(permalinkToCode('/recipes/chicken-tacos/', recipes)).toBe('rec1');
+    expect(permalinkToCode('/recipes/pasta/', recipes)).toBe('/recipes/pasta/');
+
+    expect(codeToPermalink('rec1', recipes)).toBe('/recipes/chicken-tacos/');
+    expect(codeToPermalink('unknown', recipes)).toBe('/unknown/');
   });
 });

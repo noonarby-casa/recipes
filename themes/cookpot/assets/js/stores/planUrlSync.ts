@@ -14,6 +14,12 @@ import {
   parseIsoDate,
   parseUrlDate,
 } from '../utils/dates';
+import {
+  parseRecipePortionToken,
+  permalinkToCode,
+  codeToPermalink,
+} from '../utils/urlSync';
+
 const CODE_TO_DAYS: Record<string, string> = {
   '0': 'sun',
   '1': 'mon',
@@ -42,19 +48,6 @@ function base64UrlDecode(str: string): string {
   const binString = atob(b64);
   const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
   return new TextDecoder().decode(bytes);
-}
-
-function permalinkToCode(permalink: string, recipes: Recipe[]): string {
-  const rec = recipes.find((r) => r.permalink === permalink);
-  return rec && rec.shortId ? rec.shortId : permalink;
-}
-
-function codeToPermalink(code: string, recipes: Recipe[]): string {
-  const rec = recipes.find((r) => r.shortId === code);
-  if (rec) {
-    return rec.permalink;
-  }
-  return `/${code}/`;
 }
 
 export const planUrlQueryString = derived(
@@ -270,21 +263,7 @@ export function parsePlanUrlParams(
           }
         }
 
-        let digitIndex = -1;
-        for (let i = 0; i < restStr.length; i++) {
-          const char = restStr.charAt(i);
-          if (char >= '0' && char <= '9') {
-            digitIndex = i;
-            break;
-          }
-        }
-
-        let code = restStr;
-        let portions: number | null = null;
-        if (digitIndex !== -1) {
-          code = restStr.slice(0, digitIndex);
-          portions = parseInt(restStr.slice(digitIndex), 10);
-        }
+        const { code, portions } = parseRecipePortionToken(restStr);
 
         const isCustomCode = code === 'c' || code === 'custom';
         const permalink = isCustomCode
@@ -327,21 +306,7 @@ export function parsePlanUrlParams(
           return;
         }
 
-        let digitIndex = -1;
-        for (let i = 0; i < rest.length; i++) {
-          const char = rest.charAt(i);
-          if (char >= '0' && char <= '9') {
-            digitIndex = i;
-            break;
-          }
-        }
-
-        let code = rest;
-        let portions: number | null = null;
-        if (digitIndex !== -1) {
-          code = rest.slice(0, digitIndex);
-          portions = parseInt(rest.slice(digitIndex), 10);
-        }
+        const { code, portions } = parseRecipePortionToken(rest);
 
         const isCustomCode = code === 'c' || code === 'custom';
         const permalink = isCustomCode

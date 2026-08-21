@@ -6,7 +6,7 @@
   import type { PlannedItem, IngredientInput } from '../../types';
   import Modal from '../primitives/Modal.svelte';
   import ServingsPicker from './ServingsPicker.svelte';
-  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
   import IconPicker from './IconPicker.svelte';
   import IngredientsEditor from './IngredientsEditor.svelte';
 
@@ -109,7 +109,7 @@
             aria-label="Favorite recipe"
             title={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <HeartIcon fill={isFav ? 'var(--heart-color)' : 'none'} size={22} color={isFav ? 'var(--heart-color)' : 'var(--text-muted)'} />
+            <Icon name="heart" fill={isFav ? 'var(--heart-color)' : 'none'} size={22} color={isFav ? 'var(--heart-color)' : 'var(--text-muted)'} />
           </button>
         {/if}
       </div>

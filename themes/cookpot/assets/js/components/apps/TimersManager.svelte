@@ -4,9 +4,7 @@
   import type { TimerState } from '../../types';
   import { overlayStore } from '../../stores/overlay';
   import { formatTime } from '../../utils/timer';
-  import PlayIcon from '../primitives/icons/PlayIcon.svelte';
-  import PauseIcon from '../primitives/icons/PauseIcon.svelte';
-  import ResetIcon from '../primitives/icons/ResetIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
 
   let recipeUrl = $state('');
 
@@ -104,9 +102,9 @@
                     aria-label={t.status === 'running' ? 'Pause' : 'Play'}
                   >
                     {#if t.status === 'running'}
-                      <PauseIcon size={12} strokeWidth={2.5} />
+                      <Icon name="pause" size={12} strokeWidth={2.5} />
                     {:else}
-                      <PlayIcon size={12} strokeWidth={2.5} />
+                      <Icon name="play" size={12} strokeWidth={2.5} />
                     {/if}
                   </button>
                   <button
@@ -115,7 +113,7 @@
                     onclick={() => handleReset(t)}
                     aria-label="Reset"
                   >
-                    <ResetIcon size={12} strokeWidth={2.5} />
+                    <Icon name="reset" size={12} strokeWidth={2.5} />
                   </button>
                   <button
                     type="button"

@@ -6,7 +6,9 @@ import type {
 } from '../types';
 import { SINGULAR_TO_PLURAL } from '../constants';
 import { getSingularUnit } from '../units';
-import { ITEM_RULES } from '../data/rules';
+import { getCanonicalName } from '../utils/rules';
+
+export { getCanonicalName };
 
 const PLURAL_UNITS_SET = new Set(
   Object.entries(SINGULAR_TO_PLURAL)
@@ -172,22 +174,6 @@ function validateUnitField(
   }
 
   return errors;
-}
-
-export function getCanonicalName(itemName: string): string {
-  const lower = itemName.toLowerCase().trim();
-  const rule = ITEM_RULES.find(
-    (r) =>
-      r.canonicalName.toLowerCase() === lower ||
-      r.items.some((i) =>
-        typeof i === 'string'
-          ? i.toLowerCase() === lower
-          : i.singular.toLowerCase() === lower ||
-            i.plural.toLowerCase() === lower ||
-            i.aliases?.some((a) => a.toLowerCase() === lower),
-      ),
-  );
-  return rule ? rule.canonicalName : lower;
 }
 
 export function validateIngredient(ing: IngredientInput): ValidationError[] {

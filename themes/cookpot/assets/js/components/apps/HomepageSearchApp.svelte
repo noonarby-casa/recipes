@@ -9,12 +9,8 @@
   import RecipeCard from '../domain/RecipeCard.svelte';
   import FiltersModal from '../domain/FiltersModal.svelte';
   import { PRIMARY_TAGS } from '../../constants';
-  import SearchIcon from '../primitives/icons/SearchIcon.svelte';
-  import XIcon from '../primitives/icons/XIcon.svelte';
-  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
   import EmptyState from '../primitives/EmptyState.svelte';
-  import FilterIcon from '../primitives/icons/FilterIcon.svelte';
-  import DiceIcon from '../primitives/icons/DiceIcon.svelte';
 
   let hasHydrated = $state(false);
   let isFiltersOpen = $state(false);
@@ -258,7 +254,7 @@
         class="planner-callout-btn"
         onclick={handleGeneratePlan}
       >
-        <DiceIcon size={14} strokeWidth={2.5} />
+        <Icon name="dice" size={14} strokeWidth={2.5} />
         Generate Plan
       </button>
       <a href="/plan/" class="planner-callout-btn-secondary">Open Planner →</a>
@@ -268,7 +264,7 @@
         onclick={dismissPlannerBanner}
         aria-label="Dismiss meal planner announcement"
       >
-        <XIcon size={16} strokeWidth={2.5} />
+        <Icon name="x" size={16} strokeWidth={2.5} />
       </button>
     </div>
   </div>
@@ -279,7 +275,7 @@
   <div class="recipe-search-container">
     <div class="recipe-search-row">
       <div class="recipe-search-box">
-        <SearchIcon size={18} strokeWidth={2.5} class="search-icon" />
+        <Icon name="search" size={18} strokeWidth={2.5} class="search-icon" />
         <input
           type="search"
           id="recipe-search-input-hydrated"
@@ -297,7 +293,7 @@
             aria-label="Clear search"
             onclick={() => filtersStore.update(f => ({ ...f, searchQuery: '' }))}
           >
-            <XIcon size={16} strokeWidth={2.5} />
+            <Icon name="x" size={16} strokeWidth={2.5} />
           </button>
         {/if}
       </div>
@@ -308,7 +304,7 @@
         title="Surprise me with a random recipe"
         onclick={handleSurpriseMe}
       >
-        <DiceIcon size={16} strokeWidth={2.5} />
+        <Icon name="dice" size={16} strokeWidth={2.5} />
         <span>Surprise Me</span>
       </button>
     </div>
@@ -319,7 +315,7 @@
           class="tag-filter-pill favorites-pill {$filtersStore.favoritesOnly ? 'include' : ''}"
           onclick={() => filtersStore.update(f => ({ ...f, favoritesOnly: !f.favoritesOnly }))}
         >
-          <HeartIcon size={11} fill="currentColor" color="none" class="heart-icon-badge" />
+          <Icon name="heart" size={11} fill="currentColor" color="none" class="heart-icon-badge" />
           <span>Favorites</span>
         </button>
         {#each PRIMARY_TAGS as tag (tag)}
@@ -335,7 +331,7 @@
         {/each}
       </div>
       <button type="button" class="btn-more-filters" onclick={() => isFiltersOpen = true}>
-        <FilterIcon size={14} strokeWidth={2.5} />
+        <Icon name="filter" size={14} strokeWidth={2.5} />
         Filters
       </button>
     </div>
@@ -349,7 +345,7 @@
               class="btn-favorite-all"
               onclick={handleFavoriteAll}
             >
-              <HeartIcon size={13} fill="currentColor" color="none" class="heart-icon-badge" />
+              <Icon name="heart" size={13} fill="currentColor" color="none" class="heart-icon-badge" />
               <span>Favorite all</span>
             </button>
           {/if}

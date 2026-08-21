@@ -107,3 +107,59 @@ export function updateUrlParams(
     applyUpdates();
   }
 }
+
+/**
+ * Parses a token like "rec12" or "apple-pie4" or "c6" into the recipe code and numeric portion count.
+ */
+export function parseRecipePortionToken(token: string): {
+  code: string;
+  portions: number | null;
+} {
+  let digitIndex = -1;
+  for (let i = 0; i < token.length; i++) {
+    const char = token.charAt(i);
+    if (char >= '0' && char <= '9') {
+      digitIndex = i;
+      break;
+    }
+  }
+
+  if (digitIndex !== -1) {
+    const code = token.slice(0, digitIndex);
+    const portions = parseInt(token.slice(digitIndex), 10);
+    return {
+      code,
+      portions: isNaN(portions) ? null : portions,
+    };
+  }
+
+  return {
+    code: token,
+    portions: null,
+  };
+}
+
+/**
+ * Converts a recipe permalink to its compact shortId code (or fallback permalink).
+ */
+export function permalinkToCode(
+  permalink: string,
+  recipes: Array<{ permalink: string; shortId?: string }>,
+): string {
+  const rec = recipes.find((r) => r.permalink === permalink);
+  return rec && rec.shortId ? rec.shortId : permalink;
+}
+
+/**
+ * Resolves a compact recipe shortId code back to its full permalink path.
+ */
+export function codeToPermalink(
+  code: string,
+  recipes: Array<{ permalink: string; shortId?: string }>,
+): string {
+  const rec = recipes.find((r) => r.shortId === code);
+  if (rec) {
+    return rec.permalink;
+  }
+  return `/${code}/`;
+}

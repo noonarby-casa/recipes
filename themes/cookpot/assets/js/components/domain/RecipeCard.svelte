@@ -5,12 +5,7 @@
   import { favoritesStore } from '../../stores/favorites';
   import { formatItemQuantity, formatAbbreviatedTime } from '../../units';
   import ServingsPicker from './ServingsPicker.svelte';
-  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
-  import CalendarIcon from '../primitives/icons/CalendarIcon.svelte';
-  import ClockIcon from '../primitives/icons/ClockIcon.svelte';
-  import UserIcon from '../primitives/icons/UserIcon.svelte';
-  import SwapIcon from '../primitives/icons/SwapIcon.svelte';
-  import EditIcon from '../primitives/icons/EditIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
 
   interface Props {
     /** The recipe data to display. */
@@ -168,7 +163,8 @@
             aria-pressed={isFav ? 'true' : 'false'}
             title={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <HeartIcon
+            <Icon
+              name="heart"
               fill={isFav ? 'currentColor' : 'none'}
               color="currentColor"
               size={18}
@@ -178,7 +174,7 @@
           </button>
         {:else if showFavorite && isFav}
           <div class="recipe-favorite-badge" title="Favorited recipe">
-            <HeartIcon fill="currentColor" color="none" size={36} class="heart-icon-badge" />
+            <Icon name="heart" fill="currentColor" color="none" size={36} class="heart-icon-badge" />
           </div>
         {/if}
 
@@ -205,13 +201,13 @@
           <div class="recipe-metadata-items">
             {#if rec?.dateHuman}
               <div class="recipe-meta-item recipe-date">
-                <CalendarIcon size={14} strokeWidth={2.5} class="date-icon" />
+                <Icon name="calendar" size={14} strokeWidth={2.5} class="date-icon" />
                 <time datetime={rec.dateMachine} class="recipe-list-date">{rec.dateHuman}</time>
               </div>
             {/if}
             {#if rec?.times && rec.times.length > 0}
               <div class="recipe-meta-item recipe-time">
-                <ClockIcon size={14} strokeWidth={2.5} class="time-icon" />
+                <Icon name="clock" size={14} strokeWidth={2.5} class="time-icon" />
                 <span>
                   {#each rec.times as t, index}
                     {#if index > 0}{' + '}{/if}
@@ -221,7 +217,7 @@
               </div>
             {/if}
             <div class="recipe-meta-item recipe-source">
-              <UserIcon size={14} strokeWidth={2.5} class="source-icon" />
+              <Icon name="user" size={14} strokeWidth={2.5} class="source-icon" />
               <span>{rec?.recipeSource || 'Noonarby'}</span>
             </div>
           </div>
@@ -253,12 +249,12 @@
             <div class="planner-action-btns">
               {#if onSwap}
                 <button type="button" class="recipe-control-btn recipe-swap-btn" onclick={onSwap} title="Swap recipe">
-                  <SwapIcon size={14} strokeWidth={2.5} />
+                  <Icon name="swap" size={14} strokeWidth={2.5} />
                 </button>
               {/if}
               {#if onEditDetails}
                 <button type="button" class="recipe-control-btn recipe-edit-details-btn" onclick={onEditDetails} title="Edit details">
-                  <EditIcon size={14} strokeWidth={2.5} />
+                  <Icon name="edit" size={14} strokeWidth={2.5} />
                 </button>
               {/if}
               {#if onRemove}
@@ -305,7 +301,7 @@
         />
         {#if showFavorite && isFav}
           <div class="compact-fav-badge" title="Favorited recipe">
-            <HeartIcon size={10} fill="currentColor" color="none" />
+            <Icon name="heart" size={10} fill="currentColor" color="none" />
           </div>
         {/if}
       </div>

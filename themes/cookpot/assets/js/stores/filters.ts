@@ -1,96 +1,62 @@
-import { writable } from 'svelte/store';
-import { ls } from '../utils/storage';
+import type { FiltersState } from '../types';
+import { persistedWritable } from '../utils/storage';
+import { syncStoreWithUrl } from './urlSyncStore';
 
 const FILTERS_KEY = 'noonarby-meal-plan-filters';
 
-import type { FiltersState } from '../types';
+const defaultFilters: FiltersState = {
+  searchQuery: '',
+  favoritesOnly: false,
+  includedTags: [],
+  excludedTags: [],
+  includedSources: [],
+  excludedSources: [],
+};
 
-function loadFilters(): FiltersState {
-  let includedTags: string[] = [];
-  let excludedTags: string[] = [];
-  let includedSources: string[] = [];
-  let excludedSources: string[] = [];
-  let searchQuery = '';
-  let favoritesOnly = false;
-
-  const stored = ls.getJson<Record<string, unknown>>(FILTERS_KEY);
-  if (stored) {
-    if (stored.includedTags) {
-      includedTags = stored.includedTags as string[];
-    }
-    if (stored.excludedTags) {
-      excludedTags = stored.excludedTags as string[];
-    }
-    if (stored.includedSources) {
-      includedSources = stored.includedSources as string[];
-    }
-    if (stored.excludedSources) {
-      excludedSources = stored.excludedSources as string[];
-    }
-  }
-
-  if (typeof window !== 'undefined' && window.location) {
-    try {
-      const params = new URLSearchParams(window.location.search);
-
-      const tagParam = params.get('tag') ?? params.get('tags');
-      if (tagParam !== null) {
-        includedTags = tagParam
-          .split(',')
-          .map((t) => t.trim())
-          .filter((t) => t.length > 0);
-        excludedTags = [];
-      }
-
-      const qParam =
-        params.get('q') ?? params.get('query') ?? params.get('search');
-      if (qParam !== null && qParam !== 'focus') {
-        searchQuery = qParam.trim();
-      }
-
-      const sourceParam = params.get('source') ?? params.get('sources');
-      if (sourceParam !== null) {
-        includedSources = sourceParam
-          .split(',')
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0);
-        excludedSources = [];
-      }
-
-      const favParam = params.get('favorites') ?? params.get('favorite');
-      if (favParam !== null) {
-        favoritesOnly = favParam === 'true' || favParam === '';
-      }
-    } catch (e) {
-      console.error('Error parsing filters from URL:', e);
-    }
-  }
-
-  return {
-    searchQuery,
-    favoritesOnly,
-    includedTags,
-    excludedTags,
-    includedSources,
-    excludedSources,
-  };
-}
-
-import { syncStoreWithUrl } from './urlSyncStore';
-
-export const filtersStore = writable<FiltersState>(loadFilters());
-
-filtersStore.subscribe((state) => {
-  ls.setJson(FILTERS_KEY, {
-    includedTags: state.includedTags,
-    excludedTags: state.excludedTags,
-    includedSources: state.includedSources,
-    excludedSources: state.excludedSources,
-  });
-});
+export const filtersStore = persistedWritable<FiltersState>(
+  FILTERS_KEY,
+  defaultFilters,
+  {
+    deserializer: (raw) => {
+      const stored = raw as Record<string, unknown> | null;
+      return {
+        searchQuery: '',
+        favoritesOnly: false,
+        includedTags: Array.isArray(stored?.includedTags)
+          ? (stored.includedTags as string[])
+          : [],
+        excludedTags: Array.isArray(stored?.excludedTags)
+          ? (stored.excludedTags as string[])
+          : [],
+        includedSources: Array.isArray(stored?.includedSources)
+          ? (stored.includedSources as string[])
+          : [],
+        excludedSources: Array.isArray(stored?.excludedSources)
+          ? (stored.excludedSources as string[])
+          : [],
+      };
+    },
+    serializer: (state) => ({
+      includedTags: state.includedTags,
+      excludedTags: state.excludedTags,
+      includedSources: state.includedSources,
+      excludedSources: state.excludedSources,
+    }),
+  },
+);
 
 syncStoreWithUrl(filtersStore, {
-  paramKeys: ['q', 'tag', 'source', 'favorites'],
+  paramKeys: [
+    'q',
+    'query',
+    'search',
+    'tag',
+    'tags',
+    'source',
+    'sources',
+    'favorites',
+    'favorite',
+  ],
   serialize: (state) => ({
     q: state.searchQuery ? state.searchQuery : null,
     tag: state.includedTags.length > 0 ? state.includedTags.join(',') : null,
@@ -100,23 +66,31 @@ syncStoreWithUrl(filtersStore, {
   }),
   deserialize: (params) => {
     const deserialized: Partial<FiltersState> = {};
-    if (params.has('q')) {
-      deserialized.searchQuery = params.get('q') || '';
+    const qParam =
+      params.get('q') ?? params.get('query') ?? params.get('search');
+    if (qParam !== null && qParam !== 'focus') {
+      deserialized.searchQuery = qParam.trim();
     }
-    if (params.has('tag')) {
-      deserialized.includedTags = (params.get('tag') || '')
+    const tagParam = params.get('tag') ?? params.get('tags');
+    if (tagParam !== null) {
+      deserialized.includedTags = tagParam
         .split(',')
         .map((t) => t.trim())
         .filter(Boolean);
+      deserialized.excludedTags = [];
     }
-    if (params.has('source')) {
-      deserialized.includedSources = (params.get('source') || '')
+    const sourceParam = params.get('source') ?? params.get('sources');
+    if (sourceParam !== null) {
+      deserialized.includedSources = sourceParam
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean);
+      deserialized.excludedSources = [];
     }
-    if (params.has('favorites')) {
-      deserialized.favoritesOnly = params.get('favorites') === '1';
+    const favParam = params.get('favorites') ?? params.get('favorite');
+    if (favParam !== null) {
+      deserialized.favoritesOnly =
+        favParam === '1' || favParam === 'true' || favParam === '';
     }
     return deserialized;
   },

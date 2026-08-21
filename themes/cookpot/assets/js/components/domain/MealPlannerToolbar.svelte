@@ -1,7 +1,6 @@
 <script lang="ts">
   import ToggleGroup from '../primitives/ToggleGroup.svelte';
-  import FilterIcon from '../primitives/icons/FilterIcon.svelte';
-  import DiceIcon from '../primitives/icons/DiceIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
   import DateRangePicker from './DateRangePicker.svelte';
   import MonthYearPicker from './MonthYearPicker.svelte';
 
@@ -151,7 +150,7 @@
         class="btn btn-secondary"
         onclick={() => onOpenFilters?.()}
       >
-        <FilterIcon size={14} strokeWidth={2.5} />
+        <Icon name="filter" size={14} strokeWidth={2.5} />
         Filters
       </button>
       <button
@@ -160,7 +159,7 @@
         class="btn btn-brand"
         onclick={() => onGenerateDinnerPlan?.()}
       >
-        <DiceIcon size={14} strokeWidth={2.5} />
+        <Icon name="dice" size={14} strokeWidth={2.5} />
         Generate Dinner Plan
       </button>
       <button

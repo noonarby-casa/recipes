@@ -9,7 +9,7 @@
   import Modal from '../primitives/Modal.svelte';
   import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
   import EmptyState from '../primitives/EmptyState.svelte';
-  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
   import ServingsPicker from './ServingsPicker.svelte';
   import IconPicker from './IconPicker.svelte';
   import IngredientsEditor from './IngredientsEditor.svelte';
@@ -210,7 +210,7 @@
             aria-pressed={$filtersStore.favoritesOnly}
             title={$filtersStore.favoritesOnly ? 'Showing favorites only' : 'Filter favorites only'}
           >
-            <HeartIcon class="heart-icon {$filtersStore.favoritesOnly ? 'pop-anim' : ''}" />
+            <Icon name="heart" class="heart-icon {$filtersStore.favoritesOnly ? 'pop-anim' : ''}" />
           </button>
         </div>
 

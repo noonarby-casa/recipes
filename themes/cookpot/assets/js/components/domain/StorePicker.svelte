@@ -1,7 +1,6 @@
 <script lang="ts">
   import ToggleGroup, { type Option } from '../primitives/ToggleGroup.svelte';
-  import ShoppingCartIcon from '../primitives/icons/ShoppingCartIcon.svelte';
-  import XIcon from '../primitives/icons/XIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
 
   interface Props {
     selectedId: string;
@@ -51,7 +50,7 @@
   >
     <div class="store-trigger-left">
       <div class="store-trigger-icon-wrapper">
-        <ShoppingCartIcon size={18} strokeWidth={2} />
+        <Icon name="shopping-cart" size={18} strokeWidth={2} />
       </div>
       <div class="store-trigger-text">
         <span class="store-trigger-label">{currentOption?.label ?? 'Store Layout'}</span>
@@ -93,7 +92,7 @@
             onclick={closeSheet}
             aria-label="Close store picker"
           >
-            <XIcon size={18} />
+            <Icon name="x" size={18} />
           </button>
         </div>
 

@@ -1,24 +1,6 @@
 <script lang="ts">
-  import UtensilsIcon from '../primitives/icons/UtensilsIcon.svelte';
-  import ChefHatIcon from '../primitives/icons/ChefHatIcon.svelte';
-  import BookIcon from '../primitives/icons/BookIcon.svelte';
-  import PizzaIcon from '../primitives/icons/PizzaIcon.svelte';
-  import BowlIcon from '../primitives/icons/BowlIcon.svelte';
-  import BbqIcon from '../primitives/icons/BbqIcon.svelte';
-  import DrinkIcon from '../primitives/icons/DrinkIcon.svelte';
-  import DessertIcon from '../primitives/icons/DessertIcon.svelte';
-  import SaladIcon from '../primitives/icons/SaladIcon.svelte';
-  import SandwichIcon from '../primitives/icons/SandwichIcon.svelte';
-  import BreakfastIcon from '../primitives/icons/BreakfastIcon.svelte';
-  import PastaIcon from '../primitives/icons/PastaIcon.svelte';
-  import SeafoodIcon from '../primitives/icons/SeafoodIcon.svelte';
-  import TacosIcon from '../primitives/icons/TacosIcon.svelte';
-  import BreadIcon from '../primitives/icons/BreadIcon.svelte';
-  import SnackIcon from '../primitives/icons/SnackIcon.svelte';
-  import CoffeeIcon from '../primitives/icons/CoffeeIcon.svelte';
-  import RiceIcon from '../primitives/icons/RiceIcon.svelte';
-  import SearchIcon from '../primitives/icons/SearchIcon.svelte';
-  import XIcon from '../primitives/icons/XIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
+  import type { IconName } from '../primitives/icons';
 
   interface Props {
     selectedIcon?: string;
@@ -31,25 +13,25 @@
   let searchQuery = $state('');
   let activeCategory = $state<string>('all');
 
-  const ICONS = [
-    { id: 'utensils', label: 'Utensils', category: 'mains', component: UtensilsIcon },
-    { id: 'chef-hat', label: 'Chef Hat', category: 'mains', component: ChefHatIcon },
-    { id: 'book', label: 'Recipe Book', category: 'bakery', component: BookIcon },
-    { id: 'pizza', label: 'Pizza', category: 'mains', component: PizzaIcon },
-    { id: 'bowl', label: 'Soup / Bowl', category: 'mains', component: BowlIcon },
-    { id: 'bbq', label: 'Grill / BBQ', category: 'mains', component: BbqIcon },
-    { id: 'drink', label: 'Beverage', category: 'drinks', component: DrinkIcon },
-    { id: 'dessert', label: 'Dessert', category: 'desserts', component: DessertIcon },
-    { id: 'salad', label: 'Salad', category: 'sides', component: SaladIcon },
-    { id: 'sandwich', label: 'Sandwich', category: 'mains', component: SandwichIcon },
-    { id: 'breakfast', label: 'Breakfast', category: 'mains', component: BreakfastIcon },
-    { id: 'pasta', label: 'Pasta', category: 'mains', component: PastaIcon },
-    { id: 'seafood', label: 'Seafood', category: 'mains', component: SeafoodIcon },
-    { id: 'tacos', label: 'Tacos', category: 'mains', component: TacosIcon },
-    { id: 'bread', label: 'Bakery / Bread', category: 'bakery', component: BreadIcon },
-    { id: 'snack', label: 'Snack', category: 'sides', component: SnackIcon },
-    { id: 'coffee', label: 'Coffee / Tea', category: 'drinks', component: CoffeeIcon },
-    { id: 'rice', label: 'Rice / Grain Bowl', category: 'mains', component: RiceIcon },
+  const ICONS: Array<{ id: IconName; label: string; category: string }> = [
+    { id: 'utensils', label: 'Utensils', category: 'mains' },
+    { id: 'chef-hat', label: 'Chef Hat', category: 'mains' },
+    { id: 'book', label: 'Recipe Book', category: 'bakery' },
+    { id: 'pizza', label: 'Pizza', category: 'mains' },
+    { id: 'bowl', label: 'Soup / Bowl', category: 'mains' },
+    { id: 'bbq', label: 'Grill / BBQ', category: 'mains' },
+    { id: 'drink', label: 'Beverage', category: 'drinks' },
+    { id: 'dessert', label: 'Dessert', category: 'desserts' },
+    { id: 'salad', label: 'Salad', category: 'sides' },
+    { id: 'sandwich', label: 'Sandwich', category: 'mains' },
+    { id: 'breakfast', label: 'Breakfast', category: 'mains' },
+    { id: 'pasta', label: 'Pasta', category: 'mains' },
+    { id: 'seafood', label: 'Seafood', category: 'mains' },
+    { id: 'tacos', label: 'Tacos', category: 'mains' },
+    { id: 'bread', label: 'Bakery / Bread', category: 'bakery' },
+    { id: 'snack', label: 'Snack', category: 'sides' },
+    { id: 'coffee', label: 'Coffee / Tea', category: 'drinks' },
+    { id: 'rice', label: 'Rice / Grain Bowl', category: 'mains' },
   ];
 
   const CATEGORIES = [
@@ -62,15 +44,16 @@
   ];
 
   let currentItem = $derived(
-    ICONS.find((item) => item.id === (selectedIcon || 'utensils')) || ICONS[0]
+    ICONS.find((item) => item.id === (selectedIcon || 'utensils')) || ICONS[0],
   );
-  let CurrentIcon = $derived(currentItem.component);
 
   let filteredIcons = $derived.by(() => {
     return ICONS.filter((item) => {
-      const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+      const matchesCategory =
+        activeCategory === 'all' || item.category === activeCategory;
       const q = searchQuery.trim().toLowerCase();
-      const matchesSearch = !q || item.label.toLowerCase().includes(q) || item.id.includes(q);
+      const matchesSearch =
+        !q || item.label.toLowerCase().includes(q) || item.id.includes(q);
       return matchesCategory && matchesSearch;
     });
   });
@@ -109,7 +92,7 @@
     title="Choose icon"
   >
     <div class="picker-trigger-left">
-      <CurrentIcon size={18} strokeWidth={2} />
+      <Icon name={currentItem.id} size={18} strokeWidth={2} />
       <span class="picker-trigger-label">{currentItem.label}</span>
     </div>
     <span class="picker-trigger-action">Change Icon ▼</span>
@@ -121,7 +104,9 @@
       class="icon-sheet-backdrop"
       onclick={closeSheet}
       onkeydown={(e) => {
-        if (e.key === 'Escape') {closeSheet();}
+        if (e.key === 'Escape') {
+          closeSheet();
+        }
       }}
       role="presentation"
     >
@@ -142,14 +127,14 @@
             onclick={closeSheet}
             aria-label="Close"
           >
-            <XIcon size={18} />
+            <Icon name="x" size={18} />
           </button>
         </div>
 
         <!-- Search Bar -->
         <div class="icon-sheet-search-wrapper">
           <div class="search-input-icon">
-            <SearchIcon size={16} />
+            <Icon name="search" size={16} />
           </div>
           <input
             type="text"
@@ -164,7 +149,9 @@
           {#each CATEGORIES as cat}
             <button
               type="button"
-              class="icon-sheet-cat-pill {activeCategory === cat.id ? 'active' : ''}"
+              class="icon-sheet-cat-pill {activeCategory === cat.id
+                ? 'active'
+                : ''}"
               onclick={() => (activeCategory = cat.id)}
             >
               {cat.label}
@@ -178,7 +165,6 @@
             <div class="icon-sheet-empty">No matching icons found</div>
           {:else}
             {#each filteredIcons as item}
-              {@const IconComp = item.component}
               {@const isSelected = (selectedIcon || 'utensils') === item.id}
               <button
                 type="button"
@@ -186,7 +172,7 @@
                 onclick={() => handleSelect(item.id)}
                 title={item.label}
               >
-                <IconComp size={20} strokeWidth={2} />
+                <Icon name={item.id} size={20} strokeWidth={2} />
               </button>
             {/each}
           {/if}

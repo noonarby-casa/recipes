@@ -3,9 +3,7 @@
   import { timersStore } from '../../stores/timers';
   import type { TimerState } from '../../types';
   import { formatTime } from '../../utils/timer';
-  import PlayIcon from '../primitives/icons/PlayIcon.svelte';
-  import PauseIcon from '../primitives/icons/PauseIcon.svelte';
-  import ResetIcon from '../primitives/icons/ResetIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
 
   interface Props {
     /** The raw duration string (e.g., '10m', '1-2h', '15-20 mins'). */
@@ -144,9 +142,9 @@
 >
   <span class="timer-icon">
     {#if isRunning}
-      <PauseIcon size={14} strokeWidth={2.5} class="timer-svg-icon timer-pause-icon" />
+      <Icon name="pause" size={14} strokeWidth={2.5} class="timer-svg-icon timer-pause-icon" />
     {:else}
-      <PlayIcon size={14} strokeWidth={2.5} class="timer-svg-icon timer-play-icon" />
+      <Icon name="play" size={14} strokeWidth={2.5} class="timer-svg-icon timer-play-icon" />
     {/if}
   </span>
   <span class="timer-label">{labelText}</span>
@@ -159,7 +157,7 @@
   aria-label="Reset timer"
   title="Reset timer"
 >
-  <ResetIcon size={14} strokeWidth={2.5} class="timer-svg-icon timer-reset-icon" />
+  <Icon name="reset" size={14} strokeWidth={2.5} class="timer-svg-icon timer-reset-icon" />
 </button>
 
 <style>

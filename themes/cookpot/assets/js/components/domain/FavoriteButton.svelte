@@ -1,6 +1,6 @@
 <script lang="ts">
   import { favoritesStore } from '../../stores/favorites';
-  import HeartIcon from '../primitives/icons/HeartIcon.svelte';
+  import Icon from '../primitives/Icon.svelte';
 
   interface Props {
     /** The unique short ID of the recipe. Used to check if it's in the favorites store and to toggle favorites state. */
@@ -25,7 +25,7 @@
   aria-pressed={isFav ? 'true' : 'false'}
   title="Favorite recipe"
 >
-  <HeartIcon class="heart-icon" />
+  <Icon name="heart" class="heart-icon" />
 </button>
 
 <style>
