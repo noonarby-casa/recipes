@@ -122,7 +122,7 @@ syncStoreWithUrl(filtersStore, {
   },
 });
 
-export function hasTag(rTags: string[] | undefined, tag: string): boolean {
+function hasTag(rTags: string[] | undefined, tag: string): boolean {
   if (!rTags || rTags.length === 0) {
     return false;
   }

@@ -749,7 +749,7 @@ export function isWeightUnit(unit: string): boolean {
   return UNIT_LOOKUP[sing]?.category === 'WEIGHT';
 }
 
-export function isPackageUnit(unit: string): boolean {
+function isPackageUnit(unit: string): boolean {
   const sing = getSingularUnit(unit);
   if (!sing) {
     return false;
@@ -757,7 +757,7 @@ export function isPackageUnit(unit: string): boolean {
   return UNIT_LOOKUP[sing.toLowerCase()]?.category === 'PACKAGE';
 }
 
-export function unitNeedsOf(unit: string): boolean {
+function unitNeedsOf(unit: string): boolean {
   if (!unit || unit.includes('(') || unit.toLowerCase().trim().endsWith('of')) {
     return false;
   }

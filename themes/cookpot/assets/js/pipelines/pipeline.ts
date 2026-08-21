@@ -21,7 +21,7 @@ export function toSlug(str: string): string {
     .replace(/[^a-z0-9]+/g, '-');
 }
 
-export function applyAltSelections(
+function applyAltSelections(
   ingredients: IngredientInput[],
   altSelections?: AltSelectionsMap,
 ): IngredientInput[] {

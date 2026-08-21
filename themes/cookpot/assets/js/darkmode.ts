@@ -11,7 +11,7 @@ export function getThemePreference(): ThemeOption {
   return 'system';
 }
 
-export function applyTheme(theme: ThemeOption): void {
+function applyTheme(theme: ThemeOption): void {
   if (theme === 'dark') {
     document.documentElement.classList.add('dark-mode');
   } else if (theme === 'light') {

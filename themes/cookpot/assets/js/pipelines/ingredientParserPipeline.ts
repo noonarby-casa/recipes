@@ -1,4 +1,4 @@
-import { parseRawUserInput, parseSimpleQty } from '../simple-parser';
+import { parseRawUserInput } from '../simple-parser';
 import type { IngredientInput } from '../types';
 import { RulePipeline, type RuleStep } from './RulePipeline';
 
@@ -46,5 +46,3 @@ export function parseIngredientText(text: string): IngredientInput {
     prep: parsed.prep,
   };
 }
-
-export { parseSimpleQty };

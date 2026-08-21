@@ -6,7 +6,6 @@ import type { PlannedItem, Recipe } from '../types';
 import { formatCookingNumber } from '../units';
 import { parseRawUserInput } from '../simple-parser';
 import { generateInstanceId } from '../utils/ids';
-import { updateUrlParams } from '../utils/urlSync';
 import {
   addDays,
   formatIsoDate,
@@ -15,21 +14,6 @@ import {
   parseIsoDate,
   parseUrlDate,
 } from '../utils/dates';
-
-export function syncPlanStateToUrl(searchStr: string | null): void {
-  if (searchStr === null) {
-    return;
-  }
-  const params = new URLSearchParams(searchStr);
-  updateUrlParams({
-    p: params.get('p'),
-    x: params.get('x'),
-    w: params.get('w'),
-    d: params.get('d'),
-    m: params.get('m'),
-  });
-}
-
 const CODE_TO_DAYS: Record<string, string> = {
   '0': 'sun',
   '1': 'mon',
@@ -50,7 +34,7 @@ function base64UrlEncode(str: string): string {
   return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-export function base64UrlDecode(str: string): string {
+function base64UrlDecode(str: string): string {
   let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
   while (b64.length % 4) {
     b64 += '=';

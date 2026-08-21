@@ -1,7 +1,7 @@
 import type { UnitDefinition } from './types';
 import { ITEM_RULES } from './data/rules';
 
-export const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
+const UNIT_DEFINITIONS: readonly UnitDefinition[] = [
   // Volume (base: teaspoon)
   {
     singular: 'teaspoon',

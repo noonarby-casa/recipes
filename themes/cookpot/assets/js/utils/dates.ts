@@ -71,14 +71,6 @@ export function getMondayOfWeek(refDate?: Date): Date {
 }
 
 /**
- * Returns the Friday of the week containing the given date.
- */
-export function getFridayOfWeek(refDate?: Date): Date {
-  const mon = getMondayOfWeek(refDate);
-  return addDays(mon, 4);
-}
-
-/**
  * Returns an array of ISO date strings ('YYYY-MM-DD') for a given start date & duration in days.
  */
 export function getDateSequence(

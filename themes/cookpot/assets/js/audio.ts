@@ -1,7 +1,7 @@
 // --- Web Audio API Synth Alert Sounds ---
 let audioCtx: AudioContext | null = null;
 
-export function initAudio(): void {
+function initAudio(): void {
   try {
     if (!audioCtx) {
       const AudioCtxClass =

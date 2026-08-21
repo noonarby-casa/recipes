@@ -16,13 +16,13 @@ export interface ExportItem extends ShoppingItem {
   isOptional?: boolean;
 }
 
-export interface GroupedNote {
+interface GroupedNote {
   descriptor?: string;
   altItem?: string;
   recipes: string[];
 }
 
-export function getGroupedNotes(item: ShoppingItem): {
+function getGroupedNotes(item: ShoppingItem): {
   sizeNote?: string;
   details: GroupedNote[];
   fallbackRecipes: string[];
@@ -68,7 +68,7 @@ export function getGroupedNotes(item: ShoppingItem): {
   };
 }
 
-export function formatShoppingItemNotes(
+function formatShoppingItemNotes(
   item: ShoppingItem,
   includeRecipes = true,
 ): string {

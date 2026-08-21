@@ -73,7 +73,7 @@ export function getCalendarLedgerFromStorage(): CalendarLedger {
 /**
  * Safely saves ledger to localStorage, catching QuotaExceededError and auto-pruning.
  */
-export function saveLedgerToStorage(ledger: CalendarLedger): void {
+function saveLedgerToStorage(ledger: CalendarLedger): void {
   try {
     ls.setJson(STORAGE_KEY, ledger);
   } catch (e) {
@@ -142,7 +142,7 @@ export function getLedgerStats(): {
 /**
  * Returns flat list of PlannedItems for a given date range + supplemental items.
  */
-export function getPlanFromLedger(
+function getPlanFromLedger(
   ledger: CalendarLedger,
   startDateStr: string,
   durationDays: number,

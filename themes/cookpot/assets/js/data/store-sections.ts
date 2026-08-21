@@ -43,7 +43,7 @@ export function classifyItemToCategory(itemName: string): string {
   return 'other';
 }
 
-export const STANDARD_SECTIONS: StoreSection[] = [
+const STANDARD_SECTIONS: StoreSection[] = [
   {
     id: 'produce',
     name: '🥬 Produce',
@@ -141,7 +141,7 @@ export const STANDARD_SECTIONS: StoreSection[] = [
   },
 ];
 
-export const MARKET_BASKET_PNH_SECTIONS: StoreSection[] = [
+const MARKET_BASKET_PNH_SECTIONS: StoreSection[] = [
   {
     id: 'left-wall',
     name: '🧀 Left Wall: Dairy & Cheese',
@@ -271,30 +271,26 @@ export const MARKET_BASKET_PNH_SECTIONS: StoreSection[] = [
 ];
 
 // Alternate Layout: Dairy first (e.g. for grab-and-go dairy runs)
-export const DAIRY_FIRST_SECTIONS: StoreSection[] = STANDARD_SECTIONS.map(
-  (sec) => {
-    let order = sec.order;
-    if (sec.id === 'dairy') {
-      order = 1;
-    } else if (sec.id === 'produce') {
-      order = 4;
-    } // swap dairy and produce
-    return { ...sec, order };
-  },
-);
+const DAIRY_FIRST_SECTIONS: StoreSection[] = STANDARD_SECTIONS.map((sec) => {
+  let order = sec.order;
+  if (sec.id === 'dairy') {
+    order = 1;
+  } else if (sec.id === 'produce') {
+    order = 4;
+  } // swap dairy and produce
+  return { ...sec, order };
+});
 
 // Alternate Layout: Meat first
-export const MEAT_FIRST_SECTIONS: StoreSection[] = STANDARD_SECTIONS.map(
-  (sec) => {
-    let order = sec.order;
-    if (sec.id === 'meat') {
-      order = 1;
-    } else if (sec.id === 'produce') {
-      order = 3;
-    } // swap meat and produce
-    return { ...sec, order };
-  },
-);
+const MEAT_FIRST_SECTIONS: StoreSection[] = STANDARD_SECTIONS.map((sec) => {
+  let order = sec.order;
+  if (sec.id === 'meat') {
+    order = 1;
+  } else if (sec.id === 'produce') {
+    order = 3;
+  } // swap meat and produce
+  return { ...sec, order };
+});
 
 export const STORE_LAYOUTS: StoreLayout[] = [
   {
@@ -323,7 +319,7 @@ export const STORE_LAYOUTS: StoreLayout[] = [
   },
 ];
 
-export const STORAGE_KEY_STORE_LAYOUT = 'noonarby-store-layout';
+const STORAGE_KEY_STORE_LAYOUT = 'noonarby-store-layout';
 
 export function getActiveStoreLayoutId(): string {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -360,14 +356,6 @@ export function getSectionForCategory(
     activeLayout.sections.find((s) => s.id === 'other') ||
     activeLayout.sections[activeLayout.sections.length - 1]
   );
-}
-
-export function getStoreSection(
-  itemRestOrName: string,
-  itemItem?: string,
-): StoreSection {
-  const category = classifyItemToCategory(itemItem || itemRestOrName);
-  return getSectionForCategory(category);
 }
 
 export function compareShoppingItems(

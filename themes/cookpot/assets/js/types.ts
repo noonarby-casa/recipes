@@ -232,11 +232,6 @@ export interface PlannerState {
   lastRemovedIndex: number | null;
 }
 
-export interface DateRange {
-  startDate: string; // ISO 'YYYY-MM-DD'
-  durationDays: number; // 1 to 21
-}
-
 export interface SettingsState {
   activeTab: 'edit' | 'view' | 'shop' | 'history';
   startDate: string; // ISO 'YYYY-MM-DD'
