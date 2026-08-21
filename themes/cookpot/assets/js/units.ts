@@ -5,7 +5,7 @@ import {
   UNIT_CONVERSIONS,
   UNIT_LOOKUP,
 } from './constants';
-import { getCanonicalName } from './pipelines/recipeValidationPipeline';
+import { getCanonicalName } from './utils/rules';
 import { ITEM_RULES } from './data/rules';
 
 function applyMatchCase(original: string, target: string): string {

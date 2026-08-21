@@ -8,12 +8,8 @@ interface OverlayState {
 
 const MINIMIZED_KEY = 'cooking-dashboard-minimized';
 
-function getInitialMinimized(): boolean {
-  return ls.getString(MINIMIZED_KEY) === 'true';
-}
-
 const store = writable<OverlayState>({
-  isMinimized: getInitialMinimized(),
+  isMinimized: ls.getString(MINIMIZED_KEY) === 'true',
   hasDashboard: false,
 });
 

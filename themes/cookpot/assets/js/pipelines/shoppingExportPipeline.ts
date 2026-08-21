@@ -4,9 +4,6 @@ import {
   getSectionForCategory,
   getActiveStoreLayout,
 } from '../data/store-sections';
-import { RulePipeline } from './RulePipeline';
-import { FilterExportItemsStep } from './steps/FilterExportItemsStep';
-import { GroupExportByAisleStep } from './steps/GroupExportByAisleStep';
 
 export type ExportFormat = 'google-keep' | 'markdown';
 export type ItemFilter = 'unchecked' | 'all' | 'checked';
@@ -110,10 +107,13 @@ export function filterExportItems(
   items: ExportItem[],
   filter: ItemFilter,
 ): ExportItem[] {
-  const pipeline = new RulePipeline<ExportItem>().use(
-    new FilterExportItemsStep(filter),
-  );
-  return pipeline.execute(items);
+  if (filter === 'unchecked') {
+    return items.filter((item) => !item.isChecked);
+  }
+  if (filter === 'checked') {
+    return items.filter((item) => item.isChecked);
+  }
+  return items;
 }
 
 export function formatShoppingListExport(
@@ -153,8 +153,16 @@ export function formatShoppingListExport(
   if (buyItems.length > 0) {
     text += '\n### Need to Buy\n';
     const activeLayout = getActiveStoreLayout();
-    const sortStep = new GroupExportByAisleStep(activeLayout);
-    const sortedBuy = sortStep.process(buyItems);
+    const sortedBuy = [...buyItems].sort((a, b) => {
+      const secA = getSectionForCategory(a.category, activeLayout);
+      const secB = getSectionForCategory(b.category, activeLayout);
+      const orderA = secA?.order ?? 999;
+      const orderB = secB?.order ?? 999;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.item.localeCompare(b.item);
+    });
 
     let currentSectionId = '';
     for (const item of sortedBuy) {

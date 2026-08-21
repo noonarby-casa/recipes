@@ -4,7 +4,6 @@ import type {
   ProcessedShoppingList,
 } from '../types';
 import { RulePipeline } from './RulePipeline';
-import { FilterIngredientsStep } from './steps/FilterIngredientsStep';
 import { StapleNormalizationStep } from './steps/StapleNormalizationStep';
 import { GroupCanonicalIngredientsStep } from './steps/GroupCanonicalIngredientsStep';
 import { AggregateQuantityStep } from './steps/AggregateQuantityStep';
@@ -74,10 +73,9 @@ export function processShoppingList(
   );
 
   // Step 1: Filter water
-  const filterStep = new FilterIngredientsStep<IngredientInput>(
+  const filteredIngredients = preprocessedIngredients.filter(
     (ing) => ing.item.toLowerCase().trim() !== 'water',
   );
-  const filteredIngredients = filterStep.process(preprocessedIngredients);
 
   // Step 2: Group canonical ingredients
   const groupingStep = new GroupCanonicalIngredientsStep();
@@ -116,12 +114,9 @@ export function processShoppingList(
   });
 
   // Step 6: Sort by store aisle order and category sequence
-  const sorter = (a: ShoppingItem, b: ShoppingItem) =>
-    compareShoppingItems(a, b, layout);
-
-  buyItems.sort(sorter);
-  optionalItems.sort(sorter);
-  stapleItems.sort(sorter);
+  buyItems.sort((a, b) => compareShoppingItems(a, b, layout));
+  optionalItems.sort((a, b) => compareShoppingItems(a, b, layout));
+  stapleItems.sort((a, b) => compareShoppingItems(a, b, layout));
 
   return { buyItems, optionalItems, stapleItems };
 }

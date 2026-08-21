@@ -9,7 +9,7 @@ declare const __dirname: string;
 import { processShoppingList } from './pipeline';
 import type { IngredientInput, ShoppingItem } from '../types';
 import { ITEM_RULES } from '../data/rules';
-import { getCanonicalName } from './recipeValidationPipeline';
+import { getCanonicalName } from '../utils/rules';
 import { STORE_LAYOUTS } from '../data/store-sections';
 import { UNIT_LOOKUP } from '../constants';
 import {

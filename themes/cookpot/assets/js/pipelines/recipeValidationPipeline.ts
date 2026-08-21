@@ -8,8 +8,6 @@ import { SINGULAR_TO_PLURAL } from '../constants';
 import { getSingularUnit } from '../units';
 import { getCanonicalName } from '../utils/rules';
 
-export { getCanonicalName };
-
 const PLURAL_UNITS_SET = new Set(
   Object.entries(SINGULAR_TO_PLURAL)
     .filter(([singular, plural]) => singular !== plural)
