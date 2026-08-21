@@ -59,6 +59,9 @@ jobs:
       - name: Run E2E Tests
         run: pnpm test:e2e
 
+      - name: Run Accessibility Tests
+        run: pnpm test:a11y
+
       - name: Build Hugo Site
         run: hugo --minify
 

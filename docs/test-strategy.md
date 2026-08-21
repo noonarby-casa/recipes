@@ -21,10 +21,11 @@
 ### Q3. Test Directory Structure Choice
 
 - **Question:** Where should we organize our unit test files and browser/E2E test files?
-- **Decision:** Co-located Unit Tests + Separate E2E Tests
+- **Decision:** Co-located Unit Tests + Dedicated E2E and A11y Suites
 - **Details:**
   - Unit tests: `themes/cookpot/assets/js/**/*.test.ts` (adjacent to source).
-  - E2E/Browser tests: `tests/e2e/**/*.spec.ts` (top-level directory).
+  - E2E functional tests: `tests/e2e/**/*.spec.ts`.
+  - Accessibility tests: `tests/a11y/**/*.spec.ts`.
 
 ### Q4. Unit Test DOM Emulation Choice
 
@@ -48,11 +49,11 @@
 ### Q6. CI/CD Integration Choice
 
 - **Question:** How should we structure our scripts in package.json and configure our GitHub Actions to run these tests?
-- **Decision:** Parallel Unit Tests in `pnpm run ci` + E2E (Chromium-only) in GitHub Action before deployment
+- **Decision:** Parallel Unit Tests in `pnpm run ci` + Sequential E2E & A11y in GitHub Actions before deployment
 - **Details:**
-  - `package.json` scripts: `pnpm test` (vitest run), `pnpm test:watch` (vitest), `pnpm test:e2e` (playwright test).
-  - `pnpm run ci` runs unit tests in parallel with lint, format, typecheck.
-  - GitHub Actions workflow installs Chromium browser (`npx playwright install --with-deps chromium`) and runs `pnpm test:e2e` before the Firebase deploy step.
+  - `package.json` scripts: `pnpm test:unit` (vitest run), `pnpm test:e2e` (functional playwright), `pnpm test:a11y` (axe playwright), `pnpm test:browser` (all playwright), `pnpm test:all` (unit + browser).
+  - `pnpm run ci` runs unit tests (`test:unit`) in parallel with lint, format, typecheck.
+  - GitHub Actions workflow installs Chromium browser and runs `pnpm test:e2e` followed by `pnpm test:a11y` before the Firebase deploy step.
 
 ### Q7. Test Coverage Priorities Choice
 

@@ -7,10 +7,11 @@ This session explores how to integrate accessibility (a11y) testing using axe-co
 ### Q1. Integration Strategy
 
 - **Question:** Which testing environment(s) should we integrate axe-core with?
-- **Decision:** Integrate `@axe-core/playwright` into the existing Playwright E2E suite.
+- **Decision:** Integrate `@axe-core/playwright` into a dedicated accessibility test project (`tests/a11y/`).
 - **Details:**
   - Use `@axe-core/playwright` to run accessibility scans against fully rendered pages in a real browser.
-  - Implement scans in a dedicated spec, e.g., `tests/e2e/accessibility.spec.ts`.
+  - Implement scans across modular specs under `tests/a11y/` (`templates.spec.ts`, `interactive.spec.ts`, `recipes.spec.ts`, and `axe-helper.ts`).
+  - Run via `pnpm test:a11y` (or `pnpm test:browser` for all browser tests).
 
 ### Q2. Target Pages & States
 
@@ -38,7 +39,7 @@ This session explores how to integrate accessibility (a11y) testing using axe-co
 ### Q4. CI/CD Enforcement
 
 - **Question:** Should accessibility failures fail the CI pipeline immediately, or should we use a warning/reporting phase first?
-- **Decision:** Fail the build immediately in CI (`pnpm test:e2e`).
+- **Decision:** Fail the build immediately in CI (`pnpm test:a11y`).
 - **Details:**
   - Since known exceptions will be handled in configuration, any new accessibility issue should block pull request merging and hosting deployment.
 
@@ -47,14 +48,14 @@ This session explores how to integrate accessibility (a11y) testing using axe-co
 - **Question:** Should we generate standalone HTML accessibility reports for manual review (e.g., during local development or in CI artifacts)?
 - **Decision:** Use Playwright's built-in HTML report with custom formatted console logs.
 - **Details:**
-  - Implement a custom formatting helper in the E2E test file to pretty-print axe-core violations (CSS selector, HTML snippet, impact, and remediation link) directly in the test output, which Playwright automatically captures.
+  - Implement a custom formatting helper in the accessibility test suite to pretty-print axe-core violations (CSS selector, HTML snippet, impact, and remediation link) directly in the test output, which Playwright automatically captures.
 
 ### Q6. Interactive States & Keyboard Focus
 
 - **Question:** How should we test dynamic changes (e.g., opening the timers panel, clicking buttons) and validate that keyboard focus is properly managed and does not get trapped?
-- **Decision:** Separate accessibility/focus checks into a dedicated `accessibility.spec.ts` file, keeping them distinct from functional tests.
+- **Decision:** Separate accessibility/focus checks into dedicated `tests/a11y/` specs, keeping them distinct from functional tests.
 - **Details:**
-  - Dynamic states (like open drawers) will be scanned by triggering the interaction and then running an axe scan.
+  - Dynamic states (like open drawers) will be scanned by triggering the interaction and then running an axe scan in `tests/a11y/interactive.spec.ts`.
   - Focus state transitions (like focus shifting to a drawer on open, and returning to the trigger on close) will be verified with explicit Playwright focus assertions.
 
 ### Q7. Brand Color Contrast Exceptions
