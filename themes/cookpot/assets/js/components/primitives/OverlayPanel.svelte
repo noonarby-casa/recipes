@@ -289,9 +289,4 @@
       opacity 0.2s ease-in-out,
       transform 0.2s ease-in-out;
   }
-
-  :global(.plan-toast-notification) {
-    order: 10;
-    pointer-events: auto;
-  }
 </style>

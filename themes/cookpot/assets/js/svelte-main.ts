@@ -13,6 +13,7 @@ import FontSizeController from './components/primitives/FontSizeController.svelt
 import SettingsModal from './components/domain/SettingsModal.svelte';
 import RecipeShoppingList from './components/domain/RecipeShoppingList.svelte';
 import ShoppingDebugApp from './components/apps/ShoppingDebugApp.svelte';
+import ToastContainer from './components/primitives/ToastContainer.svelte';
 
 /** Registry mapping component names to Svelte component definitions. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +29,7 @@ const COMPONENT_REGISTRY: Record<string, Component<any>> = {
   SettingsModal,
   RecipeShoppingList,
   ShoppingDebugApp,
+  ToastContainer,
 };
 
 interface MountConfig {
@@ -53,6 +55,7 @@ const LEGACY_ISLAND_CONFIGS: MountConfig[] = [
     }),
   },
   { component: 'OverlayPanel', selector: '#overlay-panel-mount' },
+  { component: 'ToastContainer', selector: '#toast-container-mount' },
   { component: 'RecipeSidesInjector', selector: '#recipe-sides-mount' },
   { component: 'FontSizeController', selector: '#font-size-controller-mount' },
   { component: 'SettingsModal', selector: '#settings-modal-mount' },

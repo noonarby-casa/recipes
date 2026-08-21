@@ -6,8 +6,10 @@ import { favoritesStore } from './favorites';
 import { filtersStore } from './filters';
 import { ls } from '../utils/storage';
 import { generateInstanceId } from '../utils/ids';
+import { showToast } from './toast';
 import {
   addDays,
+  formatDayTitle,
   formatIsoDate,
   getDateSequence,
   getMondayOfWeek,
@@ -307,6 +309,29 @@ export const plannerStore = {
       if (nextPlan.length === 0) {
         ls.remove('noonarby-planner-banner-dismissed');
       }
+
+      const recipes = get(recipesStore);
+      const rec = target.permalink
+        ? recipes.find((r) => r.permalink === target.permalink)
+        : undefined;
+      const title = rec ? rec.title : target.customTitle || 'Recipe';
+      const dayStr = target.date || target.day || '';
+      const dayLabel = formatDayTitle(dayStr);
+
+      showToast({
+        message: `Removed ${title} from ${dayLabel}`,
+        variant: 'default',
+        action: {
+          label: 'Undo',
+          onClick: () => {
+            plannerStore.undoRemove();
+          },
+        },
+        onDismiss: () => {
+          plannerStore.clearLastRemoved();
+        },
+      });
+
       return {
         ...commitPlan(state, nextPlan),
         lastRemovedRecipe: { ...target },
@@ -382,8 +407,24 @@ export const plannerStore = {
   },
 
   clearPlan() {
+    const currentPlan = get(store).plan;
+    if (currentPlan.length === 0) {
+      return;
+    }
+    const backupPlan = [...currentPlan];
     ls.remove('noonarby-planner-banner-dismissed');
     store.update((state) => commitPlan(state, []));
+
+    showToast({
+      message: 'Cleared weekly meal plan',
+      variant: 'default',
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          store.update((state) => commitPlan(state, backupPlan));
+        },
+      },
+    });
   },
 
   setConflict(sharedPlan: PlannedItem[], localPlan: PlannedItem[]) {

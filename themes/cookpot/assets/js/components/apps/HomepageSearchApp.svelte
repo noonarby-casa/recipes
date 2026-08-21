@@ -4,6 +4,7 @@
   import { favoritesStore } from '../../stores/favorites';
   import { filtersStore, filterRecipes } from '../../stores/filters';
   import { plannerStore } from '../../stores/planner';
+  import { showToast } from '../../stores/toast';
   import { ls } from '../../utils/storage';
   import RecipeCard from '../domain/RecipeCard.svelte';
   import FiltersModal from '../domain/FiltersModal.svelte';
@@ -46,8 +47,6 @@
   );
 
   let paginatedResults = $derived(searchResults.slice(0, displayCount));
-
-
 
   async function hydrate() {
     if (hasHydrated) {return;}
@@ -214,44 +213,23 @@
       searchResults.some((r) => r.shortId && !$favoritesStore.includes(r.shortId))
   );
 
-  let toastMessage = $state('');
-  let lastAddedShortIds = $state<string[]>([]);
-  let toastTimer: ReturnType<typeof setTimeout> | undefined;
-
   function handleFavoriteAll() {
     const ids = searchResults
       .map((r) => r.shortId)
       .filter((id): id is string => typeof id === 'string' && id.length > 0);
     const added = favoritesStore.addAll(ids);
     if (added.length > 0) {
-      lastAddedShortIds = added;
-      toastMessage = `Added ${added.length} recipe${added.length !== 1 ? 's' : ''} to favorites`;
-      if (toastTimer) {
-        clearTimeout(toastTimer);
-      }
-      toastTimer = setTimeout(() => {
-        toastMessage = '';
-      }, 5000);
-    }
-  }
-
-  function handleUndoFavoriteAll() {
-    if (lastAddedShortIds.length > 0) {
-      favoritesStore.removeAll(lastAddedShortIds);
-      lastAddedShortIds = [];
-    }
-    toastMessage = '';
-    if (toastTimer) {
-      clearTimeout(toastTimer);
-      toastTimer = undefined;
-    }
-  }
-
-  function dismissToast() {
-    toastMessage = '';
-    if (toastTimer) {
-      clearTimeout(toastTimer);
-      toastTimer = undefined;
+      const count = added.length;
+      showToast({
+        message: `Added ${count} recipe${count !== 1 ? 's' : ''} to favorites`,
+        variant: 'favorite',
+        action: {
+          label: 'Undo',
+          onClick: () => {
+            favoritesStore.removeAll(added);
+          },
+        },
+      });
     }
   }
 
@@ -403,25 +381,6 @@
 
 <FiltersModal isOpen={isFiltersOpen} onClose={() => isFiltersOpen = false} />
 
-{#if toastMessage}
-  <div class="search-toast-notification">
-    <div class="search-toast-body">
-      <span>{toastMessage}</span>
-      <button type="button" class="search-toast-undo-btn" onclick={handleUndoFavoriteAll}>
-        Undo
-      </button>
-    </div>
-    <button
-      type="button"
-      class="icon-close-btn"
-      aria-label="Dismiss toast"
-      onclick={dismissToast}
-    >
-      ✕
-    </button>
-  </div>
-{/if}
-
 <style>
   .search-results-actions {
     align-items: center;
@@ -450,65 +409,6 @@
   .btn-favorite-all:hover {
     background-color: var(--heart-bg-hover);
     border-color: var(--heart-color);
-    color: var(--heart-color);
-  }
-
-  .search-toast-notification {
-    align-items: center;
-    animation: searchToastSlideIn 0.3s ease;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-subtle);
-    border-left: 4px solid var(--heart-color);
-    border-radius: 8px;
-    bottom: 1.5rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    display: flex;
-    font-size: 0.9rem;
-    gap: 1rem;
-    justify-content: space-between;
-    left: 50%;
-    max-width: 90vw;
-    padding: 0.75rem 1.25rem;
-    position: fixed;
-    transform: translateX(-50%);
-    width: max-content;
-    z-index: 10000;
-  }
-
-  @keyframes searchToastSlideIn {
-    from {
-      opacity: 0;
-      transform: translate(-50%, 1rem);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-  }
-
-  .search-toast-body {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .search-toast-undo-btn {
-    background: transparent;
-    border: none;
-    border-radius: 4px;
-    color: var(--heart-color);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-  }
-
-  .search-toast-undo-btn:hover {
-    background-color: var(--heart-bg-hover);
     color: var(--heart-color);
   }
 

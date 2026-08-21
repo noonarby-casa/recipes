@@ -270,3 +270,25 @@ export interface IngredientSection {
   category: string;
   items: IngredientInput[];
 }
+
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
+export type ToastVariant = 'default' | 'favorite' | 'success' | 'warning';
+
+export interface ToastOptions {
+  id?: string;
+  message: string;
+  emphasisText?: string;
+  variant?: ToastVariant;
+  action?: ToastAction;
+  duration?: number;
+  onDismiss?: () => void;
+}
+
+export interface ActiveToast extends ToastOptions {
+  id: string;
+  variant: ToastVariant;
+}

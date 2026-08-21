@@ -39,6 +39,7 @@
 
   import ExportModal from '../domain/ExportModal.svelte';
   import type { ExportItem } from '../../pipelines/shoppingExportPipeline';
+  import { showToast } from '../../stores/toast';
 
   let isFiltersModalOpen = $state(false);
   let isExportModalOpen = $state(false);
@@ -318,6 +319,10 @@
   function sharePlanUrl() {
     const link = window.location.href;
     navigator.clipboard.writeText(link).then(() => {
+      showToast({
+        message: 'Plan link copied to clipboard',
+        variant: 'success',
+      });
       const btn = document.getElementById('btn-share-plan');
       if (btn) {
         const orig = btn.textContent;
@@ -359,6 +364,10 @@
     });
 
     navigator.clipboard.writeText(text).then(() => {
+      showToast({
+        message: 'Menu copied to clipboard',
+        variant: 'success',
+      });
       copyMenuLabel = 'Copied!';
       setTimeout(() => (copyMenuLabel = 'Copy Menu'), 2000);
     });
@@ -383,16 +392,6 @@
   }
 
   let shoppingCount = $derived($plannerStore.plan.length);
-  let removedRecipeTitle = $derived.by(() => {
-    if (!$plannerStore.lastRemovedRecipe) {
-      return '';
-    }
-    const item = $plannerStore.lastRemovedRecipe;
-    const rec = item.permalink
-      ? $recipesStore.find((r) => r.permalink === item.permalink)
-      : undefined;
-    return rec ? rec.title : item.customTitle || 'Recipe';
-  });
 </script>
 
 <!-- 1. Conflict Banner -->
@@ -613,40 +612,12 @@
   />
 {/if}
 
-<!-- 8. Recovery / Undo Toast -->
-{#if $plannerStore.lastRemovedRecipe}
-  <div class="plan-toast-notification">
-    <div class="toast-body">
-      <span
-        >Removed <strong>{removedRecipeTitle}</strong> from {formatDayTitle(
-          $plannerStore.lastRemovedRecipe.date ||
-            $plannerStore.lastRemovedRecipe.day ||
-            '',
-        )}.</span
-      >
-      <button
-        type="button"
-        class="toast-undo-btn"
-        onclick={() => plannerStore.undoRemove()}>Undo</button
-      >
-    </div>
-    <button
-      type="button"
-      class="icon-close-btn"
-      aria-label="Dismiss toast"
-      onclick={() => plannerStore.clearLastRemoved()}>✕</button
-    >
-  </div>
-{/if}
-
 <style>
   .meal-planner-container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
   }
-
-
 
   .planner-banner {
     align-items: center;
@@ -711,82 +682,6 @@
 
   .banner-btn:hover {
     transform: translateY(-1px);
-  }
-
-  .plan-toast-notification {
-    align-items: center;
-    animation: slideIn 0.3s ease;
-    background-color: var(--card-bg);
-    border: 1px solid var(--noonblue-border-light);
-    border-left: 4px solid var(--noonblue);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    display: flex;
-    font-size: 0.85rem;
-    gap: 1rem;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    padding: 0.75rem 1rem;
-    position: relative;
-  }
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(1rem);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .plan-toast-notification .toast-body {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .plan-toast-notification .toast-undo-btn {
-    background: transparent;
-    border: none;
-    border-radius: 4px;
-    color: var(--noonblue);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-  }
-
-  .plan-toast-notification .toast-undo-btn:hover {
-    background-color: var(--border-ultra-subtle);
-    color: var(--noonblue);
-  }
-
-  @media (max-width: 767px) {
-    .plan-toast-notification {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.6rem;
-      padding-right: 2.25rem;
-    }
-
-    .plan-toast-notification .toast-body {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .plan-toast-notification .icon-close-btn {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-    }
   }
 
   #plan-conflict-banner,
