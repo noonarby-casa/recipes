@@ -22,6 +22,7 @@ export interface PlannedItem {
   permalink?: string;
   customTitle?: string;
   icon?: string;
+  baseServings?: number;
   scale: number;
   date: string; // ISO 'YYYY-MM-DD' or 'supplemental'
   day?: string; // Legacy day string ('mon', 'tue', etc.) for migration fallback

@@ -119,17 +119,6 @@
             fullWidth={true}
           />
         </div>
-
-        <div class="export-desktop-action">
-          <button
-            type="button"
-            class="btn btn-brand export-copy-btn"
-            class:success={copySuccess}
-            onclick={copyToClipboard}
-          >
-            {copySuccess ? '✓ Copied to Clipboard!' : 'Copy to Clipboard'}
-          </button>
-        </div>
       </div>
 
       <!-- Preview Column -->
@@ -149,19 +138,18 @@
         ></textarea>
       </div>
     </div>
-
-    <!-- Mobile Action Footer -->
-    <div class="export-mobile-action">
-      <button
-        type="button"
-        class="btn btn-brand export-copy-btn"
-        class:success={copySuccess}
-        onclick={copyToClipboard}
-      >
-        {copySuccess ? '✓ Copied to Clipboard!' : 'Copy to Clipboard'}
-      </button>
-    </div>
   </div>
+
+  {#snippet footer()}
+    <button
+      type="button"
+      class="btn btn-brand export-copy-btn"
+      class:success={copySuccess}
+      onclick={copyToClipboard}
+    >
+      {copySuccess ? '✓ Copied to Clipboard!' : 'Copy to Clipboard'}
+    </button>
+  {/snippet}
 </Modal>
 
 <style>
@@ -207,11 +195,6 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-  }
-
-  .export-desktop-action {
-    margin-top: auto;
-    padding-top: 0.5rem;
   }
 
   .export-copy-btn {
@@ -277,10 +260,6 @@
     scrollbar-gutter: stable;
   }
 
-  .export-mobile-action {
-    display: none;
-  }
-
   @media (max-width: 767px) {
     :global(.export-modal-content) {
       width: 95vw;
@@ -293,14 +272,6 @@
     .export-modal-body {
       grid-template-columns: 1fr;
       min-height: 300px;
-    }
-
-    .export-desktop-action {
-      display: none;
-    }
-
-    .export-mobile-action {
-      display: block;
     }
 
     .mobile-hidden {

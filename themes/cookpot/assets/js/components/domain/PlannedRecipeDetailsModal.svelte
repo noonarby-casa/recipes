@@ -33,7 +33,7 @@
   let title = $derived(
     rec ? rec.title : currentItem.customTitle || 'Custom Item'
   );
-  let defaultServings = $derived(rec ? rec.servings : 4);
+  let defaultServings = $derived(rec ? rec.servings : currentItem.baseServings || 4);
   let portions = $derived(Math.round(currentItem.scale * defaultServings));
   let isFav = $derived(
     rec && rec.shortId ? $favoritesStore.includes(rec.shortId) : false

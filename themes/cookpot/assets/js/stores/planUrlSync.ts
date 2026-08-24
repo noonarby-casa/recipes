@@ -84,10 +84,9 @@ export const planUrlQueryString = derived(
       }
 
       let code = 'c';
-      let defaultServings = 4;
+      const defaultServings = rec ? rec.servings : item.baseServings || 4;
       if (rec) {
         code = permalinkToCode(item.permalink!, $recipes);
-        defaultServings = rec.servings;
       }
 
       const portions = Math.round(item.scale * defaultServings);
@@ -123,6 +122,7 @@ export const planUrlQueryString = derived(
         const title = isCustom ? item.customTitle || 'Custom Item' : '';
         parts.push(sanitize(title));
         parts.push(isCustom ? item.icon || 'utensils' : '');
+        parts.push(isCustom ? (item.baseServings || 4).toString() : '4');
 
         if (extraIngredients && hasExtra) {
           extraIngredients.forEach((ing) => {
@@ -147,7 +147,8 @@ export const planUrlQueryString = derived(
     });
 
     if (customEntries.length > 0) {
-      params.set('x', base64UrlEncode(customEntries.join(entrySeparator)));
+      const xVal = ['2', ...customEntries].join(entrySeparator);
+      params.set('x', base64UrlEncode(xVal));
     }
 
     params.set('d', formatUrlDate(startDate));
@@ -431,7 +432,14 @@ export function parsePlanUrlParams(
         ]);
 
         const entries = decodedStr.split(entrySeparator);
-        entries.forEach((entry) => {
+        let customEntries = entries;
+        let version = '1';
+        if (entries[0] === '2') {
+          version = '2';
+          customEntries = entries.slice(1);
+        }
+
+        customEntries.forEach((entry) => {
           if (!entry) {
             return;
           }
@@ -446,35 +454,50 @@ export function parsePlanUrlParams(
             return;
           }
 
+          const planItem = newPlan[idx];
+          if (!planItem) {
+            return;
+          }
+
           const title = parts[1] || undefined;
           let icon: string | undefined = undefined;
+          let baseServings = 4;
           let rawExtras: string[] = [];
 
-          if (parts.length > 2) {
-            if (KNOWN_ICONS.has(parts[2])) {
-              icon = parts[2];
-              rawExtras = parts.slice(3);
-            } else if (parts[2] === '') {
-              rawExtras = parts.slice(3);
-            } else {
-              rawExtras = parts.slice(2);
+          if (version === '2') {
+            icon = parts[2] || undefined;
+            baseServings = parseInt(parts[3], 10) || 4;
+            rawExtras = parts.slice(4);
+          } else {
+            // Legacy version 1 fallback
+            if (parts.length > 2) {
+              if (KNOWN_ICONS.has(parts[2])) {
+                icon = parts[2];
+                rawExtras = parts.slice(3);
+              } else if (parts[2] === '') {
+                rawExtras = parts.slice(3);
+              } else {
+                rawExtras = parts.slice(2);
+              }
             }
           }
 
-          const planItem = newPlan[idx];
-          if (planItem) {
-            if (title) {
-              planItem.customTitle = title;
-              planItem.permalink = undefined;
+          if (title) {
+            planItem.customTitle = title;
+            planItem.permalink = undefined;
+            planItem.baseServings = baseServings;
+            if (planItem.scale !== undefined && baseServings !== 4) {
+              const rawPortions = planItem.scale * 4;
+              planItem.scale = rawPortions / baseServings;
             }
-            if (icon) {
-              planItem.icon = icon;
-            }
-            if (rawExtras.length > 0) {
-              planItem.extraIngredients = rawExtras.map((textStr: string) =>
-                parseRawUserInput(textStr),
-              );
-            }
+          }
+          if (icon) {
+            planItem.icon = icon;
+          }
+          if (rawExtras.length > 0) {
+            planItem.extraIngredients = rawExtras.map((textStr: string) =>
+              parseRawUserInput(textStr),
+            );
           }
         });
       }

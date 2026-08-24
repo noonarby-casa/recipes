@@ -139,6 +139,58 @@ export function getLedgerStats(): {
   };
 }
 
+export interface RecentCustomDish {
+  title: string;
+  icon: string;
+  baseServings: number;
+  ingredients: IngredientInput[];
+  lastUsedDate: string;
+}
+
+/**
+ * Returns distinct recent custom dishes from the calendar ledger, sorted by most recent.
+ */
+export function getRecentCustomDishes(limit: number = 6): RecentCustomDish[] {
+  const ledger = getCalendarLedgerFromStorage();
+  const seenTitles = new Set<string>();
+  const results: RecentCustomDish[] = [];
+
+  const allItemsWithDate: { item: PlannedItem; date: string }[] = [];
+  Object.keys(ledger).forEach((dateKey) => {
+    const items = ledger[dateKey] || [];
+    items.forEach((item) => {
+      if (!item.permalink && item.customTitle && item.customTitle.trim()) {
+        allItemsWithDate.push({
+          item,
+          date: item.date || item.createdAt || dateKey,
+        });
+      }
+    });
+  });
+
+  // Sort descending by date
+  allItemsWithDate.sort((a, b) => b.date.localeCompare(a.date));
+
+  for (const { item, date } of allItemsWithDate) {
+    const norm = item.customTitle!.trim().toLowerCase();
+    if (!seenTitles.has(norm)) {
+      seenTitles.add(norm);
+      results.push({
+        title: item.customTitle!.trim(),
+        icon: item.icon || 'utensils',
+        baseServings: item.baseServings || 4,
+        ingredients: item.extraIngredients ? [...item.extraIngredients] : [],
+        lastUsedDate: date,
+      });
+      if (results.length >= limit) {
+        break;
+      }
+    }
+  }
+
+  return results;
+}
+
 /**
  * Returns flat list of PlannedItems for a given date range + supplemental items.
  */
@@ -282,13 +334,22 @@ export const plannerStore = {
     return instanceId;
   },
 
-  addCustomItem(dateStr: string, title: string): string {
+  addCustomItem(
+    dateStr: string,
+    title: string,
+    baseServings: number = 4,
+    icon: string = 'utensils',
+    ingredients: IngredientInput[] = [],
+  ): string {
     const instanceId = generateInstanceId();
     const createdAt = formatIsoDate(new Date());
     store.update((state) => {
       const newItem: PlannedItem = {
         instanceId,
         customTitle: title,
+        baseServings,
+        icon: icon || 'utensils',
+        extraIngredients: ingredients.length > 0 ? ingredients : undefined,
         scale: 1.0,
         date: dateStr,
         createdAt,
@@ -400,6 +461,19 @@ export const plannerStore = {
       );
       return commitPlan(state, nextPlan);
     });
+  },
+
+  updateBaseServings(instanceId: string, baseServings: number) {
+    store.update((state) => {
+      const nextPlan = state.plan.map((item) =>
+        item.instanceId === instanceId ? { ...item, baseServings } : item,
+      );
+      return commitPlan(state, nextPlan);
+    });
+  },
+
+  getRecentCustomDishes(limit: number = 6) {
+    return getRecentCustomDishes(limit);
   },
 
   reorderRecipes(nextPlan: PlannedItem[]) {

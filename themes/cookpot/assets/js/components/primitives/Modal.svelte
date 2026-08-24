@@ -14,10 +14,14 @@
     contentClass?: string;
     /** Custom styles for the content container. */
     contentStyle?: string;
+    /** Custom class for the footer container. */
+    footerClass?: string;
     
     // Snippets
     /** Snippet to replace the default header entirely. */
     header?: import('svelte').Snippet;
+    /** Snippet for the modal footer (action buttons, pinned bar). */
+    footer?: import('svelte').Snippet;
     /** Snippet for the body/content. */
     children?: import('svelte').Snippet;
   }
@@ -30,7 +34,9 @@
     backdropClass = 'modal-backdrop',
     contentClass = 'modal-content',
     contentStyle = '',
+    footerClass = '',
     header,
+    footer,
     children
   }: Props = $props();
 
@@ -85,6 +91,12 @@
 
       {#if children}
         {@render children()}
+      {/if}
+
+      {#if footer}
+        <div class="modal-footer {footerClass}">
+          {@render footer()}
+        </div>
       {/if}
     </div>
   </div>

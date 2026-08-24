@@ -1,72 +1,69 @@
-# Grill Session: Splitting Accessibility Tests from E2E Tests
+# Grill Session: Multiple Custom Recipes & Selector Modal Visibility
 
 ## Closed Decisions
 
-### Q1. Playwright Execution Strategy
+### Q1. Modal Layout & Custom Entry Discoverability
 
-- **Question:** How should we configure Playwright to isolate accessibility testing from functional E2E testing?
-- **Decision:** Single [`playwright.config.ts`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/playwright.config.ts) configured with Playwright Projects.
+- **Question:** How should the custom recipe creation entry point be structured inside the recipe selector modal so that adding custom dishes is always immediately obvious and accessible while preserving the two-column desktop / tabbed mobile layout?
+- **Decision:** Combine Sticky Footer + Active Action State + Search-to-Custom Bridge:
 - **Details:**
-  - Define separate projects (e.g., `e2e` and `a11y`) inside [`playwright.config.ts`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/playwright.config.ts).
-  - Preserves a single unified configuration and shared web server lifecycle while enabling isolated execution via `--project` flags.
+  - Make custom form scrollable with a sticky/fixed action footer so the button is always in view.
+  - Keep "Add Custom Dish" button visually active; if clicked while title is empty, focus/highlight the title input.
+  - In empty search states, show a "Create custom dish for '[query]'" button that switches to Custom tab on mobile and pre-fills title.
 
-### Q2. Test Directory Structure & File Naming Conventions
+### Q2. Swapping vs Adding Custom Recipes
 
-- **Question:** How should we organize the test files on disk?
-- **Decision:** Dedicated sibling directory [`tests/a11y/`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/a11y/) alongside [`tests/e2e/`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/e2e/).
+- **Question:** Should custom recipe cards in the meal planner feature a swap/shuffle button?
+- **Decision:** Omit the swap/shuffle button on custom recipes.
 - **Details:**
-  - Set `testDir: './tests/e2e'` for the `e2e` project and `testDir: './tests/a11y'` for the `a11y` project.
-  - Avoids regex-based test matching and keeps directory boundaries clean.
+  - Custom recipe cards will only show "Edit Details" (pencil) and "Remove" (✕) in edit mode.
+  - Prevents accidental destruction of custom titles, icons, and ingredient lists from one-click randomization.
 
-### Q3. Breakdown & Spec Granularity in `tests/a11y/`
+### Q3. Custom Recipe Quick-Fill & Recent Suggestions
 
-- **Question:** How should we split the monolithic accessibility tests across files in [`tests/a11y/`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/a11y/)?
-- **Decision:** 3 Spec Files + 1 Shared Helper Module.
+- **Question:** How should previously planned custom recipes be suggested/reused in the selector modal without horizontal swiping on mobile and with consistent desktop/mobile styling?
+- **Decision:** Alternative 1 (Title Input Autocomplete / Dropdown Suggestions).
 - **Details:**
-  - [`tests/a11y/axe-helper.ts`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/a11y/axe-helper.ts): Reusable Axe builder factory, theme toggle helper, violation formatter, and recipe discovery logic.
-  - [`tests/a11y/templates.spec.ts`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/a11y/templates.spec.ts): Core layout matrix (Home, Recipe, Planner, Timers × 2 Viewports × 2 Themes).
-  - [`tests/a11y/interactive.spec.ts`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/a11y/interactive.spec.ts): Dynamic states (Timer overlay open, Planner View/Edit/Shop mode switches, keyboard focus checks).
-  - [`tests/a11y/recipes.spec.ts`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/a11y/recipes.spec.ts): Dynamic scan across all individual recipe content bundles.
+  - Zero vertical clutter when idle; dropdown list of matching recent custom dishes appears when the Title field is focused/typed into.
+  - Derived dynamically from `CalendarLedger` history (top recent unique custom dishes).
+  - Selecting a suggestion auto-fills the Title, Icon, Base Servings, and Ingredients list.
 
-### Q4. `package.json` Script Catalog & Namespace
+### Q4. Base Servings & Portion Scaling for Custom Recipes
 
-- **Question:** How should test scripts in [`package.json`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/package.json) be named and scoped?
-- **Decision:** Explicit namespaced script suite with no bare `test` command.
+- **Question:** How should ingredient quantities entered into a custom recipe be scaled when setting/adjusting servings?
+- **Decision:** Custom recipes establish an explicit `baseServings` (the 1.0 scale baseline for the entered ingredient amounts).
 - **Details:**
-  - `"test:unit"`: `vitest run`
-  - `"test:unit:watch"`: `vitest`
-  - `"test:e2e"`: `playwright test --project=e2e`
-  - `"test:e2e:ui"`: `playwright test --project=e2e --ui`
-  - `"test:a11y"`: `playwright test --project=a11y`
-  - `"test:a11y:ui"`: `playwright test --project=a11y --ui`
-  - `"test:browser"`: `playwright test` (executes all Playwright projects: e2e + a11y)
-  - `"test:all"`: `pnpm run test:unit && pnpm run test:browser`
-  - Remove bare `"test"` script. Update `"ci"` script to reference `"test:unit"`.
+  - Entered ingredient amounts correspond to the chosen base servings (e.g., entering a 1-portion smoothie or 6-portion chili).
+  - Card portion adjustments scale relative to that base (`scale = currentPortions / baseServings`).
+  - `PlannedRecipeDetailsModal` allows modifying the custom dish's base servings, title, icon, and ingredient list post-creation.
 
-### Q5. CI Workflow Pipeline Execution
+### Q5. Shopping List Aggregation & Attribution for Custom Items
 
-- **Question:** How should CI orchestrate browser testing in GitHub Actions?
-- **Decision:** Sequential dedicated steps (`Run E2E Tests` & `Run Accessibility Tests`).
+- **Question:** How should custom recipe ingredients be displayed, attributed, and merged in the shopping list when multiple custom meals share ingredients?
+- **Decision:** Full pipeline consolidation with custom recipe name attribution.
 - **Details:**
-  - Execute `pnpm test:e2e` followed by `pnpm test:a11y` within the PR and merge deployment workflows.
-  - Gives isolated status indicators and log groups in GitHub Actions without runner spin-up overhead.
+  - Custom ingredients merge seamlessly with catalog recipes and other custom meals (e.g. adding avocados together).
+  - Aisle sorting and package matching rules apply automatically, with unrecognized items routing to the "Other" aisle.
+  - Item tooltips and exported text attribute ingredient sources clearly (e.g., "Needed for: Breakfast Tacos (Custom)").
 
-### Q6. Boundary Guidelines: Functional Testing vs Accessibility Audits
+### Q6. URL State Serialization for Multiple Custom Recipes
 
-- **Question:** What is the explicit boundary and division of responsibilities between [`tests/e2e/`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/e2e/) and [`tests/a11y/`](file:///home/nicholasnooney/projects/noonarby-casa/recipes/tests/a11y/)?
-- **Decision:** Strict separation by purpose.
+- **Question:** How should multiple custom recipes with custom base servings be encoded into the URL `x` parameter?
+- **Decision:** Option A with Version 2 (`2~<entries>`).
 - **Details:**
-  - `tests/e2e/`: User workflow logic, DOM state transitions, persistence, and interactive business logic without `@axe-core/playwright` overhead.
-  - `tests/a11y/`: Automated WCAG audits via Axe-core, contrast rules, ARIA semantic compliance, and focus management validation.
+  - Strict positional syntax: `2~<index>|<title>|<icon>|<baseServings>|<ingredient1>|<ingredient2>...`
+  - Unambiguous parsing: field 0 = index, field 1 = title, field 2 = icon, field 3 = baseServings, field 4+ = ingredients.
+  - Matches the versioned design of the `p` parameter (`p=2....`).
+  - Separated by `~` entries and `|` fields, then Base64URL-encoded for minimal URL size.
 
-### Q7. Test Reporting, Traces, & Output Artifacts
+### Q7. Standardized Modal Footer Primitive
 
-- **Question:** How should we manage test reporting, traces, and failure output across the split suites?
-- **Decision:** Shared standard output directories (`playwright-report/` and `test-results/`) with rich console violation formatting.
+- **Question:** How should `Modal.svelte` be upgraded to standardize modal footers across the design system?
+- **Decision:** Add an optional `footer?: Snippet` and `footerClass?: string` to `Modal.svelte`.
 - **Details:**
-  - Keep standard reporter configuration (`list` + `html`).
-  - Rely on formatted assertion error strings in console/CI logs for rapid violation triage without needing multiple report directories.
+  - Adopt across `ExportModal` (unifying desktop & mobile copy actions), `StorageDetailsModal` (pinned JSON backup button), and `RecipeSelectorModal` (pinned "Add Custom Dish" button).
+  - Pins action buttons cleanly at the bottom with standard border-top separator and responsive padding.
 
 ## Open Questions
 
-_(All core design branches resolved!)_
+_(All design questions and branches resolved!)_

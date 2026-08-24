@@ -2,7 +2,7 @@
   import { recipesStore } from '../../stores/recipes';
   import { filtersStore, filterRecipes } from '../../stores/filters';
   import { favoritesStore } from '../../stores/favorites';
-  import { plannerStore } from '../../stores/planner';
+  import { plannerStore, getRecentCustomDishes, type RecentCustomDish } from '../../stores/planner';
   import { scrollable } from '../../actions/scrollable';
   import type { IngredientInput } from '../../types';
   import RecipeCard from './RecipeCard.svelte';
@@ -37,12 +37,27 @@
   let customIcon = $state('utensils');
   let customServings = $state(4);
   let customIngredients = $state<IngredientInput[]>([]);
+  let isTitleFocused = $state(false);
+  let showTitleError = $state(false);
+  let activeSuggestionIndex = $state(-1);
+  let titleInputRef = $state<HTMLInputElement | null>(null);
 
   let recipes = $derived($recipesStore);
 
   let filteredRecipes = $derived(
     filterRecipes(recipes, $filtersStore, $favoritesStore, searchQuery)
   );
+
+  let recentDishes = $derived<RecentCustomDish[]>(
+    isOpen ? getRecentCustomDishes(8) : []
+  );
+
+  let matchingSuggestions = $derived.by(() => {
+    if (!recentDishes || recentDishes.length === 0) {return [];}
+    const q = customTitle.trim().toLowerCase();
+    if (!q) {return recentDishes.slice(0, 5);}
+    return recentDishes.filter((d) => d.title.toLowerCase().includes(q)).slice(0, 5);
+  });
 
   const mobileTabOptions: Option[] = [
     { id: 'browse', label: 'Browse Catalog' },
@@ -78,6 +93,9 @@
       customIcon = 'utensils';
       customServings = 4;
       customIngredients = [];
+      isTitleFocused = false;
+      showTitleError = false;
+      activeSuggestionIndex = -1;
     }
   });
 
@@ -110,22 +128,34 @@
     }, 10);
   }
 
+  function selectSuggestion(dish: RecentCustomDish) {
+    customTitle = dish.title;
+    customIcon = dish.icon;
+    customServings = dish.baseServings;
+    customIngredients = [...dish.ingredients];
+    isTitleFocused = false;
+    activeSuggestionIndex = -1;
+    showTitleError = false;
+  }
+
   function handleAddCustomDish() {
     const trimmed = customTitle.trim();
     if (!trimmed) {
+      showTitleError = true;
+      titleInputRef?.focus();
+      setTimeout(() => {
+        showTitleError = false;
+      }, 1500);
       return;
     }
 
-    const instanceId = plannerStore.addCustomItem(day, trimmed);
-    if (customIcon && customIcon !== 'utensils') {
-      plannerStore.updateIcon(instanceId, customIcon);
-    }
-    if (customServings !== 4) {
-      plannerStore.updateScale(instanceId, customServings / 4);
-    }
-    if (customIngredients.length > 0) {
-      plannerStore.updateExtraIngredients(instanceId, customIngredients);
-    }
+    plannerStore.addCustomItem(
+      day,
+      trimmed,
+      customServings,
+      customIcon,
+      customIngredients
+    );
 
     onClose();
   }
@@ -240,11 +270,26 @@
                 </button>
               </div>
             {:else}
-              <EmptyState
-                title={searchQuery.trim() ? 'No matching recipes found' : 'No recipes found'}
-                icon="🔍"
-                class="planner-empty-state-component"
-              />
+              <div class="selector-empty-search-wrapper">
+                <EmptyState
+                  title={searchQuery.trim() ? `No catalog recipes match "${searchQuery.trim()}"` : 'No recipes found'}
+                  icon="🔍"
+                  class="planner-empty-state-component"
+                />
+                {#if searchQuery.trim()}
+                  <button
+                    type="button"
+                    class="btn btn-brand create-custom-bridge-btn"
+                    onclick={() => {
+                      customTitle = searchQuery.trim();
+                      activeMobileTab = 'custom';
+                      searchQuery = '';
+                    }}
+                  >
+                    + Create Custom Dish "{searchQuery.trim()}"
+                  </button>
+                {/if}
+              </div>
             {/if}
           {:else}
             {#each filteredRecipes as r, idx}
@@ -263,18 +308,71 @@
       </div>
 
       <!-- Right Column: Create Custom Dish -->
-      <div class="selector-custom-col" class:mobile-hidden={activeMobileTab !== 'custom'}>
+      <div class="selector-custom-col scrollable-area" use:scrollable class:mobile-hidden={activeMobileTab !== 'custom'}>
         <h4 class="custom-section-title">Create Custom Dish</h4>
 
-        <div class="custom-form-group">
+        <div class="custom-form-group title-form-group">
           <label for="custom-dish-title" class="custom-form-label">Dish Title</label>
-          <input
-            id="custom-dish-title"
-            type="text"
-            bind:value={customTitle}
-            placeholder="e.g. Friday Night Tacos"
-            class="custom-title-input"
-          />
+          <div class="title-input-container">
+            <input
+              id="custom-dish-title"
+              bind:this={titleInputRef}
+              type="text"
+              bind:value={customTitle}
+              placeholder="e.g. Friday Night Tacos"
+              class="custom-title-input {showTitleError ? 'title-input-error shake-anim' : ''}"
+              autocomplete="off"
+              onfocus={() => (isTitleFocused = true)}
+              onblur={() => setTimeout(() => (isTitleFocused = false), 200)}
+              oninput={() => {
+                showTitleError = false;
+                activeSuggestionIndex = -1;
+              }}
+              onkeydown={(e) => {
+                if (isTitleFocused && matchingSuggestions.length > 0) {
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    activeSuggestionIndex = (activeSuggestionIndex + 1) % matchingSuggestions.length;
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    activeSuggestionIndex = (activeSuggestionIndex - 1 + matchingSuggestions.length) % matchingSuggestions.length;
+                  } else if (e.key === 'Enter' && activeSuggestionIndex >= 0) {
+                    e.preventDefault();
+                    selectSuggestion(matchingSuggestions[activeSuggestionIndex]);
+                  } else if (e.key === 'Escape') {
+                    isTitleFocused = false;
+                  }
+                } else if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddCustomDish();
+                }
+              }}
+            />
+
+            {#if isTitleFocused && matchingSuggestions.length > 0}
+              <div class="recent-suggestions-dropdown" role="listbox">
+                <div class="suggestions-header">Recent Custom Dishes</div>
+                {#each matchingSuggestions as sug, sIdx}
+                  <button
+                    type="button"
+                    class="suggestion-item {sIdx === activeSuggestionIndex ? 'active' : ''}"
+                    onmousedown={() => selectSuggestion(sug)}
+                  >
+                    <img
+                      src="/icons/custom-{sug.icon}.webp"
+                      alt=""
+                      class="suggestion-icon"
+                      onerror={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/icons/custom-utensils.webp';
+                      }}
+                    />
+                    <span class="suggestion-title">{sug.title}</span>
+                    <span class="suggestion-meta">{sug.baseServings} serv{#if sug.ingredients.length > 0} • {sug.ingredients.length} ing{/if}</span>
+                  </button>
+                {/each}
+              </div>
+            {/if}
+          </div>
         </div>
 
         <div class="custom-form-row">
@@ -308,7 +406,6 @@
           <button
             type="button"
             class="btn btn-brand add-custom-btn"
-            disabled={!customTitle.trim()}
             onclick={handleAddCustomDish}
           >
             Add Custom Dish to Plan
@@ -348,7 +445,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding-bottom: 1rem;
+    padding-bottom: 0;
   }
 
   .selector-mobile-tabs {
@@ -360,7 +457,7 @@
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     gap: 1.5rem;
-    min-height: 440px;
+    min-height: 460px;
   }
 
   .selector-browse-col {
@@ -376,6 +473,8 @@
     padding: 1rem 1.5rem 1rem 0;
     border-left: 1px solid var(--border-subtle);
     padding-left: 1.5rem;
+    max-height: 520px;
+    overflow-y: auto;
   }
 
   .custom-section-title {
@@ -389,6 +488,88 @@
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
+  }
+
+  .title-form-group {
+    position: relative;
+  }
+
+  .title-input-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .recent-suggestions-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .suggestions-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem 0.25rem 0.75rem;
+    border-bottom: 1px solid var(--border-ultra-subtle);
+  }
+
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-ultra-subtle);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s ease;
+    width: 100%;
+  }
+
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
+
+  .suggestion-item:hover,
+  .suggestion-item.active {
+    background-color: var(--noonblue-bg-light);
+  }
+
+  .suggestion-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .suggestion-title {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-title);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .suggestion-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
   }
 
   .custom-form-label {
@@ -407,6 +588,21 @@
     background-color: var(--card-bg);
     color: var(--text-body);
     font-size: 0.85rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .title-input-error {
+    border-color: #ef4444 !important;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+  }
+
+  .shake-anim {
+    animation: shake 0.3s ease;
   }
 
   .custom-form-row {
@@ -419,7 +615,12 @@
 
   .custom-action-row {
     margin-top: auto;
-    padding-top: 0.5rem;
+    padding-top: 0.75rem;
+    position: sticky;
+    bottom: 0;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-ultra-subtle);
+    z-index: 10;
   }
 
   .add-custom-btn {
@@ -429,11 +630,6 @@
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
-  }
-
-  .add-custom-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 
   .modal-tags-notice {
@@ -501,7 +697,8 @@
     fill: var(--heart-color);
     stroke: var(--heart-color);
   }
-  .selector-empty-fav-wrapper {
+  .selector-empty-fav-wrapper,
+  .selector-empty-search-wrapper {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -511,9 +708,10 @@
     padding: 2rem 1rem;
     text-align: center;
   }
-  .clear-fav-filter-btn {
+  .clear-fav-filter-btn,
+  .create-custom-bridge-btn {
     font-size: 0.85rem;
-    padding: 0.4rem 0.85rem;
+    padding: 0.5rem 1rem;
   }
   :global(.planner-empty-state-component) {
     margin-top: 1rem;
@@ -550,6 +748,7 @@
     .selector-custom-col {
       border-left: none;
       padding: 0.5rem 1rem 1rem 1rem;
+      max-height: 440px;
     }
 
     .planner-browse-shelf {

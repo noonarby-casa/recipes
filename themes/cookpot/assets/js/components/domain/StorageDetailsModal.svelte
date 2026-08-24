@@ -54,20 +54,19 @@
         Your meal plan history is saved locally in your browser. With over 30 years of capacity, your history will stay safe and accessible.
       </p>
     </div>
-
-    <!-- Backup Action Bar -->
-    <div class="storage-modal-actions">
-      <button
-        type="button"
-        class="btn btn-brand download-backup-btn"
-        onclick={() => {
-          exportLedgerBackup();
-        }}
-      >
-        📥 Download History Backup (.JSON)
-      </button>
-    </div>
   </div>
+
+  {#snippet footer()}
+    <button
+      type="button"
+      class="btn btn-brand download-backup-btn"
+      onclick={() => {
+        exportLedgerBackup();
+      }}
+    >
+      📥 Download History Backup (.JSON)
+    </button>
+  {/snippet}
 </Modal>
 
 <style>
@@ -169,12 +168,6 @@
     color: var(--text-muted);
     font-size: 0.825rem;
     line-height: 1.4;
-  }
-
-  .storage-modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 0.5rem;
   }
 
   .download-backup-btn {

@@ -61,7 +61,7 @@
   let shortId = $derived(rec?.shortId || recipe?.shortId);
   let isFav = $derived(shortId ? $favoritesStore.includes(shortId) : false);
 
-  let defaultServings = $derived(rec ? rec.servings : 4);
+  let defaultServings = $derived(rec ? rec.servings : item?.baseServings || 4);
   let portions = $derived(
     item ? Math.round(item.scale * defaultServings) : defaultServings
   );
@@ -247,7 +247,7 @@
               <ServingsPicker value={portions} onChange={handlePortionChange} />
             </div>
             <div class="planner-action-btns">
-              {#if onSwap}
+              {#if onSwap && (rec || item?.permalink)}
                 <button type="button" class="recipe-control-btn recipe-swap-btn" onclick={onSwap} title="Swap recipe">
                   <Icon name="swap" size={14} strokeWidth={2.5} />
                 </button>
