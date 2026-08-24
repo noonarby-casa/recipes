@@ -886,6 +886,14 @@
       "tbsp": {
         "base": "ounce",
         "factor": 0.5
+      },
+      "teaspoon": {
+        "base": "ounce",
+        "factor": 0.16666666666666666
+      },
+      "tsp": {
+        "base": "ounce",
+        "factor": 0.16666666666666666
       }
     }
   },
@@ -1283,6 +1291,11 @@
       },
       "fish"
     ]
+  },
+  {
+    "canonicalName": "ground protein",
+    "category": "meat",
+    "items": ["ground protein", "ground meat"]
   },
   {
     "canonicalName": "ground beef",
@@ -1884,6 +1897,17 @@
         "singular": "chili pepper",
         "plural": "chili peppers",
         "aliases": ["chili", "chilis", "chilli pepper", "chilli peppers"]
+      }
+    ]
+  },
+  {
+    "canonicalName": "eggplant",
+    "category": "fresh-produce",
+    "items": [
+      {
+        "singular": "eggplant",
+        "plural": "eggplants",
+        "aliases": ["aubergine", "aubergines"]
       }
     ]
   },
@@ -3270,6 +3294,11 @@
     "canonicalName": "dry white wine",
     "category": "beverages",
     "items": ["dry white wine", "white wine"]
+  },
+  {
+    "canonicalName": "red wine",
+    "category": "beverages",
+    "items": ["red wine", "dry red wine"]
   },
   {
     "canonicalName": "sub roll",

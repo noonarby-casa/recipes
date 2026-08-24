@@ -4917,6 +4917,63 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '1 cup needed',
     },
   },
+  {
+    input: {
+      item: 'eggplant',
+      qty: 1,
+      desc: 'medium to large',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'eggplant',
+      qty: 1,
+      unit: '',
+      category: 'fresh-produce',
+    },
+  },
+  {
+    input: {
+      item: 'ground protein',
+      qty: 0.5,
+      unit: 'pound',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'ground protein',
+      qty: 0.5,
+      unit: 'pound',
+      category: 'meat',
+    },
+  },
+  {
+    input: {
+      item: 'red wine',
+      qty: 0.25,
+      unit: 'cup',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'red wine',
+      qty: 0.25,
+      unit: 'cup',
+      category: 'beverages',
+    },
+  },
+  {
+    input: {
+      item: 'tomato paste',
+      qty: 4,
+      unit: 'teaspoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'tomato paste',
+      qty: 1,
+      unit: 'can (6 oz)',
+      category: 'canned-tomatoes',
+      sizeNote: '2/3 oz needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
