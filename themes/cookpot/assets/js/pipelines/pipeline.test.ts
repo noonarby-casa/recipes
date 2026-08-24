@@ -53,13 +53,13 @@ describe('processShoppingList', () => {
 
   test('handles volume units with no package size by moving them to notes', () => {
     const ingredients: IngredientInput[] = [
-      { item: 'lemon extract', qty: 2, unit: 'tablespoon' },
-      { item: 'lemon extract', qty: 2, unit: 'tablespoon' },
+      { item: 'dry white wine', qty: 2, unit: 'tablespoon' },
+      { item: 'dry white wine', qty: 2, unit: 'tablespoon' },
     ];
 
     const result = processShoppingList(ingredients);
     expect(result.buyItems).toHaveLength(1);
-    expect(result.buyItems[0].item).toBe('lemon extract');
+    expect(result.buyItems[0].item).toBe('dry white wine');
     expect(result.buyItems[0].qty).toBeNull();
     expect(result.buyItems[0].unit).toBe('');
     expect(result.buyItems[0].note?.sizeNote).toBe('4 tbsp needed');
@@ -258,15 +258,17 @@ describe('processShoppingList', () => {
     expect(redPepper).toBeDefined();
     expect(greenPepper).toBeDefined();
 
-    // 3. Vegetable broth & chicken broth separate
-    const vegBroth = result.buyItems.find((i) => i.item === 'vegetable broth');
-    const chkBroth = result.buyItems.find((i) => i.item === 'chicken broth');
+    // 3. Vegetable broth & chicken broth separate (in stapleItems)
+    const vegBroth = result.stapleItems.find(
+      (i) => i.item === 'vegetable broth',
+    );
+    const chkBroth = result.stapleItems.find((i) => i.item === 'chicken broth');
     expect(vegBroth).toBeDefined();
     expect(chkBroth).toBeDefined();
 
-    // 4. Oils separate
-    const sesameOil = result.buyItems.find((i) => i.item === 'sesame oil');
-    const coconutOil = result.buyItems.find((i) => i.item === 'coconut oil');
+    // 4. Oils separate (in stapleItems)
+    const sesameOil = result.stapleItems.find((i) => i.item === 'sesame oil');
+    const coconutOil = result.stapleItems.find((i) => i.item === 'coconut oil');
     expect(sesameOil).toBeDefined();
     expect(coconutOil).toBeDefined();
 
@@ -276,8 +278,8 @@ describe('processShoppingList', () => {
     expect(freshBasil).toBeDefined();
     expect(driedBasil).toBeDefined();
 
-    // 6. Minced garlic in buyItems, fresh garlic in buyItems
-    const mincedG = result.buyItems.find((i) => i.item === 'minced garlic');
+    // 6. Minced garlic in stapleItems, fresh garlic in buyItems
+    const mincedG = result.stapleItems.find((i) => i.item === 'minced garlic');
     const freshG = result.buyItems.find((i) => i.item === 'garlic');
     expect(mincedG).toBeDefined();
     expect(freshG).toBeDefined();

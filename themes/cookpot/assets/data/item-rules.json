@@ -23,6 +23,7 @@
   {
     "canonicalName": "minced garlic",
     "category": "canned-other",
+    "staple": true,
     "items": ["minced garlic", "jarred minced garlic"]
   },
   {
@@ -109,7 +110,6 @@
   {
     "canonicalName": "lemon juice",
     "category": "fresh-produce",
-    "staple": true,
     "items": [
       {
         "singular": "lemon juice",
@@ -159,7 +159,6 @@
   {
     "canonicalName": "lime juice",
     "category": "fresh-produce",
-    "staple": true,
     "items": [
       {
         "singular": "lime juice",
@@ -230,6 +229,7 @@
   {
     "canonicalName": "chicken broth",
     "category": "canned-other",
+    "staple": true,
     "items": [
       "chicken broth",
       "chicken stock",
@@ -260,6 +260,7 @@
   {
     "canonicalName": "vegetable broth",
     "category": "canned-other",
+    "staple": true,
     "items": [
       "vegetable broth",
       "vegetable stock",
@@ -288,6 +289,7 @@
   {
     "canonicalName": "beef broth",
     "category": "canned-other",
+    "staple": true,
     "items": [
       "beef broth",
       "beef stock",
@@ -546,6 +548,7 @@
   {
     "canonicalName": "panko",
     "category": "pasta-grains",
+    "staple": true,
     "items": ["panko", "bread crumbs", "breadcrumbs", "bread crumb"],
     "unitEquivalences": {
       "box (8 oz)": {
@@ -1531,6 +1534,7 @@
   {
     "canonicalName": "sriracha",
     "category": "condiments",
+    "staple": true,
     "items": ["sriracha", "sriracha sauce", "sriracha hot chili sauce"],
     "unitEquivalences": {
       "bottle (17 oz)": {
@@ -1546,6 +1550,7 @@
   {
     "canonicalName": "honey",
     "category": "condiments",
+    "staple": true,
     "items": ["honey"],
     "unitEquivalences": {
       "bottle (12 oz)": {
@@ -1561,11 +1566,13 @@
   {
     "canonicalName": "hot chili sauce",
     "category": "condiments",
+    "staple": true,
     "items": ["hot chili sauce", "hot chilli sauce"]
   },
   {
     "canonicalName": "soy sauce",
     "category": "condiments",
+    "staple": true,
     "items": ["soy sauce", "regular soy sauce"],
     "unitEquivalences": {
       "bottle (15 fl oz)": {
@@ -1581,6 +1588,7 @@
   {
     "canonicalName": "tamari",
     "category": "condiments",
+    "staple": true,
     "items": ["tamari"],
     "unitEquivalences": {
       "bottle (10 fl oz)": {
@@ -1596,6 +1604,7 @@
   {
     "canonicalName": "coconut amino",
     "category": "condiments",
+    "staple": true,
     "pluralByDefault": true,
     "items": [
       {
@@ -1652,6 +1661,7 @@
   {
     "canonicalName": "Dijon mustard",
     "category": "condiments",
+    "staple": true,
     "items": ["Dijon mustard"],
     "unitEquivalences": {
       "jar (8 oz)": {
@@ -1682,6 +1692,7 @@
   {
     "canonicalName": "ketchup",
     "category": "condiments",
+    "staple": true,
     "items": ["ketchup"],
     "unitEquivalences": {
       "bottle (20 oz)": {
@@ -1702,11 +1713,13 @@
   {
     "canonicalName": "oyster sauce",
     "category": "condiments",
+    "staple": true,
     "items": ["oyster sauce"]
   },
   {
     "canonicalName": "peanut butter",
     "category": "condiments",
+    "staple": true,
     "items": ["peanut butter"],
     "unitEquivalences": {
       "jar (16 oz)": {
@@ -1722,6 +1735,7 @@
   {
     "canonicalName": "maple syrup",
     "category": "condiments",
+    "staple": true,
     "items": ["maple syrup"],
     "unitEquivalences": {
       "bottle (12 fl oz)": {
@@ -1737,6 +1751,7 @@
   {
     "canonicalName": "whole-egg mayonnaise",
     "category": "condiments",
+    "staple": true,
     "items": ["whole-egg mayonnaise", "mayonnaise", "mayo"],
     "unitEquivalences": {
       "jar (30 fl oz)": {
@@ -1996,7 +2011,6 @@
   {
     "canonicalName": "parsley",
     "category": "fresh-herbs",
-    "staple": true,
     "items": ["parsley", "fresh parsley"]
   },
   {
@@ -2041,6 +2055,7 @@
   {
     "canonicalName": "rice",
     "category": "pasta-grains",
+    "staple": true,
     "items": [
       "rice",
       "white rice",
@@ -2119,6 +2134,7 @@
   {
     "canonicalName": "rolled oats",
     "category": "pasta-grains",
+    "staple": true,
     "items": ["rolled oats", "rolled oat", "oat", "oats"],
     "unitEquivalences": {
       "tub (42 oz)": {
@@ -2309,11 +2325,13 @@
   {
     "canonicalName": "yeast",
     "category": "baking",
+    "staple": true,
     "items": ["yeast", "active dry yeast", "instant yeast"]
   },
   {
     "canonicalName": "lemon extract",
-    "category": "fresh-produce",
+    "category": "baking",
+    "staple": true,
     "items": ["lemon extract"]
   },
   {
@@ -2366,6 +2384,7 @@
   {
     "canonicalName": "powdered sugar",
     "category": "baking",
+    "staple": true,
     "items": ["powdered sugar", "confectioners' sugar", "confectioner's sugar"],
     "unitEquivalences": {
       "bag (2 lb)": {
@@ -2613,11 +2632,7 @@
       }
     }
   },
-  {
-    "canonicalName": "Italian seasoning",
-    "category": "spices-seasonings",
-    "items": ["Italian seasoning"]
-  },
+
   {
     "canonicalName": "chive",
     "category": "fresh-herbs",
@@ -2784,6 +2799,7 @@
   {
     "canonicalName": "sesame oil",
     "category": "oils-vinegars",
+    "staple": true,
     "items": ["sesame oil", "toasted sesame oil"],
     "unitEquivalences": {
       "bottle (5 fl oz)": {
@@ -2799,6 +2815,7 @@
   {
     "canonicalName": "coconut oil",
     "category": "oils-vinegars",
+    "staple": true,
     "items": ["coconut oil"],
     "unitEquivalences": {
       "jar (14 oz)": {
@@ -2814,6 +2831,7 @@
   {
     "canonicalName": "avocado oil",
     "category": "oils-vinegars",
+    "staple": true,
     "items": ["avocado oil"],
     "unitEquivalences": {
       "bottle (16.9 fl oz)": {
@@ -2829,6 +2847,7 @@
   {
     "canonicalName": "rice vinegar",
     "category": "oils-vinegars",
+    "staple": true,
     "items": ["rice vinegar", "rice wine vinegar"],
     "unitEquivalences": {
       "bottle (12 fl oz)": {
@@ -2844,6 +2863,7 @@
   {
     "canonicalName": "apple cider vinegar",
     "category": "oils-vinegars",
+    "staple": true,
     "items": ["apple cider vinegar"],
     "unitEquivalences": {
       "bottle (16 fl oz)": {
@@ -2859,6 +2879,7 @@
   {
     "canonicalName": "red wine vinegar",
     "category": "oils-vinegars",
+    "staple": true,
     "items": ["red wine vinegar"],
     "unitEquivalences": {
       "bottle (16 fl oz)": {
@@ -2874,6 +2895,7 @@
   {
     "canonicalName": "white vinegar",
     "category": "oils-vinegars",
+    "staple": true,
     "items": ["white vinegar", "vinegar"],
     "unitEquivalences": {
       "bottle (32 fl oz)": {
@@ -2889,6 +2911,7 @@
   {
     "canonicalName": "balsamic vinegar",
     "category": "oils-vinegars",
+    "staple": true,
     "items": ["balsamic vinegar"],
     "unitEquivalences": {
       "bottle (16.9 fl oz)": {
@@ -2945,7 +2968,7 @@
     "canonicalName": "sugar",
     "category": "baking",
     "staple": true,
-    "items": ["sugar"],
+    "items": ["sugar", "granulated sugar", "white sugar"],
     "unitEquivalences": {
       "bag (4 lb)": {
         "base": "cup",
@@ -2973,33 +2996,6 @@
     "canonicalName": "raw sugar",
     "category": "baking",
     "items": ["raw sugar", "turbinado sugar", "demerara sugar"]
-  },
-  {
-    "canonicalName": "granulated sugar",
-    "category": "baking",
-    "items": ["granulated sugar"],
-    "unitEquivalences": {
-      "bag (4 lb)": {
-        "base": "cup",
-        "factor": 9.14
-      },
-      "bag": {
-        "base": "cup",
-        "factor": 9.14
-      },
-      "cup": {
-        "base": "ounce",
-        "factor": 7
-      },
-      "tablespoon": {
-        "base": "ounce",
-        "factor": 0.44
-      },
-      "tbsp": {
-        "base": "ounce",
-        "factor": 0.44
-      }
-    }
   },
   {
     "canonicalName": "paprika",
@@ -3082,6 +3078,7 @@
   {
     "canonicalName": "fenugreek",
     "category": "spices-seasonings",
+    "staple": true,
     "items": [
       "kasoori methi",
       "kasuri methi",
@@ -3191,6 +3188,7 @@
   {
     "canonicalName": "sumac",
     "category": "spices-seasonings",
+    "staple": true,
     "items": ["sumac"]
   },
   {
@@ -3216,6 +3214,7 @@
   {
     "canonicalName": "fish sauce",
     "category": "condiments",
+    "staple": true,
     "items": ["fish sauce"],
     "unitEquivalences": {
       "bottle (7 fl oz)": {
@@ -3391,6 +3390,7 @@
   {
     "canonicalName": "worcestershire sauce",
     "category": "condiments",
+    "staple": true,
     "items": ["worcestershire sauce", "Worcestershire sauce"],
     "unitEquivalences": {
       "bottle (10 fl oz)": {
