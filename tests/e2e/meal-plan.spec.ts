@@ -114,3 +114,68 @@ test.describe('Meal Planner favorites filtering UX', () => {
     await expect(heartBtn).not.toHaveClass(/is-favorite/);
   });
 });
+
+test.describe('Meal Planner custom recipes Mon-Fri workflow', () => {
+  test('creates a 5-day meal plan with custom recipes Monday through Friday', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    // Navigate to a fixed Monday 5-day work week plan in edit mode
+    await page.goto('/plan/?d=2026-08-24&w=5&m=e');
+
+    // Clear any existing plan if present
+    const clearBtn = page.locator('#clear-plan-btn');
+    if (await clearBtn.isVisible()) {
+      await clearBtn.click();
+    }
+
+    const customDishes = [
+      { dayIndex: 0, title: 'Monday Protein Smoothie' },
+      { dayIndex: 1, title: 'Tuesday Chicken Wrap' },
+      { dayIndex: 2, title: 'Wednesday Grain Bowl' },
+      { dayIndex: 3, title: 'Thursday Veggie Stir Fry' },
+      { dayIndex: 4, title: 'Friday Homemade Pizza' },
+    ];
+
+    const dayColumns = page.locator(
+      '.day-column:not(:has-text("Anytime / Supplemental"))',
+    );
+    await expect(dayColumns).toHaveCount(5);
+
+    for (const { dayIndex, title } of customDishes) {
+      const col = dayColumns.nth(dayIndex);
+      const addBtn = col.locator('.empty-slot-box');
+      await addBtn.click();
+
+      const modal = page.locator('.selector-modal-content');
+      await expect(modal).toBeVisible();
+
+      // Fill custom dish title
+      const titleInput = modal.locator('#custom-dish-title');
+      await titleInput.fill(title);
+
+      // Click "Add Custom Dish to Plan"
+      const submitBtn = modal.locator('.add-custom-btn');
+      await submitBtn.click();
+
+      // Modal closes
+      await expect(modal).toBeHidden();
+
+      // Verify custom recipe card appears in the day column
+      const recipeCard = col.locator('.recipe-card-unified');
+      await expect(recipeCard).toBeVisible();
+      await expect(recipeCard.locator('.recipe-card-title')).toContainText(
+        title,
+      );
+
+      // Verify swap button is NOT present on custom recipe card
+      const swapBtn = recipeCard.locator('.recipe-swap-btn');
+      await expect(swapBtn).toHaveCount(0);
+    }
+
+    // Verify total 5 custom recipe cards rendered across Monday to Friday
+    const allRecipeCards = page.locator('.day-column .recipe-card-unified');
+    await expect(allRecipeCards).toHaveCount(5);
+  });
+});
