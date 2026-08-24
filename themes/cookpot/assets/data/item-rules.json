@@ -1293,11 +1293,6 @@
     ]
   },
   {
-    "canonicalName": "ground protein",
-    "category": "meat",
-    "items": ["ground protein", "ground meat"]
-  },
-  {
     "canonicalName": "ground beef",
     "category": "meat",
     "items": ["ground beef", "beef"]

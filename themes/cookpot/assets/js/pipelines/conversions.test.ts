@@ -4933,20 +4933,6 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
-      item: 'ground protein',
-      qty: 0.5,
-      unit: 'pound',
-    },
-    expectedList: 'buy',
-    expectedItem: {
-      item: 'ground protein',
-      qty: 0.5,
-      unit: 'pound',
-      category: 'meat',
-    },
-  },
-  {
-    input: {
       item: 'red wine',
       qty: 0.25,
       unit: 'cup',
