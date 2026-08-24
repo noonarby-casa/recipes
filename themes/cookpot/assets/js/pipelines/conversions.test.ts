@@ -4852,6 +4852,22 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '2 cups needed',
     },
   },
+  {
+    input: {
+      item: 'pearl barley',
+      qty: 1,
+      unit: 'cup',
+      desc: 'medium',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'pearl barley',
+      qty: 1,
+      unit: 'bag (16 oz)',
+      category: 'pasta-grains',
+      sizeNote: '1 cup needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {

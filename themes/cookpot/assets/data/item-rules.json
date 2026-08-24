@@ -2088,6 +2088,25 @@
     }
   },
   {
+    "canonicalName": "pearl barley",
+    "category": "pasta-grains",
+    "items": ["pearl barley", "medium pearl barley", "barley"],
+    "unitEquivalences": {
+      "bag (16 oz)": {
+        "base": "cup",
+        "factor": 2.3
+      },
+      "bag": {
+        "base": "cup",
+        "factor": 2.3
+      },
+      "cup": {
+        "base": "ounce",
+        "factor": 7
+      }
+    }
+  },
+  {
     "canonicalName": "French bread",
     "category": "bakery",
     "items": ["French bread", "french bread"]
