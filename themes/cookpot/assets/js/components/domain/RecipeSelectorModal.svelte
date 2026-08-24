@@ -30,6 +30,7 @@
   let searchQuery = $state('');
   let keyboardFocusedIndex = $state(-1);
   let shelfElement = $state<HTMLElement | null>(null);
+  let searchInputRef = $state<HTMLInputElement | null>(null);
   let activeMobileTab = $state<'browse' | 'custom'>('browse');
 
   // Custom Dish Form State
@@ -96,26 +97,120 @@
       isTitleFocused = false;
       showTitleError = false;
       activeSuggestionIndex = -1;
+
+      if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
+        setTimeout(() => {
+          searchInputRef?.focus();
+        }, 50);
+      }
     }
   });
 
-  function handleKeydown(e: KeyboardEvent) {
-    if (activeMobileTab !== 'browse' || filteredRecipes.length === 0) {return;}
+  function handleSearchInput() {
+    keyboardFocusedIndex = -1;
+  }
+
+  function handleSearchKeydown(e: KeyboardEvent) {
+    if (activeMobileTab !== 'browse') {return;}
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      keyboardFocusedIndex = (keyboardFocusedIndex + 1) % filteredRecipes.length;
-      scrollFocusedIntoView();
+      if (filteredRecipes.length > 0) {
+        if (keyboardFocusedIndex === -1) {
+          keyboardFocusedIndex = 0;
+        } else if (keyboardFocusedIndex < filteredRecipes.length - 1) {
+          keyboardFocusedIndex++;
+        }
+        scrollFocusedIntoView();
+      } else {
+        const emptyBtn = shelfElement?.querySelector<HTMLButtonElement>(
+          '.create-custom-bridge-btn, .clear-fav-filter-btn'
+        );
+        emptyBtn?.focus();
+      }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      keyboardFocusedIndex = (keyboardFocusedIndex - 1 + filteredRecipes.length) % filteredRecipes.length;
-      scrollFocusedIntoView();
+      if (filteredRecipes.length > 0) {
+        if (keyboardFocusedIndex > 0) {
+          keyboardFocusedIndex--;
+          scrollFocusedIntoView();
+        } else if (keyboardFocusedIndex === 0) {
+          keyboardFocusedIndex = -1;
+        }
+      }
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      const idx = keyboardFocusedIndex >= 0 && keyboardFocusedIndex < filteredRecipes.length ? keyboardFocusedIndex : 0;
-      onSelect(filteredRecipes[idx].permalink);
+      if (keyboardFocusedIndex >= 0 && keyboardFocusedIndex < filteredRecipes.length) {
+        onSelect(filteredRecipes[keyboardFocusedIndex].permalink);
+      } else {
+        searchInputRef?.blur();
+      }
     } else if (e.key === 'Escape') {
-      onClose();
+      e.preventDefault();
+      e.stopPropagation();
+      if (searchQuery.length > 0 || keyboardFocusedIndex >= 0) {
+        searchQuery = '';
+        keyboardFocusedIndex = -1;
+      } else {
+        onClose();
+      }
+    }
+  }
+
+  function handleCreateCustomBridge() {
+    customTitle = searchQuery.trim();
+    activeMobileTab = 'custom';
+    searchQuery = '';
+    keyboardFocusedIndex = -1;
+    setTimeout(() => {
+      titleInputRef?.focus();
+    }, 50);
+  }
+
+  function handleCustomKeydown(e: KeyboardEvent) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleAddCustomDish();
+    }
+  }
+
+  function handleTitleKeydown(e: KeyboardEvent) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleAddCustomDish();
+      return;
+    }
+
+    if (isTitleFocused && matchingSuggestions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeSuggestionIndex = (activeSuggestionIndex + 1) % matchingSuggestions.length;
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeSuggestionIndex = (activeSuggestionIndex - 1 + matchingSuggestions.length) % matchingSuggestions.length;
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeSuggestionIndex >= 0) {
+          selectSuggestion(matchingSuggestions[activeSuggestionIndex]);
+        } else {
+          handleAddCustomDish();
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        isTitleFocused = false;
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddCustomDish();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (customTitle.length > 0) {
+        customTitle = '';
+      } else {
+        onClose();
+      }
     }
   }
 
@@ -226,9 +321,11 @@
 
         <div class="modal-search-wrapper">
           <input
+            bind:this={searchInputRef}
             type="text"
             bind:value={searchQuery}
-            onkeydown={handleKeydown}
+            oninput={handleSearchInput}
+            onkeydown={handleSearchKeydown}
             placeholder="Search available recipes by title..."
             autocomplete="off"
           />
@@ -280,11 +377,7 @@
                   <button
                     type="button"
                     class="btn btn-brand create-custom-bridge-btn"
-                    onclick={() => {
-                      customTitle = searchQuery.trim();
-                      activeMobileTab = 'custom';
-                      searchQuery = '';
-                    }}
+                    onclick={handleCreateCustomBridge}
                   >
                     + Create Custom Dish "{searchQuery.trim()}"
                   </button>
@@ -308,7 +401,13 @@
       </div>
 
       <!-- Right Column: Create Custom Dish -->
-      <div class="selector-custom-col scrollable-area" use:scrollable class:mobile-hidden={activeMobileTab !== 'custom'}>
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div
+        class="selector-custom-col scrollable-area"
+        use:scrollable
+        class:mobile-hidden={activeMobileTab !== 'custom'}
+        onkeydown={handleCustomKeydown}
+      >
         <h4 class="custom-section-title">Create Custom Dish</h4>
 
         <div class="custom-form-group title-form-group">
@@ -328,25 +427,7 @@
                 showTitleError = false;
                 activeSuggestionIndex = -1;
               }}
-              onkeydown={(e) => {
-                if (isTitleFocused && matchingSuggestions.length > 0) {
-                  if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    activeSuggestionIndex = (activeSuggestionIndex + 1) % matchingSuggestions.length;
-                  } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    activeSuggestionIndex = (activeSuggestionIndex - 1 + matchingSuggestions.length) % matchingSuggestions.length;
-                  } else if (e.key === 'Enter' && activeSuggestionIndex >= 0) {
-                    e.preventDefault();
-                    selectSuggestion(matchingSuggestions[activeSuggestionIndex]);
-                  } else if (e.key === 'Escape') {
-                    isTitleFocused = false;
-                  }
-                } else if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleAddCustomDish();
-                }
-              }}
+              onkeydown={handleTitleKeydown}
             />
 
             {#if isTitleFocused && matchingSuggestions.length > 0}

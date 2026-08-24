@@ -91,9 +91,23 @@
   }
 
   function handleKeydown(e: KeyboardEvent) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      if (inputValue.trim()) {
+        e.preventDefault();
+        handleSave();
+      }
+      return;
+    }
+
     if (e.key === 'Enter') {
       e.preventDefault();
       handleSave();
+    } else if (e.key === 'Escape') {
+      if (editingIndex !== null || inputValue.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleCancelEdit();
+      }
     }
   }
 </script>

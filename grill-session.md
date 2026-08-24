@@ -1,58 +1,59 @@
-# Grill Session: Meal Planner Calendar & Date Range Picker UX
+# Grill Session: Meal Selector Modal Keyboard UX & Interactions
 
 ## Closed Decisions
 
-### Q1. Preset Controls & Jump Semantics
+### Q1. Enter Key Behavior in Catalog Search Input
 
-- **Question:** How should preset buttons and jump actions be labeled and structured in the calendar popover?
-- **Decision:** Split controls into two distinct rows for **Start** and **Duration** in the popover:
-  - **Row 1 (Start Anchors):** `Today`, `This Week` (snaps start to current week's Monday), `Next Week` (snaps start to next week's Monday). Preserves the currently selected duration.
-  - **Row 2 (Duration Presets):** `5 Days`, `7 Days`, `14 Days`, `21 Days` (or `5d Workweek`, `7d Week`, `14d 2 Wks`, `21d 3 Wks`). Extends from the currently selected start date.
-  - **Interaction:** Clicking any preset highlights the range immediately on the calendar grid without closing the modal. Active duration pills visually highlight when matching the current selection.
+- **Question:** What should happen when pressing `Enter` in the recipe search input with or without an active arrow key selection?
+- **Decision:** Consistent split between blur and explicit selection:
+  - **Without arrow keys (`keyboardFocusedIndex === -1`):** Pressing `Enter` blurs the input (`inputElement.blur()`) to collapse the on-screen keyboard (or release input focus) and reveal matching results in the modal. It does _not_ auto-select the first result, even if there is only 1 match.
+  - **With arrow keys (`keyboardFocusedIndex >= 0`):** Pressing `Enter` selects the highlighted recipe and adds it to the meal plan.
 
-### Q2. Stepper Arrow Navigation Logic
+### Q2. Auto-focus Behavior on Modal Open Across Devices
 
-- **Question:** How should the previous (`‹`) and next (`›`) stepper arrows calculate the date shift?
-- **Decision:** Smart step rules based on duration:
-  - **`durationDays === 1`:** Shift by **±1 day** for day-by-day navigation.
-  - **`2 <= durationDays <= 6`:** Shift by **±7 days** (preserves the start day of the week, e.g. Mon–Fri workweeks or Fri–Sun weekends).
-  - **`durationDays >= 7`:** Shift by **±`durationDays`** (e.g. ±7, ±14, ±21 days).
+- **Question:** How should the search input be focused when the recipe selector modal opens?
+- **Decision:** Capability-based auto-focus using pointer media queries:
+  - **Desktop / Mouse (`(pointer: fine)`):** Automatically focus the search input so desktop users can start typing to search immediately.
+  - **Touch / Tablet / Mobile (`(pointer: coarse)`):** Do _not_ auto-focus on modal open, preventing the OS soft keyboard from prematurely covering the recipe list.
 
-### Q3. Popover Dismissal & Closing Lifecycle
+### Q3. Escape Key Semantics in Search Input
 
-- **Question:** When and how should the popover close when interacting with the calendar grid or presets?
-- **Decision:** Live updates with explicit and implicit dismissal:
-  - All interactions (date clicks, jump buttons, duration presets) update the active range live in real-time.
-  - The 2nd click on the calendar grid sets the end date without closing the popover, allowing the user to review or adjust the highlighted span.
-  - Dismissal options: An explicit **"Done"** button in the popover footer, clicking outside (backdrop), or pressing `Escape`.
+- **Question:** When the user presses `Escape`, should it clear the search query or close the modal?
+- **Decision:** Two-step escape hierarchy:
+  - **Step 1:** If search input has text (`searchQuery.length > 0`) or a card is highlighted (`keyboardFocusedIndex >= 0`), `Escape` clears the query, resets the highlighted index to `-1`, and keeps focus in the search box.
+  - **Step 2:** If search input is already empty, `Escape` closes the modal.
 
-### Q4. Calendar Grid Week Starting Day
+### Q4. Arrow Key Navigation Mechanics & Boundaries
 
-- **Question:** Should the calendar popover month matrices start on Sunday (`Su Mo Tu We Th Fr Sa`) or Monday (`Mo Tu We Th Fr Sa Su`)?
-- **Decision:** Keep **Sunday-start (`Su Mo Tu We Th Fr Sa`)** to match standard U.S. consumer calendar conventions.
+- **Question:** How should arrow keys navigate recipe cards and handle boundaries and new keystrokes?
+- **Decision:** Linear non-wrapping boundary with typing reset:
+  - **Input &rarr; Cards:** `ArrowDown` moves from input (`-1`) to the first card (`0`).
+  - **Cards &rarr; Input:** `ArrowUp` from the first card (`0`) returns to `-1` (unhighlighting cards and returning focus to the search bar cursor).
+  - **End of List:** `ArrowDown` at the last card stops at the last card (no infinite wrap).
+  - **Typing Reset:** Any typing/input in the search box immediately resets `keyboardFocusedIndex` to `-1`.
 
-### Q5. Calendar Cell Visuals & Today Indicator
+### Q5. Keyboard Interactions in Custom Dish Entry Form
 
-- **Question:** How should the active range and today's real-world date be indicated in the calendar matrix?
-- **Decision:**
-  - **Range Style:** Keep the current unified solid selection styling across the active range (reading top-left to bottom-right).
-  - **Today Marker:** Render a small 4px accent dot centered beneath the date number (turning white when selected).
+- **Question:** How should `Enter` and submission shortcuts behave within the Custom Dish form?
+- **Decision:** Smart contextual actions and power shortcuts:
+  - **Title Input:** If suggestion active &rarr; selects suggestion; if no suggestion active &rarr; submits custom dish if valid.
+  - **Ingredients Input:** `Enter` commits the current ingredient and keeps focus in the input for the next item. `Escape` cancels editing.
+  - **Power Shortcut:** `Cmd+Enter` / `Ctrl+Enter` submits the custom dish from anywhere in the custom panel.
 
-### Q6. Trigger Button Label & Range Formatting
+### Q6. Tab Switching & Column Navigation via Keyboard
 
-- **Question:** Should the main toolbar date trigger button include day-of-week abbreviations in the label?
-- **Decision:**
-  - Display weekday names in the range label (e.g. `Mon, Aug 3 – Fri, Aug 7 (5 days)` or `Mon, Aug 3 – Sun, Aug 9 (7 days)`).
-  - Provide instant clarity on the weekly rhythm without needing to open the popover.
-  - Gracefully shorten on small mobile viewports if needed to avoid toolbar overflow.
+- **Question:** How should keyboard navigation handle moving between tabs on mobile, and between the two columns on desktop?
+- **Decision:** Standard WAI-ARIA and linear Tab flow:
+  - **Mobile / Tablet:** WAI-ARIA arrow navigation (`ArrowLeft` / `ArrowRight`) on the `ToggleGroup` tab header.
+  - **Desktop:** Clean linear `Tab` ring across Search &rarr; Favorites &rarr; Shelf &rarr; Custom Form. No non-standard modifier combinations.
 
-### Q7. Mobile & Viewport Layout (< 600px)
+### Q7. "No Results" Empty State & Custom Dish Bridge Keyboard Actions
 
-- **Question:** How should the 2-month calendar and controls render on mobile screens?
-- **Decision:**
-  - Preserve the full **2-month view** on mobile (stacked vertically) so cross-month selection remains effortless.
-  - Use **static positioning** for the footer presets and Done button beneath Month 2.
-  - Set `max-height: 85vh; overflow-y: auto;` on the popover container so smaller screens scroll smoothly without collapsing or shrinking calendar cells (which stay fixed at 30px).
+- **Question:** How should keyboard navigation interact with empty state action buttons?
+- **Decision:** Predictable focus flow and smooth bridge:
+  - `Enter` in search input blurs to reveal empty state without selecting.
+  - `ArrowDown` / `Tab` from empty search focuses the action button (`+ Create Custom Dish` or `Show All Recipes`).
+  - Activating `+ Create Custom Dish` copies query to title, switches tab on mobile, clears query, and focuses the title field.
 
 ## Open Questions
 

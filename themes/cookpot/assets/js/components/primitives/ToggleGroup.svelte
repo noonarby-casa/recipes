@@ -48,13 +48,37 @@
       );
     }
   }
+
+  function handleKeyDown(e: KeyboardEvent) {
+    if (options.length <= 1) {return;}
+    const currentIndex = options.findIndex((opt) => opt.id === internalSelectedId);
+    let nextIndex = -1;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      nextIndex = currentIndex >= 0 ? (currentIndex + 1) % options.length : 0;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      nextIndex = currentIndex >= 0 ? (currentIndex - 1 + options.length) % options.length : options.length - 1;
+    }
+
+    if (nextIndex >= 0) {
+      const nextOpt = options[nextIndex];
+      handleSelect(nextOpt.id);
+      const buttons = rootElement?.querySelectorAll<HTMLButtonElement>('button');
+      buttons?.[nextIndex]?.focus();
+    }
+  }
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
   class="toggle-group"
   class:vertical={orientation === 'vertical'}
   class:full-width={fullWidth}
   bind:this={rootElement}
+  role="group"
+  onkeydown={handleKeyDown}
 >
   {#each options as opt}
     <Button
