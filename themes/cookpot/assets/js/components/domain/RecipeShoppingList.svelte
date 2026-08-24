@@ -94,7 +94,7 @@
     const total = sectionItems.length;
     const checked = sectionItems.filter((item) => {
       const isStaple = item.staple === 'in-pantry';
-      const key = getIngredientKey(isStaple, item.unit, item.item);
+      const key = getIngredientKey(item.item);
       return isChecked(key, isStaple);
     }).length;
     return { checked, total, isComplete: total > 0 && checked === total };
@@ -103,7 +103,7 @@
   let exportItems = $derived<ExportItem[]>([
     ...computed.buyItems.map((item) => {
       const isStaple = item.staple === 'in-pantry';
-      const key = getIngredientKey(isStaple, item.unit, item.item);
+      const key = getIngredientKey(item.item);
       return {
         ...item,
         isChecked: isChecked(key, isStaple),
@@ -111,7 +111,7 @@
       };
     }),
     ...computed.optionalItems.map((item) => {
-      const key = getIngredientKey(false, item.unit, item.item);
+      const key = getIngredientKey(item.item);
       return {
         ...item,
         isChecked: isChecked(key, false),
@@ -298,7 +298,7 @@
       {#if !isCollapsed}
         {#each section.items as item}
           {@const isStaple = item.staple === 'in-pantry'}
-          {@const key = getIngredientKey(isStaple, item.unit, item.item)}
+          {@const key = getIngredientKey(item.item)}
           {@const checked = isChecked(key, isStaple)}
           <ShoppingListItemRow
             {item}
@@ -344,7 +344,7 @@
       </li>
       {#if !isCollapsed}
         {#each computed.optionalItems as item}
-          {@const key = getIngredientKey(false, item.unit, item.item)}
+          {@const key = getIngredientKey(item.item)}
           {@const checked = isChecked(key, false)}
           <ShoppingListItemRow
             {item}

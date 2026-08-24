@@ -28,6 +28,9 @@
     /** Total meals logged in current month. */
     totalMonthMeals?: number;
 
+    /** Whether any custom checkbox overrides exist. */
+    hasCustomChecks?: boolean;
+
     // Event callbacks
     onTabChange?: (tab: 'edit' | 'view' | 'shop' | 'history') => void;
     onRangeChange?: (startDate: string, durationDays: number) => void;
@@ -39,6 +42,7 @@
     onExportList?: () => void;
     onCopyMenu?: () => void;
     onResetCheckboxes?: () => void;
+    onOpenPantryAudit?: () => void;
     onPrevHistoryMonth?: () => void;
     onNextHistoryMonth?: () => void;
     onJumpHistoryToday?: () => void;
@@ -59,6 +63,7 @@
     storageKb = 0,
     storagePercent = 0,
     totalMonthMeals = 1,
+    hasCustomChecks = false,
     onTabChange,
     onRangeChange,
     onAdjustPortions,
@@ -69,6 +74,7 @@
     onExportList,
     onCopyMenu,
     onResetCheckboxes,
+    onOpenPantryAudit,
     onPrevHistoryMonth,
     onNextHistoryMonth,
     onJumpHistoryToday,
@@ -206,7 +212,17 @@
     class:visible={activeTab === 'shop'}
     id="toolbar-shop"
   >
-    <div class="planner-top-actions">
+    <div class="shop-primary-actions">
+      <button
+        type="button"
+        id="btn-check-pantry"
+        class="btn btn-brand"
+        disabled={shoppingCount === 0}
+        onclick={() => onOpenPantryAudit?.()}
+        title="Audit pantry staples and ingredients on hand"
+      >
+        Check Pantry
+      </button>
       <button
         type="button"
         id="btn-copy-combined-list"
@@ -215,6 +231,9 @@
       >
         Export List...
       </button>
+    </div>
+
+    <div class="shop-secondary-actions">
       <button
         type="button"
         id="btn-copy-menu-text"
@@ -224,15 +243,17 @@
       >
         {copyMenuLabel}
       </button>
-      <button
-        type="button"
-        class="planner-clear-btn"
-        id="btn-reset-shopping-list"
-        title="Reset checkboxes"
-        onclick={() => onResetCheckboxes?.()}
-      >
-        Reset Checkboxes
-      </button>
+      {#if hasCustomChecks}
+        <button
+          type="button"
+          class="planner-clear-btn"
+          id="btn-reset-shopping-list"
+          title="Reset checkboxes"
+          onclick={() => onResetCheckboxes?.()}
+        >
+          Reset Checkboxes
+        </button>
+      {/if}
     </div>
   </div>
 
@@ -316,7 +337,9 @@
     display: flex;
   }
 
-  .planner-top-actions {
+  .planner-top-actions,
+  .shop-primary-actions,
+  .shop-secondary-actions {
     align-items: center;
     display: flex;
     flex-wrap: wrap;

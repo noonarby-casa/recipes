@@ -38,12 +38,14 @@
   import { getCalendarMonthMatrix } from '../../utils/dates';
 
   import ExportModal from '../domain/ExportModal.svelte';
+  import PantryAuditModal from '../domain/PantryAuditModal.svelte';
   import type { ExportItem } from '../../pipelines/shoppingExportPipeline';
   import { showToast } from '../../stores/toast';
 
   let isFiltersModalOpen = $state(false);
   let isExportModalOpen = $state(false);
   let isStorageModalOpen = $state(false);
+  let isPantryAuditOpen = $state(false);
   let activeAddDay = $state<string | null>(null);
   let detailsItem = $state<PlannedItem | null>(null);
 
@@ -100,7 +102,7 @@
   let combinedExportItems = $derived<ExportItem[]>([
     ...$combinedShoppingList.combinedBuyItems.map((item) => {
       const isStaple = item.staple === 'in-pantry';
-      const key = getIngredientKey(isStaple, item.unit, item.item);
+      const key = getIngredientKey(item.item);
       return {
         ...item,
         isChecked: isItemChecked(key, isStaple, $shoppingCheckedStore),
@@ -108,7 +110,7 @@
       };
     }),
     ...$combinedShoppingList.optionalItems.map((item) => {
-      const key = getIngredientKey(false, item.unit, item.item);
+      const key = getIngredientKey(item.item);
       return {
         ...item,
         isChecked: isItemChecked(key, false, $shoppingCheckedStore),
@@ -506,6 +508,7 @@
   storageKb={storageStats.storageKb}
   storagePercent={storageStats.percent}
   totalMonthMeals={totalMonthMeals}
+  hasCustomChecks={Object.keys($shoppingCheckedStore).length > 0}
   onTabChange={(tab) => {
     settingsStore.update((s) => ({ ...s, activeTab: tab }));
     plannerStore.reloadActivePlan();
@@ -527,6 +530,7 @@
   onExportList={() => (isExportModalOpen = true)}
   onCopyMenu={copyMenuTextToClipboard}
   onResetCheckboxes={() => shoppingCheckedStore.clearChecked()}
+  onOpenPantryAudit={() => (isPantryAuditOpen = true)}
   onPrevHistoryMonth={prevHistoryMonth}
   onNextHistoryMonth={nextHistoryMonth}
   onJumpHistoryToday={jumpHistoryToday}
@@ -593,6 +597,16 @@
 <StorageDetailsModal
   isOpen={isStorageModalOpen}
   onClose={() => (isStorageModalOpen = false)}
+/>
+<PantryAuditModal
+  isOpen={isPantryAuditOpen}
+  onClose={() => (isPantryAuditOpen = false)}
+  items={[
+    ...$combinedShoppingList.combinedBuyItems,
+    ...$combinedShoppingList.optionalItems,
+  ]}
+  checkedStates={$shoppingCheckedStore}
+  onSetChecked={(key, checked) => shoppingCheckedStore.setChecked(key, checked)}
 />
 
 {#if activeAddDay}

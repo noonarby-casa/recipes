@@ -23,6 +23,7 @@
   import EmptyState from '../primitives/EmptyState.svelte';
   import Icon from '../primitives/Icon.svelte';
   import ShoppingListItemRow from '../domain/ShoppingListItemRow.svelte';
+  import PantryAuditModal from '../domain/PantryAuditModal.svelte';
 
   import { getUrlParams, updateUrlParams, onUrlChange } from '../../utils/urlSync';
   import {
@@ -38,6 +39,7 @@
   let isolatedCheckedStates = $state<Record<string, boolean>>({});
   let isolatedAltSelections = $state<Record<string, string>>({});
   let activeMobileTab = $state<'recipes' | 'shopping'>('recipes');
+  let showAuditModal = $state(false);
   let isInitialized = false;
 
   let recipes = $derived($recipesStore);
@@ -249,6 +251,10 @@
     buyItems.length + optionalItems.length,
   );
 
+  let hasCustomChecks = $derived(
+    Object.keys(isolatedCheckedStates).length > 0,
+  );
+
   const collapsedSections = new SvelteSet<string>();
 
   function toggleSection(sectionId: string) {
@@ -303,7 +309,7 @@
     const total = sectionItems.length;
     const checked = sectionItems.filter((item) => {
       const isStaple = item.staple === 'in-pantry';
-      const key = getIngredientKey(isStaple, item.unit, item.item);
+      const key = getIngredientKey(item.item);
       return isItemChecked(key, isStaple, isolatedCheckedStates);
     }).length;
     return { checked, total, isComplete: total > 0 && checked === total };
@@ -513,13 +519,33 @@
             >
           </div>
           {#if totalSectionsCount > 0}
-            <button
-              type="button"
-              class="btn btn-secondary btn-sm"
-              onclick={toggleAllSections}
-            >
-              {allCollapsed ? 'Expand All' : 'Collapse All'}
-            </button>
+            <div class="debug-shopping-actions">
+              <button
+                type="button"
+                class="btn btn-brand btn-sm check-pantry-btn"
+                onclick={() => (showAuditModal = true)}
+                title="Audit pantry staples and ingredients on hand"
+              >
+                Check Pantry
+              </button>
+              {#if hasCustomChecks}
+                <button
+                  type="button"
+                  class="planner-clear-btn btn-sm reset-checks-btn"
+                  onclick={() => (isolatedCheckedStates = {})}
+                  title="Reset all check states back to defaults"
+                >
+                  Reset Checkboxes
+                </button>
+              {/if}
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+                onclick={toggleAllSections}
+              >
+                {allCollapsed ? 'Expand All' : 'Collapse All'}
+              </button>
+            </div>
           {/if}
         </div>
 
@@ -584,11 +610,7 @@
                   {#if !isCollapsed}
                     {#each section.items as item}
                       {@const isStaple = item.staple === 'in-pantry'}
-                      {@const key = getIngredientKey(
-                        isStaple,
-                        item.unit,
-                        item.item,
-                      )}
+                      {@const key = getIngredientKey(item.item)}
                       {@const isChecked = isItemChecked(
                         key,
                         isStaple,
@@ -642,7 +664,7 @@
                 </li>
                 {#if !isCollapsed}
                   {#each optionalItems as item}
-                    {@const key = getIngredientKey(false, item.unit, item.item)}
+                    {@const key = getIngredientKey(item.item)}
                     {@const isChecked = isItemChecked(
                       key,
                       false,
@@ -664,6 +686,16 @@
     </div>
   </div>
 </div>
+
+<PantryAuditModal
+  isOpen={showAuditModal}
+  onClose={() => (showAuditModal = false)}
+  items={[...buyItems, ...optionalItems]}
+  checkedStates={isolatedCheckedStates}
+  onSetChecked={(key, checked) => {
+    isolatedCheckedStates = { ...isolatedCheckedStates, [key]: checked };
+  }}
+/>
 
 <style>
   .shopping-debug-container {

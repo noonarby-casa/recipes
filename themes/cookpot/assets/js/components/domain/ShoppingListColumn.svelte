@@ -74,7 +74,7 @@
     const total = sectionItems.length;
     const checked = sectionItems.filter((item) => {
       const isStaple = item.staple === 'in-pantry';
-      const key = getIngredientKey(isStaple, item.unit, item.item);
+      const key = getIngredientKey(item.item);
       return isItemChecked(key, isStaple, $shoppingCheckedStore);
     }).length;
     return { checked, total, isComplete: total > 0 && checked === total };
@@ -147,7 +147,7 @@
             {#if !isCollapsed}
               {#each section.items as item}
                 {@const isStaple = item.staple === 'in-pantry'}
-                {@const key = getIngredientKey(isStaple, item.unit, item.item)}
+                {@const key = getIngredientKey(item.item)}
                 {@const isChecked = isItemChecked(
                   key,
                   isStaple,
@@ -200,7 +200,7 @@
           </li>
           {#if !isCollapsed}
             {#each optionalItems as item}
-              {@const key = getIngredientKey(false, item.unit, item.item)}
+              {@const key = getIngredientKey(item.item)}
               {@const isChecked = isItemChecked(
                 key,
                 false,

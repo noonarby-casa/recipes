@@ -10,7 +10,7 @@ import {
 } from '../data/store-sections';
 import { ls } from '../utils/storage';
 
-const CHECKED_STORAGE_KEY = 'noonarby-shopping-checked-items-v2';
+const CHECKED_STORAGE_KEY = 'noonarby-shopping-checked-items-v3';
 
 function loadCheckedStates(): Record<string, boolean> {
   return ls.getJson<Record<string, boolean>>(CHECKED_STORAGE_KEY) ?? {};
@@ -29,11 +29,26 @@ if (typeof document !== 'undefined') {
 
 const checkedStates = writable<Record<string, boolean>>(loadCheckedStates());
 
+export function getIngredientKey(item: string): string {
+  return (item || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+export function isItemChecked(
+  key: string,
+  isStaple: boolean,
+  states: Record<string, boolean>,
+): boolean {
+  if (key in states) {
+    return states[key];
+  }
+  return isStaple;
+}
+
 export const shoppingCheckedStore = {
   subscribe: checkedStates.subscribe,
   toggle(key: string, isStaple: boolean) {
     checkedStates.update((states) => {
-      const current = states[key] !== undefined ? states[key] : isStaple;
+      const current = isItemChecked(key, isStaple, states);
       const next = { ...states, [key]: !current };
       ls.setJson(CHECKED_STORAGE_KEY, next);
       return next;
@@ -44,6 +59,24 @@ export const shoppingCheckedStore = {
       const next = { ...states, [key]: checked };
       ls.setJson(CHECKED_STORAGE_KEY, next);
       return next;
+    });
+  },
+  pruneOrphans(validKeys: Set<string>) {
+    checkedStates.update((states) => {
+      let changed = false;
+      const next: Record<string, boolean> = {};
+      for (const [k, v] of Object.entries(states)) {
+        if (validKeys.has(k)) {
+          next[k] = v;
+        } else {
+          changed = true;
+        }
+      }
+      if (changed) {
+        ls.setJson(CHECKED_STORAGE_KEY, next);
+        return next;
+      }
+      return states;
     });
   },
   clearChecked() {
@@ -81,28 +114,6 @@ export const shoppingAltSelectionsStore = {
   },
 };
 
-export function getIngredientKey(
-  isStaple: boolean,
-  unit: string,
-  rest: string,
-): string {
-  const stapleStr = isStaple ? 'staple' : 'buy';
-  const normalizedUnit = (unit || '').trim().toLowerCase();
-  const normalizedRest = (rest || '').trim().toLowerCase().replace(/\s+/g, ' ');
-  return `${stapleStr}_${normalizedUnit}_${normalizedRest}`;
-}
-
-export function isItemChecked(
-  key: string,
-  isStaple: boolean,
-  states: Record<string, boolean>,
-): boolean {
-  if (key in states) {
-    return states[key];
-  }
-  return isStaple;
-}
-
 /**
  * Deep-clones an ingredient and scales its quantity (and alt quantity) by the
  * given scale factor. Handles both scalar and [min, max] tuple quantities.
@@ -130,6 +141,9 @@ export const combinedShoppingList = derived(
   ([$planner, $recipes, $layoutId, $altSelections]) => {
     const planItems = $planner.plan;
     if (planItems.length === 0) {
+      if (typeof window !== 'undefined') {
+        shoppingCheckedStore.clearChecked();
+      }
       return {
         buyItems: [],
         optionalItems: [],
@@ -177,6 +191,14 @@ export const combinedShoppingList = derived(
     const combinedBuyItems = [...buyItems, ...stapleItems].sort((a, b) =>
       compareShoppingItems(a, b, activeLayout),
     );
+
+    if (typeof window !== 'undefined') {
+      const validKeys = new Set<string>();
+      [...combinedBuyItems, ...optionalItems].forEach((item) => {
+        validKeys.add(getIngredientKey(item.item));
+      });
+      shoppingCheckedStore.pruneOrphans(validKeys);
+    }
 
     return { buyItems, optionalItems, stapleItems, combinedBuyItems };
   },
