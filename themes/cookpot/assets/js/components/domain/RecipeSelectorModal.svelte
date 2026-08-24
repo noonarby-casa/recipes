@@ -99,9 +99,13 @@
       activeSuggestionIndex = -1;
 
       if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
-        setTimeout(() => {
+        if (
+          !document.activeElement ||
+          document.activeElement === document.body ||
+          !searchInputRef?.closest('.modal-content')?.contains(document.activeElement)
+        ) {
           searchInputRef?.focus();
-        }, 50);
+        }
       }
     }
   });
