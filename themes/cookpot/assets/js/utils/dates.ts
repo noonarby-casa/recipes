@@ -99,8 +99,10 @@ export function formatDayTitle(dateStr: string): string {
   return `${dayName}, ${monthName} ${dayNum}`;
 }
 
+const SHORT_WEEKDAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
+
 /**
- * Formats a date range for display: e.g. "Aug 3 – Aug 7, 2026 (5 days)".
+ * Formats a date range for display: e.g. "M Aug 3 – F Aug 7 (5d)".
  */
 export function formatDateRangeLabel(
   startDateStr: string,
@@ -109,19 +111,28 @@ export function formatDateRangeLabel(
   const start = parseIsoDate(startDateStr);
   const end = addDays(start, Math.max(1, durationDays) - 1);
 
+  const startWeekday = SHORT_WEEKDAYS[start.getDay()];
   const startMonth = start.toLocaleDateString('en-US', { month: 'short' });
   const startDay = start.getDate();
+  const startYear = start.getFullYear();
+
+  const endWeekday = SHORT_WEEKDAYS[end.getDay()];
   const endMonth = end.toLocaleDateString('en-US', { month: 'short' });
   const endDay = end.getDate();
-  const year = end.getFullYear();
+  const endYear = end.getFullYear();
+
+  if (durationDays === 1) {
+    const yearPart =
+      startYear !== new Date().getFullYear() ? ` ${startYear}` : '';
+    return `${startWeekday} ${startMonth} ${startDay}${yearPart} (1d)`;
+  }
 
   const rangeText =
-    start.getMonth() === end.getMonth()
-      ? `${startMonth} ${startDay} – ${endDay}, ${year}`
-      : `${startMonth} ${startDay} – ${endMonth} ${endDay}, ${year}`;
+    startYear !== endYear
+      ? `${startWeekday} ${startMonth} ${startDay} ${startYear} – ${endWeekday} ${endMonth} ${endDay} ${endYear}`
+      : `${startWeekday} ${startMonth} ${startDay} – ${endWeekday} ${endMonth} ${endDay}`;
 
-  const dayWord = durationDays === 1 ? 'day' : 'days';
-  return `${rangeText} (${durationDays} ${dayWord})`;
+  return `${rangeText} (${durationDays}d)`;
 }
 
 /**

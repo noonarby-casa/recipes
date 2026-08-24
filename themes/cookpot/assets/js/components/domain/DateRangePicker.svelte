@@ -74,7 +74,14 @@
 
   function stepRange(direction: -1 | 1) {
     const start = parseIsoDate(startDate);
-    const shift = direction * durationDays;
+    let shift: number;
+    if (durationDays === 1) {
+      shift = direction * 1;
+    } else if (durationDays >= 2 && durationDays <= 6) {
+      shift = direction * 7;
+    } else {
+      shift = direction * durationDays;
+    }
     const newStart = addDays(start, shift);
     onChangeRange(formatIsoDate(newStart), durationDays);
   }
@@ -88,6 +95,12 @@
       hoveringDate = null;
     }
     isOpen = !isOpen;
+  }
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && isOpen) {
+      isOpen = false;
+    }
   }
 
   function handleDateClick(dateObj: Date) {
@@ -118,8 +131,28 @@
       onChangeRange(formatIsoDate(start), days);
       selectingStart = null;
       hoveringDate = null;
-      isOpen = false;
     }
+  }
+
+  function applyJumpAnchor(targetStart: Date) {
+    onChangeRange(formatIsoDate(targetStart), durationDays);
+    selectingStart = null;
+    hoveringDate = null;
+    viewYear = targetStart.getFullYear();
+    viewMonth = targetStart.getMonth();
+  }
+
+  function applyDurationPreset(days: number) {
+    const baseStart = selectingStart
+      ? parseIsoDate(selectingStart)
+      : parseIsoDate(startDate);
+    onChangeRange(formatIsoDate(baseStart), days);
+    selectingStart = null;
+    hoveringDate = null;
+  }
+
+  function isDateToday(dateObj: Date): boolean {
+    return formatIsoDate(dateObj) === formatIsoDate(new Date());
   }
 
   function isDateSelected(dateObj: Date): boolean {
@@ -169,6 +202,8 @@
     return seq;
   }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="date-range-picker-container">
   <div class="date-stepper-wrapper">
@@ -244,10 +279,14 @@
                       class="calendar-cell-btn"
                       class:selected={isDateSelected(cell)}
                       class:in-range={isDateInRange(cell)}
+                      class:is-today={isDateToday(cell)}
                       onmouseover={() => (hoveringDate = formatIsoDate(cell))}
                       onclick={() => handleDateClick(cell)}
                     >
-                      {cell.getDate()}
+                      <span class="calendar-cell-num">{cell.getDate()}</span>
+                      {#if isDateToday(cell)}
+                        <span class="today-marker-dot"></span>
+                      {/if}
                     </button>
                   {:else}
                     <span class="cell-empty"></span>
@@ -277,10 +316,14 @@
                       class="calendar-cell-btn"
                       class:selected={isDateSelected(cell)}
                       class:in-range={isDateInRange(cell)}
+                      class:is-today={isDateToday(cell)}
                       onmouseover={() => (hoveringDate = formatIsoDate(cell))}
                       onclick={() => handleDateClick(cell)}
                     >
-                      {cell.getDate()}
+                      <span class="calendar-cell-num">{cell.getDate()}</span>
+                      {#if isDateToday(cell)}
+                        <span class="today-marker-dot"></span>
+                      {/if}
                     </button>
                   {:else}
                     <span class="cell-empty"></span>
@@ -293,50 +336,80 @@
       </div>
 
       <div class="popover-footer">
-        <div class="preset-pills">
+        <div class="presets-section">
+          <div class="preset-row">
+            <span class="preset-row-label">Start:</span>
+            <div class="preset-pills">
+              <button
+                type="button"
+                class="preset-pill"
+                onclick={() => applyJumpAnchor(new Date())}
+              >
+                Today
+              </button>
+              <button
+                type="button"
+                class="preset-pill"
+                onclick={() => applyJumpAnchor(getMondayOfWeek())}
+              >
+                This Week
+              </button>
+              <button
+                type="button"
+                class="preset-pill"
+                onclick={() => applyJumpAnchor(addDays(getMondayOfWeek(), 7))}
+              >
+                Next Week
+              </button>
+            </div>
+          </div>
+
+          <div class="preset-row">
+            <span class="preset-row-label">Duration:</span>
+            <div class="preset-pills">
+              <button
+                type="button"
+                class="preset-pill"
+                class:active={durationDays === 5 && !selectingStart}
+                onclick={() => applyDurationPreset(5)}
+              >
+                5 Days
+              </button>
+              <button
+                type="button"
+                class="preset-pill"
+                class:active={durationDays === 7 && !selectingStart}
+                onclick={() => applyDurationPreset(7)}
+              >
+                7 Days
+              </button>
+              <button
+                type="button"
+                class="preset-pill"
+                class:active={durationDays === 14 && !selectingStart}
+                onclick={() => applyDurationPreset(14)}
+              >
+                14 Days
+              </button>
+              <button
+                type="button"
+                class="preset-pill"
+                class:active={durationDays === 21 && !selectingStart}
+                onclick={() => applyDurationPreset(21)}
+              >
+                21 Days
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="popover-actions-row">
           <button
             type="button"
-            class="preset-pill"
-            onclick={() => {
-              const start = formatIsoDate(getMondayOfWeek());
-              onChangeRange(start, 5);
-              isOpen = false;
-            }}
+            class="date-picker-done-btn"
+            onclick={() => (isOpen = false)}
           >
-            This Workweek (5d)
-          </button>
-          <button
-            type="button"
-            class="preset-pill"
-            onclick={() => {
-              const start = formatIsoDate(getMondayOfWeek());
-              onChangeRange(start, 7);
-              isOpen = false;
-            }}
-          >
-            Full Week (7d)
-          </button>
-          <button
-            type="button"
-            class="preset-pill"
-            onclick={() => {
-              const start = formatIsoDate(getMondayOfWeek());
-              onChangeRange(start, 14);
-              isOpen = false;
-            }}
-          >
-            2 Weeks (14d)
-          </button>
-          <button
-            type="button"
-            class="preset-pill"
-            onclick={() => {
-              const start = formatIsoDate(getMondayOfWeek());
-              onChangeRange(start, 21);
-              isOpen = false;
-            }}
-          >
-            3 Weeks (21d)
+            Done
           </button>
         </div>
       </div>
@@ -420,7 +493,9 @@
     border-radius: 14px;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
     left: 0;
+    max-height: 85vh;
     max-width: 600px;
+    overflow-y: auto;
     padding: 1rem;
     position: absolute;
     top: calc(100% + 8px);
@@ -504,10 +579,12 @@
     color: var(--text-color);
     cursor: pointer;
     display: flex;
+    flex-direction: column;
     font-size: 0.85rem;
     height: 30px;
     justify-content: center;
     margin: 1px 0;
+    position: relative;
     transition: background 0.15s ease;
   }
 
@@ -528,20 +605,61 @@
     font-weight: 700;
   }
 
+  .calendar-cell-num {
+    line-height: 1;
+  }
+
+  .today-marker-dot {
+    background-color: var(--noonblue);
+    border-radius: 50%;
+    bottom: 2px;
+    height: 4px;
+    position: absolute;
+    width: 4px;
+  }
+
+  .calendar-cell-btn.selected .today-marker-dot {
+    background-color: #ffffff;
+  }
+
   .cell-empty {
     height: 30px;
   }
 
   .popover-footer {
     border-top: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
     margin-top: 1rem;
     padding-top: 0.75rem;
+  }
+
+  .presets-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .preset-row {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .preset-row-label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 60px;
+    text-transform: uppercase;
   }
 
   .preset-pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.35rem;
   }
 
   .preset-pill {
@@ -552,7 +670,7 @@
     cursor: pointer;
     font-size: 0.75rem;
     font-weight: 600;
-    padding: 0.35rem 0.65rem;
+    padding: 0.3rem 0.6rem;
     transition: all 0.2s ease;
   }
 
@@ -560,6 +678,34 @@
     background: var(--noonblue-bg-light);
     border-color: var(--noonblue);
     color: var(--noonblue);
+  }
+
+  .preset-pill.active {
+    background: var(--noonblue);
+    border-color: var(--noonblue);
+    color: #ffffff;
+  }
+
+  .popover-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.25rem;
+  }
+
+  .date-picker-done-btn {
+    background: var(--noonblue);
+    border: 1px solid var(--noonblue);
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .date-picker-done-btn:hover {
+    background: var(--noonblue-dark, #2b6cb0);
   }
 
   @media (max-width: 600px) {

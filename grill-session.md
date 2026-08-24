@@ -1,69 +1,59 @@
-# Grill Session: Multiple Custom Recipes & Selector Modal Visibility
+# Grill Session: Meal Planner Calendar & Date Range Picker UX
 
 ## Closed Decisions
 
-### Q1. Modal Layout & Custom Entry Discoverability
+### Q1. Preset Controls & Jump Semantics
 
-- **Question:** How should the custom recipe creation entry point be structured inside the recipe selector modal so that adding custom dishes is always immediately obvious and accessible while preserving the two-column desktop / tabbed mobile layout?
-- **Decision:** Combine Sticky Footer + Active Action State + Search-to-Custom Bridge:
-- **Details:**
-  - Make custom form scrollable with a sticky/fixed action footer so the button is always in view.
-  - Keep "Add Custom Dish" button visually active; if clicked while title is empty, focus/highlight the title input.
-  - In empty search states, show a "Create custom dish for '[query]'" button that switches to Custom tab on mobile and pre-fills title.
+- **Question:** How should preset buttons and jump actions be labeled and structured in the calendar popover?
+- **Decision:** Split controls into two distinct rows for **Start** and **Duration** in the popover:
+  - **Row 1 (Start Anchors):** `Today`, `This Week` (snaps start to current week's Monday), `Next Week` (snaps start to next week's Monday). Preserves the currently selected duration.
+  - **Row 2 (Duration Presets):** `5 Days`, `7 Days`, `14 Days`, `21 Days` (or `5d Workweek`, `7d Week`, `14d 2 Wks`, `21d 3 Wks`). Extends from the currently selected start date.
+  - **Interaction:** Clicking any preset highlights the range immediately on the calendar grid without closing the modal. Active duration pills visually highlight when matching the current selection.
 
-### Q2. Swapping vs Adding Custom Recipes
+### Q2. Stepper Arrow Navigation Logic
 
-- **Question:** Should custom recipe cards in the meal planner feature a swap/shuffle button?
-- **Decision:** Omit the swap/shuffle button on custom recipes.
-- **Details:**
-  - Custom recipe cards will only show "Edit Details" (pencil) and "Remove" (✕) in edit mode.
-  - Prevents accidental destruction of custom titles, icons, and ingredient lists from one-click randomization.
+- **Question:** How should the previous (`‹`) and next (`›`) stepper arrows calculate the date shift?
+- **Decision:** Smart step rules based on duration:
+  - **`durationDays === 1`:** Shift by **±1 day** for day-by-day navigation.
+  - **`2 <= durationDays <= 6`:** Shift by **±7 days** (preserves the start day of the week, e.g. Mon–Fri workweeks or Fri–Sun weekends).
+  - **`durationDays >= 7`:** Shift by **±`durationDays`** (e.g. ±7, ±14, ±21 days).
 
-### Q3. Custom Recipe Quick-Fill & Recent Suggestions
+### Q3. Popover Dismissal & Closing Lifecycle
 
-- **Question:** How should previously planned custom recipes be suggested/reused in the selector modal without horizontal swiping on mobile and with consistent desktop/mobile styling?
-- **Decision:** Alternative 1 (Title Input Autocomplete / Dropdown Suggestions).
-- **Details:**
-  - Zero vertical clutter when idle; dropdown list of matching recent custom dishes appears when the Title field is focused/typed into.
-  - Derived dynamically from `CalendarLedger` history (top recent unique custom dishes).
-  - Selecting a suggestion auto-fills the Title, Icon, Base Servings, and Ingredients list.
+- **Question:** When and how should the popover close when interacting with the calendar grid or presets?
+- **Decision:** Live updates with explicit and implicit dismissal:
+  - All interactions (date clicks, jump buttons, duration presets) update the active range live in real-time.
+  - The 2nd click on the calendar grid sets the end date without closing the popover, allowing the user to review or adjust the highlighted span.
+  - Dismissal options: An explicit **"Done"** button in the popover footer, clicking outside (backdrop), or pressing `Escape`.
 
-### Q4. Base Servings & Portion Scaling for Custom Recipes
+### Q4. Calendar Grid Week Starting Day
 
-- **Question:** How should ingredient quantities entered into a custom recipe be scaled when setting/adjusting servings?
-- **Decision:** Custom recipes establish an explicit `baseServings` (the 1.0 scale baseline for the entered ingredient amounts).
-- **Details:**
-  - Entered ingredient amounts correspond to the chosen base servings (e.g., entering a 1-portion smoothie or 6-portion chili).
-  - Card portion adjustments scale relative to that base (`scale = currentPortions / baseServings`).
-  - `PlannedRecipeDetailsModal` allows modifying the custom dish's base servings, title, icon, and ingredient list post-creation.
+- **Question:** Should the calendar popover month matrices start on Sunday (`Su Mo Tu We Th Fr Sa`) or Monday (`Mo Tu We Th Fr Sa Su`)?
+- **Decision:** Keep **Sunday-start (`Su Mo Tu We Th Fr Sa`)** to match standard U.S. consumer calendar conventions.
 
-### Q5. Shopping List Aggregation & Attribution for Custom Items
+### Q5. Calendar Cell Visuals & Today Indicator
 
-- **Question:** How should custom recipe ingredients be displayed, attributed, and merged in the shopping list when multiple custom meals share ingredients?
-- **Decision:** Full pipeline consolidation with custom recipe name attribution.
-- **Details:**
-  - Custom ingredients merge seamlessly with catalog recipes and other custom meals (e.g. adding avocados together).
-  - Aisle sorting and package matching rules apply automatically, with unrecognized items routing to the "Other" aisle.
-  - Item tooltips and exported text attribute ingredient sources clearly (e.g., "Needed for: Breakfast Tacos (Custom)").
+- **Question:** How should the active range and today's real-world date be indicated in the calendar matrix?
+- **Decision:**
+  - **Range Style:** Keep the current unified solid selection styling across the active range (reading top-left to bottom-right).
+  - **Today Marker:** Render a small 4px accent dot centered beneath the date number (turning white when selected).
 
-### Q6. URL State Serialization for Multiple Custom Recipes
+### Q6. Trigger Button Label & Range Formatting
 
-- **Question:** How should multiple custom recipes with custom base servings be encoded into the URL `x` parameter?
-- **Decision:** Option A with Version 2 (`2~<entries>`).
-- **Details:**
-  - Strict positional syntax: `2~<index>|<title>|<icon>|<baseServings>|<ingredient1>|<ingredient2>...`
-  - Unambiguous parsing: field 0 = index, field 1 = title, field 2 = icon, field 3 = baseServings, field 4+ = ingredients.
-  - Matches the versioned design of the `p` parameter (`p=2....`).
-  - Separated by `~` entries and `|` fields, then Base64URL-encoded for minimal URL size.
+- **Question:** Should the main toolbar date trigger button include day-of-week abbreviations in the label?
+- **Decision:**
+  - Display weekday names in the range label (e.g. `Mon, Aug 3 – Fri, Aug 7 (5 days)` or `Mon, Aug 3 – Sun, Aug 9 (7 days)`).
+  - Provide instant clarity on the weekly rhythm without needing to open the popover.
+  - Gracefully shorten on small mobile viewports if needed to avoid toolbar overflow.
 
-### Q7. Standardized Modal Footer Primitive
+### Q7. Mobile & Viewport Layout (< 600px)
 
-- **Question:** How should `Modal.svelte` be upgraded to standardize modal footers across the design system?
-- **Decision:** Add an optional `footer?: Snippet` and `footerClass?: string` to `Modal.svelte`.
-- **Details:**
-  - Adopt across `ExportModal` (unifying desktop & mobile copy actions), `StorageDetailsModal` (pinned JSON backup button), and `RecipeSelectorModal` (pinned "Add Custom Dish" button).
-  - Pins action buttons cleanly at the bottom with standard border-top separator and responsive padding.
+- **Question:** How should the 2-month calendar and controls render on mobile screens?
+- **Decision:**
+  - Preserve the full **2-month view** on mobile (stacked vertically) so cross-month selection remains effortless.
+  - Use **static positioning** for the footer presets and Done button beneath Month 2.
+  - Set `max-height: 85vh; overflow-y: auto;` on the popover container so smaller screens scroll smoothly without collapsing or shrinking calendar cells (which stay fixed at 30px).
 
 ## Open Questions
 
-_(All design questions and branches resolved!)_
+_(All initial questions resolved)_
