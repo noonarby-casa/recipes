@@ -3518,5 +3518,25 @@
         "aliases": ["pepita", "pepitas"]
       }
     ]
+  },
+  {
+    "canonicalName": "baguette",
+    "category": "bakery",
+    "items": [
+      {
+        "singular": "baguette",
+        "plural": "baguettes"
+      }
+    ]
+  },
+  {
+    "canonicalName": "guacamole seasoning mix",
+    "category": "spices-seasonings",
+    "items": ["guacamole seasoning mix", "guacamole seasoning"]
+  },
+  {
+    "canonicalName": "everything bagel seasoning",
+    "category": "spices-seasonings",
+    "items": ["everything bagel seasoning"]
   }
 ]

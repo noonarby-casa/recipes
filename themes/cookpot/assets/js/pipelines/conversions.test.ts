@@ -4976,6 +4976,49 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '2/3 oz needed',
     },
   },
+  {
+    input: {
+      item: 'baguette',
+      qty: 1,
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'baguette',
+      qty: 1,
+      unit: '',
+      category: 'bakery',
+    },
+  },
+  {
+    input: {
+      item: 'guacamole seasoning mix',
+      qty: 2,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'guacamole seasoning mix',
+      qty: null,
+      unit: '',
+      category: 'spices-seasonings',
+      sizeNote: '2 tbsp needed',
+    },
+  },
+  {
+    input: {
+      item: 'everything bagel seasoning',
+      qty: 1,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'everything bagel seasoning',
+      qty: null,
+      unit: '',
+      category: 'spices-seasonings',
+      sizeNote: '1 tbsp needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
