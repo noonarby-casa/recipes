@@ -757,6 +757,22 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
+      item: 'garlic powder',
+      qty: 0.5,
+      unit: 'teaspoon',
+    },
+    expectedList: 'staple',
+    expectedItem: {
+      item: 'garlic powder',
+      qty: null,
+      unit: '',
+      category: 'spices-seasonings',
+      staple: 'in-pantry',
+      sizeNote: '1/2 tsp needed',
+    },
+  },
+  {
+    input: {
       item: 'tamari',
       qty: 1,
       unit: 'tablespoon',

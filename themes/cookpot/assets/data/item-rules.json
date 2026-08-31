@@ -3117,6 +3117,12 @@
     "items": ["fresh oregano"]
   },
   {
+    "canonicalName": "garlic powder",
+    "category": "spices-seasonings",
+    "staple": true,
+    "items": ["garlic powder"]
+  },
+  {
     "canonicalName": "onion powder",
     "category": "spices-seasonings",
     "staple": true,
