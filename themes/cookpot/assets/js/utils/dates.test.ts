@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatDateRangeLabel,
+  formatDayTitle,
   formatIsoDate,
   getCalendarMonthMatrix,
   getDateSequence,
@@ -54,5 +55,19 @@ describe('dates utility', () => {
     // Saturday is index 6
     expect(matrix[0][0]).toBeNull();
     expect(matrix[0][6]?.getDate()).toBe(1);
+  });
+
+  it('formats day title with 3-letter day abbreviation', () => {
+    expect(formatDayTitle('2026-08-03')).toBe('Mon, Aug 3');
+    expect(formatDayTitle('2026-08-04')).toBe('Tue, Aug 4');
+    expect(formatDayTitle('2026-08-05')).toBe('Wed, Aug 5');
+    expect(formatDayTitle('2026-08-06')).toBe('Thu, Aug 6');
+    expect(formatDayTitle('2026-08-07')).toBe('Fri, Aug 7');
+    expect(formatDayTitle('2026-08-08')).toBe('Sat, Aug 8');
+    expect(formatDayTitle('2026-08-09')).toBe('Sun, Aug 9');
+  });
+
+  it('formats supplemental day title correctly', () => {
+    expect(formatDayTitle('supplemental')).toBe('Anytime / Supplemental');
   });
 });

@@ -86,14 +86,14 @@ export function getDateSequence(
 }
 
 /**
- * Formats a date string ('YYYY-MM-DD') for a day column header: "Monday, Aug 3".
+ * Formats a date string ('YYYY-MM-DD') for a day column header: "Mon, Aug 3".
  */
 export function formatDayTitle(dateStr: string): string {
   if (dateStr === 'supplemental') {
     return 'Anytime / Supplemental';
   }
   const date = parseIsoDate(dateStr);
-  const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
   const monthName = date.toLocaleDateString('en-US', { month: 'short' });
   const dayNum = date.getDate();
   return `${dayName}, ${monthName} ${dayNum}`;
