@@ -179,3 +179,258 @@ test.describe('Meal Planner custom recipes Mon-Fri workflow', () => {
     await expect(allRecipeCards).toHaveCount(5);
   });
 });
+
+test.describe('Meal Planner drag and drop interactions', () => {
+  test('drags and drops a recipe card from Monday to Tuesday via pointer', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/plan/?d=2026-08-24&w=5&m=e');
+
+    // Add a custom dish to Monday
+    const mondayCol = page.locator('.day-column').first();
+    await mondayCol.locator('.day-header-add-btn').click();
+
+    const modal = page.locator('.selector-modal-content');
+    await expect(modal).toBeVisible();
+    await modal.locator('#custom-dish-title').fill('Tacos');
+    await modal.locator('.add-custom-btn').click();
+    await expect(modal).toBeHidden();
+
+    const monCard = mondayCol.locator('.recipe-card-unified');
+    await expect(monCard).toBeVisible();
+
+    const tuesdayCol = page.locator('.day-column').nth(1);
+    await expect(tuesdayCol.locator('.recipe-card-unified')).toHaveCount(0);
+
+    // Get bounding boxes
+    const cardHandle = monCard.locator('.recipe-drag-handle');
+    const handleBox = await cardHandle.boundingBox();
+    const tueBox = await tuesdayCol.boundingBox();
+
+    expect(handleBox).not.toBeNull();
+    expect(tueBox).not.toBeNull();
+
+    if (handleBox && tueBox) {
+      const startX = handleBox.x + handleBox.width / 2;
+      const startY = handleBox.y + handleBox.height / 2;
+      const targetX = tueBox.x + tueBox.width / 2;
+      const targetY = tueBox.y + tueBox.height / 2;
+
+      // Perform pointer drag
+      await page.mouse.move(startX, startY);
+      await page.mouse.down();
+      await page.mouse.move(targetX, targetY, { steps: 10 });
+      await page.mouse.up();
+    }
+
+    // Verify card moved from Monday to Tuesday
+    await expect(mondayCol.locator('.recipe-card-unified')).toHaveCount(0);
+    await expect(tuesdayCol.locator('.recipe-card-unified')).toHaveCount(1);
+    await expect(tuesdayCol.locator('.recipe-card-title')).toContainText(
+      'Tacos',
+    );
+  });
+
+  test('drags and drops a recipe card by grabbing the recipe image with mouse', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/plan/?d=2026-08-24&w=5&m=e');
+
+    const mondayCol = page.locator('.day-column').first();
+    await mondayCol.locator('.day-header-add-btn').click();
+
+    const modal = page.locator('.selector-modal-content');
+    await modal.locator('#custom-dish-title').fill('Pasta Carbonara');
+    await modal.locator('.add-custom-btn').click();
+    await expect(modal).toBeHidden();
+
+    const monCard = mondayCol.locator('.recipe-card-unified');
+    await expect(monCard).toBeVisible();
+
+    const tuesdayCol = page.locator('.day-column').nth(1);
+    await expect(tuesdayCol.locator('.recipe-card-unified')).toHaveCount(0);
+
+    // Grab image directly
+    const imgEl = monCard.locator('.recipe-card-img');
+    const imgBox = await imgEl.boundingBox();
+    const tueBox = await tuesdayCol.boundingBox();
+
+    expect(imgBox).not.toBeNull();
+    expect(tueBox).not.toBeNull();
+
+    if (imgBox && tueBox) {
+      const startX = imgBox.x + imgBox.width / 2;
+      const startY = imgBox.y + imgBox.height / 2;
+      const targetX = tueBox.x + tueBox.width / 2;
+      const targetY = tueBox.y + tueBox.height / 2;
+
+      await page.mouse.move(startX, startY);
+      await page.mouse.down();
+      await page.mouse.move(targetX, targetY, { steps: 12 });
+      await page.mouse.up();
+    }
+
+    // Verify card successfully moved to Tuesday
+    await expect(mondayCol.locator('.recipe-card-unified')).toHaveCount(0);
+    await expect(tuesdayCol.locator('.recipe-card-unified')).toHaveCount(1);
+    await expect(tuesdayCol.locator('.recipe-card-title')).toContainText(
+      'Pasta Carbonara',
+    );
+  });
+
+  test('drags and drops a recipe card via touch events on the image', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 800, height: 900 });
+    await page.goto('/plan/?d=2026-08-24&w=5&m=e');
+
+    const mondayCol = page.locator('.day-column').first();
+    await mondayCol.locator('.day-header-add-btn').click();
+
+    const modal = page.locator('.selector-modal-content');
+    await modal.locator('#custom-dish-title').fill('Touch Burrito');
+    await modal.locator('.add-custom-btn').click();
+    await expect(modal).toBeHidden();
+
+    const monCard = mondayCol.locator('.recipe-card-unified');
+    await expect(monCard).toBeVisible();
+
+    const tuesdayCol = page.locator('.day-column').nth(1);
+    await expect(tuesdayCol.locator('.recipe-card-unified')).toHaveCount(0);
+
+    const imgBox = await monCard.locator('.recipe-card-img').boundingBox();
+    const tueBox = await tuesdayCol.boundingBox();
+
+    expect(imgBox).not.toBeNull();
+    expect(tueBox).not.toBeNull();
+
+    if (imgBox && tueBox) {
+      const startX = imgBox.x + imgBox.width / 2;
+      const startY = imgBox.y + imgBox.height / 2;
+      const targetX = tueBox.x + tueBox.width / 2;
+      const targetY = tueBox.y + tueBox.height / 2;
+
+      // Dispatch touch sequence on client
+      await page.evaluate(
+        ({ sX, sY, tX, tY }) => {
+          const el = document.elementFromPoint(sX, sY);
+          if (!el) {
+            return;
+          }
+
+          const touch1 = new Touch({
+            identifier: 1,
+            target: el,
+            clientX: sX,
+            clientY: sY,
+            pageX: sX,
+            pageY: sY,
+          });
+
+          el.dispatchEvent(
+            new TouchEvent('touchstart', {
+              bubbles: true,
+              cancelable: true,
+              touches: [touch1],
+              targetTouches: [touch1],
+              changedTouches: [touch1],
+            }),
+          );
+
+          // Step moves
+          for (let i = 1; i <= 8; i++) {
+            const curX = sX + ((tX - sX) * i) / 8;
+            const curY = sY + ((tY - sY) * i) / 8;
+            const moveTouch = new Touch({
+              identifier: 1,
+              target: el,
+              clientX: curX,
+              clientY: curY,
+              pageX: curX,
+              pageY: curY,
+            });
+            window.dispatchEvent(
+              new TouchEvent('touchmove', {
+                bubbles: true,
+                cancelable: true,
+                touches: [moveTouch],
+                targetTouches: [moveTouch],
+                changedTouches: [moveTouch],
+              }),
+            );
+          }
+
+          const endTouch = new Touch({
+            identifier: 1,
+            target: el,
+            clientX: tX,
+            clientY: tY,
+            pageX: tX,
+            pageY: tY,
+          });
+          window.dispatchEvent(
+            new TouchEvent('touchend', {
+              bubbles: true,
+              cancelable: true,
+              touches: [],
+              targetTouches: [],
+              changedTouches: [endTouch],
+            }),
+          );
+        },
+        { sX: startX, sY: startY, tX: targetX, tY: targetY },
+      );
+    }
+
+    // Verify touch drag moved card to Tuesday
+    await expect(mondayCol.locator('.recipe-card-unified')).toHaveCount(0);
+    await expect(tuesdayCol.locator('.recipe-card-unified')).toHaveCount(1);
+    await expect(tuesdayCol.locator('.recipe-card-title')).toContainText(
+      'Touch Burrito',
+    );
+  });
+
+  test('confirms vertical scrolling via gutters and card body without triggering drag', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 700 });
+    await page.goto('/plan/?d=2026-08-24&w=5&m=e');
+
+    const mondayCol = page.locator('.day-column').first();
+
+    // Add 4 meals to Monday to make it overflow vertically
+    for (let i = 1; i <= 4; i++) {
+      await mondayCol.locator('.day-header-add-btn').click();
+      const modal = page.locator('.selector-modal-content');
+      await modal.locator('#custom-dish-title').fill(`Meal Item ${i}`);
+      await modal.locator('.add-custom-btn').click();
+      await expect(modal).toBeHidden();
+    }
+
+    const cards = mondayCol.locator('.recipe-card-unified');
+    await expect(cards).toHaveCount(4);
+
+    const scrollContainer = page.locator('#col-planner');
+
+    // Check initial scrollTop
+    const initialScroll = await scrollContainer.evaluate((el) => el.scrollTop);
+    expect(initialScroll).toBe(0);
+
+    // Scroll by mouse wheel over card title / body (not image)
+    const cardTitle = cards.first().locator('.recipe-card-title');
+    await cardTitle.hover();
+    await page.mouse.wheel(0, 200);
+
+    // Wait briefly for scroll to settle
+    await page.waitForTimeout(200);
+
+    const scrolledPos = await scrollContainer.evaluate((el) => el.scrollTop);
+    expect(scrolledPos).toBeGreaterThan(0);
+
+    // Verify no drag was accidentally initiated (trash zone stays hidden and no card is in dragging state)
+    await expect(page.locator('#planner-trash-zone')).toBeHidden();
+    await expect(page.locator('.drag-wrapper.is-dragging')).toHaveCount(0);
+  });
+});

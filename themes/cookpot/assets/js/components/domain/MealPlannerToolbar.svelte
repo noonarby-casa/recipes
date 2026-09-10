@@ -84,18 +84,18 @@
   }: Props = $props();
 </script>
 
-<div class="meal-planner-toolbar-container">
-  <!-- Mode Selector Header Row -->
-  <div class="planner-mode-header">
+<div class="planner-unified-toolbar">
+  <!-- Primary Row: Mode Switcher & Contextual Navigation/Controls -->
+  <div class="toolbar-primary-row">
     <div class="mode-toggle-group">
       <ToggleGroup
         options={[
-          { id: 'view', label: 'View Plan', idAttr: 'mode-view-btn' },
-          { id: 'edit', label: 'Edit Plan', idAttr: 'mode-edit-btn' },
+          { id: 'view', label: 'View', idAttr: 'mode-view-btn' },
+          { id: 'edit', label: 'Edit', idAttr: 'mode-edit-btn' },
           {
             id: 'shop',
             label:
-              `Shopping List` +
+              `Shop` +
               (shoppingCount > 0 ? ` (${shoppingCount})` : ''),
             idAttr: 'mode-shop-btn',
           },
@@ -106,22 +106,67 @@
           onTabChange?.(id as 'edit' | 'view' | 'shop' | 'history')}
       />
     </div>
+
+    <div class="toolbar-primary-context">
+      {#if activeTab === 'view' || activeTab === 'edit'}
+        <div class="date-picker-toolbar-wrapper">
+          <DateRangePicker
+            {startDate}
+            {durationDays}
+            onChangeRange={(s, d) => onRangeChange?.(s, d)}
+          />
+        </div>
+      {:else if activeTab === 'history'}
+        <div class="history-left-controls">
+          <MonthYearPicker
+            year={historyYear}
+            month={historyMonth}
+            onChangeMonthYear={(y, m) => onSelectHistoryMonthYear?.(y, m)}
+            onPrevMonth={() => onPrevHistoryMonth?.()}
+            onNextMonth={() => onNextHistoryMonth?.()}
+            onJumpToday={() => onJumpHistoryToday?.()}
+          />
+          {#if totalMonthMeals === 0}
+            <button
+              type="button"
+              class="history-empty-alert-pill"
+              onclick={() => onJumpActivePlan?.()}
+            >
+              🗓️ Empty Month — Plan Now
+            </button>
+          {/if}
+        </div>
+      {:else if activeTab === 'shop'}
+        <div class="shop-primary-actions">
+          <button
+            type="button"
+            id="btn-check-pantry"
+            class="btn btn-brand"
+            disabled={shoppingCount === 0}
+            onclick={() => onOpenPantryAudit?.()}
+            title="Audit pantry staples and ingredients on hand"
+          >
+            Check Pantry
+          </button>
+          <button
+            type="button"
+            id="btn-copy-combined-list"
+            class="btn btn-secondary"
+            onclick={() => onExportList?.()}
+          >
+            Export List...
+          </button>
+        </div>
+      {/if}
+    </div>
   </div>
 
-  <!-- Edit Toolbar -->
+  <!-- Secondary Context Actions Row -->
   <div
-    class="planner-controls-toolbar"
+    class="toolbar-secondary-row"
     class:visible={activeTab === 'edit'}
     id="toolbar-edit"
   >
-    <div class="date-picker-toolbar-wrapper">
-      <DateRangePicker
-        {startDate}
-        {durationDays}
-        onChangeRange={(s, d) => onRangeChange?.(s, d)}
-      />
-    </div>
-
     <div class="global-scaler-panel" id="global-scaler-panel">
       <span class="global-scaler-label">Adjust Servings</span>
       <div class="servings-picker">
@@ -180,20 +225,12 @@
     </div>
   </div>
 
-  <!-- View Toolbar -->
   <div
-    class="planner-controls-toolbar"
+    class="toolbar-secondary-row"
     class:visible={activeTab === 'view'}
     id="toolbar-view"
   >
-    <div class="date-picker-toolbar-wrapper">
-      <DateRangePicker
-        {startDate}
-        {durationDays}
-        onChangeRange={(s, d) => onRangeChange?.(s, d)}
-      />
-    </div>
-
+    <div class="toolbar-spacer"></div>
     <div class="planner-top-actions">
       <button
         type="button"
@@ -206,33 +243,12 @@
     </div>
   </div>
 
-  <!-- Shop Toolbar -->
   <div
-    class="planner-controls-toolbar"
+    class="toolbar-secondary-row"
     class:visible={activeTab === 'shop'}
     id="toolbar-shop"
   >
-    <div class="shop-primary-actions">
-      <button
-        type="button"
-        id="btn-check-pantry"
-        class="btn btn-brand"
-        disabled={shoppingCount === 0}
-        onclick={() => onOpenPantryAudit?.()}
-        title="Audit pantry staples and ingredients on hand"
-      >
-        Check Pantry
-      </button>
-      <button
-        type="button"
-        id="btn-copy-combined-list"
-        class="btn btn-secondary"
-        onclick={() => onExportList?.()}
-      >
-        Export List...
-      </button>
-    </div>
-
+    <div class="toolbar-spacer"></div>
     <div class="shop-secondary-actions">
       <button
         type="button"
@@ -257,33 +273,12 @@
     </div>
   </div>
 
-  <!-- History Toolbar -->
   <div
-    class="planner-controls-toolbar"
+    class="toolbar-secondary-row"
     class:visible={activeTab === 'history'}
     id="toolbar-history"
   >
-    <div class="history-left-controls">
-      <MonthYearPicker
-        year={historyYear}
-        month={historyMonth}
-        onChangeMonthYear={(y, m) => onSelectHistoryMonthYear?.(y, m)}
-        onPrevMonth={() => onPrevHistoryMonth?.()}
-        onNextMonth={() => onNextHistoryMonth?.()}
-        onJumpToday={() => onJumpHistoryToday?.()}
-      />
-
-      {#if totalMonthMeals === 0}
-        <button
-          type="button"
-          class="history-empty-alert-pill"
-          onclick={() => onJumpActivePlan?.()}
-        >
-          🗓️ Empty Month — Plan Now
-        </button>
-      {/if}
-    </div>
-
+    <div class="toolbar-spacer"></div>
     <div class="planner-top-actions">
       <button
         type="button"
@@ -306,35 +301,65 @@
 </div>
 
 <style>
-  .planner-mode-header {
-    align-items: center;
+  .planner-unified-toolbar {
     background: var(--font-panel-bg);
     border: 1px solid var(--border-subtle);
     border-radius: 14px;
     box-shadow: var(--btn-shadow);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
     margin-bottom: 0.75rem;
-    margin-top: 1rem;
-    padding: 0.75rem 1.25rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.85rem;
   }
 
-  .planner-controls-toolbar {
+  @media (min-width: 768px) {
+    .planner-unified-toolbar {
+      box-sizing: border-box;
+      min-height: 82px;
+    }
+
+    .toolbar-primary-row {
+      min-height: 34px;
+    }
+
+    .toolbar-secondary-row {
+      min-height: 32px;
+    }
+  }
+
+  .toolbar-primary-row {
     align-items: center;
-    background: var(--font-panel-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-    box-shadow: var(--btn-shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+  }
+
+  .toolbar-primary-context {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .toolbar-secondary-row {
+    align-items: center;
+    border-top: 1px solid var(--border-ultra-subtle);
     display: none;
     flex-wrap: wrap;
-    gap: 1.25rem;
+    gap: 0.75rem;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
-    padding: 0.75rem 1.25rem;
+    padding-top: 0.4rem;
   }
 
-  .planner-controls-toolbar.visible {
+  .toolbar-secondary-row.visible {
     display: flex;
+  }
+
+  .toolbar-spacer {
+    flex: 1;
   }
 
   .planner-top-actions,
@@ -346,32 +371,53 @@
     gap: 0.5rem;
   }
 
+  :global(.planner-unified-toolbar .btn),
+  :global(.planner-unified-toolbar .planner-clear-btn) {
+    align-items: center;
+    box-sizing: border-box;
+    display: inline-flex;
+    font-size: 0.8rem;
+    height: 32px;
+    justify-content: center;
+    padding: 0 0.75rem;
+  }
+
   .global-scaler-panel {
     align-items: center;
     background-color: var(--font-controls-bg);
     border: 1px solid var(--border-ultra-subtle);
-    border-radius: 10px;
+    border-radius: 8px;
+    box-sizing: border-box;
     display: inline-flex;
-    gap: 0.75rem;
-    padding: 3px 0.75rem 3px 3px;
+    gap: 0.5rem;
+    height: 32px;
+    padding: 2px 0.5rem 2px 2px;
+  }
+
+  .global-scaler-panel :global(.servings-picker) {
+    height: 26px;
+  }
+
+  .global-scaler-panel :global(.servings-btn) {
+    font-size: 0.85rem;
+    height: 24px;
+    width: 24px;
   }
 
   .global-scaler-label {
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
-    padding-left: 0.5rem;
+    letter-spacing: 0.04em;
+    padding-left: 0.4rem;
     text-transform: uppercase;
   }
-
-
 
   .history-left-controls {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.6rem;
   }
 
   .history-empty-alert-pill {
@@ -382,10 +428,10 @@
     color: var(--noonblue);
     cursor: pointer;
     display: inline-flex;
-    font-size: 0.825rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    height: 36px;
-    padding: 0 0.75rem;
+    height: 32px;
+    padding: 0 0.65rem;
     transition: all 0.2s ease;
   }
 
@@ -402,10 +448,10 @@
     color: var(--text-color);
     cursor: pointer;
     display: inline-flex;
-    font-size: 0.825rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    height: 36px;
-    padding: 0 0.75rem;
+    height: 32px;
+    padding: 0 0.65rem;
     transition: all 0.2s ease;
   }
 
@@ -415,14 +461,17 @@
   }
 
   .history-active-shortcut-btn {
+    align-items: center;
     background: var(--noonblue-bg-light);
     border: 1px solid var(--noonblue);
     border-radius: 8px;
     color: var(--noonblue);
     cursor: pointer;
-    font-size: 0.85rem;
+    display: inline-flex;
+    font-size: 0.8rem;
     font-weight: 600;
-    padding: 0.45rem 0.85rem;
+    height: 32px;
+    padding: 0 0.75rem;
     transition: all 0.2s ease;
   }
 
@@ -432,8 +481,9 @@
   }
 
   @media (max-width: 767px) {
-    .planner-controls-toolbar {
-      gap: 0.75rem;
+    .toolbar-primary-row,
+    .toolbar-secondary-row {
+      gap: 0.5rem;
       justify-content: center;
     }
   }

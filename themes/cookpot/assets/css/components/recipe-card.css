@@ -442,6 +442,28 @@ html.dark-mode .recipe-favorite-badge {
   color: var(--noonblue);
 }
 
+.planner-card .recipe-card-media-wrapper {
+  aspect-ratio: 4 / 3;
+}
+
+.planner-card .recipe-card-img.custom-recipe-img {
+  background-color: var(--image-bg);
+  object-fit: contain;
+  padding: 10px;
+}
+
+.planner-card .recipe-card-header .recipe-card-title {
+  font-size: 0.875rem;
+  line-height: 1.25;
+  margin: 0.45rem 0.5rem 0.2rem 0.5rem;
+  min-height: 2.5em;
+}
+
+.planner-card .recipe-card-body {
+  gap: 0.35rem;
+  padding: 0.35rem 0.5rem 0.5rem 0.5rem;
+}
+
 @media (max-width: 767px) {
   .planner-card .recipe-card-header {
     align-items: center;

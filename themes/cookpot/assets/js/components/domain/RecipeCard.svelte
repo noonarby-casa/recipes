@@ -130,7 +130,7 @@
           <img
             src={customImgUrl}
             alt={title}
-            class="recipe-card-img"
+            class="recipe-card-img custom-recipe-img"
             loading="lazy"
             onerror={(e) => {
               (e.currentTarget as HTMLImageElement).src = '/icons/custom-utensils.webp';
@@ -380,19 +380,27 @@
     align-items: center;
     background: var(--font-controls-bg);
     border: 1px solid var(--border-ultra-subtle);
-    border-radius: 8px;
+    border-radius: 6px;
     color: var(--font-btn-text);
     cursor: pointer;
     display: inline-flex;
-    font-size: 0.85rem;
-    height: 32px;
-    width: 32px;
-    min-width: 32px;
-    min-height: 32px;
+    font-size: 0.8rem;
+    height: 28px;
+    width: 28px;
+    min-width: 28px;
+    min-height: 28px;
     justify-content: center;
     line-height: 1;
     padding: 0;
     transition: all 0.2s ease;
+  }
+  @media (pointer: coarse) {
+    .recipe-control-btn {
+      height: 34px;
+      width: 34px;
+      min-width: 34px;
+      min-height: 34px;
+    }
   }
   .recipe-control-btn:hover {
     background-color: var(--noonblue-bg-light);
@@ -428,20 +436,21 @@
   .recipe-drag-handle:active {
     cursor: grabbing;
   }
-  .recipe-card-unified.edit-mode .recipe-card-header,
   .recipe-card-unified.edit-mode .recipe-card-media-wrapper,
   .recipe-card-unified.edit-mode .recipe-card-img,
-  .recipe-card-unified.edit-mode .recipe-card-title {
+  .recipe-card-unified.edit-mode .recipe-drag-handle {
     cursor: grab;
+    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none;
   }
-  .recipe-card-unified.edit-mode .recipe-card-header:active,
   .recipe-card-unified.edit-mode .recipe-card-media-wrapper:active,
   .recipe-card-unified.edit-mode .recipe-card-img:active,
-  .recipe-card-unified.edit-mode .recipe-card-title:active {
+  .recipe-card-unified.edit-mode .recipe-drag-handle:active {
     cursor: grabbing;
+  }
+  .recipe-card-unified.edit-mode {
+    touch-action: pan-y;
   }
   .recipe-card-unified.edit-mode .planner-edit-controls-stacked {
     cursor: default;

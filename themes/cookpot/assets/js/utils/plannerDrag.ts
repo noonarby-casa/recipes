@@ -9,7 +9,7 @@ export function isControlTarget(el: HTMLElement | null): boolean {
     return false;
   }
   return !!el.closest(
-    'button, input, select, textarea, a, .recipe-control-btn, .servings-picker-row, .portion-picker-row, .planner-action-btns, .planner-edit-controls-stacked, [role="button"]',
+    'button, input, select, textarea, a, .recipe-control-btn, .servings-picker-row, .portion-picker-row, .planner-action-btns, .planner-edit-controls-stacked, .day-header-add-btn, [role="button"]',
   );
 }
 
@@ -133,6 +133,7 @@ export interface TouchDragOptions {
 }
 
 let activeAvatar: HTMLElement | null = null;
+let activeDragCleanup: (() => void) | null = null;
 
 function removeAvatar() {
   if (activeAvatar && activeAvatar.parentNode) {
@@ -152,6 +153,11 @@ export function handlePointerDragStart(
     return;
   }
 
+  if (activeDragCleanup) {
+    activeDragCleanup();
+    activeDragCleanup = null;
+  }
+
   const targetEl = e.target as HTMLElement | null;
   if (isControlTarget(targetEl)) {
     return;
@@ -168,6 +174,9 @@ export function handlePointerDragStart(
   let currentTargetDay: string | null = null;
   let currentTargetCardId: string | undefined = undefined;
   let isOverTrash = false;
+  let autoScrollRaf: number | null = null;
+  let currentScrollContainer: HTMLElement | null = null;
+  let autoScrollSpeedY = 0;
 
   const cardWrapper = targetEl?.closest('.drag-wrapper') as HTMLElement | null;
 
@@ -175,6 +184,56 @@ export function handlePointerDragStart(
     document.querySelectorAll('.drag-over').forEach((el) => {
       el.classList.remove('drag-over');
     });
+  }
+
+  function runAutoScroll() {
+    if (!isDragging || autoScrollSpeedY === 0) {
+      autoScrollRaf = null;
+      return;
+    }
+    const container =
+      currentScrollContainer || document.getElementById('col-planner');
+    if (container) {
+      container.scrollTop += autoScrollSpeedY;
+    } else {
+      window.scrollBy(0, autoScrollSpeedY);
+    }
+    autoScrollRaf = requestAnimationFrame(runAutoScroll);
+  }
+
+  function updateAutoScroll(moveY: number) {
+    const container = document.getElementById('col-planner');
+    if (container) {
+      currentScrollContainer = container;
+      const rect = container.getBoundingClientRect();
+      const edgeThreshold = 70;
+      if (moveY < rect.top + edgeThreshold && moveY >= rect.top - 20) {
+        const factor = 1 - Math.max(0, (moveY - rect.top) / edgeThreshold);
+        autoScrollSpeedY = -Math.max(3, Math.round(factor * 14));
+      } else if (
+        moveY > rect.bottom - edgeThreshold &&
+        moveY <= rect.bottom + 20
+      ) {
+        const factor = 1 - Math.max(0, (rect.bottom - moveY) / edgeThreshold);
+        autoScrollSpeedY = Math.max(3, Math.round(factor * 14));
+      } else {
+        autoScrollSpeedY = 0;
+      }
+    } else {
+      const edgeThreshold = 70;
+      const vh = window.innerHeight;
+      if (moveY < edgeThreshold) {
+        autoScrollSpeedY = -Math.round((1 - moveY / edgeThreshold) * 14);
+      } else if (moveY > vh - edgeThreshold) {
+        autoScrollSpeedY = Math.round((1 - (vh - moveY) / edgeThreshold) * 14);
+      } else {
+        autoScrollSpeedY = 0;
+      }
+    }
+
+    if (autoScrollSpeedY !== 0 && autoScrollRaf === null) {
+      autoScrollRaf = requestAnimationFrame(runAutoScroll);
+    }
   }
 
   function onMove(moveEv: PointerEvent | TouchEvent) {
@@ -236,6 +295,7 @@ export function handlePointerDragStart(
         activeAvatar.style.top = `${moveY}px`;
       }
 
+      updateAutoScroll(moveY);
       clearHighlights();
 
       const dropEl = document.elementFromPoint(
@@ -270,12 +330,19 @@ export function handlePointerDragStart(
   }
 
   function onEnd() {
+    activeDragCleanup = null;
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerup', onEnd);
     window.removeEventListener('pointercancel', onEnd);
     window.removeEventListener('touchmove', onMove);
     window.removeEventListener('touchend', onEnd);
     window.removeEventListener('touchcancel', onEnd);
+
+    if (autoScrollRaf !== null) {
+      cancelAnimationFrame(autoScrollRaf);
+      autoScrollRaf = null;
+    }
+    autoScrollSpeedY = 0;
 
     if (cardWrapper) {
       cardWrapper.classList.remove('is-dragging');
@@ -301,6 +368,8 @@ export function handlePointerDragStart(
       }
     }
   }
+
+  activeDragCleanup = onEnd;
 
   window.addEventListener('pointermove', onMove, { passive: false });
   window.addEventListener('pointerup', onEnd);

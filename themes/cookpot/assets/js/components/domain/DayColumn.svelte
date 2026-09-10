@@ -3,6 +3,7 @@
   import { plannerStore } from '../../stores/planner';
   import RecipeCard from './RecipeCard.svelte';
   import { recipesStore } from '../../stores/recipes';
+  import Icon from '../primitives/Icon.svelte';
   import {
     isControlTarget,
     movePlannedItem,
@@ -113,9 +114,22 @@
 >
   <div class="day-header">
     <span class="day-title">{dayName}</span>
-    {#if dayTotalMin > 0}
-      <span class="day-time-badge">{dayTotalMin} min</span>
-    {/if}
+    <div class="day-header-right">
+      {#if dayTotalMin > 0}
+        <span class="day-time-badge">{dayTotalMin} min</span>
+      {/if}
+      {#if editMode}
+        <button
+          type="button"
+          class="day-header-add-btn"
+          aria-label="Add recipe to {dayName}"
+          title="Add recipe to {dayName}"
+          onclick={onAddRecipe}
+        >
+          <Icon name="plus" size={13} strokeWidth={2.5} />
+        </button>
+      {/if}
+    </div>
   </div>
 
   <div class="day-recipes-list" data-day={day}>
@@ -148,6 +162,24 @@
             },
           });
         }}
+        ontouchstart={(e) => {
+          handlePointerDragStart(e, {
+            item,
+            editMode,
+            onMove: (draggedId, targetDayKey, targetCardId) => {
+              const nextPlan = movePlannedItem(
+                $plannerStore.plan,
+                draggedId,
+                targetDayKey,
+                targetCardId
+              );
+              plannerStore.reorderRecipes(nextPlan);
+            },
+            onRemove: (draggedId) => {
+              plannerStore.removeRecipe(draggedId);
+            },
+          });
+        }}
       >
         <RecipeCard
           {item}
@@ -161,7 +193,7 @@
     {/each}
   </div>
 
-  {#if editMode}
+  {#if editMode && items.length === 0}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="empty-slot-box" data-day={day} title="Add recipe to {dayName}" onclick={onAddRecipe}>
@@ -194,11 +226,38 @@
   }
 
   .day-header {
-    align-items: baseline;
+    align-items: center;
     border-bottom: 1px solid var(--border-ultra-subtle);
     display: flex;
     justify-content: space-between;
     padding-bottom: 0.4rem;
+  }
+
+  .day-header-right {
+    align-items: center;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .day-header-add-btn {
+    align-items: center;
+    background: var(--font-controls-bg);
+    border: 1px solid var(--border-ultra-subtle);
+    border-radius: 6px;
+    color: var(--noonblue);
+    cursor: pointer;
+    display: inline-flex;
+    height: 22px;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+    width: 22px;
+  }
+
+  .day-header-add-btn:hover {
+    background-color: var(--noonblue);
+    border-color: var(--noonblue);
+    color: #ffffff;
   }
 
   .day-title {

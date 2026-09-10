@@ -121,7 +121,7 @@
 
   @media (min-width: 768px) {
     .planned-recipes-grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
       gap: 0.75rem;
     }
 
@@ -129,34 +129,35 @@
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
-    .planned-recipes-grid :global(.day-column[data-day='supplemental']) {
-      grid-column: 1 / span 5;
-    }
-
-    .planned-recipes-grid.grid-5day
-      :global(.day-column[data-day='supplemental']) {
-      grid-column: 1 / span 5;
+    .planned-recipes-grid :global(.day-column[data-day='supplemental']),
+    .planned-recipes-grid.grid-5day :global(.day-column[data-day='supplemental']) {
+      grid-column: 1 / -1;
     }
   }
 
   .planner-trash-zone {
     align-items: center;
-    background-color: rgba(239, 68, 68, 0.05);
+    background-color: var(--card-bg);
     border: 2px dashed var(--danger-color);
-    border-radius: 12px;
+    border-radius: 9999px;
+    bottom: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
     color: var(--danger-color);
     display: none;
     font-size: 0.9rem;
     font-weight: 700;
     gap: 0.6rem;
     justify-content: center;
-    margin-top: 1rem;
-    padding: 1.25rem;
+    left: 50%;
+    padding: 0.75rem 1.5rem;
+    position: fixed;
+    transform: translateX(-50%);
     transition: all 0.2s ease;
+    z-index: 1000;
   }
 
   .planner-trash-zone.drag-over {
     background-color: rgba(255, 74, 74, 0.15);
-    transform: scale(1.01);
+    transform: translateX(-50%) scale(1.05);
   }
 </style>
