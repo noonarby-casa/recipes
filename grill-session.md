@@ -1,60 +1,51 @@
-# Grill Session: Meal Selector Modal Keyboard UX & Interactions
+# Grill Session: Removing Celery from Chicken Stew
 
 ## Closed Decisions
 
-### Q1. Enter Key Behavior in Catalog Search Input
+### Q1. Aromatic Replacement vs. Straight Omission
 
-- **Question:** What should happen when pressing `Enter` in the recipe search input with or without an active arrow key selection?
-- **Decision:** Consistent split between blur and explicit selection:
-  - **Without arrow keys (`keyboardFocusedIndex === -1`):** Pressing `Enter` blurs the input (`inputElement.blur()`) to collapse the on-screen keyboard (or release input focus) and reveal matching results in the modal. It does _not_ auto-select the first result, even if there is only 1 match.
-  - **With arrow keys (`keyboardFocusedIndex >= 0`):** Pressing `Enter` selects the highlighted recipe and adds it to the meal plan.
+- **Question:** Should celery be replaced with another aromatic (leeks, fennel, extra mirepoix) or omitted completely?
+- **Decision:** Omit completely without replacement.
+- **Details:**
+  - No alternative aromatics or celery substitutes (like celery seed/salt or leeks) will be added to the stew base.
 
-### Q2. Auto-focus Behavior on Modal Open Across Devices
+### Q2. Vegetable Bulk & Liquid Ratio
 
-- **Question:** How should the search input be focused when the recipe selector modal opens?
-- **Decision:** Capability-based auto-focus using pointer media queries:
-  - **Desktop / Mouse (`(pointer: fine)`):** Automatically focus the search input so desktop users can start typing to search immediately.
-  - **Touch / Tablet / Mobile (`(pointer: coarse)`):** Do _not_ auto-focus on modal open, preventing the OS soft keyboard from prematurely covering the recipe list.
+- **Question:** Should other vegetables or liquid/roux quantities be adjusted to compensate for lost celery volume?
+- **Decision:** Leave existing ingredient amounts and liquid ratios unchanged.
+- **Details:**
+  - No changes to carrots, potatoes, chicken, broth, cream, or flour quantities.
 
-### Q3. Escape Key Semantics in Search Input
+### Q3. Seasoning & Herb Balance
 
-- **Question:** When the user presses `Escape`, should it clear the search query or close the modal?
-- **Decision:** Two-step escape hierarchy:
-  - **Step 1:** If search input has text (`searchQuery.length > 0`) or a card is highlighted (`keyboardFocusedIndex >= 0`), `Escape` clears the query, resets the highlighted index to `-1`, and keeps focus in the search box.
-  - **Step 2:** If search input is already empty, `Escape` closes the modal.
+- **Question:** Should any herbs, spices, or salt levels be adjusted to compensate for the flavor loss of celery?
+- **Decision:** Leave seasoning blend unchanged.
+- **Details:**
+  - Keep dried sage, thyme, oregano, sweet paprika, and apple cider vinegar at their existing amounts.
 
-### Q4. Arrow Key Navigation Mechanics & Boundaries
+### Q4. Recipe Notes & Variations
 
-- **Question:** How should arrow keys navigate recipe cards and handle boundaries and new keystrokes?
-- **Decision:** Linear non-wrapping boundary with typing reset:
-  - **Input &rarr; Cards:** `ArrowDown` moves from input (`-1`) to the first card (`0`).
-  - **Cards &rarr; Input:** `ArrowUp` from the first card (`0`) returns to `-1` (unhighlighting cards and returning focus to the search bar cursor).
-  - **End of List:** `ArrowDown` at the last card stops at the last card (no infinite wrap).
-  - **Typing Reset:** Any typing/input in the search box immediately resets `keyboardFocusedIndex` to `-1`.
+- **Question:** Should an optional variation note regarding celery be added?
+- **Decision:** No optional note; completely scrub celery.
+- **Details:**
+  - No notes, tips, or references to celery will remain in the recipe.
 
-### Q5. Keyboard Interactions in Custom Dish Entry Form
+### Q5. Prep Time Estimate
 
-- **Question:** How should `Enter` and submission shortcuts behave within the Custom Dish form?
-- **Decision:** Smart contextual actions and power shortcuts:
-  - **Title Input:** If suggestion active &rarr; selects suggestion; if no suggestion active &rarr; submits custom dish if valid.
-  - **Ingredients Input:** `Enter` commits the current ingredient and keeps focus in the input for the next item. `Escape` cancels editing.
-  - **Power Shortcut:** `Cmd+Enter` / `Ctrl+Enter` submits the custom dish from anywhere in the custom panel.
+- **Question:** Should prep time be reduced due to fewer vegetables to chop?
+- **Decision:** Keep prep time unchanged at 15 minutes.
+- **Details:**
+  - Prepping potatoes, green beans, carrots, onion, and garlic still warrants 15 minutes.
 
-### Q6. Tab Switching & Column Navigation via Keyboard
+### Q6. Implementation & Execution Scope
 
-- **Question:** How should keyboard navigation handle moving between tabs on mobile, and between the two columns on desktop?
-- **Decision:** Standard WAI-ARIA and linear Tab flow:
-  - **Mobile / Tablet:** WAI-ARIA arrow navigation (`ArrowLeft` / `ArrowRight`) on the `ToggleGroup` tab header.
-  - **Desktop:** Clean linear `Tab` ring across Search &rarr; Favorites &rarr; Shelf &rarr; Custom Form. No non-standard modifier combinations.
-
-### Q7. "No Results" Empty State & Custom Dish Bridge Keyboard Actions
-
-- **Question:** How should keyboard navigation interact with empty state action buttons?
-- **Decision:** Predictable focus flow and smooth bridge:
-  - `Enter` in search input blurs to reveal empty state without selecting.
-  - `ArrowDown` / `Tab` from empty search focuses the action button (`+ Create Custom Dish` or `Show All Recipes`).
-  - Activating `+ Create Custom Dish` copies query to title, switches tab on mobile, clears query, and focuses the title field.
+- **Question:** Proceed with removing celery from front matter and step 1 instructions in `content/chicken-stew/index.md`?
+- **Decision:** Implemented.
+- **Details:**
+  - Removed `celery` entry from `ingredients` table.
+  - Removed `diced celery` and shortcode from Step 1 instructions.
+  - Preserved all other ingredients, timings, and instructions.
 
 ## Open Questions
 
-_(All initial questions resolved)_
+_(None — all decisions closed.)_
