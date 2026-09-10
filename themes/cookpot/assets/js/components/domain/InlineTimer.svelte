@@ -2,11 +2,11 @@
   import { onMount } from 'svelte';
   import { timersStore } from '../../stores/timers';
   import type { TimerState } from '../../types';
-  import { formatTime } from '../../utils/timer';
+  import { formatTime, parseDuration } from '../../utils/timer';
   import Icon from '../primitives/Icon.svelte';
 
   interface Props {
-    /** The raw duration string (e.g., '10m', '1-2h', '15-20 mins'). */
+    /** The raw duration string (e.g., '10m', '1-2h', '15-20 mins', '10 to 15 mins'). */
     duration: string;
     /** The zero-based index of this specific timer within the recipe. */
     index: number;
@@ -19,46 +19,24 @@
   let recipeTitle: string = $state('');
   let recipeUrl: string = $state('');
 
-  // Parse duration
-  let parsed: { minSeconds: number; maxSeconds: number } | null = $derived.by(() => {
-    const str = duration.toLowerCase().trim();
-    const rangeRegex = /^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)\s*(hour|hours|hr|hrs|h|minute|minutes|min|mins|m|second|seconds|sec|secs|s)$/;
-    const singleRegex = /^(\d+(?:\.\d+)?)\s*(hour|hours|hr|hrs|h|minute|minutes|min|mins|m|second|seconds|sec|secs|s)$/;
+  // Parse duration using shared utility
+  let parsed = $derived(parseDuration(duration));
 
-    let minVal: number, maxVal: number, unit: string;
-    let match = str.match(rangeRegex);
-    if (match) {
-      minVal = parseFloat(match[1]);
-      maxVal = parseFloat(match[2]);
-      unit = match[3];
-    } else {
-      match = str.match(singleRegex);
-      if (match) {
-        minVal = parseFloat(match[1]);
-        maxVal = minVal;
-        unit = match[2];
-      } else {
-        return null;
-      }
-    }
-
-    let multiplier = 1;
-    if (unit.startsWith('h')) {multiplier = 3600;}
-    else if (unit.startsWith('m')) {multiplier = 60;}
-    else if (unit.startsWith('s')) {multiplier = 1;}
-
-    return {
-      minSeconds: Math.round(minVal * multiplier),
-      maxSeconds: Math.round(maxVal * multiplier),
-    };
-  });
-
-  let timerState: TimerState | undefined = $derived($timersStore.list.find((t) => t.recipeUrl === recipeUrl && t.timerIndex === index));
+  let timerState: TimerState | undefined = $derived(
+    $timersStore.list.find(
+      (t) => t.recipeUrl === recipeUrl && t.timerIndex === index,
+    ),
+  );
 
   let elapsed: number = $derived.by(() => {
-    if (!timerState) {return 0;}
+    if (!timerState) {
+      return 0;
+    }
     if (timerState.status === 'running' && timerState.startedAt !== null) {
-      return timerState.elapsedBeforeStart + Math.floor(($timersStore.now - timerState.startedAt) / 1000);
+      return (
+        timerState.elapsedBeforeStart +
+        Math.floor(($timersStore.now - timerState.startedAt) / 1000)
+      );
     }
     return timerState.elapsedBeforeStart;
   });
@@ -66,36 +44,71 @@
   let remaining = $derived(parsed ? parsed.maxSeconds - elapsed : 0);
 
   let labelText = $derived.by(() => {
-    if (!timerState) {return duration;}
+    if (!timerState) {
+      return duration;
+    }
     return formatTime(remaining);
   });
 
   let isBeyondRange = $derived(parsed && elapsed > parsed.maxSeconds);
-  let isInRange = $derived(parsed && elapsed >= parsed.minSeconds && elapsed <= parsed.maxSeconds);
+  let isInRange = $derived(
+    parsed && elapsed >= parsed.minSeconds && elapsed <= parsed.maxSeconds,
+  );
   let hasStarted = $derived(!!timerState);
   let isRunning = $derived(timerState?.status === 'running');
+
+  let mainButtonAriaLabel = $derived.by(() => {
+    if (!hasStarted) {
+      return `Start timer ${duration}`;
+    }
+    if (isRunning) {
+      return `Pause timer, ${labelText} remaining`;
+    }
+    return `Resume timer, ${labelText} remaining`;
+  });
 
   // Reactively sync classes on the target element
   $effect(() => {
     if (target) {
-      if (hasStarted) {target.classList.add('has-started');}
-      else {target.classList.remove('has-started');}
+      if (hasStarted) {
+        target.classList.add('has-started');
+      } else {
+        target.classList.remove('has-started');
+      }
 
-      if (isRunning) {target.classList.add('is-running');}
-      else {target.classList.remove('is-running');}
+      if (isRunning) {
+        target.classList.add('is-running');
+      } else {
+        target.classList.remove('is-running');
+      }
 
-      if (isInRange) {target.classList.add('is-in-range');}
-      else {target.classList.remove('is-in-range');}
+      if (isInRange) {
+        target.classList.add('is-in-range');
+      } else {
+        target.classList.remove('is-in-range');
+      }
 
-      if (isBeyondRange) {target.classList.add('is-beyond-range');}
-      else {target.classList.remove('is-beyond-range');}
+      if (isBeyondRange) {
+        target.classList.add('is-beyond-range');
+      } else {
+        target.classList.remove('is-beyond-range');
+      }
     }
   });
 
   function handlePlayPause(e: Event) {
     e.preventDefault();
-    if (!parsed) {return;}
-    timersStore.startTimer(recipeTitle, recipeUrl, index, duration, parsed.minSeconds, parsed.maxSeconds);
+    if (!parsed) {
+      return;
+    }
+    timersStore.startTimer(
+      recipeTitle,
+      recipeUrl,
+      index,
+      duration,
+      parsed.minSeconds,
+      parsed.maxSeconds,
+    );
   }
 
   function handleReset(e: Event) {
@@ -111,24 +124,54 @@
 
     if (target && parsed) {
       const inactiveWidth = target.getBoundingClientRect().width;
-      
-      const span = document.createElement('span');
-      span.className = 'timer-label';
-      span.textContent = formatTime(parsed.maxSeconds);
-      
+
+      // Construct an offscreen active state clone to measure true active width including reset button
       const mockTimer = document.createElement('span');
-      mockTimer.className = 'recipe-timer btn-brand has-started';
-      mockTimer.appendChild(span);
+      mockTimer.className = 'recipe-timer btn btn-brand has-started';
       mockTimer.style.position = 'absolute';
       mockTimer.style.visibility = 'hidden';
+      mockTimer.style.pointerEvents = 'none';
+      mockTimer.style.whiteSpace = 'nowrap';
+
+      const mockBtn = document.createElement('button');
+      mockBtn.className = 'recipe-timer-btn';
+      mockBtn.type = 'button';
+
+      const mockIconSpan = document.createElement('span');
+      mockIconSpan.className = 'timer-icon';
+      const mockSvg = document.createElement('span');
+      mockSvg.style.display = 'inline-block';
+      mockSvg.style.width = '14px';
+      mockSvg.style.height = '14px';
+      mockIconSpan.appendChild(mockSvg);
+
+      const mockLabel = document.createElement('span');
+      mockLabel.className = 'timer-label';
+      mockLabel.textContent = formatTime(parsed.maxSeconds);
+
+      mockBtn.appendChild(mockIconSpan);
+      mockBtn.appendChild(mockLabel);
+
+      const mockReset = document.createElement('button');
+      mockReset.className = 'recipe-timer-reset';
+      mockReset.type = 'button';
+      mockReset.style.display = 'inline-flex';
+      const mockResetSvg = document.createElement('span');
+      mockResetSvg.style.display = 'inline-block';
+      mockResetSvg.style.width = '14px';
+      mockResetSvg.style.height = '14px';
+      mockReset.appendChild(mockResetSvg);
+
+      mockTimer.appendChild(mockBtn);
+      mockTimer.appendChild(mockReset);
+
       document.body.appendChild(mockTimer);
-      
       const activeWidth = mockTimer.getBoundingClientRect().width;
       document.body.removeChild(mockTimer);
 
       if (inactiveWidth > 0 && activeWidth > 0) {
         const lockedWidth = Math.ceil(Math.max(inactiveWidth, activeWidth));
-        target.style.width = `${lockedWidth}px`;
+        target.style.minWidth = `${lockedWidth}px`;
       }
     }
   });
@@ -138,13 +181,23 @@
   class="recipe-timer-btn"
   type="button"
   onclick={handlePlayPause}
-  aria-label="Start timer {duration}"
+  aria-label={mainButtonAriaLabel}
 >
   <span class="timer-icon">
     {#if isRunning}
-      <Icon name="pause" size={14} strokeWidth={2.5} class="timer-svg-icon timer-pause-icon" />
+      <Icon
+        name="pause"
+        size={14}
+        strokeWidth={2.5}
+        class="timer-svg-icon timer-pause-icon"
+      />
     {:else}
-      <Icon name="play" size={14} strokeWidth={2.5} class="timer-svg-icon timer-play-icon" />
+      <Icon
+        name="play"
+        size={14}
+        strokeWidth={2.5}
+        class="timer-svg-icon timer-play-icon"
+      />
     {/if}
   </span>
   <span class="timer-label">{labelText}</span>
@@ -157,7 +210,12 @@
   aria-label="Reset timer"
   title="Reset timer"
 >
-  <Icon name="reset" size={14} strokeWidth={2.5} class="timer-svg-icon timer-reset-icon" />
+  <Icon
+    name="reset"
+    size={14}
+    strokeWidth={2.5}
+    class="timer-svg-icon timer-reset-icon"
+  />
 </button>
 
 <style>
@@ -172,9 +230,14 @@
     margin: 0 0.3rem;
     padding: 0 !important;
     overflow: hidden;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      min-width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
     vertical-align: -0.15em;
+    white-space: nowrap;
   }
 
   :global(.recipe-timer:hover) {
@@ -198,11 +261,17 @@
     font-weight: 600;
     gap: 0.35rem;
     line-height: 1.2;
-    outline: none;
     padding: 0.15rem 0.6rem;
     transition: background-color 0.2s ease;
     flex-grow: 1;
+    flex-shrink: 0;
     justify-content: center;
+    white-space: nowrap;
+  }
+
+  .recipe-timer-btn:focus-visible {
+    outline: 2px solid var(--accent, #fff);
+    outline-offset: -2px;
   }
 
   .recipe-timer-btn:hover {
@@ -220,12 +289,19 @@
     font-size: inherit;
     justify-content: center;
     line-height: 1.2;
-    outline: none;
     padding: 0.15rem 0.4rem;
     transition:
       background-color 0.2s ease,
       color 0.2s ease;
     width: 28px; /* Generous touch target for tablets */
+    flex-shrink: 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+
+  .recipe-timer-reset:focus-visible {
+    outline: 2px solid var(--accent, #fff);
+    outline-offset: -2px;
   }
 
   .recipe-timer-reset:hover {

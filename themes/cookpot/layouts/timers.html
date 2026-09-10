@@ -156,7 +156,7 @@
             <div class="timers-list">
               <div class="timers-item">
                 <div class="timers-item-left">
-                  <span class="timers-item-label">3 to 6 Seconds</span>
+                  <span class="timers-item-label">Hyphen Range (3-6s)</span>
                   <span class="timers-item-desc"
                     >Warning at 3s, Alarm at 6s</span
                   >
@@ -165,12 +165,30 @@
               </div>
               <div class="timers-item">
                 <div class="timers-item-left">
+                  <span class="timers-item-label">'to' Range (3 to 6s)</span>
+                  <span class="timers-item-desc"
+                    >Natural 'to' syntax support</span
+                  >
+                </div>
+                {{ partial "timer.html" "3 to 6 seconds" }}
+              </div>
+              <div class="timers-item">
+                <div class="timers-item-left">
+                  <span class="timers-item-label">En-dash Range (3–6s)</span>
+                  <span class="timers-item-desc"
+                    >Typography en-dash (–) support</span
+                  >
+                </div>
+                {{ partial "timer.html" "3–6 seconds" }}
+              </div>
+              <div class="timers-item">
+                <div class="timers-item-left">
                   <span class="timers-item-label">5 to 10 Seconds</span>
                   <span class="timers-item-desc"
                     >Warning at 5s, Alarm at 10s</span
                   >
                 </div>
-                {{ partial "timer.html" "5-10 seconds" }}
+                {{ partial "timer.html" "5 to 10 seconds" }}
               </div>
             </div>
           </div>
@@ -193,11 +211,20 @@
               <div class="timers-item">
                 <div class="timers-item-left">
                   <span class="timers-item-label"
-                    >Decimal Range (1.5-3.5s)</span
+                    >Decimal Range (1.5 to 3.5s)</span
                   >
-                  <span class="timers-item-desc">Range parsing</span>
+                  <span class="timers-item-desc">Range parsing with 'to'</span>
                 </div>
-                {{ partial "timer.html" "1.5-3.5 seconds" }}
+                {{ partial "timer.html" "1.5 to 3.5 seconds" }}
+              </div>
+              <div class="timers-item">
+                <div class="timers-item-left">
+                  <span class="timers-item-label">Dual Unit (45s to 1m)</span>
+                  <span class="timers-item-desc"
+                    >Different units per bound</span
+                  >
+                </div>
+                {{ partial "timer.html" "45s to 1m" }}
               </div>
               <div class="timers-item">
                 <div class="timers-item-left">
@@ -252,6 +279,27 @@
                   <span class="timers-item-label">Timer C (10s)</span>
                 </div>
                 {{ partial "timer.html" "10 seconds" }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5: Inline Paragraph Reflow Sandbox -->
+          <div class="timers-card">
+            <h2>5. Inline Paragraph Reflow Sandbox</h2>
+            <p>
+              Verify that starting and resetting inline timers does not shift or
+              wrap surrounding paragraph text.
+            </p>
+            <div class="timers-list">
+              <div
+                class="timers-item"
+                style="display: block; line-height: 1.7;"
+              >
+                Preheat the skillet over medium-high heat for
+                {{ partial "timer.html" "5s" }} until sizzling. Add the
+                aromatics and stir continuously for
+                {{ partial "timer.html" "10 to 15 seconds" }} before removing
+                from heat.
               </div>
             </div>
           </div>

@@ -167,4 +167,36 @@ test.describe('Recipe Timers E2E', () => {
     await expect(timerContainer).not.toHaveClass(/is-running/);
     await expect(resetBtn).toBeHidden();
   });
+
+  test('should handle "to" syntax range timers', async ({ page }) => {
+    const timerContainer = page
+      .locator('.recipe-timer[data-duration="3 to 6 seconds"]')
+      .first();
+    const btn = timerContainer.locator('.recipe-timer-btn');
+    const label = timerContainer.locator('.timer-label');
+    const resetBtn = timerContainer.locator('.recipe-timer-reset');
+
+    // Initially idle
+    await expect(label).toHaveText('3 to 6 seconds');
+
+    // Start timer
+    await btn.click();
+    await expect(timerContainer).toHaveClass(/has-started/);
+    await expect(timerContainer).toHaveClass(/is-running/);
+    await expect(resetBtn).toBeVisible();
+
+    // Fast forward 3 seconds to reach minimum (3s) -> in-range green
+    await page.clock.fastForward(3000);
+    await expect(label).toHaveText('0:03');
+    await expect(timerContainer).toHaveClass(/is-in-range/);
+
+    // Fast forward 3.1 more seconds to exceed maximum (6s) -> beyond-range orange
+    await page.clock.fastForward(3100);
+    await expect(timerContainer).toHaveClass(/is-beyond-range/);
+
+    // Reset back to idle
+    await resetBtn.click();
+    await expect(label).toHaveText('3 to 6 seconds');
+    await expect(timerContainer).not.toHaveClass(/has-started/);
+  });
 });
