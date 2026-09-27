@@ -110,6 +110,9 @@ jobs:
           hugo-version: 'latest'
           extended: true
 
+      - name: Build static assets
+        run: pnpm run build
+
       - name: Build Hugo Site
         run: hugo --minify
 
