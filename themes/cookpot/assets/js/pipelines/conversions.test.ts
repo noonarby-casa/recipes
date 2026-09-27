@@ -5019,6 +5019,20 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       sizeNote: '1 tbsp needed',
     },
   },
+  {
+    input: {
+      item: 'cherry tomato',
+      qty: 1.5,
+      unit: 'pound',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'cherry tomato',
+      qty: 1.5,
+      unit: 'pounds',
+      category: 'fresh-produce',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
