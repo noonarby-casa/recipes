@@ -23,7 +23,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'hugo --minify && pnpm exec sirv public --port 4321',
+    command: 'hugo --minify && sirv public --port 4321',
     url: 'http://localhost:4321',
     reuseExistingServer: !process.env.CI,
     stdout: 'ignore',
