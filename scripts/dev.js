@@ -6,6 +6,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
+try {
+  execSync('node scripts/check-toolchain.js', {
+    cwd: rootDir,
+    stdio: 'inherit',
+  });
+} catch {
+  process.exit(1);
+}
+
 console.log('Building initial Vite bundle...');
 try {
   execSync('pnpm exec vite build', { cwd: rootDir, stdio: 'inherit' });

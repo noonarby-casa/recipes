@@ -20,7 +20,10 @@
     "test:browser": "playwright test",
     "test:all": "pnpm run test:unit && pnpm run test:browser",
     "check:styles": "node scripts/check-style-rules.js",
-    "ci": "pnpm run build && pnpm run typecheck & p1=$! ; pnpm run lint & p2=$! ; pnpm run format & p3=$! ; pnpm run check:styles & p4=$! ; pnpm run test:unit & p5=$! ; wait $p1 && wait $p2 && wait $p3 && wait $p4 && wait $p5",
+    "check:toolchain": "node scripts/check-toolchain.js",
+    "sync:toolchain": "node scripts/sync-toolchain.js",
+    "update:toolchain": "node scripts/sync-toolchain.js",
+    "ci": "pnpm run check:toolchain && (pnpm run build && pnpm run typecheck & p1=$! ; pnpm run lint & p2=$! ; pnpm run format & p3=$! ; pnpm run check:styles & p4=$! ; pnpm run test:unit & p5=$! ; wait $p1 && wait $p2 && wait $p3 && wait $p4 && wait $p5)",
     "fix": "pnpm run lint:fix && pnpm run format:fix",
     "clean": "node scripts/clean.js",
     "clean:all": "node scripts/clean.js --all"
@@ -46,5 +49,6 @@
     "vite": "^8.1.5",
     "vite-plugin-css-injected-by-js": "^5.0.2",
     "vitest": "^4.1.10"
-  }
+  },
+  "packageManager": "pnpm@12.6.0"
 }

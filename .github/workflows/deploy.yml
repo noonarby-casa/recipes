@@ -23,26 +23,28 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
+
+      - name: Read Hugo version
+        id: hugo-version
+        run: echo "version=$(cat .hugo-version | tr -d 'v\r\n')" >> $GITHUB_OUTPUT
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ steps.hugo-version.outputs.version }}
+          extended: true
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Run CI checks
         run: pnpm run ci
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: 'latest'
-          extended: true
 
       - name: Get Playwright Version
         id: playwright-version
@@ -92,23 +94,25 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Read Hugo version
+        id: hugo-version
+        run: echo "version=$(cat .hugo-version | tr -d 'v\r\n')" >> $GITHUB_OUTPUT
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: 'latest'
+          hugo-version: ${{ steps.hugo-version.outputs.version }}
           extended: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build static assets
         run: pnpm run build
