@@ -2148,7 +2148,13 @@
   {
     "canonicalName": "sliced bread",
     "category": "bakery",
-    "items": ["sliced bread", "bread", "brioche", "cornbread"]
+    "items": [
+      "sliced bread",
+      "bread",
+      "brioche",
+      "cornbread",
+      "pumpkin brioche twist"
+    ]
   },
   {
     "canonicalName": "rolled oats",

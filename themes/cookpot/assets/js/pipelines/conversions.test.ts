@@ -1603,6 +1603,20 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
+      item: 'pumpkin brioche twist',
+      qty: 1,
+      unit: 'loaf',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'pumpkin brioche twist',
+      qty: 1,
+      unit: 'loaf',
+      category: 'bakery',
+    },
+  },
+  {
+    input: {
       item: 'butter',
       qty: 2,
       unit: 'tablespoon',
