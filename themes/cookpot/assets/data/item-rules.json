@@ -1578,6 +1578,11 @@
     "items": ["hot chili sauce", "hot chilli sauce"]
   },
   {
+    "canonicalName": "chile crisp",
+    "category": "condiments",
+    "items": ["chile crisp", "chili crisp", "chili oil crisp"]
+  },
+  {
     "canonicalName": "soy sauce",
     "category": "condiments",
     "staple": true,

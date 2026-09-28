@@ -5047,6 +5047,21 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
       category: 'fresh-produce',
     },
   },
+  {
+    input: {
+      item: 'chile crisp',
+      qty: 2,
+      unit: 'tablespoon',
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'chile crisp',
+      qty: null,
+      unit: '',
+      category: 'condiments',
+      sizeNote: '2 tbsp needed',
+    },
+  },
 ];
 
 function getAllIngredientsFromContent(): string[] {
