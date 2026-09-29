@@ -1351,7 +1351,9 @@
       "mild sausage",
       "hot sausage",
       "Italian turkey sausage",
-      "turkey sausage"
+      "turkey sausage",
+      "Italian chicken sausage",
+      "chicken sausage"
     ],
     "unitEquivalences": {
       "package (19 oz)": {

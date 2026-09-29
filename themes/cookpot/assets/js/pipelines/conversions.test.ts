@@ -4555,6 +4555,22 @@ const INGREDIENT_TEST_CASES: IngredientTestCase[] = [
   },
   {
     input: {
+      item: 'Italian chicken sausage',
+      qty: 4,
+      desc: 'sweet or hot',
+      alt: { qty: 1, unit: 'pound' },
+    },
+    expectedList: 'buy',
+    expectedItem: {
+      item: 'Italian chicken sausage',
+      qty: 1,
+      unit: 'package (19 oz)',
+      category: 'meat',
+      sizeNote: '4 links needed',
+    },
+  },
+  {
+    input: {
       item: 'Italian sub roll',
       qty: 4,
     },
